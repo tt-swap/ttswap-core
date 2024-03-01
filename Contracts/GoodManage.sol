@@ -11,7 +11,6 @@ import {T_Currency, L_CurrencyLibrary} from "./types/T_Currency.sol";
 import {T_GoodId, L_GoodIdLibrary} from "./types/T_GoodId.sol";
 import {S_GoodKey, S_GoodState} from "./types/S_GoodKey.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "./types/T_BalanceUINT256.sol";
-
 import {SafeCast} from "./libraries/SafeCast.sol";
 
 abstract contract GoodManage is I_Good {
@@ -73,7 +72,6 @@ abstract contract GoodManage is I_Good {
         good_.erc20address = goods[_goodid].erc20address;
     }
 
-
     function getGoodsFee(
         T_GoodId _goodid,
         address user
@@ -121,7 +119,6 @@ abstract contract GoodManage is I_Good {
         _ownergoods[to].push(goodid);
         return true;
     }
-
 
     function collectProtocolFee(
         T_GoodId goodid

@@ -253,11 +253,11 @@ library L_Good {
             _goodQuantity
         );
         require(
-            disinvestResult_.amount0() < _self.currentState.amount0(),
+            disinvestResult_.amount0() < _self.goodConfig.getDisinvestChips(_self.currentState.amount0()),
             "value good value not enough"
         );
         require(
-            _goodQuantity < _self.currentState.amount1(),
+            _goodQuantity < _self.goodConfig.getDisinvestChips(_self.currentState.amount1()),
             "value good quantity not enough"
         );
         _self.currentState = _self.currentState - disinvestResult_;
@@ -320,20 +320,20 @@ library L_Good {
 
         require(
             NormalGoodResult1_.amount0() <
-                _valueGoodState.currentState.amount0(),
+                _valueGoodState.goodConfig.getDisinvestChips(_valueGoodState.currentState.amount0()),
             "normal good value not enough"
         );
         require(
-            valequanity_ < _valueGoodState.currentState.amount1(),
-            "normal good quantiy not enough"
+            valequanity_ < _valueGoodState.goodConfig.getDisinvestChips(_valueGoodState.currentState.amount1()),
+            "value good quantiy not enough"
         );
         require(
-            NormalGoodResult1_.amount0() < _self.currentState.amount0(),
+            NormalGoodResult1_.amount0() < _self.goodConfig.getDisinvestChips(_self.currentState.amount0()),
             "value good value not enough"
         );
         require(
-            NormalGoodResult1_.amount1() < _self.currentState.amount1(),
-            "value good quanity not enough"
+            NormalGoodResult1_.amount1() < _self.goodConfig.getDisinvestChips(_self.currentState.amount1()),
+            "normal good quanity not enough"
         );
         _self.currentState = _self.currentState - NormalGoodResult1_;
         _self.investState = _self.investState - NormalGoodResult1_;

@@ -32,7 +32,6 @@ contract MarketManager is
     using L_Proof for S_ProofState;
     using L_CurrencyLibrary for T_Currency;
     using L_MarketConfigLibrary for uint256;
-    //address public immutable marketaddress;
 
     constructor(
         address _marketcreator,
@@ -73,7 +72,7 @@ contract MarketManager is
         proofs[normalproof].extends = toBalanceUINT256(initial.amount0(), 0);
         proofs[normalproof].invest = toBalanceUINT256(0, initial.amount1());
         proofs[normalproof].valueinvest = toBalanceUINT256(0, 0);
-        goodnum += 1;
+        goodnum = 1;
         goodmapping[goodnum] = metagood;
         _ownergoods[msg.sender].push(metagood);
         return true;

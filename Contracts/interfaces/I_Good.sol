@@ -49,10 +49,6 @@ interface I_Good {
     /// @return the result
     function changeOwner(T_GoodId goodid, address to) external returns (bool);
 
-    function changeOwnerByMarketor(
-        T_GoodId goodid,
-        address to
-    ) external returns (bool);
 
     function collectProtocolFee(
         T_GoodId goodid

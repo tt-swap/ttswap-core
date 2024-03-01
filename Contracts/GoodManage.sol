@@ -115,27 +115,13 @@ abstract contract GoodManage is I_Good {
         T_GoodId goodid,
         address to
     ) external override returns (bool) {
-        require(msg.sender == goods[goodid].owner, "good isnot your");
+        require(msg.sender == goods[goodid].owner || msg.sender==marketcreator, "you havn't priv");
         emit e_changeOwner(goodid, goods[goodid].owner, to);
         goods[goodid].owner = to;
         _ownergoods[to].push(goodid);
         return true;
     }
 
-    function changeOwnerByMarketor(
-        T_GoodId goodid,
-        address to
-    ) external override onlyMarketCreator returns (bool) {
-        emit e_changeOwnerByMarketor(
-            goodid,
-            msg.sender,
-            goods[goodid].owner,
-            to
-        );
-        goods[goodid].owner = to;
-        _ownergoods[to].push(goodid);
-        return true;
-    }
 
     function collectProtocolFee(
         T_GoodId goodid

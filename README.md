@@ -11,7 +11,7 @@ TTSWAP(token-token swap)是建立在以太坊上的一套去中心自动做市�
 3. 无滑点,交易阈值内交易无滑点
 交易数量低于商品交易阈值,无滑点
 4. 无无常损失,流动性提供者或商品投资者无无常损失
-恒定市场价值从逻辑上就避免了无常损失,用户撤资时就能获得原投资商品+提供流动性产生的收益.
+价值守恒交易策略从逻辑上就避免了无常损失,用户撤资时就能获得原投资商品+提供流动性产生的收益.
 5. 低GAS费,计算逻辑简单,GAS消耗低
 价值恒定交易模式逻辑简单,运算量少,GAS消耗低.
 6. 手续费分角色返佣,人人参与
@@ -317,8 +317,8 @@ github:https://github.com/ttswap/ttswap-core/LICENSE.
 
 
 # 11 参与和合作联系方式
-X:@ttswap.exchange
-TG:@ttswap01
-Email:ttswap.exchange@gmail.com
-Discord:https://discord.com/invite/T53BKnRDQh
+X:@ttswap.exchange   
+TG:@ttswap01   
+Email:ttswap.exchange@gmail.com   
+Discord:https://discord.com/invite/T53BKnRDQh   
  

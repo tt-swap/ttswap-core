@@ -291,31 +291,31 @@ ___
 github:https://github.com/ttswap/ttswap-core/LICENSE.
 如因项目在未知的情况违反其它项目开源协议,及时联系我们,我们尽快调整.
 ## 11.3 文件开源协议信息
-├── GoodManage.sol(BUSL-1.1)
-├── MarketManager.sol(BUSL-1.1)
-├── ProofManage.sol(BUSL-1.1)
-├── interfaces
-│   ├── I_Good.sol(MIT)
-│   ├── I_MarketManage.sol(MIT)
-│   └── I_Proof.sol(MIT)
-├── libraries
-│   ├── Address.sol(MIT)
-│   ├── FullMath.sol(MIT)
-│   ├── L_Good.sol(BUSL-1.1)
-│   ├── L_GoodConfig.sol(BUSL-1.1)
-│   ├── L_MarketConfig.sol(BUSL-1.1)
-│   ├── L_Proof.sol(BUSL-1.1)
-│   ├── L_Ralate.sol(MIT)
-│   ├── Multicall.sol( GPL-2.0-or-later)
-│   ├── SafeCast.sol (MIT)
-│   └── Strings.sol (MIT)
+├── GoodManage.sol(BUSL-1.1)  
+├── MarketManager.sol(BUSL-1.1)  
+├── ProofManage.sol(BUSL-1.1)  
+├── interfaces  
+│   ├── I_Good.sol(MIT)  
+│   ├── I_MarketManage.sol(MIT)  
+│   └── I_Proof.sol(MIT)   
+├── libraries   
+│   ├── Address.sol(MIT)     
+│   ├── FullMath.sol(MIT)      
+│   ├── L_Good.sol(BUSL-1.1)    
+│   ├── L_GoodConfig.sol(BUSL-1.1)     
+│   ├── L_MarketConfig.sol(BUSL-1.1)    
+│   ├── L_Proof.sol(BUSL-1.1)    
+│   ├── L_Ralate.sol(MIT)    
+│   ├── Multicall.sol( GPL-2.0-or-later)     
+│   ├── SafeCast.sol (MIT)     
+│   └── Strings.sol (MIT)     
 └── types
-    ├── S_GoodKey.sol(MIT)
-    ├── S_ProofKey.sol(MIT)
-    ├── T_BalanceUINT256.sol(MIT)
-    ├── T_Currency.sol(MIT)
-    ├── T_GoodId.sol(MIT)
-    └── T_ProofId.sol(MIT)
+    ├── S_GoodKey.sol(MIT)      
+    ├── S_ProofKey.sol(MIT)     
+    ├── T_BalanceUINT256.sol(MIT)     
+    ├── T_Currency.sol(MIT)     
+    ├── T_GoodId.sol(MIT) 
+    └── T_ProofId.sol(MIT)     
 
 
 

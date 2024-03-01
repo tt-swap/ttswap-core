@@ -3,7 +3,7 @@ pragma solidity ^0.8.23;
 
 import {FullMath} from "./FullMath.sol";
 
-/// @notice Library for computing the ID of a pool
+/// @notice 
 library L_GoodConfigLibrary {
     //商品配置
     function isvaluegood(uint256 config) internal pure returns (bool a) {
@@ -88,7 +88,7 @@ library L_GoodConfigLibrary {
         a = FullMath.mulDiv128(amount, a, 10000);
     }
 
-    //
+    // get swap chips
     function getSwapChips(uint256 config) internal pure returns (uint16 a) {
         assembly {
             a := shr(246, shl(41, config))
@@ -108,10 +108,30 @@ library L_GoodConfigLibrary {
         return (amount / (a * 2 ** 6));
     }
 
+    // get Unstake Chips
+    function getUnstakeChips(uint256 config) internal pure returns (uint16 a) {
+        assembly {
+            a := shr(246, shl(51, config))
+        }
+        return a ;
+    }
+
+    function getUnstakeChips(
+        uint256 config,
+        uint128 amount
+    ) internal pure returns (uint128) {
+        uint128 a;
+        assembly {
+            a := shr(246, shl(51, config))
+        }
+        if (a == 0) return amount;
+        return (amount / a);
+    }
+
     //物品类型
     function getGoodType(uint256 config) internal pure returns (uint128 a) {
         assembly {
-            a := shr(223, shl(51, config))
+            a := shr(223, shl(61, config))
         }
 
         return a;
@@ -120,7 +140,7 @@ library L_GoodConfigLibrary {
     //电话号码
     function getTell(uint256 config) internal pure returns (uint128 a) {
         assembly {
-            a := shr(208, shl(84, config))
+            a := shr(208, shl(94, config))
         }
 
         return a;
@@ -129,7 +149,7 @@ library L_GoodConfigLibrary {
     //经度
     function getLongitude(uint256 config) internal pure returns (uint128 a) {
         assembly {
-            a := shr(208, shl(132, config))
+            a := shr(208, shl(142, config))
         }
 
         return a;
@@ -138,7 +158,7 @@ library L_GoodConfigLibrary {
     //纬度
     function getLatitude(uint256 config) internal pure returns (uint128 a) {
         assembly {
-            a := shr(208, shl(180, config))
+            a := shr(208, shl(190, config))
         }
         return a;
     }

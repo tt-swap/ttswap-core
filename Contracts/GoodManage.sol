@@ -23,7 +23,7 @@ abstract contract GoodManage is I_Good {
     using SafeCast for *;
 
     uint256 public override marketconfig;
-    uint256 goodnum;
+    uint256 public goodnum;
     mapping(T_GoodId id => L_Good.S_State) public goods;
     mapping(address => T_GoodId[]) public _ownergoods;
     mapping(uint256 => T_GoodId) public goodmapping;

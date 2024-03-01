@@ -302,14 +302,14 @@ github:https://github.com/ttswap/ttswap-core/LICENSE.
 │   ├── Address.sol(MIT)     
 │   ├── FullMath.sol(MIT)      
 │   ├── L_Good.sol(BUSL-1.1)    
-│   ├── L_GoodConfig.sol(BUSL-1.1)     
-│   ├── L_MarketConfig.sol(BUSL-1.1)    
+│   ├── L_GoodConfig.sol(MIT)     
+│   ├── L_MarketConfig.sol(MIT)    
 │   ├── L_Proof.sol(BUSL-1.1)    
 │   ├── L_Ralate.sol(MIT)    
 │   ├── Multicall.sol( GPL-2.0-or-later)     
 │   ├── SafeCast.sol (MIT)     
 │   └── Strings.sol (MIT)     
-└── types
+└── types   
     ├── S_GoodKey.sol(MIT)      
     ├── S_ProofKey.sol(MIT)     
     ├── T_BalanceUINT256.sol(MIT)     

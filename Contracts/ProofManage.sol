@@ -128,7 +128,7 @@ abstract contract ProofManage is I_Proof {
         address from,
         address to,
         uint256 tokenId
-    ) internal virtual {
+    ) internal  {
         require(
             _ownerOf(tokenId) == from,
             "ERC721: transfer of token that is not own"
@@ -178,7 +178,7 @@ abstract contract ProofManage is I_Proof {
         _supportedInterfaces[interfaceId] = true;
     }
 
-    function _mint(address to, uint256 tokenId) internal virtual {
+    function _mint(address to, uint256 tokenId) internal  {
         require(to != address(0), "ERC721: mint to the zero address");
         require(!_exists(tokenId), "ERC721: token already minted");
 
@@ -216,8 +216,8 @@ abstract contract ProofManage is I_Proof {
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override {
-        //solhint-disable-next-line max-line-length
+    ) public  override {
+ 
         require(
             _isApprovedOrOwner(msg.sender, tokenId),
             "ERC721: transfer caller is not owner nor approved"

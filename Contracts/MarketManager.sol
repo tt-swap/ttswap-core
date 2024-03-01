@@ -140,7 +140,7 @@ contract MarketManager is
         goodnum += 1;
         goodmapping[goodnum] = togood;
         _ownergoods[msg.sender].push(togood);
-        emit e_initNormalGood(togood);
+        emit e_initNormalGood();
         return normalproof;
     }
 
@@ -203,9 +203,9 @@ contract MarketManager is
             _ralate
         );
         emit e_buyGood(
-            msg.sender,
             _goodid1,
             _goodid2,
+            msg.sender,
             _swapQuanitity,
             toBalanceUINT256(
                 _swapQuanitity - swapcache.remainQuanitity,
@@ -258,7 +258,7 @@ contract MarketManager is
             )
         );
 
-        emit e_investValueGood(msg.sender, _goodid, _goodQuanitity, valueproof);
+        emit e_investGood( valueproof);
     }
 
     function disinvestValueGood(
@@ -367,11 +367,7 @@ contract MarketManager is
             )
         );
 
-        emit e_investNormalGood(
-            msg.sender,
-            _togood,
-            _valuegood,
-            _quanitity,
+        emit e_investGood(
             proofid
         );
     }
@@ -431,12 +427,8 @@ contract MarketManager is
                 disinvestResult2_.amount1() -
                 protocalfee
         );
-        emit e_disinvestNormalGood(
-            msg.sender,
-            _togood,
-            _valuegood,
-            disinvestResult1_,
-            disinvestResult2_
+        emit e_disinvestGood(
+            _normalproof
         );
     }
 
@@ -476,11 +468,8 @@ contract MarketManager is
                 disinvestResult_.amount1() -
                 protocalfee
         );
-        emit e_disinvestValueProof(
-            msg.sender,
-            _valueproofid,
-            _goodQuanitity,
-            disinvestResult_
+        emit e_disinvestGood(
+            _valueproofid
         );
     }
 
@@ -538,12 +527,8 @@ contract MarketManager is
                 protocalfee
         );
 
-        emit e_disinvestNormalProof(
-            msg.sender,
-            _normalProof,
-            _goodQuanitity,
-            disinvestResult1_,
-            disinvestResult2_
+        emit e_disinvestGood(
+            _normalProof
         );
     }
 

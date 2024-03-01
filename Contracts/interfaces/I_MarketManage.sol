@@ -17,59 +17,27 @@ import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, sub
 /// @title 市场管理接口 market manage interface
 /// @notice 市场管理接口 market manage interface
 interface I_MarketManage is I_Good, I_Proof {
-    event e_initMetaGood(bytes32);
-    event e_initNormalGood(bytes32);
+    event e_initNormalGood();
     event e_updateNormalGood(bytes32);
     event e_updateValueGood(bytes32);
 
     event e_initNormalGood(T_GoodId indexed);
     event e_buyGood(
-        address indexed,
         T_GoodId indexed,
         T_GoodId indexed,
+        address,
         uint128,
         T_BalanceUINT256,
         T_BalanceUINT256
     );
-    event e_investValueGood(
-        address indexed,
-        T_GoodId indexed,
-        uint128,
-        T_ProofId
+    event e_investGood(
+        T_ProofId indexed
     );
-    event e_disinvestValueGood(
-        address indexed,
-        T_GoodId indexed,
-        uint128,
-        T_BalanceUINT256
+    event e_disinvestGood(
+        T_ProofId indexed
     );
-    event e_investNormalGood(
-        address indexed,
-        T_GoodId indexed,
-        T_GoodId indexed,
-        uint128,
-        T_ProofId
-    );
-    event e_disinvestNormalGood(
-        address indexed,
-        T_GoodId indexed,
-        T_GoodId indexed,
-        T_BalanceUINT256,
-        T_BalanceUINT256
-    );
-    event e_disinvestValueProof(
-        address indexed,
-        T_ProofId indexed,
-        uint128,
-        T_BalanceUINT256
-    );
-    event e_disinvestNormalProof(
-        address indexed,
-        T_ProofId indexed,
-        uint128,
-        T_BalanceUINT256,
-        T_BalanceUINT256
-    );
+   
+    
 
     /// @notice 获取商品状态 get good's state
     /// @param _goodkey1   商品的商品ID good's id

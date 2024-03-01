@@ -314,7 +314,7 @@ github:https://github.com/ttswap/ttswap-core/LICENSE.
     ├── S_ProofKey.sol(MIT)     
     ├── T_BalanceUINT256.sol(MIT)     
     ├── T_Currency.sol(MIT)     
-    ├── T_GoodId.sol(MIT) 
+    ├── T_GoodId.sol(MIT)   
     └── T_ProofId.sol(MIT)     
 
 

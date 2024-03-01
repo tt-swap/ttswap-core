@@ -1,5 +1,3 @@
-
-[toc]
 # 1 概要
 TTSWAP(token-token swap)是建立在以太坊上的一套去中心自动做市协议.底层原理是根据用户行为触发的市场价值迁移为基础,以价值守恒交易策略进行的平台搭建.
 白皮书解释了ttswap项目的设计逻辑.涵盖商品交易,价值商品投资与价值商品撤资,普通商品投资与普通商品撤资,和商品手续费产生与分配的原理和实现.
@@ -318,4 +316,9 @@ github:https://github.com/ttswap/ttswap-core/LICENSE.
     └── T_ProofId.sol(MIT)     
 
 
-
+# 11 参与和合作联系方式
+X:@ttswap.exchange
+TG:@ttswap01
+Email:ttswap.exchange@gmail.com
+Discord:https://discord.com/invite/T53BKnRDQh
+ 

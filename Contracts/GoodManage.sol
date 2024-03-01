@@ -30,7 +30,6 @@ abstract contract GoodManage is I_Good {
     uint256 internal locked;
     address public immutable marketcreator;
 
-    mapping(address => bool) private blacklist;
 
     constructor(address _marketcreator, uint256 _marketconfig) {
         marketcreator = _marketcreator;
@@ -39,11 +38,6 @@ abstract contract GoodManage is I_Good {
 
     modifier onlyMarketCreator() {
         require(msg.sender == marketcreator, "1");
-        _;
-    }
-
-    modifier onlyWhitelist() {
-        require(!blacklist[msg.sender], "black list");
         _;
     }
 
@@ -79,13 +73,6 @@ abstract contract GoodManage is I_Good {
         good_.erc20address = goods[_goodid].erc20address;
     }
 
-    function addblacklist(address bid) external onlyMarketCreator {
-        blacklist[bid] = true;
-    }
-
-    function delblacklist(address bid) external onlyMarketCreator {
-        delete blacklist[bid];
-    }
 
     function getGoodsFee(
         T_GoodId _goodid,
@@ -99,12 +86,7 @@ abstract contract GoodManage is I_Good {
         uint256 _goodConfig
     ) external override returns (bool) {
         require(msg.sender == goods[_goodid].owner, "");
-        assembly {
-            _goodConfig := shr(1, shl(1, _goodConfig))
-        }
-        goods[_goodid].goodConfig.isvaluegood()
-            ? goods[_goodid].goodConfig = 1 * 2 ** 255 + _goodConfig
-            : goods[_goodid].goodConfig = _goodConfig;
+        goods[_goodid].updateGoodConfig(_goodConfig);
         emit e_updategoodconfig(
             _goodid,
             goods[_goodid].goodConfig,
@@ -160,7 +142,6 @@ abstract contract GoodManage is I_Good {
     ) external payable override returns (uint256) {
         uint256 fee = goods[goodid].fees[msg.sender].toUInt128();
         require(fee > 0, "no fee");
-        require(blacklist[msg.sender] != true, "blacklist");
         goods[goodid].fees[msg.sender] = 0;
         uint256 protocol = marketconfig.getPlatFee256(fee);
         emit e_collectProtocolFee(goodid, msg.sender, protocol);
@@ -168,5 +149,4 @@ abstract contract GoodManage is I_Good {
         goods[goodid].erc20address.transfer(msg.sender, fee - protocol);
         return fee;
     }
-
 }

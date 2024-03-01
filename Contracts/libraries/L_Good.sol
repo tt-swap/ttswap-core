@@ -62,6 +62,15 @@ library L_Good {
         self.goodConfig = b;
     }
 
+    function updateGoodConfig(S_State storage _self,uint256 _goodConfig)internal{
+        assembly {
+            _goodConfig := shr(1, shl(1, _goodConfig))
+        }
+        _self.goodConfig.isvaluegood()
+            ? _self.goodConfig = 1 * 2 ** 255 + _goodConfig
+            : _self.goodConfig = _goodConfig;
+    }
+
     function init(
         S_State storage self,
         T_BalanceUINT256 _init,

@@ -84,7 +84,7 @@ contract MarketManager is
         T_BalanceUINT256 initial,
         T_Currency _erc20address,
         uint256 _goodConfig
-    ) external payable override noReentrant onlyWhitelist returns (T_ProofId) {
+    ) external payable override noReentrant  returns (T_ProofId) {
         require(goods[valuegood].goodConfig.isvaluegood(), "not value good");
         require(!_goodConfig.isvaluegood(), "normal good config error");
         require(_erc20address.decimals() <= 18, "erc20 decimals to long");
@@ -159,7 +159,7 @@ contract MarketManager is
         payable
         override
         noReentrant
-        onlyWhitelist
+        
         returns (
             uint128 goodid2Quanitity_,
             uint128 goodid1FeeQuanitity_,
@@ -225,7 +225,7 @@ contract MarketManager is
         payable
         override
         noReentrant
-        onlyWhitelist
+        
         returns (S_GoodInvestReturn memory normalInvest_)
     {
         require(
@@ -271,7 +271,7 @@ contract MarketManager is
         payable
         override
         noReentrant
-        onlyWhitelist
+        
         returns (T_BalanceUINT256 disinvestResult_)
     {
         T_ProofId investproofid = S_ProofKey(
@@ -312,7 +312,7 @@ contract MarketManager is
         payable
         override
         noReentrant
-        onlyWhitelist
+        
         returns (
             S_GoodInvestReturn memory normalInvest,
             S_GoodInvestReturn memory valueInvest
@@ -387,7 +387,7 @@ contract MarketManager is
         payable
         override
         noReentrant
-        onlyWhitelist
+        
         returns (
             T_BalanceUINT256 disinvestResult1_,
             T_BalanceUINT256 disinvestResult2_
@@ -451,7 +451,7 @@ contract MarketManager is
         payable
         override
         noReentrant
-        onlyWhitelist
+        
         returns (T_BalanceUINT256 disinvestResult_)
     {
         T_GoodId goodid1 = proofs[_valueproofid].currentgood;
@@ -494,7 +494,7 @@ contract MarketManager is
         payable
         override
         noReentrant
-        onlyWhitelist
+        
         returns (
             T_BalanceUINT256 disinvestResult1_,
             T_BalanceUINT256 disinvestResult2_

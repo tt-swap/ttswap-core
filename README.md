@@ -1,4 +1,4 @@
-![Alt text](./docs/image/<./幻灯片1.png>)
+
 [toc]
 # 1 概要
 TTSWAP(token-token swap)是建立在以太坊上的一套去中心自动做市协议.底层原理是根据用户行为触发的市场价值迁移为基础,以价值守恒交易策略进行的平台搭建.
@@ -22,7 +22,7 @@ TTSWAP(token-token swap)是建立在以太坊上的一套去中心自动做市�
 # 3 价值守恒交易模式原理
 ## 3.1 市场中的商品
 例:在市场中有2000个商品A1,市场价值2000.
-![Alt text](./docs/image/./docs/image/GOOD_STATES.png)
+![Alt text](./docs/image/GOOD_STATES.png)
 定义:
 市场价值V(A1):用于衡量市场用户对于商品的需求程度.商品A的市场价值为2000
 商品数量Q(A1):记录商品的数量.商品A的数量为2000.

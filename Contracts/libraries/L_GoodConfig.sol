@@ -109,14 +109,14 @@ library L_GoodConfigLibrary {
     }
 
     // get Unstake Chips
-    function getUnstakeChips(uint256 config) internal pure returns (uint16 a) {
+    function getDisinvestChips(uint256 config) internal pure returns (uint16 a) {
         assembly {
             a := shr(246, shl(51, config))
         }
         return a ;
     }
 
-    function getUnstakeChips(
+    function getDisinvestChips(
         uint256 config,
         uint128 amount
     ) internal pure returns (uint128) {

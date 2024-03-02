@@ -118,7 +118,6 @@ contract buyGoodFeeChips is BaseSetup {
         S_GoodState memory s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s2);
         (
-            uint128 goodid2Quanitity_,
             uint128 goodid1FeeQuanitity_,
             uint128 goodid2FeeQuanitity_
         ) = market.buyGood(
@@ -129,7 +128,6 @@ contract buyGoodFeeChips is BaseSetup {
                 _ralate
             );
         console2.log(
-            goodid2Quanitity_,
             goodid1FeeQuanitity_,
             goodid2FeeQuanitity_
         );
@@ -137,7 +135,7 @@ contract buyGoodFeeChips is BaseSetup {
         s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s1);
         GoodUtil.showGood(s2);
-        (goodid2Quanitity_, goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
+        ( goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
                 metagood,
@@ -160,7 +158,6 @@ contract buyGoodFeeChips is BaseSetup {
         S_GoodState memory s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s2);
         (
-            uint128 goodid2Quanitity_,
             uint128 goodid1FeeQuanitity_,
             uint128 goodid2FeeQuanitity_
         ) = market.buyGood(
@@ -171,7 +168,7 @@ contract buyGoodFeeChips is BaseSetup {
                 _ralate
             );
 
-        (goodid2Quanitity_, goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
+        ( goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
                 metagood,
@@ -179,7 +176,7 @@ contract buyGoodFeeChips is BaseSetup {
                 T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
                 _ralate
             );
-        (goodid2Quanitity_, goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
+        ( goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
                 metagood,
@@ -187,7 +184,7 @@ contract buyGoodFeeChips is BaseSetup {
                 T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
                 _ralate
             );
-        (goodid2Quanitity_, goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
+        ( goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
                 metagood,
@@ -196,7 +193,7 @@ contract buyGoodFeeChips is BaseSetup {
                 _ralate
             );
 
-        (goodid2Quanitity_, goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
+        ( goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
                 metagood,
@@ -205,7 +202,7 @@ contract buyGoodFeeChips is BaseSetup {
                 _ralate
             );
 
-        (goodid2Quanitity_, goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
+        ( goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
                 metagood,
@@ -214,7 +211,7 @@ contract buyGoodFeeChips is BaseSetup {
                 _ralate
             );
 
-        (goodid2Quanitity_, goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
+        ( goodid1FeeQuanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
                 metagood,

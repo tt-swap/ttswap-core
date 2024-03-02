@@ -61,7 +61,6 @@ contract MarketManager is
         goods[metagood].investState = initial;
         goods[metagood].goodConfig = _goodConfig;
         goods[metagood].erc20address = goodkey1.erc20address;
-        goods[metagood].feeQunitityState = toBalanceUINT256(0, 0);
         T_ProofId normalproof = S_ProofKey(
             msg.sender,
             metagood,
@@ -71,7 +70,6 @@ contract MarketManager is
         proofs[normalproof].currentgood = metagood;
         proofs[normalproof].extends = toBalanceUINT256(initial.amount0(), 0);
         proofs[normalproof].invest = toBalanceUINT256(0, initial.amount1());
-        proofs[normalproof].valueinvest = toBalanceUINT256(0, 0);
         goodnum = 1;
         goodmapping[goodnum] = metagood;
         _ownergoods[msg.sender].push(metagood);
@@ -161,12 +159,12 @@ contract MarketManager is
         
         returns (
             uint128 goodid2Quanitity_,
-            uint128 goodid1FeeQuanitity_,
             uint128 goodid2FeeQuanitity_
         )
     {
+
         L_Good.swapCache memory swapcache = L_Good.swapCache({
-            remainQuanitity: _swapQuanitity - goodid1FeeQuanitity_,
+            remainQuanitity: _swapQuanitity,
             outputQuanitity: 0,
             feeQuanitity: 0,
             good1currentState: goods[_goodid1].currentState,
@@ -179,7 +177,6 @@ contract MarketManager is
             T_BalanceUINT256.wrap(_limitPrice)
         );
 
-        goodid1FeeQuanitity_ = swapcache.feeQuanitity;
         goodid2FeeQuanitity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuanitity
         );
@@ -190,9 +187,10 @@ contract MarketManager is
             _swapQuanitity - swapcache.remainQuanitity
         );
         goods[_goodid2].erc20address.transfer(msg.sender, goodid2Quanitity_);
+    
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
-            goodid1FeeQuanitity_,
+            swapcache.feeQuanitity,
             marketconfig,
             _ralate
         );
@@ -202,14 +200,14 @@ contract MarketManager is
             marketconfig,
             _ralate
         );
-        emit e_buyGood(
+         emit e_buyGood(
             _goodid1,
             _goodid2,
             msg.sender,
             _swapQuanitity,
             toBalanceUINT256(
                 _swapQuanitity - swapcache.remainQuanitity,
-                goodid1FeeQuanitity_
+                swapcache.feeQuanitity
             ),
             toBalanceUINT256(goodid2Quanitity_, goodid2FeeQuanitity_)
         );
@@ -371,7 +369,6 @@ contract MarketManager is
             proofid
         );
     }
-
     function disinvestNormalGood(
         T_GoodId _togood,
         T_GoodId _valuegood,

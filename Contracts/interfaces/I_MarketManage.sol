@@ -18,8 +18,6 @@ import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, sub
 /// @notice 市场管理接口 market manage interface
 interface I_MarketManage is I_Good, I_Proof {
     event e_initNormalGood();
-    event e_updateNormalGood(bytes32);
-    event e_updateValueGood(bytes32);
 
     event e_initNormalGood(T_GoodId indexed);
     event e_buyGood(
@@ -36,9 +34,6 @@ interface I_MarketManage is I_Good, I_Proof {
     event e_disinvestGood(
         T_ProofId indexed
     );
-   
-    
-
     /// @notice 获取商品状态 get good's state
     /// @param _goodkey1   商品的商品ID good's id
     /// @param _initial   初始化的商品的参数,前128位为价值,后128位为数量.initial good,amount0:value,amount1:quantity
@@ -71,7 +66,6 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _limitprice   在不高于某价值出售
     /// @param _ralate   用户的关系,推荐人和门户地址
     /// @return goodid2_quanitity_ 商品2获得的数量(不包含手续费)
-    /// @return goodid1_fee_quanitity_ 商品1的手续费
     /// @return goodid2_fee_quanitity_ 商品2的手续费
     function buyGood(
         T_GoodId _goodid1,
@@ -84,7 +78,6 @@ interface I_MarketManage is I_Good, I_Proof {
         payable
         returns (
             uint128 goodid2_quanitity_,
-            uint128 goodid1_fee_quanitity_,
             uint128 goodid2_fee_quanitity_
         );
 

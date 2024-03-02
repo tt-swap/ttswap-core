@@ -93,7 +93,7 @@ library L_GoodConfigLibrary {
         assembly {
             a := shr(246, shl(41, config))
         }
-        return a * 2 ** 6;
+        return a * 64;
     }
 
     function getSwapChips(
@@ -105,7 +105,7 @@ library L_GoodConfigLibrary {
             a := shr(246, shl(41, config))
         }
         if (a == 0) return amount;
-        return (amount / (a * 2 ** 6));
+        return (amount / (a * 64));
     }
 
     // get Unstake Chips

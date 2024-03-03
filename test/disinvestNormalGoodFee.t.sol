@@ -183,7 +183,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
          snapStart("disinvest normal proof with fee first");
         market.disinvestNormalProof(p_, 10000, _ralate);
-         snapStart("disinvest normal proof with fee second");
+         snapEnd();
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
 
         S_GoodState memory aa = market.getGoodState(normalgoodusdt);

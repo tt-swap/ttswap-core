@@ -93,7 +93,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
             gater: address(1),
             refer: address(3)
         });
-        snapStart("disinvestNormalgood without fee first");
+        snapStart("disinvest Normal good without fee first");
         market.disinvestNormalGood(normalgoodusdt, metagood, 10000, _ralate);
         snapEnd();
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
@@ -153,7 +153,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
-              snapStart("disinvestNormalgood without fee second");
+              snapStart("disinvest Normal good without fee second");
         market.disinvestNormalGood(normalgoodusdt, metagood, 1, _ralate);
         snapEnd();
         vm.stopPrank();
@@ -178,7 +178,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
             refer: address(3)
         });
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
-        snapStart("disinvestNormalproof without fee first");
+        snapStart("disinvest Normal proof without fee first");
         market.disinvestNormalProof(p_, 10000, _ralate);
         snapEnd();
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
@@ -238,7 +238,9 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
-
+        snapStart("disinvest Normal proof without fee second");
+        market.disinvestNormalProof(p_, 100, _ralate);
+        snapEnd();
         vm.stopPrank();
     }
 

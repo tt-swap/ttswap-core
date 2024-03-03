@@ -115,7 +115,7 @@ contract buyGoodFee is BaseSetup {
 
             uint128 goodid2Quanitity_;
             uint128 goodid2FeeQuanitity_;
-            snapStart("buygood cross  with fee without chips first");
+            snapStart("buygood   with fee without chips first");
         (
          
              goodid2Quanitity_,
@@ -137,7 +137,7 @@ contract buyGoodFee is BaseSetup {
         GoodUtil.showGood(s1);
         GoodUtil.showGood(s2);
 
-        snapStart("buygood cross  with fee without chips second");
+        snapStart("buygood with fee without chips second");
         (
          
              goodid2Quanitity_,

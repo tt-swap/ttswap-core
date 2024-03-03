@@ -103,14 +103,12 @@ contract buyGoodFeeChips is BaseSetup {
             owner: users[3]
         }).toId();
 
-        snapStart("init normalgood with fee with config");
         market.initNormalGood(
             metagood,
             toBalanceUINT256(20000000, 20000000),
             T_Currency.wrap(token),
             _goodConfig
         );
-        snapEnd();
         vm.stopPrank();
     }
 

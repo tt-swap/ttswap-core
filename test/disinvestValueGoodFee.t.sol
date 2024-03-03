@@ -64,7 +64,7 @@ contract disinvestValueGoodFee is BaseSetup {
         console2.log(_goodConfig.isvaluegood(), "1");
         console2.log(_goodConfig.getInvestFee(), "2");
         console2.log(_goodConfig.getDisinvestFee(), "3");
-        snapStart("updateGoodConfig");
+        snapStart("update Good Config");
         market.updateGoodConfig(metagood, _goodConfig);
         snapEnd();
         vm.stopPrank();
@@ -84,9 +84,7 @@ contract disinvestValueGoodFee is BaseSetup {
             gater: address(1),
             refer: address(2)
         });
-        snapStart("investValuegoodwithfee first");
         market.investValueGood(metagood, 20000, _ralate);
-        snapEnd();
         p_ = S_ProofKey(users[2], metagood, T_GoodId.wrap(0)).toId();
         S_GoodState memory aa = market.getGoodState(metagood);
         S_ProofState memory _s = market.getProofState(p_);
@@ -142,7 +140,7 @@ contract disinvestValueGoodFee is BaseSetup {
             gater: address(1),
             refer: address(3)
         });
-        snapStart("disinvestValueGoodWithFee first");
+        snapStart("disinvest Value Good With Fee first");
         T_BalanceUINT256 result = market.disinvestValueGood(
             metagood,
             quanity,
@@ -187,7 +185,7 @@ contract disinvestValueGoodFee is BaseSetup {
             uint256(aa.feeQunitityState.amount0()),
             uint256(aa.feeQunitityState.amount1())
         );
-        snapStart("disinvestValueGoodWithFee second");
+        snapStart("disinvest Value Good With Fee second");
          result = market.disinvestValueGood(
             metagood,
             10,
@@ -206,7 +204,7 @@ contract disinvestValueGoodFee is BaseSetup {
         vm.assume(aquanity > 1 && aquanity < 1000);
         uint128 quanity = uint128(aquanity);
         T_ProofId p_ = S_ProofKey(users[2], metagood, T_GoodId.wrap(0)).toId();
-        snapStart("disinvestValueProofwithfee first");
+        snapStart("disinvest Value Proof with fee first");
         T_BalanceUINT256 result = market.disinvestValueProof(
             p_,
             quanity,
@@ -249,7 +247,7 @@ contract disinvestValueGoodFee is BaseSetup {
             8,
             "feeQunitityState's contruct fee is error"
         );
-        snapStart("disinvestValueProofwithfee second");
+        snapStart("disinvest Value Proof with fee second");
          result = market.disinvestValueProof(
             p_,
             10,

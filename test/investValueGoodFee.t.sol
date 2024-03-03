@@ -82,7 +82,7 @@ contract investValueGoodFee is BaseSetup {
             gater: address(1),
             refer: address(2)
         });
-        snapStart("invest valuegood with fee first");
+        snapStart("invest value good with fee first");
         market.investValueGood(metagood, 20000, _ralate);
         snapEnd();
         T_ProofId p_ = S_ProofKey(users[4], metagood, T_GoodId.wrap(0)).toId();
@@ -140,7 +140,7 @@ contract investValueGoodFee is BaseSetup {
         );
         assertEq(market.getGoodsFee(metagood, address(1)), 1, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 2, "refer fee");
-        snapStart("invest valuegood with fee second");
+        snapStart("invest value good with fee second");
         market.investValueGood(metagood, 200, _ralate);
         snapEnd();
         vm.stopPrank();

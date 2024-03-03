@@ -81,12 +81,13 @@ contract disinvestValueGoodNoFee is BaseSetup {
             gater: address(1),
             refer: address(3)
         });
-
+    snapStart("disinvest Valuegood No Fee first");
         T_BalanceUINT256 result = market.disinvestValueGood(
             metagood,
             quanity,
             _ralate
         );
+        snapEnd();
         S_GoodState memory aa = market.getGoodState(metagood);
         assertEq(result.amount0(), 0, "disinvest proof 's value is error");
         assertEq(result.amount1(), 0, "disinvest proof 's quantity is error");
@@ -121,7 +122,13 @@ contract disinvestValueGoodNoFee is BaseSetup {
             0,
             "feeQunitityState's contruct fee is error"
         );
-        result = market.disinvestValueGood(metagood, quanity, _ralate);
+          snapStart("disinvest Valuegood No Fee second");
+         result = market.disinvestValueGood(
+            metagood,
+            quanity,
+            _ralate
+        );
+        snapEnd();
 
         vm.stopPrank();
     }
@@ -135,11 +142,14 @@ contract disinvestValueGoodNoFee is BaseSetup {
         vm.assume(aquanity > 1 && aquanity < 1000);
         uint128 quanity = uint128(aquanity);
         T_ProofId p_ = S_ProofKey(users[2], metagood, T_GoodId.wrap(0)).toId();
+
+          snapStart("disinvest Valueproof No Fee second");
         T_BalanceUINT256 result = market.disinvestValueProof(
             p_,
             quanity,
             _ralate
         );
+        snapEnd();
         S_GoodState memory aa = market.getGoodState(metagood);
         assertEq(result.amount0(), 0, "disinvest proof 's value is error");
         assertEq(result.amount1(), 0, "disinvest proof 's quantity is error");

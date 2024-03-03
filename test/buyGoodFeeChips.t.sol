@@ -54,7 +54,7 @@ contract buyGoodFeeChips is BaseSetup {
             1 *
             2 ** 205;
         
-        snapStart("initmetagoodwithfeewithconfig");
+        snapStart("init metagood with fee with config");
         market.initMetaGood(
             goodkey,
             toBalanceUINT256(20000000, 20000000),
@@ -131,7 +131,7 @@ contract buyGoodFeeChips is BaseSetup {
 
             uint128 goodid2Quanitity_;
             uint128 goodid2FeeQuanitity_;
-        snapStart("buygoodcross 25 chips with fee first");
+        snapStart("buygood cross 4 chips with fee first");
         (
              goodid2Quanitity_,
              goodid2FeeQuanitity_
@@ -144,7 +144,7 @@ contract buyGoodFeeChips is BaseSetup {
             );
         snapEnd();
 
-        snapStart("buygoodcross 25 chips with fee second");
+        snapStart("buygood cross 4 chips with fee second");
         (
              goodid2Quanitity_,
              goodid2FeeQuanitity_
@@ -164,6 +164,7 @@ contract buyGoodFeeChips is BaseSetup {
         s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s1);
         GoodUtil.showGood(s2);
+       
         (goodid2Quanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
@@ -195,26 +196,26 @@ contract buyGoodFeeChips is BaseSetup {
         ) = market.buyGood(
                 normalgoodusdt,
                 metagood,
-                100,
+                100000,
                 T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
                 _ralate
             );
         snapEnd();
 
-        snapStart("buygood cross 27 chips with fee second");
+        snapStart("buygood cross 1 chips with fee second");
         (
              goodid2Quanitity_,
              goodid2FeeQuanitity_
         ) = market.buyGood(
                 normalgoodusdt,
                 metagood,
-                100,
+                100000,
                 T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
                 _ralate
             );
         snapEnd();
 
-        snapStart("buygood cross 1 chips with second");
+        snapStart("buygood cross 27 chips with fee second");
         (goodid2Quanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
@@ -223,8 +224,8 @@ contract buyGoodFeeChips is BaseSetup {
                 T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
                 _ralate
             );
-        
         snapEnd();
+        snapStart("buygood cross 3 chips with fee second");
         (goodid2Quanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,
@@ -233,6 +234,7 @@ contract buyGoodFeeChips is BaseSetup {
                 T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
                 _ralate
             );
+        snapEnd();
         (goodid2Quanitity_, goodid2FeeQuanitity_) = market
             .buyGood(
                 normalgoodusdt,

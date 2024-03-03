@@ -171,7 +171,6 @@ library L_Good {
         }
         return stepCache;
     }
-
     function swapCommit(
         S_State storage _self,
         T_BalanceUINT256 _swapstate,
@@ -184,6 +183,7 @@ library L_Good {
             _self.feeQunitityState +
             toBalanceUINT256(_marketconfig.getLiquidFee(_fee), 0);
         allocateFee(_self, _fee, _marketconfig, _ralate);
+
     }
 
     function investGood(

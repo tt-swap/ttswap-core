@@ -28,7 +28,9 @@ contract testInitMetaGood is BaseSetup {
         deal(address(btc), marketcreator, 100000, false);
         console2.log(btc.balanceOf(marketcreator));
         btc.approve(address(market), 30000);
+        snapStart("init metagood");
         market.initMetaGood(goodkey, toBalanceUINT256(20000, 20000), goodconfig);
+        snapEnd();
         metagood = S_GoodKey({erc20address: T_Currency.wrap(address(btc)), owner: marketcreator}).toId();
         S_GoodState memory good_ = market.getGoodState(metagood);
         GoodUtil.showGood(good_);

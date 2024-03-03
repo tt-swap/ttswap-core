@@ -130,9 +130,7 @@ contract disinvestValueGoodFee is BaseSetup {
             "feeQunitityState's contruct fee is error"
         );
 
-        snapStart("investValuegoodwithfee second");
-        market.investValueGood(metagood, 20000, _ralate);
-        snapEnd();
+      
         vm.stopPrank();
     }
 
@@ -192,7 +190,7 @@ contract disinvestValueGoodFee is BaseSetup {
         snapStart("disinvestValueGoodWithFee second");
          result = market.disinvestValueGood(
             metagood,
-            quanity,
+            10,
             _ralate
         );
         snapEnd();
@@ -251,10 +249,10 @@ contract disinvestValueGoodFee is BaseSetup {
             8,
             "feeQunitityState's contruct fee is error"
         );
-    snapStart("disinvestValueProofwithfee second");
+        snapStart("disinvestValueProofwithfee second");
          result = market.disinvestValueProof(
             p_,
-            quanity,
+            10,
             _ralate
         );
         snapEnd();

@@ -86,28 +86,14 @@ contract disinvestNormalGoodFee is BaseSetup {
 
     function testdisinvestNormalGood(uint256) public {
         vm.startPrank(users[3]);
-        deal(
-            T_Currency.unwrap(market.getGoodState(metagood).erc20address),
-            users[3],
-            100000,
-            false
-        );
-        deal(
-            T_Currency.unwrap(market.getGoodState(normalgoodusdt).erc20address),
-            users[3],
-            100000,
-            false
-        );
-        MyToken(T_Currency.unwrap(market.getGoodState(metagood).erc20address))
-            .approve(address(market), 20000);
-        MyToken(
-            T_Currency.unwrap(market.getGoodState(normalgoodusdt).erc20address)
-        ).approve(address(market), 20000);
+
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
             refer: address(3)
         });
+        snapStart("disinvest normal good with fee first");
         market.disinvestNormalGood(normalgoodusdt, metagood, 10000, _ralate);
+        snapEnd();
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
         S_GoodState memory aa = market.getGoodState(normalgoodusdt);
@@ -165,7 +151,9 @@ contract disinvestNormalGoodFee is BaseSetup {
         );
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
-
+        snapStart("disinvest normal good with fee second");
+        market.disinvestNormalGood(normalgoodusdt, metagood, 10, _ralate);
+        snapEnd();
         vm.stopPrank();
     }
 
@@ -193,7 +181,9 @@ contract disinvestNormalGoodFee is BaseSetup {
             refer: address(3)
         });
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
+         snapStart("disinvest normal proof with fee first");
         market.disinvestNormalProof(p_, 10000, _ralate);
+         snapStart("disinvest normal proof with fee second");
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
 
         S_GoodState memory aa = market.getGoodState(normalgoodusdt);
@@ -251,6 +241,9 @@ contract disinvestNormalGoodFee is BaseSetup {
         );
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
+        snapStart("disinvest normal proof with fee second");
+        market.disinvestNormalProof(p_, 10, _ralate);
+        snapEnd();
         vm.stopPrank();
     }
 }

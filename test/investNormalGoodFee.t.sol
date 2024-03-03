@@ -106,7 +106,9 @@ contract investNormalGoodFee is BaseSetup {
             gater: address(1),
             refer: address(3)
         });
+        snapStart("invest normal good with fee first");
         market.investNormalGood(normalgoodusdt, metagood, 10000, _ralate);
+        snapEnd();
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
         S_GoodState memory aa = market.getGoodState(normalgoodusdt);
@@ -164,7 +166,9 @@ contract investNormalGoodFee is BaseSetup {
         );
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
+           snapStart("invest normal good with fee second");
         market.investNormalGood(normalgoodusdt, metagood, 10000, _ralate);
+        snapEnd();
 
         vm.stopPrank();
     }

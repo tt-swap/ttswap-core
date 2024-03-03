@@ -42,9 +42,11 @@ contract investValueGoodNoFee is BaseSetup {
     function testinvestValueGood(uint256) public {
         vm.startPrank(users[2]);
         deal(T_Currency.unwrap(market.getGoodState(metagood).erc20address), users[2], 100000, false);
-        MyToken(T_Currency.unwrap(market.getGoodState(metagood).erc20address)).approve(address(market), 20000);
+        MyToken(T_Currency.unwrap(market.getGoodState(metagood).erc20address)).approve(address(market), 200000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({gater: address(1), refer: address(2)});
+        snapStart("invest value good no fee first");
         market.investValueGood(metagood, 20000, _ralate);
+        snapEnd();
         T_ProofId p_ = S_ProofKey(users[2], metagood, T_GoodId.wrap(0)).toId();
         S_GoodState memory aa = market.getGoodState(metagood);
         S_ProofState memory _s = market.getProofState(p_);
@@ -65,7 +67,9 @@ contract investValueGoodNoFee is BaseSetup {
         assertEq(uint256(market.getGoodsFee(metagood, marketcreator)), 0, "seller fee");
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
-
+  snapStart("invest value good no fee second");
+        market.investValueGood(metagood, 20000, _ralate);
+        snapEnd();
         vm.stopPrank();
     }
 }

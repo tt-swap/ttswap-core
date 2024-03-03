@@ -112,10 +112,14 @@ contract buyGoodFee is BaseSetup {
         GoodUtil.showGood(s1);
         S_GoodState memory s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s2);
+
+            uint128 goodid2Quanitity_;
+            uint128 goodid2FeeQuanitity_;
+            snapStart("buygood cross  with fee without chips first");
         (
          
-            uint128 goodid2Quanitity_,
-            uint128 goodid2FeeQuanitity_
+             goodid2Quanitity_,
+             goodid2FeeQuanitity_
         ) = market.buyGood(
                 normalgoodusdt,
                 metagood,
@@ -123,6 +127,7 @@ contract buyGoodFee is BaseSetup {
                 T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
                 _ralate
             );
+        snapEnd();
         console2.log(
             goodid2Quanitity_,
             goodid2FeeQuanitity_
@@ -131,5 +136,19 @@ contract buyGoodFee is BaseSetup {
         s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s1);
         GoodUtil.showGood(s2);
+
+        snapStart("buygood cross  with fee without chips second");
+        (
+         
+             goodid2Quanitity_,
+             goodid2FeeQuanitity_
+        ) = market.buyGood(
+                normalgoodusdt,
+                metagood,
+                1000000,
+                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+                _ralate
+            );
+        snapEnd();
     }
 }

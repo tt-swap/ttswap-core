@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import "forge-gas-snapshot/GasSnapshot.sol";
 import {Test, DSTest} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 
-contract BaseSetup is Test {
+contract BaseSetup is Test,GasSnapshot {
     address payable[8] internal users;
     MyToken btc;
     MyToken usdt;
@@ -27,6 +28,8 @@ contract BaseSetup is Test {
         btc = new MyToken("BTC", "BTC");
         usdt = new MyToken("USDT", "USDT");
         eth = new MyToken("ETH", "ETH");
+        snapStart("depoly Market Manager");
         market = new MarketManager(marketcreator, m_marketconfig);
+        snapEnd();
     }
 }

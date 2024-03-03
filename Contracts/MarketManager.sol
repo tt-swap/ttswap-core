@@ -144,7 +144,7 @@ contract MarketManager is
 
     //交易
     //花_swapQuanitity个T_GoodId1买T_GoodId2
-
+    event debug(uint256);
     function buyGood(
         T_GoodId _goodid1,
         T_GoodId _goodid2,
@@ -162,7 +162,8 @@ contract MarketManager is
             uint128 goodid2FeeQuanitity_
         )
     {
-
+        uint256 gaskk=gasleft();
+        emit debug(gaskk-gasleft());
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuanitity: _swapQuanitity,
             outputQuanitity: 0,
@@ -172,11 +173,14 @@ contract MarketManager is
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
+        emit debug(gaskk-gasleft());
+        gaskk=gasleft();
         swapcache = L_Good.swapCompute(
             swapcache,
             T_BalanceUINT256.wrap(_limitPrice)
         );
-
+        emit debug(gaskk-gasleft());
+        gaskk=gasleft();
         goodid2FeeQuanitity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuanitity
         );
@@ -188,18 +192,27 @@ contract MarketManager is
         );
         goods[_goodid2].erc20address.transfer(msg.sender, goodid2Quanitity_);
     
+        emit debug(gaskk-gasleft());
+        gaskk=gasleft();
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
             swapcache.feeQuanitity,
             marketconfig,
             _ralate
         );
+
+        emit debug(gaskk-gasleft());
+        gaskk=gasleft();
         goods[_goodid2].swapCommit(
             swapcache.good2currentState,
             goodid2FeeQuanitity_,
             marketconfig,
             _ralate
         );
+
+        emit debug(gaskk-gasleft());
+        gaskk=gasleft();
+
          emit e_buyGood(
             _goodid1,
             _goodid2,

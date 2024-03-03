@@ -88,6 +88,7 @@ contract buyGoodNoFee is BaseSetup {
         S_GoodState memory s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s2);
         (
+            uint128 goodid2Quanitity_,
             uint128 goodid1FeeQuanitity_,
             uint128 goodid2FeeQuanitity_
         ) = market.buyGood(
@@ -98,6 +99,7 @@ contract buyGoodNoFee is BaseSetup {
                 _ralate
             );
         console2.log(
+            goodid2Quanitity_,
             goodid1FeeQuanitity_,
             goodid2FeeQuanitity_
         );
@@ -106,6 +108,7 @@ contract buyGoodNoFee is BaseSetup {
         GoodUtil.showGood(s1);
         GoodUtil.showGood(s2);
         console2.log(
+            goodid2Quanitity_,
             goodid1FeeQuanitity_,
             goodid2FeeQuanitity_
         );

@@ -93,7 +93,6 @@ library L_Good {
         T_BalanceUINT256 good2currentState;
         uint256 good2config;
     }
-
     function swapCompute(
         swapCache memory stepCache,
         T_BalanceUINT256 limitPrice
@@ -109,7 +108,7 @@ library L_Good {
                 stepCache.good2currentState,
                 limitPrice
             )
-        ) {
+        ) { 
             good1 = stepCache.good1config.getSwapChips(
                 stepCache.good1currentState.amount0()
             );

@@ -1,22 +1,28 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import "forge-gas-snapshot/GasSnapshot.sol";
 import "forge-std/Test.sol";
 import {L_MarketConfigLibrary} from "../Contracts/libraries/L_MarketConfig.sol";
 
-contract testMarketConfig is Test {
+contract testMarketConfig is Test,GasSnapshot {
     using L_MarketConfigLibrary for uint256;
 
     uint256 marketconfig;
+    function setUp()public{}
 
     function test_getLiquidFee() public {
         uint256 a_min = 1 * 2 ** 250;
         uint256 a_mid = 1 * 2 ** 255;
         uint256 a_max = 63 * 2 ** 250;
+        snapStart('marketconfig_getliquid');
         assertEq(a_min.getLiquidFee(), 1);
+        snapEnd();
         assertEq(a_mid.getLiquidFee(), 32);
         assertEq(a_max.getLiquidFee(), 63);
+        snapStart('marketconfig_computeliquid_fee');
         assertEq(a_min.getLiquidFee(100), 1);
+        snapEnd();
         assertEq(a_mid.getLiquidFee(100), 32);
         assertEq(a_max.getLiquidFee(100), 63);
     }

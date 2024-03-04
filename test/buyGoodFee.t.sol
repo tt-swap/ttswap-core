@@ -115,7 +115,7 @@ contract buyGoodFee is BaseSetup {
 
             uint128 goodid2Quanitity_;
             uint128 goodid2FeeQuanitity_;
-            snapStart("buygood   with fee without chips first");
+            snapStart("buygood with fee without chips first");
         (
          
              goodid2Quanitity_,

@@ -1,8 +1,4 @@
-![1](<./firstpage.png>)
-
-
-
-
+![](<./firstpage.png>)
 
 
 
@@ -30,7 +26,6 @@ The logic behind the constant value trading model is simple, resulting in low co
 
 5. Fee Distribution Based on Roles for Everyone
 Fees are distributed based on roles, allowing anyone to become a good investor (liquidity provider), merchant, portal, referrer, user, or platform role, sharing in the platform's growth earnings.
-
 ---
 
 # 3 Principle of Value Conservation Trading Mode
@@ -116,23 +111,21 @@ Quantity: Records the current quantity of goods in the market.
 - The item configuration occupies 255 positions.
 
 ### 4.3.1 Market set
-| id  | config | size | unit    | max | min | start | end | note |
-| --- | ------ | ---- | ------- | --- | --- | ----- | --- | ---- |
-| 1   | config | 1    | BOOLEAN | 1   | 0   | 256   | 256 |      |
+| id  | config    | size | unit    | max | min | start | end | note |
+| --- | --------- | ---- | ------- | --- | --- | ----- | --- | ---- |
+| 1   | valuegood | 1    | BOOLEAN | 1   | 0   | 256   | 256 |      |
 | ... |
  
 ### 4.3.2 Good seller set
-| id  | config             | size | unit               | max  | min | start | end | note                                                                 |
-| --- | ------------------ | ---- | ------------------ | ---- | --- | ----- | --- | -------------------------------------------------------------------- |
-| 1   | invest fee rate    | 10   | One ten-thousandth | 1023 | 0   | 255   | 246 | (1~1023)/10000                                                       |
-| 2   | disinvest fee rate | 10   | One ten-thousandth | 1023 | 0   | 245   | 236 | (1~1023)/10000                                                       |
-| 3   | buy fee rate       | 10   | One ten-thousandth | 1023 | 0   | 235   | 226 | (1~1023)/10000                                                       |
-| 4   | sell fee rate      | 10   | One ten-thousandth | 1023 | 0   | 225   | 216 | (1~1023)/10000                                                       |
-| 5   | trade chips        | 10   | 64                 | 1023 | 0   | 215   | 206 | (1~1023)X64                                                          |
-| 7   | asset type         | 33   | 1                  | 1023 | 0   | 205   | 173 | 1~99999999999                                                        |
-| 8   | tellphone          | 48   | 1                  | 1023 | 0   | 172   | 125 | 1~999999999999999,The first 4 digits are the international dial code |
-| 9   | longitude          | 48   | 1                  | 1023 | 0   | 124   | 77  | Adding 180 to small data points: original_39.928902, new_219.928902  |
-| 10  | latitude           | 48   | 1                  | 1023 | 0   | 76    | 28  | Adding 180 to small data points: original_39.928902, new_219.928902  |
+| id  | config             | size | unit               | max  | min | start | end | note           |
+| --- | ------------------ | ---- | ------------------ | ---- | --- | ----- | --- | -------------- |
+| 1   | invest fee rate    | 10   | One ten-thousandth | 1023 | 0   | 255   | 246 | (1~1023)/10000 |
+| 2   | disinvest fee rate | 10   | One ten-thousandth | 1023 | 0   | 245   | 236 | (1~1023)/10000 |
+| 3   | buy fee rate       | 10   | One ten-thousandth | 1023 | 0   | 235   | 226 | (1~1023)/10000 |
+| 4   | sell fee rate      | 10   | One ten-thousandth | 1023 | 0   | 225   | 216 | (1~1023)/10000 |
+| 5   | trade chips        | 10   | 64                 | 1023 | 0   | 215   | 206 | (1~1023)X64    |
+| 6   | disinvest chips    | 10   | 1                  | 1023 | 0   | 205   | 195 | (1~1023)       |
+
 
 ---
 

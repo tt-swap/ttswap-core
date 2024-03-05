@@ -314,8 +314,8 @@ github:https://github.com/ttswap/ttswap-core/LICENSE.
 
 
 # 11 参与和合作联系方式
-X:@ttswap.exchange   
+X:@ttswap_exchange   
 TG:@ttswap01   
 Email:ttswap.exchange@gmail.com   
-Discord:https://discord.com/invite/T53BKnRDQh   
+Discord:https://discord.com/invite/GZyEPZmk 
  

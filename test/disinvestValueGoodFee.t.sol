@@ -88,7 +88,7 @@ contract disinvestValueGoodFee is BaseSetup {
         p_ = S_ProofKey(users[2], metagood, T_GoodId.wrap(0)).toId();
         S_GoodState memory aa = market.getGoodState(metagood);
         S_ProofState memory _s = market.getProofState(p_);
-        assertEq(_s.extends.amount0(), 19984, "proof's value is error");
+        assertEq(_s.state.amount0(), 19984, "proof's value is error");
         assertEq(_s.invest.amount0(), 0, "proof's contruct quantity is error");
         assertEq(_s.invest.amount1(), 19984, "proof's quantity is error");
 

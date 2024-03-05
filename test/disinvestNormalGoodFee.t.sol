@@ -99,7 +99,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         S_GoodState memory aa = market.getGoodState(normalgoodusdt);
         S_ProofState memory _s = market.getProofState(p_);
 
-        assertEq(_s.extends.amount0(), 10000, "proof's value is error");
+        assertEq(_s.state.amount0(), 10000, "proof's value is error");
         assertEq(_s.invest.amount0(), 0, "proof's contruct quantity is error");
         assertEq(_s.invest.amount1(), 10000, "proof's quantity is error");
 
@@ -189,7 +189,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         S_GoodState memory aa = market.getGoodState(normalgoodusdt);
         S_ProofState memory _s = market.getProofState(p_);
 
-        assertEq(_s.extends.amount0(), 10000, "proof's value is error");
+        assertEq(_s.state.amount0(), 10000, "proof's value is error");
         assertEq(_s.invest.amount0(), 0, "proof's contruct quantity is error");
         assertEq(_s.invest.amount1(), 10000, "proof's quantity is error");
 

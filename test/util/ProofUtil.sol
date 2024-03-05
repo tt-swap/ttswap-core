@@ -9,8 +9,8 @@ library ProofUtil {
         console2.log("proof address", p_.owner);
         // console2.log('proof currentgood',T_GoodId.unwrap(p_.currentgood));
         // console2.log('proof valuegood',p_.valuegood);
-        console2.log("proof extends:", uint256(p_.extends.amount0()));
-        console2.log("proof extends:", uint256(p_.extends.amount1()));
+        console2.log("proof extends:", uint256(p_.state.amount0()));
+        console2.log("proof extends:", uint256(p_.state.amount1()));
         console2.log("proof invest:", uint256(p_.invest.amount0()));
         console2.log("proof invest:", uint256(p_.invest.amount1()));
         console2.log("proof valueinvest:", uint256(p_.valueinvest.amount0()));

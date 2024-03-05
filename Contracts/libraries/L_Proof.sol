@@ -10,7 +10,7 @@ library L_Proof {
     function updateValueInvest(
         S_ProofState storage _self,
         T_GoodId _currenctgood,
-        T_BalanceUINT256 _extend,
+        T_BalanceUINT256 _state,
         T_BalanceUINT256 _invest
     ) internal {
         if (_self.invest.amount1() == 0) {
@@ -19,14 +19,14 @@ library L_Proof {
             _self.valuegood = T_GoodId.wrap(0);
         }
         _self.invest = _self.invest + _invest;
-        _self.extends = _self.extends + _extend;
+        _self.state = _self.state + _state;
     }
 
     function updateNormalInvest(
         S_ProofState storage _self,
         T_GoodId _currenctgood,
         T_GoodId _valuegood,
-        T_BalanceUINT256 _extend,
+        T_BalanceUINT256 _state,
         T_BalanceUINT256 _invest,
         T_BalanceUINT256 _valueinvest
     ) internal {
@@ -35,7 +35,7 @@ library L_Proof {
             _self.currentgood = _currenctgood;
             _self.valuegood = _valuegood;
         }
-        _self.extends = _self.extends + _extend;
+        _self.state = _self.state + _state;
         _self.invest = _self.invest + _invest;
         _self.valueinvest = _self.valueinvest + _valueinvest;
     }
@@ -46,7 +46,7 @@ library L_Proof {
     ) internal {
         T_BalanceUINT256 burnResult_ = toBalanceUINT256(
             FullMath.mulDiv128(
-                _self.extends.amount0(),
+                _self.state.amount0(),
                 _quantity,
                 _self.invest.amount1()
             ),
@@ -56,8 +56,8 @@ library L_Proof {
             _self.invest -
             toBalanceUINT256(burnResult_.amount1(), _quantity);
 
-        _self.extends =
-            _self.extends -
+        _self.state =
+            _self.state -
             toBalanceUINT256(burnResult_.amount0(), 0);
     }
 
@@ -67,7 +67,7 @@ library L_Proof {
     ) internal {
         T_BalanceUINT256 burnResult1_ = toBalanceUINT256(
             FullMath.mulDiv128(
-                _self.extends.amount0(),
+                _self.state.amount0(),
                 _quantity,
                 _self.invest.amount1()
             ),
@@ -90,8 +90,8 @@ library L_Proof {
             _self.invest -
             toBalanceUINT256(burnResult1_.amount1(), _quantity);
         _self.valueinvest = _self.valueinvest - burnResult2_;
-        _self.extends =
-            _self.extends -
+        _self.state =
+            _self.state -
             toBalanceUINT256(burnResult1_.amount0(), 0);
     }
 }

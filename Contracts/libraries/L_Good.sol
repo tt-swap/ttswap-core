@@ -246,7 +246,7 @@ library L_Good {
     ) internal returns (T_BalanceUINT256 disinvestResult_) {
         disinvestResult_ = toBalanceUINT256(
             toBalanceUINT256(
-                _investProof.extends.amount0(),
+                _investProof.state.amount0(),
                 _investProof.invest.amount1()
             ).getamount0fromamount1(_goodQuantity),
             _goodQuantity
@@ -307,7 +307,7 @@ library L_Good {
     {
         NormalGoodResult1_ = toBalanceUINT256(
             toBalanceUINT256(
-                _investProof.extends.amount0(),
+                _investProof.state.amount0(),
                 _investProof.invest.amount1()
             ).getamount0fromamount1(_goodQuantity),
             _goodQuantity
@@ -365,7 +365,7 @@ library L_Good {
 
         ValueGoodResult2_ = toBalanceUINT256(
             toBalanceUINT256(
-                _investProof.extends.amount0(),
+                _investProof.state.amount0(),
                 _investProof.valueinvest.amount1()
             ).getamount0fromamount1(valequanity_),
             _goodQuantity

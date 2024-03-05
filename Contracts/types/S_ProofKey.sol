@@ -14,7 +14,7 @@ struct S_ProofState {
     address owner;
     T_GoodId currentgood;
     T_GoodId valuegood;
-    T_BalanceUINT256 extends; //value
+    T_BalanceUINT256 state; //amount0:value amount1:null
     T_BalanceUINT256 invest; //normalgood   contruct:investquanity
     T_BalanceUINT256 valueinvest; //valuegood contruct:investquanity
 }

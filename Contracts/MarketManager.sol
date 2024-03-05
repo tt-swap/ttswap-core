@@ -68,7 +68,7 @@ contract MarketManager is
         ).toId();
         proofs[normalproof].owner = msg.sender;
         proofs[normalproof].currentgood = metagood;
-        proofs[normalproof].extends = toBalanceUINT256(initial.amount0(), 0);
+        proofs[normalproof].state = toBalanceUINT256(initial.amount0(), 0);
         proofs[normalproof].invest = toBalanceUINT256(0, initial.amount1());
         goodnum = 1;
         goodmapping[goodnum] = metagood;

@@ -73,7 +73,7 @@ abstract contract ProofManage is I_Proof {
         proof_.owner = proofs[_proof].owner;
         proof_.currentgood = proofs[_proof].currentgood;
         proof_.valuegood = proofs[_proof].valuegood;
-        proof_.extends = proofs[_proof].extends;
+        proof_.state = proofs[_proof].state;
         proof_.invest = proofs[_proof].invest;
         proof_.valueinvest = proofs[_proof].valueinvest;
     }

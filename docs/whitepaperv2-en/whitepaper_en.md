@@ -220,12 +220,12 @@ The total actual investment profit for this good at present equals the current t
 # 8 Market config
 | id  | config        | size | unit        | max | min | start | end | note |
 | --- | ------------- | ---- | ----------- | --- | --- | ----- | --- | ---- |
-| 1   | good investor | 6    | One percent | 63  | 0   | 256   | 247 |      |
-| 2   | good seller   | 6    | One percent | 63  | 0   | 246   | 237 |      |
-| 3   | gater         | 6    | One percent | 63  | 0   | 236   | 227 |      |
-| 4   | referer       | 6    | One percent | 63  | 0   | 226   | 217 |      |
-| 5   | customer      | 6    | One percent | 63  | 0   | 216   | 207 |      |
-| 6   | plat          | 6    | One percent | 63  | 0   | 206   | 197 |      |
+| 1   | good investor | 6    | One percent | 63  | 0   | 256   | 251 |      |
+| 2   | good seller   | 6    | One percent | 63  | 0   | 250   | 245 |      |
+| 3   | gater         | 6    | One percent | 63  | 0   | 244   | 239 |      |
+| 4   | referer       | 6    | One percent | 63  | 0   | 238   | 233 |      |
+| 5   | customer      | 6    | One percent | 63  | 0   | 232   | 227 |      |
+| 6   | plat          | 6    | One percent | 63  | 0   | 226   | 221 |      |
 | ... |               |      |             |     |     |       |     |      |
 
 ---

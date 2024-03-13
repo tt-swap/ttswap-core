@@ -66,7 +66,8 @@ contract disinvestValueGoodNoFee is BaseSetup {
             .approve(address(market), 100000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(2)
+            refer: address(2),
+            recipent: users[6]
         });
         market.investValueGood(metagood, 20000, _ralate);
         p_ = S_ProofKey(users[2], metagood, T_GoodId.wrap(0)).toId();
@@ -79,9 +80,10 @@ contract disinvestValueGoodNoFee is BaseSetup {
         uint128 quanity = uint128(aquanity);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
-    snapStart("disinvest Value good No Fee first");
+        snapStart("disinvest Value good No Fee first");
         T_BalanceUINT256 result = market.disinvestValueGood(
             metagood,
             quanity,
@@ -122,12 +124,8 @@ contract disinvestValueGoodNoFee is BaseSetup {
             0,
             "feeQunitityState's contruct fee is error"
         );
-          snapStart("disinvest Value good No Fee second");
-         result = market.disinvestValueGood(
-            metagood,
-            quanity,
-            _ralate
-        );
+        snapStart("disinvest Value good No Fee second");
+        result = market.disinvestValueGood(metagood, quanity, _ralate);
         snapEnd();
 
         vm.stopPrank();
@@ -137,13 +135,14 @@ contract disinvestValueGoodNoFee is BaseSetup {
         vm.startPrank(users[2]);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
         vm.assume(aquanity > 1 && aquanity < 1000);
         uint128 quanity = uint128(aquanity);
         T_ProofId p_ = S_ProofKey(users[2], metagood, T_GoodId.wrap(0)).toId();
 
-          snapStart("disinvest Value proof No Fee first");
+        snapStart("disinvest Value proof No Fee first");
         T_BalanceUINT256 result = market.disinvestValueProof(
             p_,
             quanity,
@@ -184,12 +183,8 @@ contract disinvestValueGoodNoFee is BaseSetup {
             0,
             "feeQunitityState's contruct fee is error"
         );
-  snapStart("disinvest Value proof No Fee second");
-         result = market.disinvestValueProof(
-            p_,
-            10,
-            _ralate
-        );
+        snapStart("disinvest Value proof No Fee second");
+        result = market.disinvestValueProof(p_, 10, _ralate);
         snapEnd();
         vm.stopPrank();
     }

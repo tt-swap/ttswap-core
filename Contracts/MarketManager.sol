@@ -19,12 +19,7 @@ import {S_ProofKey, S_ProofState} from "./types/S_ProofKey.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {T_Currency, L_CurrencyLibrary} from "./types/T_Currency.sol";
 
-contract MarketManager is
-    Multicall,
-    GoodManage,
-    ProofManage,
-    I_MarketManage
-{
+contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_Good for L_Good.S_State;
@@ -32,7 +27,6 @@ contract MarketManager is
     using L_Proof for S_ProofState;
     using L_CurrencyLibrary for T_Currency;
     using L_MarketConfigLibrary for uint256;
-
 
     constructor(
         address _marketcreator,
@@ -44,13 +38,7 @@ contract MarketManager is
         S_GoodKey calldata goodkey1,
         T_BalanceUINT256 initial,
         uint256 _goodConfig
-    )
-        external
-        override
-        noReentrant
-        onlyMarketCreator
-        returns (bool)
-    {
+    ) external override noReentrant onlyMarketCreator returns (bool) {
         require(_goodConfig.isvaluegood(), "need value good");
         goodkey1.erc20address.transferFrom(
             msg.sender,
@@ -82,7 +70,7 @@ contract MarketManager is
         T_BalanceUINT256 initial,
         T_Currency _erc20address,
         uint256 _goodConfig
-    ) external payable override noReentrant  returns (T_ProofId) {
+    ) external payable override noReentrant returns (T_ProofId) {
         require(goods[valuegood].goodConfig.isvaluegood(), "not value good");
         require(!_goodConfig.isvaluegood(), "normal good config error");
         require(_erc20address.decimals() <= 18, "erc20 decimals to long");
@@ -145,7 +133,7 @@ contract MarketManager is
 
     //交易
     //花_swapQuanitity个T_GoodId1买T_GoodId2
-    event debug(uint256);
+
     function buyGood(
         T_GoodId _goodid1,
         T_GoodId _goodid2,
@@ -158,11 +146,7 @@ contract MarketManager is
         payable
         override
         noReentrant
-        
-        returns (
-            uint128 goodid2Quanitity_,
-            uint128 goodid2FeeQuanitity_
-        )
+        returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_)
     {
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuanitity: _swapQuanitity,
@@ -179,7 +163,8 @@ contract MarketManager is
             T_BalanceUINT256.wrap(_limitPrice)
         );
 
-        if(istotal==true&& swapcache.remainQuanitity>0) revert err_total();
+        if (istotal == true && swapcache.remainQuanitity > 0)
+            revert err_total();
         goodid2FeeQuanitity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuanitity
         );
@@ -215,6 +200,75 @@ contract MarketManager is
         );
     }
 
+    function buyGoodForPay(
+        T_GoodId _goodid1,
+        T_GoodId _goodid2,
+        uint128 _swapQuanitity,
+        uint256 _limitPrice,
+        bool _istotal,
+        L_Ralate.S_Ralate calldata _ralate
+    )
+        external
+        payable
+        override
+        noReentrant
+        returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_)
+    {
+        L_Good.swapCache memory swapcache = L_Good.swapCache({
+            remainQuanitity: _swapQuanitity,
+            outputQuanitity: 0,
+            feeQuanitity: 0,
+            good1currentState: goods[_goodid1].currentState,
+            good1config: goods[_goodid1].goodConfig,
+            good2currentState: goods[_goodid2].currentState,
+            good2config: goods[_goodid2].goodConfig
+        });
+
+        swapcache = L_Good.swapCompute(
+            swapcache,
+            T_BalanceUINT256.wrap(_limitPrice)
+        );
+
+        if (_istotal == true && swapcache.remainQuanitity > 0)
+            revert err_total();
+        goodid2FeeQuanitity_ = goods[_goodid2].goodConfig.getBuyFee(
+            swapcache.outputQuanitity
+        );
+        goodid2Quanitity_ = swapcache.outputQuanitity - goodid2FeeQuanitity_;
+
+        goods[_goodid1].swapCommit(
+            swapcache.good1currentState,
+            swapcache.feeQuanitity,
+            marketconfig,
+            _ralate
+        );
+        goods[_goodid2].swapCommit(
+            swapcache.good2currentState,
+            goodid2FeeQuanitity_,
+            marketconfig,
+            _ralate
+        );
+        goods[_goodid1].erc20address.transferFrom(
+            msg.sender,
+            _swapQuanitity - swapcache.remainQuanitity
+        );
+        goods[_goodid2].erc20address.transfer(
+            _ralate.recipent,
+            goodid2Quanitity_
+        );
+        emit e_buyGoodForPay(
+            _goodid1,
+            _goodid2,
+            msg.sender,
+            _swapQuanitity,
+            toBalanceUINT256(
+                _swapQuanitity - swapcache.remainQuanitity,
+                swapcache.feeQuanitity
+            ),
+            toBalanceUINT256(goodid2Quanitity_, goodid2FeeQuanitity_)
+        );
+    }
+
     function investValueGood(
         T_GoodId _goodid,
         uint128 _goodQuanitity,
@@ -224,7 +278,6 @@ contract MarketManager is
         payable
         override
         noReentrant
-        
         returns (S_GoodInvestReturn memory normalInvest_)
     {
         require(
@@ -258,7 +311,7 @@ contract MarketManager is
             )
         );
 
-        emit e_investGood( valueproof);
+        emit e_investGood(valueproof);
     }
 
     function disinvestValueGood(
@@ -270,7 +323,6 @@ contract MarketManager is
         payable
         override
         noReentrant
-        
         returns (T_BalanceUINT256 disinvestResult_)
     {
         T_ProofId investproofid = S_ProofKey(
@@ -311,7 +363,6 @@ contract MarketManager is
         payable
         override
         noReentrant
-        
         returns (
             S_GoodInvestReturn memory normalInvest,
             S_GoodInvestReturn memory valueInvest
@@ -367,9 +418,7 @@ contract MarketManager is
             )
         );
 
-        emit e_investGood(
-            proofid
-        );
+        emit e_investGood(proofid);
     }
     function disinvestNormalGood(
         T_GoodId _togood,
@@ -381,7 +430,6 @@ contract MarketManager is
         payable
         override
         noReentrant
-        
         returns (
             T_BalanceUINT256 disinvestResult1_,
             T_BalanceUINT256 disinvestResult2_
@@ -426,9 +474,7 @@ contract MarketManager is
                 disinvestResult2_.amount1() -
                 protocalfee
         );
-        emit e_disinvestGood(
-            _normalproof
-        );
+        emit e_disinvestGood(_normalproof);
     }
 
     //disinvestResult_ amount0为投资收益 amount1为实际产生手续费
@@ -441,7 +487,6 @@ contract MarketManager is
         payable
         override
         noReentrant
-        
         returns (T_BalanceUINT256 disinvestResult_)
     {
         T_GoodId goodid1 = proofs[_valueproofid].currentgood;
@@ -467,9 +512,7 @@ contract MarketManager is
                 disinvestResult_.amount1() -
                 protocalfee
         );
-        emit e_disinvestGood(
-            _valueproofid
-        );
+        emit e_disinvestGood(_valueproofid);
     }
 
     function disinvestNormalProof(
@@ -481,7 +524,6 @@ contract MarketManager is
         payable
         override
         noReentrant
-        
         returns (
             T_BalanceUINT256 disinvestResult1_,
             T_BalanceUINT256 disinvestResult2_
@@ -526,9 +568,7 @@ contract MarketManager is
                 protocalfee
         );
 
-        emit e_disinvestGood(
-            _normalProof
-        );
+        emit e_disinvestGood(_normalProof);
     }
 
     function profitInvestValueProof(

@@ -29,7 +29,6 @@ abstract contract GoodManage is I_Good {
     uint256 internal locked;
     address public immutable marketcreator;
 
-
     constructor(address _marketcreator, uint256 _marketconfig) {
         marketcreator = _marketcreator;
         marketconfig = _marketconfig;
@@ -109,11 +108,23 @@ abstract contract GoodManage is I_Good {
         return true;
     }
 
+    function payGood(
+        T_GoodId goodid,
+        uint256 payquanity,
+        address recipent
+    ) external returns (bool) {
+        goods[goodid].erc20address.transferFrom(recipent, payquanity);
+        return true;
+    }
+
     function changeOwner(
         T_GoodId goodid,
         address to
     ) external override returns (bool) {
-        require(msg.sender == goods[goodid].owner || msg.sender==marketcreator, "you havn't priv");
+        require(
+            msg.sender == goods[goodid].owner || msg.sender == marketcreator,
+            "you havn't priv"
+        );
         emit e_changeOwner(goodid, goods[goodid].owner, to);
         goods[goodid].owner = to;
         _ownergoods[to].push(goodid);

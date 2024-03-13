@@ -82,7 +82,8 @@ contract disinvestValueGoodFee is BaseSetup {
             .approve(address(market), 100000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(2)
+            refer: address(2),
+            recipent: users[6]
         });
         market.investValueGood(metagood, 20000, _ralate);
         p_ = S_ProofKey(users[2], metagood, T_GoodId.wrap(0)).toId();
@@ -128,7 +129,6 @@ contract disinvestValueGoodFee is BaseSetup {
             "feeQunitityState's contruct fee is error"
         );
 
-      
         vm.stopPrank();
     }
 
@@ -138,7 +138,8 @@ contract disinvestValueGoodFee is BaseSetup {
         uint128 quanity = uint128(aquanity);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
         snapStart("disinvest Value Good With Fee first");
         T_BalanceUINT256 result = market.disinvestValueGood(
@@ -186,11 +187,7 @@ contract disinvestValueGoodFee is BaseSetup {
             uint256(aa.feeQunitityState.amount1())
         );
         snapStart("disinvest Value Good With Fee second");
-         result = market.disinvestValueGood(
-            metagood,
-            10,
-            _ralate
-        );
+        result = market.disinvestValueGood(metagood, 10, _ralate);
         snapEnd();
         vm.stopPrank();
     }
@@ -199,7 +196,8 @@ contract disinvestValueGoodFee is BaseSetup {
         vm.startPrank(users[2]);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
         vm.assume(aquanity > 1 && aquanity < 1000);
         uint128 quanity = uint128(aquanity);
@@ -248,11 +246,7 @@ contract disinvestValueGoodFee is BaseSetup {
             "feeQunitityState's contruct fee is error"
         );
         snapStart("disinvest Value Proof with fee second");
-         result = market.disinvestValueProof(
-            p_,
-            10,
-            _ralate
-        );
+        result = market.disinvestValueProof(p_, 10, _ralate);
         snapEnd();
         vm.stopPrank();
     }
@@ -261,7 +255,8 @@ contract disinvestValueGoodFee is BaseSetup {
         vm.startPrank(users[2]);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
 
         uint128 quanity = 10000;
@@ -314,7 +309,8 @@ contract disinvestValueGoodFee is BaseSetup {
         vm.startPrank(users[2]);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
 
         uint128 quanity = 500;

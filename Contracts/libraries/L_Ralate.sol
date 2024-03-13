@@ -5,5 +5,6 @@ library L_Ralate {
     struct S_Ralate {
         address gater;
         address refer;
+        address recipent;
     }
 }

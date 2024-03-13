@@ -80,7 +80,8 @@ contract investValueGoodFee is BaseSetup {
             .approve(address(market), 100000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(2)
+            refer: address(2),
+            recipent: msg.sender
         });
         snapStart("invest value good with fee first");
         market.investValueGood(metagood, 20000, _ralate);

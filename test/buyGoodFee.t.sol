@@ -106,7 +106,8 @@ contract buyGoodFee is BaseSetup {
         usdt.approve(address(market), 100000000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
         S_GoodState memory s1 = market.getGoodState(metagood);
         GoodUtil.showGood(s1);
@@ -136,7 +137,8 @@ contract buyGoodFee is BaseSetup {
             normalgoodusdt,
             metagood,
             1000000,
-            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),  false,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
             _ralate
         );
         snapEnd();

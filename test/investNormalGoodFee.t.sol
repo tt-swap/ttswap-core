@@ -104,7 +104,8 @@ contract investNormalGoodFee is BaseSetup {
         ).approve(address(market), 40000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
         snapStart("invest normal good with fee first");
         market.investNormalGood(normalgoodusdt, metagood, 10000, _ralate);
@@ -166,7 +167,7 @@ contract investNormalGoodFee is BaseSetup {
         );
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
-           snapStart("invest normal good with fee second");
+        snapStart("invest normal good with fee second");
         market.investNormalGood(normalgoodusdt, metagood, 10000, _ralate);
         snapEnd();
 

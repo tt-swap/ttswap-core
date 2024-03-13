@@ -91,7 +91,8 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
         snapStart("disinvest Normal good without fee first");
         market.disinvestNormalGood(normalgoodusdt, metagood, 10000, _ralate);
@@ -153,7 +154,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
-              snapStart("disinvest Normal good without fee second");
+        snapStart("disinvest Normal good without fee second");
         market.disinvestNormalGood(normalgoodusdt, metagood, 1, _ralate);
         snapEnd();
         vm.stopPrank();
@@ -175,7 +176,8 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: users[6]
         });
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
         snapStart("disinvest Normal proof without fee first");
@@ -260,12 +262,12 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: msg.sender
         });
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
         market.disinvestNormalProof(p_, 5000, _ralate);
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
-
 
         vm.stopPrank();
     }
@@ -286,7 +288,8 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3)
+            refer: address(3),
+            recipent: msg.sender
         });
         market.disinvestNormalGood(normalgoodusdt, metagood, 5000, _ralate);
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);

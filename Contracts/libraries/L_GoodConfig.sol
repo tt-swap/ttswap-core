@@ -3,7 +3,7 @@ pragma solidity ^0.8.23;
 
 import {FullMath} from "./FullMath.sol";
 
-/// @notice 
+/// @notice
 library L_GoodConfigLibrary {
     //商品配置
     function isvaluegood(uint256 config) internal pure returns (bool a) {
@@ -109,11 +109,13 @@ library L_GoodConfigLibrary {
     }
 
     // get disinvest Chips
-    function getDisinvestChips(uint256 config) internal pure returns (uint16 a) {
+    function getDisinvestChips(
+        uint256 config
+    ) internal pure returns (uint16 a) {
         assembly {
             a := shr(246, shl(51, config))
         }
-        return a ;
+        return a;
     }
 
     function getDisinvestChips(
@@ -128,4 +130,38 @@ library L_GoodConfigLibrary {
         return (amount / a);
     }
 
+    //物品类型
+    function getGoodType(uint256 config) internal pure returns (uint128 a) {
+        assembly {
+            a := shr(223, shl(61, config))
+        }
+
+        return a;
+    }
+
+    //电话号码
+    function getTell(uint256 config) internal pure returns (uint128 a) {
+        assembly {
+            a := shr(208, shl(94, config))
+        }
+
+        return a;
+    }
+
+    //经度
+    function getLongitude(uint256 config) internal pure returns (uint128 a) {
+        assembly {
+            a := shr(208, shl(142, config))
+        }
+
+        return a;
+    }
+
+    //纬度
+    function getLatitude(uint256 config) internal pure returns (uint128 a) {
+        assembly {
+            a := shr(208, shl(190, config))
+        }
+        return a;
+    }
 }

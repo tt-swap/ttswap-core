@@ -34,6 +34,8 @@ interface I_MarketManage is I_Good, I_Proof {
     event e_disinvestGood(
         T_ProofId indexed
     );
+
+    error err_total();
     /// @notice 获取商品状态 get good's state
     /// @param _goodkey1   商品的商品ID good's id
     /// @param _initial   初始化的商品的参数,前128位为价值,后128位为数量.initial good,amount0:value,amount1:quantity
@@ -64,6 +66,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _goodid2   商品2的ID
     /// @param _swapQuanitity  出售商品1的数量
     /// @param _limitprice   在不高于某价值出售
+    /// @param _istotal 是否允许完全成交
     /// @param _ralate   用户的关系,推荐人和门户地址
     /// @return goodid2_quanitity_ 商品2获得的数量(不包含手续费)
     /// @return goodid2_fee_quanitity_ 商品2的手续费
@@ -72,6 +75,7 @@ interface I_MarketManage is I_Good, I_Proof {
         T_GoodId _goodid2,
         uint128 _swapQuanitity,
         uint256 _limitprice,
+        bool _istotal,
         L_Ralate.S_Ralate calldata _ralate
     )
         external

@@ -2,7 +2,6 @@ pragma solidity ^0.8.13;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
 
-
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
@@ -30,7 +29,6 @@ contract buyGoodFeeChips is BaseSetup {
         BaseSetup.setUp();
         initmetagood();
         normalgoodusdt = initNormalGood(address(usdt));
-        
     }
 
     function initmetagood() public {
@@ -53,7 +51,7 @@ contract buyGoodFeeChips is BaseSetup {
             2 ** 215 +
             1 *
             2 ** 205;
-        
+
         snapStart("init metagood with fee with config");
         market.initMetaGood(
             goodkey,
@@ -127,50 +125,43 @@ contract buyGoodFeeChips is BaseSetup {
         S_GoodState memory s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s2);
 
-            uint128 goodid2Quanitity_;
-            uint128 goodid2FeeQuanitity_;
+        uint128 goodid2Quanitity_;
+        uint128 goodid2FeeQuanitity_;
         snapStart("buygood cross 4 chips with fee first");
-        (
-             goodid2Quanitity_,
-             goodid2FeeQuanitity_
-        ) = market.buyGood(
-                normalgoodusdt,
-                metagood,
-                1000000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            1000000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
         snapEnd();
 
         snapStart("buygood cross 4 chips with fee second");
-        (
-             goodid2Quanitity_,
-             goodid2FeeQuanitity_
-        ) = market.buyGood(
-                normalgoodusdt,
-                metagood,
-                1000000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
-        snapEnd();
-        console2.log(
-            goodid2Quanitity_,
-            goodid2FeeQuanitity_
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            1000000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
         );
+        snapEnd();
+        console2.log(goodid2Quanitity_, goodid2FeeQuanitity_);
         s1 = market.getGoodState(metagood);
         s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s1);
         GoodUtil.showGood(s2);
-       
-        (goodid2Quanitity_, goodid2FeeQuanitity_) = market
-            .buyGood(
-                normalgoodusdt,
-                metagood,
-                quan,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            quan,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
     }
 
     function testBuyGoodChips1() public {
@@ -186,87 +177,83 @@ contract buyGoodFeeChips is BaseSetup {
         S_GoodState memory s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s2);
         uint128 goodid2Quanitity_;
-            uint128 goodid2FeeQuanitity_;
+        uint128 goodid2FeeQuanitity_;
         snapStart("buygood cross 1 chips with fee first");
-        (
-             goodid2Quanitity_,
-             goodid2FeeQuanitity_
-        ) = market.buyGood(
-                normalgoodusdt,
-                metagood,
-                100000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            100000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
         snapEnd();
 
         snapStart("buygood cross 1 chips with fee second");
-        (
-             goodid2Quanitity_,
-             goodid2FeeQuanitity_
-        ) = market.buyGood(
-                normalgoodusdt,
-                metagood,
-                100000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            100000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
         snapEnd();
 
         snapStart("buygood cross 27 chips with fee second");
-        (goodid2Quanitity_, goodid2FeeQuanitity_) = market
-            .buyGood(
-                normalgoodusdt,
-                metagood,
-                10000000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            10000000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
         snapEnd();
         snapStart("buygood cross 3 chips with fee second");
-        (goodid2Quanitity_, goodid2FeeQuanitity_) = market
-            .buyGood(
-                normalgoodusdt,
-                metagood,
-                1000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            1000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
         snapEnd();
-        (goodid2Quanitity_, goodid2FeeQuanitity_) = market
-            .buyGood(
-                normalgoodusdt,
-                metagood,
-                10000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            10000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
 
-        (goodid2Quanitity_, goodid2FeeQuanitity_) = market
-            .buyGood(
-                normalgoodusdt,
-                metagood,
-                100000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            100000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
 
-        (goodid2Quanitity_, goodid2FeeQuanitity_) = market
-            .buyGood(
-                normalgoodusdt,
-                metagood,
-                1000000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            1000000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
 
-        (goodid2Quanitity_, goodid2FeeQuanitity_) = market
-            .buyGood(
-                normalgoodusdt,
-                metagood,
-                10000000,
-                T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
-                _ralate
-            );
+        (goodid2Quanitity_, goodid2FeeQuanitity_) = market.buyGood(
+            normalgoodusdt,
+            metagood,
+            10000000,
+            T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
+            false,
+            _ralate
+        );
     }
 }

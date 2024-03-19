@@ -32,6 +32,7 @@ abstract contract GoodManage is I_Good {
     constructor(address _marketcreator, uint256 _marketconfig) {
         marketcreator = _marketcreator;
         marketconfig = _marketconfig;
+        emit e_initMarket(_marketcreator, _marketconfig);
     }
 
     modifier onlyMarketCreator() {

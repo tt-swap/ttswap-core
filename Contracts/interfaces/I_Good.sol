@@ -15,7 +15,7 @@ interface I_Good {
     event e_changeOwner(T_GoodId indexed, address, address);
     event e_changeOwnerByMarketor(T_GoodId indexed, address, address, address);
     event e_collectProtocolFee(T_GoodId indexed, address, uint256);
-
+    event e_initMarket(address, uint256);
     function setMarketConfig(uint256 _marketconfig) external returns (bool);
 
     function marketconfig() external view returns (uint256);
@@ -48,7 +48,6 @@ interface I_Good {
     /// @param to   接收者
     /// @return the result
     function changeOwner(T_GoodId goodid, address to) external returns (bool);
-
 
     function collectProtocolFee(
         T_GoodId goodid

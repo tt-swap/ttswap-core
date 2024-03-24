@@ -200,12 +200,12 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
     }
 
+    // good1 approved quanity =
     function buyGoodForPay(
         T_GoodId _goodid1,
         T_GoodId _goodid2,
         uint128 _swapQuanitity,
         uint256 _limitPrice,
-        bool _istotal,
         L_Ralate.S_Ralate calldata _ralate
     )
         external
@@ -229,8 +229,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             T_BalanceUINT256.wrap(_limitPrice)
         );
 
-        if (_istotal == true && swapcache.remainQuanitity > 0)
-            revert err_total();
+        if (swapcache.remainQuanitity > 0) revert err_total();
         goodid2FeeQuanitity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuanitity
         );

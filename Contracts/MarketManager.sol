@@ -158,7 +158,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             good2config: goods[_goodid2].goodConfig
         });
 
-        swapcache = L_Good.swapCompute(
+        swapcache = L_Good.swapCompute1(
             swapcache,
             T_BalanceUINT256.wrap(_limitPrice)
         );
@@ -206,13 +206,14 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         T_GoodId _goodid2,
         uint128 _swapQuanitity,
         uint256 _limitPrice,
+        address recipent,
         L_Ralate.S_Ralate calldata _ralate
     )
         external
         payable
         override
         noReentrant
-        returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_)
+        returns (uint128 goodid1Quanitity_, uint128 goodid1FeeQuanitity_)
     {
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuanitity: _swapQuanitity,
@@ -224,36 +225,36 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             good2config: goods[_goodid2].goodConfig
         });
 
-        swapcache = L_Good.swapCompute(
+        swapcache = L_Good.swapCompute2(
             swapcache,
             T_BalanceUINT256.wrap(_limitPrice)
         );
 
         if (swapcache.remainQuanitity > 0) revert err_total();
-        goodid2FeeQuanitity_ = goods[_goodid2].goodConfig.getBuyFee(
+        goodid1FeeQuanitity_ = goods[_goodid1].goodConfig.getBuyFee(
             swapcache.outputQuanitity
         );
-        goodid2Quanitity_ = swapcache.outputQuanitity - goodid2FeeQuanitity_;
+        goodid1Quanitity_ = swapcache.outputQuanitity - goodid1FeeQuanitity_;
 
-        goods[_goodid1].swapCommit(
-            swapcache.good1currentState,
+        goods[_goodid2].swapCommit(
+            swapcache.good2currentState,
             swapcache.feeQuanitity,
             marketconfig,
             _ralate
         );
-        goods[_goodid2].swapCommit(
-            swapcache.good2currentState,
-            goodid2FeeQuanitity_,
+        goods[_goodid1].swapCommit(
+            swapcache.good1currentState,
+            goodid1FeeQuanitity_,
             marketconfig,
             _ralate
         );
-        goods[_goodid1].erc20address.transferFrom(
-            msg.sender,
+        goods[_goodid2].erc20address.transfer(
+            recipent,
             _swapQuanitity - swapcache.remainQuanitity
         );
-        goods[_goodid2].erc20address.transfer(
-            _ralate.recipent,
-            goodid2Quanitity_
+        goods[_goodid1].erc20address.transferFrom(
+            msg.sender,
+            goodid1Quanitity_
         );
         emit e_buyGoodForPay(
             _goodid1,
@@ -264,7 +265,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 _swapQuanitity - swapcache.remainQuanitity,
                 swapcache.feeQuanitity
             ),
-            toBalanceUINT256(goodid2Quanitity_, goodid2FeeQuanitity_)
+            toBalanceUINT256(goodid1Quanitity_, goodid1FeeQuanitity_)
         );
     }
 

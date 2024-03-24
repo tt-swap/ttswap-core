@@ -101,6 +101,7 @@ interface I_MarketManage is I_Good, I_Proof {
         T_GoodId _goodid2,
         uint128 _swapQuanitity,
         uint256 _limitprice,
+        address recipent,
         L_Ralate.S_Ralate calldata _ralate
     )
         external

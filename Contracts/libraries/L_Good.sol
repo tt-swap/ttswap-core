@@ -62,7 +62,10 @@ library L_Good {
         self.goodConfig = b;
     }
 
-    function updateGoodConfig(S_State storage _self,uint256 _goodConfig)internal{
+    function updateGoodConfig(
+        S_State storage _self,
+        uint256 _goodConfig
+    ) internal {
         assembly {
             _goodConfig := shr(1, shl(1, _goodConfig))
         }
@@ -93,7 +96,7 @@ library L_Good {
         T_BalanceUINT256 good2currentState;
         uint256 good2config;
     }
-    function swapCompute(
+    function swapCompute1(
         swapCache memory stepCache,
         T_BalanceUINT256 limitPrice
     ) internal pure returns (swapCache memory) {
@@ -108,7 +111,7 @@ library L_Good {
                 stepCache.good2currentState,
                 limitPrice
             )
-        ) { 
+        ) {
             good1 = stepCache.good1config.getSwapChips(
                 stepCache.good1currentState.amount0()
             );
@@ -171,6 +174,86 @@ library L_Good {
         }
         return stepCache;
     }
+
+    function swapCompute2(
+        swapCache memory stepCache,
+        T_BalanceUINT256 limitPrice
+    ) internal pure returns (swapCache memory) {
+        uint128 minValue;
+        uint128 minQuanitity;
+        uint128 good1;
+        uint128 good2;
+        while (
+            stepCache.remainQuanitity > 0 &&
+            getprice(
+                stepCache.good1currentState,
+                stepCache.good2currentState,
+                limitPrice
+            )
+        ) {
+            good1 = stepCache.good1config.getSwapChips(
+                stepCache.good1currentState.amount0()
+            );
+            good2 = stepCache.good2config.getSwapChips(
+                stepCache.good2currentState.amount0()
+            );
+            minValue = good1 >= good2 ? good2 : good1;
+            minQuanitity = stepCache.good2currentState.getamount1fromamount0(
+                minValue
+            );
+
+            if (stepCache.remainQuanitity > minQuanitity) {
+                stepCache.remainQuanitity -= minQuanitity;
+                good2 = stepCache.good2config.getBuyFee(minQuanitity);
+                stepCache.feeQuanitity += good2;
+                minQuanitity -= good2;
+                minValue = stepCache.good1currentState.getamount0fromamount1(
+                    minQuanitity
+                );
+                stepCache.outputQuanitity += stepCache
+                    .good1currentState
+                    .getamount1fromamount0(minValue);
+                stepCache.good2currentState = addsub(
+                    stepCache.good2currentState,
+                    toBalanceUINT256(minValue, minQuanitity)
+                );
+                good1 = stepCache.good2currentState.getamount1fromamount0(
+                    minValue
+                );
+                stepCache.good1currentState = subadd(
+                    stepCache.good2currentState,
+                    toBalanceUINT256(minValue, good2)
+                );
+            } else {
+                good2 = stepCache.good2config.getBuyFee(
+                    stepCache.remainQuanitity
+                );
+                stepCache.feeQuanitity += good2;
+                stepCache.remainQuanitity -= good2;
+
+                minValue = stepCache.good2currentState.getamount0fromamount1(
+                    stepCache.remainQuanitity
+                );
+                stepCache.outputQuanitity += stepCache
+                    .good1currentState
+                    .getamount1fromamount0(minValue);
+                stepCache.good2currentState = addsub(
+                    stepCache.good2currentState,
+                    toBalanceUINT256(minValue, stepCache.remainQuanitity)
+                );
+                good1 = stepCache.good1currentState.getamount1fromamount0(
+                    minValue
+                );
+                stepCache.good1currentState = subadd(
+                    stepCache.good1currentState,
+                    toBalanceUINT256(minValue, good2)
+                );
+                stepCache.remainQuanitity = 0;
+            }
+        }
+        return stepCache;
+    }
+
     function swapCommit(
         S_State storage _self,
         T_BalanceUINT256 _swapstate,
@@ -183,7 +266,6 @@ library L_Good {
             _self.feeQunitityState +
             toBalanceUINT256(_marketconfig.getLiquidFee(_fee), 0);
         allocateFee(_self, _fee, _marketconfig, _ralate);
-
     }
 
     function investGood(
@@ -252,11 +334,17 @@ library L_Good {
             _goodQuantity
         );
         require(
-            disinvestResult_.amount0() < _self.goodConfig.getDisinvestChips(_self.currentState.amount0()),
+            disinvestResult_.amount0() <
+                _self.goodConfig.getDisinvestChips(
+                    _self.currentState.amount0()
+                ),
             "value good value not enough"
         );
         require(
-            _goodQuantity < _self.goodConfig.getDisinvestChips(_self.currentState.amount1()),
+            _goodQuantity <
+                _self.goodConfig.getDisinvestChips(
+                    _self.currentState.amount1()
+                ),
             "value good quantity not enough"
         );
         _self.currentState = _self.currentState - disinvestResult_;
@@ -319,19 +407,30 @@ library L_Good {
 
         require(
             NormalGoodResult1_.amount0() <
-                _valueGoodState.goodConfig.getDisinvestChips(_valueGoodState.currentState.amount0()),
+                _valueGoodState.goodConfig.getDisinvestChips(
+                    _valueGoodState.currentState.amount0()
+                ),
             "normal good value not enough"
         );
         require(
-            valequanity_ < _valueGoodState.goodConfig.getDisinvestChips(_valueGoodState.currentState.amount1()),
+            valequanity_ <
+                _valueGoodState.goodConfig.getDisinvestChips(
+                    _valueGoodState.currentState.amount1()
+                ),
             "value good quantiy not enough"
         );
         require(
-            NormalGoodResult1_.amount0() < _self.goodConfig.getDisinvestChips(_self.currentState.amount0()),
+            NormalGoodResult1_.amount0() <
+                _self.goodConfig.getDisinvestChips(
+                    _self.currentState.amount0()
+                ),
             "value good value not enough"
         );
         require(
-            NormalGoodResult1_.amount1() < _self.goodConfig.getDisinvestChips(_self.currentState.amount1()),
+            NormalGoodResult1_.amount1() <
+                _self.goodConfig.getDisinvestChips(
+                    _self.currentState.amount1()
+                ),
             "normal good quanity not enough"
         );
         _self.currentState = _self.currentState - NormalGoodResult1_;

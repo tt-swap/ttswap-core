@@ -118,8 +118,7 @@ contract buyGoodFeeChips is BaseSetup {
         usdt.approve(address(market), 100000000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: users[6]
+            refer: address(3)
         });
         S_GoodState memory s1 = market.getGoodState(metagood);
         GoodUtil.showGood(s1);
@@ -171,8 +170,7 @@ contract buyGoodFeeChips is BaseSetup {
         usdt.approve(address(market), 100000000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: users[6]
+            refer: address(3)
         });
         S_GoodState memory s1 = market.getGoodState(metagood);
         GoodUtil.showGood(s1);

@@ -200,7 +200,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
     }
 
-    // good1 approved quanity =
+    //
     function buyGoodForPay(
         T_GoodId _goodid1,
         T_GoodId _goodid2,

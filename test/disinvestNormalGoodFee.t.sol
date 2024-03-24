@@ -89,8 +89,7 @@ contract disinvestNormalGoodFee is BaseSetup {
 
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: msg.sender
+            refer: address(3)
         });
         snapStart("disinvest normal good with fee first");
         market.disinvestNormalGood(normalgoodusdt, metagood, 10000, _ralate);
@@ -179,8 +178,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         ).approve(address(market), 20000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: users[6]
+            refer: address(3)
         });
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
         snapStart("disinvest normal proof with fee first");

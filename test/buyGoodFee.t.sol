@@ -104,11 +104,10 @@ contract buyGoodFee is BaseSetup {
         vm.startPrank(users[6]);
         deal(address(usdt), users[6], 1000000000, false);
         usdt.approve(address(market), 100000000);
-        L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
-            gater: address(1),
-            refer: address(3),
-            recipent: users[6]
-        });
+        L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate(
+            address(1),
+            address(3)
+        );
         S_GoodState memory s1 = market.getGoodState(metagood);
         GoodUtil.showGood(s1);
         S_GoodState memory s2 = market.getGoodState(normalgoodusdt);

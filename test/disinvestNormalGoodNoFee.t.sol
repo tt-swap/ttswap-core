@@ -91,8 +91,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: users[6]
+            refer: address(3)
         });
         snapStart("disinvest Normal good without fee first");
         market.disinvestNormalGood(normalgoodusdt, metagood, 10000, _ralate);
@@ -176,8 +175,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: users[6]
+            refer: address(3)
         });
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
         snapStart("disinvest Normal proof without fee first");
@@ -262,8 +260,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: msg.sender
+            refer: address(3)
         });
         T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
         market.disinvestNormalProof(p_, 5000, _ralate);
@@ -288,8 +285,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         );
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: msg.sender
+            refer: address(3)
         });
         market.disinvestNormalGood(normalgoodusdt, metagood, 5000, _ralate);
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);

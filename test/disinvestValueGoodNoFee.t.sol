@@ -66,8 +66,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
             .approve(address(market), 100000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(2),
-            recipent: users[6]
+            refer: address(2)
         });
         market.investValueGood(metagood, 20000, _ralate);
         p_ = S_ProofKey(users[2], metagood, T_GoodId.wrap(0)).toId();
@@ -80,8 +79,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
         uint128 quanity = uint128(aquanity);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: users[6]
+            refer: address(3)
         });
         snapStart("disinvest Value good No Fee first");
         T_BalanceUINT256 result = market.disinvestValueGood(
@@ -135,8 +133,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
         vm.startPrank(users[2]);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: users[6]
+            refer: address(3)
         });
         vm.assume(aquanity > 1 && aquanity < 1000);
         uint128 quanity = uint128(aquanity);

@@ -104,8 +104,7 @@ contract investNormalGoodFee is BaseSetup {
         ).approve(address(market), 40000);
         L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
             gater: address(1),
-            refer: address(3),
-            recipent: users[6]
+            refer: address(3)
         });
         snapStart("invest normal good with fee first");
         market.investNormalGood(normalgoodusdt, metagood, 10000, _ralate);

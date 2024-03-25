@@ -62,6 +62,13 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goodnum = 1;
         goodmapping[goodnum] = metagood;
         _ownergoods[msg.sender].push(metagood);
+        emit e_initMetaGood(
+            metagood,
+            initial,
+            _goodConfig,
+            goodkey1.erc20address.unwrap(),
+            msg.sender
+        );
         return true;
     }
 
@@ -127,7 +134,14 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goodnum += 1;
         goodmapping[goodnum] = togood;
         _ownergoods[msg.sender].push(togood);
-        emit e_initNormalGood();
+        emit e_initNormalGood(
+            valuegood,
+            togood,
+            initial,
+            _goodConfig,
+            _erc20address.unwrap(),
+            msg.sender
+        );
         return normalproof;
     }
 

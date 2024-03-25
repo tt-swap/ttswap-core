@@ -130,4 +130,8 @@ library L_CurrencyLibrary {
     function fromId(uint256 id) internal pure returns (T_Currency) {
         return T_Currency.wrap(address(uint160(id)));
     }
+
+    function unwrap(T_Currency currency) internal pure returns (address) {
+        return T_Currency.unwrap(currency);
+    }
 }

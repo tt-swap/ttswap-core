@@ -17,9 +17,16 @@ import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, sub
 /// @title 市场管理接口 market manage interface
 /// @notice 市场管理接口 market manage interface
 interface I_MarketManage is I_Good, I_Proof {
-    event e_initNormalGood();
+    event e_initMetaGood(T_GoodId, T_BalanceUINT256, uint256, address, address);
+    event e_initNormalGood(
+        T_GoodId,
+        T_GoodId,
+        T_BalanceUINT256,
+        uint256,
+        address,
+        address
+    );
 
-    event e_initNormalGood(T_GoodId indexed);
     event e_buyGood(
         T_GoodId indexed,
         T_GoodId indexed,

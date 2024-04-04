@@ -13,7 +13,12 @@ import {T_ProofId} from "../types/T_ProofId.sol";
 import {T_GoodId} from "../types/T_GoodId.sol";
 import {T_Currency} from "../types/T_Currency.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "../types/T_BalanceUINT256.sol";
-
+struct S_BuyResult {
+    uint128 good1Quanitity;
+    uint128 fee1Quanitity;
+    uint128 good2Quanitity;
+    uint128 fee2Quanitity;
+}
 /// @title 市场管理接口 market manage interface
 /// @notice 市场管理接口 market manage interface
 interface I_MarketManage is I_Good, I_Proof {
@@ -53,6 +58,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _initial   初始化的商品的参数,前128位为价值,后128位为数量.initial good,amount0:value,amount1:quantity
     /// @param _goodconfig   初始化的商品的参数,前128位为价值,后128位为数量.initial good,amount0:value,amount1:quantity
     /// @return 是否初始化成功
+
     function initMetaGood(
         S_GoodKey calldata _goodkey1,
         T_BalanceUINT256 _initial,
@@ -80,8 +86,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _limitprice   在不高于某价值出售
     /// @param _istotal 是否允许完全成交
     /// @param _ralate   用户的关系,推荐人和门户地址
-    /// @return goodid2_quanitity_ 商品2获得的数量(不包含手续费)
-    /// @return goodid2_fee_quanitity_ 商品2的手续费
+    /// @return goodid2Quanitity_ 实际情况
+    /// @return goodid2FeeQuanitity_ 实际情况
     function buyGood(
         T_GoodId _goodid1,
         T_GoodId _goodid2,
@@ -92,7 +98,7 @@ interface I_MarketManage is I_Good, I_Proof {
     )
         external
         payable
-        returns (uint128 goodid2_quanitity_, uint128 goodid2_fee_quanitity_);
+        returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_);
 
     /// @notice 出售商品1购买商品2
     /// @dev 如果购买商品1而出售商品2,开发者需求折算成使用商品2购买商品1

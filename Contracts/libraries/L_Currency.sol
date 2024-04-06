@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.23;
+pragma solidity 0.8.24;
 
 import {IERC20Minimal} from "../interfaces/IERC20Minimal.sol";
-
-type T_Currency is address;
 
 /// @title L_CurrencyLibrary
 /// @dev This library allows for transferring and holding native tokens and ERC20 tokens
 library L_CurrencyLibrary {
-    using L_CurrencyLibrary for T_Currency;
+    using L_CurrencyLibrary for address;
 
     /// @notice Thrown when a native transfer fails
     error NativeTransferFailed();
@@ -16,40 +14,29 @@ library L_CurrencyLibrary {
     /// @notice Thrown when an ERC20 transfer fails
     error ERC20TransferFailed();
 
-    T_Currency public constant NATIVE = T_Currency.wrap(address(0));
+    address public constant NATIVE = address(0);
 
-    function approve(T_Currency currency, uint256 amount) internal {
-        IERC20Minimal(T_Currency.unwrap(currency)).approve(
-            address(this),
-            amount
-        );
+    function approve(address currency, uint256 amount) internal {
+        IERC20Minimal(currency).approve(address(this), amount);
     }
 
-    function decimals(T_Currency currency) internal view returns (uint8) {
-        return IERC20Minimal(T_Currency.unwrap(currency)).decimals();
+    function decimals(address currency) internal view returns (uint8) {
+        return IERC20Minimal(currency).decimals();
     }
 
-    function totalSupply(T_Currency currency) internal view returns (uint256) {
-        return IERC20Minimal(T_Currency.unwrap(currency)).totalSupply();
+    function totalSupply(address currency) internal view returns (uint256) {
+        return IERC20Minimal(currency).totalSupply();
     }
 
     function transferFrom(
-        T_Currency currency,
+        address currency,
         address from,
         uint256 amount
     ) internal {
-        IERC20Minimal(T_Currency.unwrap(currency)).transferFrom(
-            from,
-            address(this),
-            amount
-        );
+        IERC20Minimal(currency).transferFrom(from, address(this), amount);
     }
 
-    function transfer(
-        T_Currency currency,
-        address to,
-        uint256 amount
-    ) internal {
+    function transfer(address currency, address to, uint256 amount) internal {
         // implementation from
         // https://github.com/transmissions11/solmate/blob/e8f96f25d48fe702117ce76c79228ca4f20206cb/src/utils/SafeTransferLib.sol
 
@@ -95,43 +82,26 @@ library L_CurrencyLibrary {
         }
     }
 
-    function balanceOfSelf(
-        T_Currency currency
-    ) internal view returns (uint256) {
+    function balanceOfSelf(address currency) internal view returns (uint256) {
         if (currency.isNative()) {
             return address(this).balance;
         } else {
-            return
-                IERC20Minimal(T_Currency.unwrap(currency)).balanceOf(
-                    address(this)
-                );
+            return IERC20Minimal(currency).balanceOf(address(this));
         }
     }
 
     function balanceOf(
-        T_Currency currency,
+        address currency,
         address owner
     ) internal view returns (uint256) {
         if (currency.isNative()) {
             return owner.balance;
         } else {
-            return IERC20Minimal(T_Currency.unwrap(currency)).balanceOf(owner);
+            return IERC20Minimal(currency).balanceOf(owner);
         }
     }
 
-    function isNative(T_Currency currency) internal pure returns (bool) {
-        return T_Currency.unwrap(currency) == T_Currency.unwrap(NATIVE);
-    }
-
-    function toId(T_Currency currency) internal pure returns (uint256) {
-        return uint160(T_Currency.unwrap(currency));
-    }
-
-    function fromId(uint256 id) internal pure returns (T_Currency) {
-        return T_Currency.wrap(address(uint160(id)));
-    }
-
-    function unwrap(T_Currency currency) internal pure returns (address) {
-        return T_Currency.unwrap(currency);
+    function isNative(address currency) internal pure returns (bool) {
+        return currency == address(0);
     }
 }

@@ -1,0 +1,8 @@
+M001 "the good exists"
+M002 "this good is not a value good"
+M003 "normal good'sconfig error"
+M004 "erc20 decimals to big"
+M005 "the token suply to big"
+M007 "the proof not exists or the proof is not yours"
+M008 "the proof not exists or the proof is not yours or the proof is not value proof"
+M008 "the proof not exists or the proof is not yours or the proof is not Normal proof"

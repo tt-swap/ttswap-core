@@ -1,22 +1,21 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity ^0.8.23;
+pragma solidity 0.8.24;
 
-import {T_GoodId} from "../types/T_GoodId.sol";
-import {S_ProofState} from "../types/S_ProofKey.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "../types/T_BalanceUINT256.sol";
+import {S_ProofState, S_ProofKey} from "./L_Struct.sol";
+import {T_BalanceUINT256, toBalanceUINT256} from "./L_BalanceUINT256.sol";
 import {FullMath} from "../libraries/FullMath.sol";
 
 library L_Proof {
     function updateValueInvest(
         S_ProofState storage _self,
-        T_GoodId _currenctgood,
+        uint256 _currenctgood,
         T_BalanceUINT256 _state,
         T_BalanceUINT256 _invest
     ) internal {
         if (_self.invest.amount1() == 0) {
             _self.owner = msg.sender;
             _self.currentgood = _currenctgood;
-            _self.valuegood = T_GoodId.wrap(0);
+            _self.valuegood = 0;
         }
         _self.invest = _self.invest + _invest;
         _self.state = _self.state + _state;
@@ -24,8 +23,8 @@ library L_Proof {
 
     function updateNormalInvest(
         S_ProofState storage _self,
-        T_GoodId _currenctgood,
-        T_GoodId _valuegood,
+        uint256 _currenctgood,
+        uint256 _valuegood,
         T_BalanceUINT256 _state,
         T_BalanceUINT256 _invest,
         T_BalanceUINT256 _valueinvest
@@ -56,9 +55,7 @@ library L_Proof {
             _self.invest -
             toBalanceUINT256(burnResult_.amount1(), _quantity);
 
-        _self.state =
-            _self.state -
-            toBalanceUINT256(burnResult_.amount0(), 0);
+        _self.state = _self.state - toBalanceUINT256(burnResult_.amount0(), 0);
     }
 
     function burnNormalProofSome(
@@ -90,8 +87,12 @@ library L_Proof {
             _self.invest -
             toBalanceUINT256(burnResult1_.amount1(), _quantity);
         _self.valueinvest = _self.valueinvest - burnResult2_;
-        _self.state =
-            _self.state -
-            toBalanceUINT256(burnResult1_.amount0(), 0);
+        _self.state = _self.state - toBalanceUINT256(burnResult1_.amount0(), 0);
+    }
+}
+
+library L_ProofIdLibrary {
+    function toId(S_ProofKey memory proofKey) internal pure returns (bytes32) {
+        return keccak256(abi.encode(proofKey));
     }
 }

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.24;
 
 import "forge-std/Test.sol";
 import {L_GoodConfigLibrary} from "../../Contracts/libraries/L_GoodConfig.sol";
 import "../../src/ERC20.sol";
 import "../../Contracts/MarketManager.sol";
 import "../../Contracts/interfaces/I_Good.sol";
-import {S_GoodKey} from "../../Contracts/types/S_GoodKey.sol";
-import {T_GoodId, L_GoodIdLibrary} from "../../Contracts/types/T_GoodId.sol";
-import {T_Currency} from "../../Contracts/types/T_Currency.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "../../Contracts/types/T_BalanceUINT256.sol";
+import {S_GoodKey} from "../../Contracts/libraries/L_Struct.sol";
+import {L_GoodIdLibrary} from "../../Contracts/libraries/L_Good.sol";
+import {L_CurrencyLibrary} from "../../Contracts/libraries/L_Currency.sol";
+import {T_BalanceUINT256, toBalanceUINT256} from "../../Contracts/libraries/L_BalanceUINT256.sol";
 
 contract initMetaGoodtest {
     using L_GoodIdLibrary for S_GoodKey;
@@ -18,9 +18,9 @@ contract initMetaGoodtest {
     MyToken public btc;
     MyToken public USDT;
     MyToken public WETH;
-    T_GoodId public metagood;
-    T_GoodId public normalGood1;
-    T_GoodId public normalGood2;
+    uint256 public metagood;
+    uint256 public normalGood1;
+    uint256 public normalGood2;
 
     MarketManager market;
 
@@ -30,9 +30,8 @@ contract initMetaGoodtest {
         btc = new MyToken(aa, aa);
         btc.mint(marketcreator, 20000000);
         btc.approve(address(market), 2000000);
-        S_GoodKey memory goodkey = S_GoodKey({erc20address: T_Currency.wrap(address(btc)), owner: marketcreator});
-        market.initMetaGood(goodkey, toBalanceUINT256(20000, 20000), 0);
+
+        market.initMetaGood(address(btc), toBalanceUINT256(20000, 20000), 0);
         market.updatetoValueGood(metagood);
-        metagood = S_GoodKey({erc20address: T_Currency.wrap(address(btc)), owner: marketcreator}).toId();
     }
 }

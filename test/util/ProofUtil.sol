@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.24;
 
 import {console2} from "forge-std/Test.sol";
-import {S_ProofState} from "../../Contracts/types/S_ProofKey.sol";
+import {S_ProofState} from "../../Contracts/libraries/L_Struct.sol";
 
 library ProofUtil {
     function showproof(S_ProofState memory p_) public pure {

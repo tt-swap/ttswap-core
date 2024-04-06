@@ -1,16 +1,16 @@
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.8.24;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey} from "../Contracts/types/S_GoodKey.sol";
-import {T_GoodId, L_GoodIdLibrary} from "../Contracts/types/T_GoodId.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/types/T_BalanceUINT256.sol";
-import {S_ProofKey, S_ProofState} from "../Contracts/types/S_ProofKey.sol";
+import {S_GoodKey, S_Ralate, S_ProofKey, S_ProofState} from "../Contracts/libraries/L_Struct.sol";
+import {L_GoodIdLibrary} from "../Contracts/libraries/L_Good.sol";
+import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
+
 import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../Contracts/libraries/L_MarketConfig.sol";
-import {L_Ralate} from "../Contracts/libraries/L_Ralate.sol";
 
 contract disinvestNormalGoodNoFee is BaseSetup {
     using L_MarketConfigLibrary for uint256;
@@ -18,9 +18,9 @@ contract disinvestNormalGoodNoFee is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    T_GoodId metagood;
-    T_GoodId normalgoodusdt;
-    T_GoodId normalgoodeth;
+    uint256 metagood;
+    uint256 normalgoodusdt;
+    uint256 normalgoodeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -30,31 +30,22 @@ contract disinvestNormalGoodNoFee is BaseSetup {
     }
 
     function initmetagood() public {
-        S_GoodKey memory goodkey = S_GoodKey({
-            erc20address: T_Currency.wrap(address(btc)),
-            owner: marketcreator
-        });
         vm.startPrank(marketcreator);
         deal(address(btc), marketcreator, 100000, false);
         btc.approve(address(market), 30000);
 
         uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 235;
-        market.initMetaGood(
-            goodkey,
+        metagood = market.initMetaGood(
+            address(btc),
             toBalanceUINT256(20000, 20000),
             _goodConfig
         );
-        metagood = S_GoodKey({
-            erc20address: T_Currency.wrap(address(btc)),
-            owner: marketcreator
-        }).toId();
+
         //market.updatetoValueGood(metagood);
         vm.stopPrank();
     }
 
-    function initNormalGood(
-        address token
-    ) public returns (T_GoodId normalgood) {
+    function initNormalGood(address token) public returns (uint256 normalgood) {
         vm.startPrank(users[3]);
         deal(address(btc), users[3], 100000, false);
         btc.approve(address(market), 20000);
@@ -62,43 +53,33 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         MyToken(token).approve(address(market), 20000);
 
         uint256 _goodConfig = 0;
-        normalgood = S_GoodKey({
-            erc20address: T_Currency.wrap(address(token)),
-            owner: users[3]
-        }).toId();
-        market.initNormalGood(
+        (normalgood, ) = market.initNormalGood(
             metagood,
             toBalanceUINT256(20000, 20000),
-            T_Currency.wrap(token),
-            _goodConfig
+            token,
+            _goodConfig,
+            msg.sender
         );
         vm.stopPrank();
     }
 
     function testdisinvestNormalGood(uint256) public {
         vm.startPrank(users[3]);
-        S_GoodState memory normal = market.getGoodState(normalgoodusdt);
-        S_GoodState memory meta = market.getGoodState(metagood);
-        deal(T_Currency.unwrap(meta.erc20address), users[3], 100000, false);
-        deal(T_Currency.unwrap(normal.erc20address), users[3], 100000, false);
-        MyToken(T_Currency.unwrap(meta.erc20address)).approve(
-            address(market),
-            20000
-        );
-        MyToken(T_Currency.unwrap(normal.erc20address)).approve(
-            address(market),
-            20000
-        );
-        L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
-            gater: address(1),
-            refer: address(3)
-        });
+        S_GoodTmpState memory normal = market.getGoodState(normalgoodusdt);
+        S_GoodTmpState memory meta = market.getGoodState(metagood);
+        deal(meta.erc20address, users[3], 100000, false);
+        deal(normal.erc20address, users[3], 100000, false);
+        MyToken(meta.erc20address).approve(address(market), 20000);
+        MyToken(normal.erc20address).approve(address(market), 20000);
+
         snapStart("disinvest Normal good without fee first");
-        market.disinvestNormalGood(normalgoodusdt, metagood, 10000, _ralate);
+        market.disinvestNormalGood(normalgoodusdt, metagood, 10000, address(1));
         snapEnd();
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
-        T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
-        S_GoodState memory aa = market.getGoodState(normalgoodusdt);
+        uint256 p_ = market.proofseq(
+            S_ProofKey(users[3], normalgoodusdt, metagood).toId()
+        );
+        S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
         S_ProofState memory _s = market.getProofState(p_);
 
         assertEq(_s.state.amount0(), 10000, "proof's value is error");
@@ -154,36 +135,29 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest Normal good without fee second");
-        market.disinvestNormalGood(normalgoodusdt, metagood, 1, _ralate);
+        market.disinvestNormalGood(normalgoodusdt, metagood, 1, address(1));
         snapEnd();
         vm.stopPrank();
     }
 
     function testdisinvestNormalProof(uint256) public {
         vm.startPrank(users[3]);
-        S_GoodState memory normal = market.getGoodState(normalgoodusdt);
-        S_GoodState memory meta = market.getGoodState(metagood);
-        deal(T_Currency.unwrap(meta.erc20address), users[3], 100000, false);
-        deal(T_Currency.unwrap(normal.erc20address), users[3], 100000, false);
-        MyToken(T_Currency.unwrap(meta.erc20address)).approve(
-            address(market),
-            20000
+        S_GoodTmpState memory normal = market.getGoodState(normalgoodusdt);
+        S_GoodTmpState memory meta = market.getGoodState(metagood);
+        deal(meta.erc20address, users[3], 100000, false);
+        deal(normal.erc20address, users[3], 100000, false);
+        MyToken(meta.erc20address).approve(address(market), 20000);
+        MyToken(normal.erc20address).approve(address(market), 20000);
+
+        uint256 p_ = market.proofseq(
+            S_ProofKey(users[3], normalgoodusdt, metagood).toId()
         );
-        MyToken(T_Currency.unwrap(normal.erc20address)).approve(
-            address(market),
-            20000
-        );
-        L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
-            gater: address(1),
-            refer: address(3)
-        });
-        T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
         snapStart("disinvest Normal proof without fee first");
-        market.disinvestNormalProof(p_, 10000, _ralate);
+        market.disinvestNormalProof(p_, 10000, address(1));
         snapEnd();
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
 
-        S_GoodState memory aa = market.getGoodState(normalgoodusdt);
+        S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
         S_ProofState memory _s = market.getProofState(p_);
 
         assertEq(_s.state.amount0(), 10000, "proof's value is error");
@@ -239,31 +213,24 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest Normal proof without fee second");
-        market.disinvestNormalProof(p_, 100, _ralate);
+        market.disinvestNormalProof(p_, 100, address(1));
         snapEnd();
         vm.stopPrank();
     }
 
     function testdisinvestNormalProof1(uint256) public {
         vm.startPrank(users[3]);
-        S_GoodState memory normal = market.getGoodState(normalgoodusdt);
-        S_GoodState memory meta = market.getGoodState(metagood);
-        deal(T_Currency.unwrap(meta.erc20address), users[3], 100000, false);
-        deal(T_Currency.unwrap(normal.erc20address), users[3], 100000, false);
-        MyToken(T_Currency.unwrap(meta.erc20address)).approve(
-            address(market),
-            20000
+        S_GoodTmpState memory normal = market.getGoodState(normalgoodusdt);
+        S_GoodTmpState memory meta = market.getGoodState(metagood);
+        deal(meta.erc20address, users[3], 100000, false);
+        deal(normal.erc20address, users[3], 100000, false);
+        MyToken(meta.erc20address).approve(address(market), 20000);
+        MyToken(normal.erc20address).approve(address(market), 20000);
+
+        uint256 p_ = market.proofseq(
+            S_ProofKey(users[3], normalgoodusdt, metagood).toId()
         );
-        MyToken(T_Currency.unwrap(normal.erc20address)).approve(
-            address(market),
-            20000
-        );
-        L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
-            gater: address(1),
-            refer: address(3)
-        });
-        T_ProofId p_ = S_ProofKey(users[3], normalgoodusdt, metagood).toId();
-        market.disinvestNormalProof(p_, 5000, _ralate);
+        market.disinvestNormalProof(p_, 5000, address(1));
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
 
         vm.stopPrank();
@@ -271,26 +238,15 @@ contract disinvestNormalGoodNoFee is BaseSetup {
 
     function testdisinvestNormalGood1(uint256) public {
         vm.startPrank(users[3]);
-        S_GoodState memory normal = market.getGoodState(normalgoodusdt);
-        S_GoodState memory meta = market.getGoodState(metagood);
-        deal(T_Currency.unwrap(meta.erc20address), users[3], 100000, false);
-        deal(T_Currency.unwrap(normal.erc20address), users[3], 100000, false);
-        MyToken(T_Currency.unwrap(meta.erc20address)).approve(
-            address(market),
-            20000
-        );
-        MyToken(T_Currency.unwrap(normal.erc20address)).approve(
-            address(market),
-            20000
-        );
-        L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate({
-            gater: address(1),
-            refer: address(3)
-        });
-        market.disinvestNormalGood(normalgoodusdt, metagood, 5000, _ralate);
+        S_GoodTmpState memory normal = market.getGoodState(normalgoodusdt);
+        S_GoodTmpState memory meta = market.getGoodState(metagood);
+        deal(meta.erc20address, users[3], 100000, false);
+        deal(normal.erc20address, users[3], 100000, false);
+        MyToken(meta.erc20address).approve(address(market), 20000);
+        MyToken(normal.erc20address).approve(address(market), 20000);
+        market.disinvestNormalGood(normalgoodusdt, metagood, 5000, address(1));
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
-
-        market.disinvestNormalGood(normalgoodusdt, metagood, 5000, _ralate);
+        market.disinvestNormalGood(normalgoodusdt, metagood, 5000, address(1));
         vm.stopPrank();
     }
 }

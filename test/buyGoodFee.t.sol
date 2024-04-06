@@ -1,18 +1,19 @@
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.8.24;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey} from "../Contracts/types/S_GoodKey.sol";
-import {T_GoodId, L_GoodIdLibrary} from "../Contracts/types/T_GoodId.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/types/T_BalanceUINT256.sol";
-import {S_ProofKey, S_ProofState} from "../Contracts/types/S_ProofKey.sol";
+import {S_GoodKey, S_ProofKey, S_ProofState, S_Ralate} from "../Contracts/libraries/L_Struct.sol";
+import {L_GoodIdLibrary} from "../Contracts/libraries/L_Good.sol";
+import {L_ProofIdLibrary} from "../Contracts/libraries/L_Proof.sol";
+import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
+
 import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../Contracts/libraries/L_MarketConfig.sol";
-import {L_Ralate} from "../Contracts/libraries/L_Ralate.sol";
+
 import {GoodUtil} from "./util/GoodUtil.sol";
-import {L_Ralate} from "../Contracts/libraries/L_Ralate.sol";
 
 contract buyGoodFee is BaseSetup {
     using L_MarketConfigLibrary for uint256;
@@ -20,9 +21,9 @@ contract buyGoodFee is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    T_GoodId metagood;
-    T_GoodId normalgoodusdt;
-    T_GoodId normalgoodeth;
+    uint256 metagood;
+    uint256 normalgoodusdt;
+    uint256 normalgoodeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -31,10 +32,6 @@ contract buyGoodFee is BaseSetup {
     }
 
     function initmetagood() public {
-        S_GoodKey memory goodkey = S_GoodKey({
-            erc20address: T_Currency.wrap(address(btc)),
-            owner: marketcreator
-        });
         vm.startPrank(marketcreator);
         deal(address(btc), marketcreator, 1000000000, false);
         btc.approve(address(market), 20000000);
@@ -48,8 +45,8 @@ contract buyGoodFee is BaseSetup {
             2 ** 225 +
             8 *
             2 ** 215;
-        market.initMetaGood(
-            goodkey,
+        metagood = market.initMetaGood(
+            address(btc),
             toBalanceUINT256(20000000, 20000000),
             _goodConfig
         );
@@ -61,17 +58,12 @@ contract buyGoodFee is BaseSetup {
             (20 << 220);
 
         market.setMarketConfig(_marketConfig);
-        metagood = S_GoodKey({
-            erc20address: T_Currency.wrap(address(btc)),
-            owner: marketcreator
-        }).toId();
+
         //market.updatetoValueGood(metagood);
         vm.stopPrank();
     }
 
-    function initNormalGood(
-        address token
-    ) public returns (T_GoodId normalgood) {
+    function initNormalGood(address token) public returns (uint256 normalgood) {
         vm.startPrank(users[3]);
         deal(address(btc), users[3], 100000000, false);
         btc.approve(address(market), 20000000);
@@ -87,15 +79,13 @@ contract buyGoodFee is BaseSetup {
             2 ** 225 +
             8 *
             2 ** 215;
-        normalgood = S_GoodKey({
-            erc20address: T_Currency.wrap(address(token)),
-            owner: users[3]
-        }).toId();
-        market.initNormalGood(
+
+        (normalgood, ) = market.initNormalGood(
             metagood,
             toBalanceUINT256(20000000, 20000000),
-            T_Currency.wrap(token),
-            _goodConfig
+            token,
+            _goodConfig,
+            msg.sender
         );
         vm.stopPrank();
     }
@@ -104,13 +94,9 @@ contract buyGoodFee is BaseSetup {
         vm.startPrank(users[6]);
         deal(address(usdt), users[6], 1000000000, false);
         usdt.approve(address(market), 100000000);
-        L_Ralate.S_Ralate memory _ralate = L_Ralate.S_Ralate(
-            address(1),
-            address(3)
-        );
-        S_GoodState memory s1 = market.getGoodState(metagood);
+        S_GoodTmpState memory s1 = market.getGoodState(metagood);
         GoodUtil.showGood(s1);
-        S_GoodState memory s2 = market.getGoodState(normalgoodusdt);
+        S_GoodTmpState memory s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s2);
 
         uint128 goodid2Quanitity_;
@@ -122,7 +108,7 @@ contract buyGoodFee is BaseSetup {
             1000000,
             T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
             false,
-            _ralate
+            address(1)
         );
         snapEnd();
         console2.log(goodid2Quanitity_, goodid2FeeQuanitity_);
@@ -138,7 +124,7 @@ contract buyGoodFee is BaseSetup {
             1000000,
             T_BalanceUINT256.unwrap(toBalanceUINT256(2, 1)),
             false,
-            _ralate
+            address(1)
         );
         snapEnd();
     }

@@ -1,19 +1,14 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity ^0.8.23;
+pragma solidity 0.8.24;
 
 import {L_Proof} from "./L_Proof.sol";
 import {SafeCast} from "./SafeCast.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
-import {L_Ralate} from "./L_Ralate.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
 
-import {T_GoodId, L_GoodIdLibrary} from "../types/T_GoodId.sol";
-import {S_GoodInvestReturn} from "../types/S_GoodKey.sol";
-import {T_ProofId} from "../types/T_ProofId.sol";
-import {S_ProofState} from "../types/S_ProofKey.sol";
+import {S_GoodInvestReturn, S_Ralate, S_ProofState, S_GoodState, S_GoodKey} from "./L_Struct.sol";
 
-import {T_Currency} from "../types/T_Currency.sol";
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, getprice} from "../types/T_BalanceUINT256.sol";
+import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, getprice} from "./L_BalanceUINT256.sol";
 
 library L_Good {
     using SafeCast for *;
@@ -22,29 +17,19 @@ library L_Good {
     using L_BalanceUINT256Library for uint256;
     using L_Proof for S_ProofState;
 
-    struct S_State {
-        address owner;
-        T_Currency erc20address;
-        uint256 goodConfig; //商品配置 refer to goodConfig 物品的配置信息
-        T_BalanceUINT256 currentState; // value: quantity: 记录物品当前的数量与当前的价值
-        T_BalanceUINT256 investState; // investvalue invest_quantity 记录投资的总价值和数量
-        T_BalanceUINT256 feeQunitityState; //fee contruct记录物品的当前手续费与构建手续费
-        mapping(address => uint256) fees;
-    }
-
     function getMaxTradeValue(
-        S_State storage self
+        S_GoodState storage self
     ) internal view returns (uint128) {
         return self.goodConfig.getSwapChips(self.currentState.amount0());
     }
 
     function getMaxTradeQunitity(
-        S_State storage self
+        S_GoodState storage self
     ) internal view returns (uint128) {
         return self.goodConfig.getSwapChips(self.currentState.amount1());
     }
 
-    function updateToValueGood(S_State storage self) internal {
+    function updateToValueGood(S_GoodState storage self) internal {
         require(!self.goodConfig.isvaluegood(), "is valuegood");
         uint256 b = self.goodConfig;
         assembly {
@@ -53,7 +38,7 @@ library L_Good {
         self.goodConfig = b + 1 * 2 ** 255;
     }
 
-    function updateToNormalGood(S_State storage self) internal {
+    function updateToNormalGood(S_GoodState storage self) internal {
         require(self.goodConfig.isvaluegood(), "is normalgood");
         uint256 b = self.goodConfig;
         assembly {
@@ -63,7 +48,7 @@ library L_Good {
     }
 
     function updateGoodConfig(
-        S_State storage _self,
+        S_GoodState storage _self,
         uint256 _goodConfig
     ) internal {
         assembly {
@@ -75,9 +60,9 @@ library L_Good {
     }
 
     function init(
-        S_State storage self,
+        S_GoodState storage self,
         T_BalanceUINT256 _init,
-        T_Currency _erc20address,
+        address _erc20address,
         uint256 _goodConfig
     ) internal {
         self.currentState = _init;
@@ -96,6 +81,7 @@ library L_Good {
         T_BalanceUINT256 good2currentState;
         uint256 good2config;
     }
+
     function swapCompute1(
         swapCache memory _stepCache,
         T_BalanceUINT256 _limitPrice
@@ -104,10 +90,10 @@ library L_Good {
         uint128 minQuanitity;
         uint128 good1;
         uint128 good2;
-
         _stepCache.feeQuanitity = _stepCache.good1config.getSellFee(
             _stepCache.remainQuanitity
         );
+
         _stepCache.remainQuanitity -= _stepCache.feeQuanitity;
         while (
             _stepCache.remainQuanitity > 0 &&
@@ -120,9 +106,11 @@ library L_Good {
             good1 = _stepCache.good1config.getSwapChips(
                 _stepCache.good1currentState.amount0()
             );
+
             good2 = _stepCache.good2config.getSwapChips(
                 _stepCache.good2currentState.amount0()
             );
+
             minValue = good1 >= good2 ? good2 : good1;
             minQuanitity = _stepCache.good1currentState.getamount1fromamount0(
                 minValue
@@ -135,48 +123,57 @@ library L_Good {
                 minValue = _stepCache.good1currentState.getamount0fromamount1(
                     minQuanitity
                 );
+
                 _stepCache.outputQuanitity += _stepCache
                     .good2currentState
                     .getamount1fromamount0(minValue);
+
                 _stepCache.good1currentState = subadd(
                     _stepCache.good1currentState,
                     toBalanceUINT256(minValue, minQuanitity)
                 );
+
                 good2 = _stepCache.good2currentState.getamount1fromamount0(
                     minValue
                 );
+
                 _stepCache.good2currentState = addsub(
                     _stepCache.good2currentState,
                     toBalanceUINT256(minValue, good2)
                 );
             } else {
-                _stepCache.remainQuanitity -= good1;
-
                 minValue = _stepCache.good1currentState.getamount0fromamount1(
                     _stepCache.remainQuanitity
                 );
+
                 _stepCache.outputQuanitity += _stepCache
                     .good2currentState
                     .getamount1fromamount0(minValue);
+
                 _stepCache.good1currentState = subadd(
                     _stepCache.good1currentState,
                     toBalanceUINT256(minValue, _stepCache.remainQuanitity)
                 );
+
                 good2 = _stepCache.good2currentState.getamount1fromamount0(
                     minValue
                 );
+
                 _stepCache.good2currentState = addsub(
                     _stepCache.good2currentState,
                     toBalanceUINT256(minValue, good2)
                 );
+
                 _stepCache.remainQuanitity = 0;
             }
         }
+
         if (_stepCache.remainQuanitity > 0) {
             _stepCache.feeQuanitity -= _stepCache.good1config.getSellerFee(
                 _stepCache.remainQuanitity
             );
         }
+
         return _stepCache;
     }
 
@@ -251,11 +248,11 @@ library L_Good {
     }
 
     function swapCommit(
-        S_State storage _self,
+        S_GoodState storage _self,
         T_BalanceUINT256 _swapstate,
         uint128 _fee,
         uint256 _marketconfig,
-        L_Ralate.S_Ralate calldata _ralate
+        S_Ralate memory _ralate
     ) internal {
         _self.currentState = _swapstate;
         _self.feeQunitityState =
@@ -265,10 +262,10 @@ library L_Good {
     }
 
     function investGood(
-        S_State storage _self,
+        S_GoodState storage _self,
         uint128 _invest,
         uint256 _marketConfig,
-        L_Ralate.S_Ralate calldata _ralate
+        S_Ralate memory _ralate
     ) internal returns (S_GoodInvestReturn memory investResult_) {
         investResult_.actualInvestQuantity =
             _invest -
@@ -316,11 +313,11 @@ library L_Good {
 
     //disinvestResult_ amount0为投资收益 amount1为实际产生手续费
     function disinvestValueGood(
-        S_State storage _self,
+        S_GoodState storage _self,
         S_ProofState storage _investProof,
         uint128 _goodQuantity,
         uint256 _marketconfig,
-        L_Ralate.S_Ralate calldata _ralate
+        S_Ralate memory _ralate
     ) internal returns (T_BalanceUINT256 disinvestResult_) {
         disinvestResult_ = toBalanceUINT256(
             toBalanceUINT256(
@@ -375,12 +372,12 @@ library L_Good {
     }
 
     function disinvestNormalGood(
-        S_State storage _self,
-        S_State storage _valueGoodState,
+        S_GoodState storage _self,
+        S_GoodState storage _valueGoodState,
         S_ProofState storage _investProof,
         uint128 _goodQuantity,
         uint256 _marketconfig,
-        L_Ralate.S_Ralate calldata _ralate
+        S_Ralate memory _ralate
     )
         internal
         returns (
@@ -429,6 +426,7 @@ library L_Good {
                 ),
             "normal good quanity not enough"
         );
+
         _self.currentState = _self.currentState - NormalGoodResult1_;
         _self.investState = _self.investState - NormalGoodResult1_;
 
@@ -439,6 +437,7 @@ library L_Good {
             ).getamount0fromamount1(_goodQuantity),
             _investProof.invest.getamount0fromamount1(_goodQuantity)
         );
+
         _self.feeQunitityState = _self.feeQunitityState - NormalGoodResult1_;
         NormalGoodResult1_ = toBalanceUINT256(
             NormalGoodResult1_.amount0() - NormalGoodResult1_.amount1(),
@@ -451,13 +450,14 @@ library L_Good {
                 _marketconfig.getLiquidFee(NormalGoodResult1_.amount1()),
                 0
             );
-        allocateFee(
-            _valueGoodState,
-            NormalGoodResult1_.amount1(),
-            _marketconfig,
-            _ralate
-        );
 
+        if (NormalGoodResult1_.amount1() > 0)
+            allocateFee(
+                _valueGoodState,
+                NormalGoodResult1_.amount1(),
+                _marketconfig,
+                _ralate
+            );
         ValueGoodResult2_ = toBalanceUINT256(
             toBalanceUINT256(
                 _investProof.state.amount0(),
@@ -483,38 +483,39 @@ library L_Good {
         _valueGoodState.feeQunitityState =
             _valueGoodState.feeQunitityState -
             ValueGoodResult2_;
+
         ValueGoodResult2_ = toBalanceUINT256(
             ValueGoodResult2_.amount0() - ValueGoodResult2_.amount1(),
             _valueGoodState.goodConfig.getDisinvestFee(valequanity_)
         );
 
         _valueGoodState.feeQunitityState =
-            _self.feeQunitityState +
+            _valueGoodState.feeQunitityState +
             toBalanceUINT256(
                 _marketconfig.getLiquidFee(ValueGoodResult2_.amount1()),
                 0
             );
-        allocateFee(_self, ValueGoodResult2_.amount1(), _marketconfig, _ralate);
 
         _investProof.burnNormalProofSome(_goodQuantity);
-        allocateFee(
-            _valueGoodState,
-            ValueGoodResult2_.amount1(),
-            _marketconfig,
-            _ralate
-        );
+        if (ValueGoodResult2_.amount1() > 0)
+            allocateFee(
+                _valueGoodState,
+                ValueGoodResult2_.amount1(),
+                _marketconfig,
+                _ralate
+            );
     }
-
     function allocateFee(
-        S_State storage _self,
+        S_GoodState storage _self,
         uint128 _actualFeeQuantity,
         uint256 _marketconfig,
-        L_Ralate.S_Ralate calldata _ralate
+        S_Ralate memory _ralate
     ) private {
         if (_ralate.refer == address(0)) {
             _self.fees[_self.owner] +=
                 _marketconfig.getSellerFee(_actualFeeQuantity) +
                 _marketconfig.getCustomerFee(_actualFeeQuantity);
+
             _self.fees[_ralate.gater] +=
                 _marketconfig.getGaterFee(_actualFeeQuantity) +
                 _marketconfig.getReferFee(_actualFeeQuantity);
@@ -535,5 +536,11 @@ library L_Good {
                 _actualFeeQuantity
             );
         }
+    }
+}
+
+library L_GoodIdLibrary {
+    function toId(S_GoodKey memory goodKey) internal pure returns (bytes32) {
+        return keccak256(abi.encode(goodKey));
     }
 }

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.24;
 
 import "forge-std/Test.sol";
 import {L_GoodConfigLibrary} from "../../Contracts/libraries/L_GoodConfig.sol";
 import "../../src/ERC20.sol";
 import "../../Contracts/MarketManager.sol";
 import "../../Contracts/interfaces/I_Good.sol";
-import {S_GoodKey} from "../../Contracts/types/S_GoodKey.sol";
-import {T_GoodId, L_GoodIdLibrary} from "../../Contracts/types/T_GoodId.sol";
-import {T_Currency} from "../../Contracts/types/T_Currency.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "../../Contracts/types/T_BalanceUINT256.sol";
+import {S_GoodKey} from "../../Contracts/libraries/L_Struct.sol";
+import {L_GoodIdLibrary} from "../../Contracts/libraries/L_Good.sol";
+import {L_CurrencyLibrary} from "../../Contracts/libraries/L_Currency.sol";
+import {T_BalanceUINT256, toBalanceUINT256} from "../../Contracts/libraries/L_BalanceUINT256.sol";
 import "../util/initMetaGoodtest.sol";
 
 contract initNormalGoodtest is initMetaGoodtest, Test {
@@ -27,6 +27,12 @@ contract initNormalGoodtest is initMetaGoodtest, Test {
         USDT.approve(address(market), 100000);
         btc.approve(address(market), 100000);
         market.updatetoValueGood(metagood);
-        market.initNormalGood(metagood, toBalanceUINT256(2000, 2000), T_Currency.wrap(address(USDT)), 0);
+        market.initNormalGood(
+            metagood,
+            toBalanceUINT256(2000, 2000),
+            address(USDT),
+            0,
+            msg.sender
+        );
     }
 }

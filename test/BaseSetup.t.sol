@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.24;
 
 import "forge-gas-snapshot/GasSnapshot.sol";
 import {Test, DSTest} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 
-contract BaseSetup is Test,GasSnapshot {
+contract BaseSetup is Test, GasSnapshot {
     address payable[8] internal users;
     MyToken btc;
     MyToken usdt;

@@ -4,13 +4,9 @@ pragma solidity 0.8.24;
 import "./interfaces/I_Proof.sol";
 import {S_ProofKey, S_ProofState} from "./libraries/L_Struct.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
-import {Strings} from "./libraries/Strings.sol";
-import {Address} from "./libraries/Address.sol";
 
 abstract contract ProofManage is I_Proof {
     using L_Proof for *;
-    using Strings for uint256;
-    using Address for address;
     using L_ProofIdLibrary for S_ProofKey;
 
     uint256 proofnum;

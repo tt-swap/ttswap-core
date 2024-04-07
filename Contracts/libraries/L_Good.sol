@@ -310,7 +310,6 @@ library L_Good {
             _ralate
         );
     }
-
     //disinvestResult_ amount0为投资收益 amount1为实际产生手续费
     function disinvestValueGood(
         S_GoodState storage _self,
@@ -367,7 +366,6 @@ library L_Good {
                 _marketconfig.getLiquidFee(disinvestResult_.amount1()),
                 0
             );
-
         allocateFee(_self, disinvestResult_.amount1(), _marketconfig, _ralate);
     }
 
@@ -511,28 +509,28 @@ library L_Good {
         uint256 _marketconfig,
         S_Ralate memory _ralate
     ) private {
+        uint128 temfee;
         if (_ralate.refer == address(0)) {
-            _self.fees[_self.owner] +=
+            temfee =
                 _marketconfig.getSellerFee(_actualFeeQuantity) +
                 _marketconfig.getCustomerFee(_actualFeeQuantity);
 
-            _self.fees[_ralate.gater] +=
-                _marketconfig.getGaterFee(_actualFeeQuantity) +
-                _marketconfig.getReferFee(_actualFeeQuantity);
+            _self.fees[_self.owner] += temfee;
+
+            _self.fees[_ralate.gater] += (_actualFeeQuantity -
+                _marketconfig.getLiquidFee(_actualFeeQuantity) -
+                temfee);
         } else {
             _self.fees[_self.owner] += _marketconfig.getSellerFee(
                 _actualFeeQuantity
             );
-
-            _self.fees[_ralate.gater] += _marketconfig.getGaterFee(
-                _actualFeeQuantity
-            );
-
             _self.fees[_ralate.refer] += _marketconfig.getReferFee(
                 _actualFeeQuantity
             );
-
             _self.fees[msg.sender] += _marketconfig.getCustomerFee(
+                _actualFeeQuantity
+            );
+            _self.fees[_ralate.gater] += _marketconfig.getGaterFee(
                 _actualFeeQuantity
             );
         }

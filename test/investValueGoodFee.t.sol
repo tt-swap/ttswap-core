@@ -112,26 +112,26 @@ contract investValueGoodFee is BaseSetup {
         assertEq(
             aa.feeQunitityState.amount1(),
             0,
-            "feeQunitityState's feeamount is error"
+            "feeQunitityState's contruct is error"
         );
         assertEq(
             aa.feeQunitityState.amount0(),
             8,
-            "feeQunitityState's contruct fee is error"
+            "feeQunitityState's feeamount fee is error"
         );
 
         assertEq(
             uint256(market.getGoodsFee(metagood, users[4])),
-            3,
+            0,
             "customer fee"
         );
         assertEq(
             uint256(market.getGoodsFee(metagood, marketcreator)),
-            0,
+            3,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 1, "gater fee");
-        assertEq(market.getGoodsFee(metagood, address(2)), 2, "refer fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 5, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("invest value good with fee second");
         market.investValueGood(metagood, 200, address(1));
         snapEnd();

@@ -109,7 +109,7 @@ contract disinvestValueGoodFee is BaseSetup {
         );
         assertEq(
             aa.feeQunitityState.amount0(),
-            0,
+            8,
             "feeQunitityState's feeamount is error"
         );
         assertEq(
@@ -160,12 +160,12 @@ contract disinvestValueGoodFee is BaseSetup {
         assertEq(
             aa.feeQunitityState.amount1(),
             0,
-            "feeQunitityState's feeamount is error"
+            "feeQunitityState's contruct fee  is error"
         );
         assertEq(
             aa.feeQunitityState.amount0(),
-            0,
-            "feeQunitityState's contruct fee is error"
+            8,
+            "feeQunitityState's feeamount is error"
         );
         console2.log(
             uint256(aa.feeQunitityState.amount0()),
@@ -217,12 +217,12 @@ contract disinvestValueGoodFee is BaseSetup {
             "investState's quantity is error"
         );
         assertEq(
-            aa.feeQunitityState.amount1(),
-            0,
+            aa.feeQunitityState.amount0(),
+            8,
             "feeQunitityState's feeamount is error"
         );
         assertEq(
-            aa.feeQunitityState.amount0(),
+            aa.feeQunitityState.amount1(),
             0,
             "feeQunitityState's contruct fee is error"
         );
@@ -237,6 +237,9 @@ contract disinvestValueGoodFee is BaseSetup {
 
         uint128 quanity = 10000;
         uint256 p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
+        S_ProofState memory _s = market.getProofState(p_);
+        console2.log("proof value", _s.state.amount0());
+        console2.log("proof invest quanity", _s.invest.amount1());
         T_BalanceUINT256 result = market.disinvestValueProof(
             p_,
             quanity,
@@ -269,12 +272,12 @@ contract disinvestValueGoodFee is BaseSetup {
             "investState's quantity is error"
         );
         assertEq(
-            aa.feeQunitityState.amount1(),
-            0,
+            aa.feeQunitityState.amount0(),
+            10,
             "feeQunitityState's feeamount is error"
         );
         assertEq(
-            aa.feeQunitityState.amount0(),
+            aa.feeQunitityState.amount1(),
             0,
             "feeQunitityState's contruct fee is error"
         );

@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {FullMath} from "./FullMath.sol";
-
 /// @notice
 library L_GoodConfigLibrary {
     //商品配置
@@ -24,12 +22,15 @@ library L_GoodConfigLibrary {
 
     function getInvestFee(
         uint256 config,
-        uint128 amount
+        uint256 amount
     ) internal pure returns (uint128 a) {
-        assembly {
-            a := shr(246, shl(1, config))
+        unchecked {
+            assembly {
+                config := shr(246, shl(1, config))
+                config := mul(config, amount)
+                a := div(config, 10000)
+            }
         }
-        a = FullMath.mulDiv128(amount, a, 10000);
     }
 
     //商品撤资费率 单位万分之一
@@ -42,13 +43,15 @@ library L_GoodConfigLibrary {
 
     function getDisinvestFee(
         uint256 config,
-        uint128 amount
+        uint256 amount
     ) internal pure returns (uint128 a) {
-        assembly {
-            a := shr(246, shl(11, config))
+        unchecked {
+            assembly {
+                config := shr(246, shl(11, config))
+                config := mul(config, amount)
+                a := div(config, 10000)
+            }
         }
-
-        a = FullMath.mulDiv128(amount, a, 10000);
     }
 
     //商品购买费率 单位万分之一
@@ -61,13 +64,15 @@ library L_GoodConfigLibrary {
 
     function getBuyFee(
         uint256 config,
-        uint128 amount
+        uint256 amount
     ) internal pure returns (uint128 a) {
-        assembly {
-            a := shr(246, shl(21, config))
+        unchecked {
+            assembly {
+                config := shr(246, shl(21, config))
+                config := mul(config, amount)
+                a := div(config, 10000)
+            }
         }
-
-        a = FullMath.mulDiv128(amount, a, 10000);
     }
 
     //商品出售费率 单位万分之一
@@ -80,12 +85,15 @@ library L_GoodConfigLibrary {
 
     function getSellFee(
         uint256 config,
-        uint128 amount
+        uint256 amount
     ) internal pure returns (uint128 a) {
-        assembly {
-            a := shr(246, shl(31, config))
+        unchecked {
+            assembly {
+                config := shr(246, shl(31, config))
+                config := mul(config, amount)
+                a := div(config, 10000)
+            }
         }
-        a = FullMath.mulDiv128(amount, a, 10000);
     }
 
     // get swap chips

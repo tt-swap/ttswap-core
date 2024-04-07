@@ -3,7 +3,6 @@ pragma solidity 0.8.24;
 
 import {S_ProofState, S_ProofKey} from "./L_Struct.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "./L_BalanceUINT256.sol";
-import {FullMath} from "../libraries/FullMath.sol";
 
 library L_Proof {
     function updateValueInvest(
@@ -44,11 +43,7 @@ library L_Proof {
         uint128 _quantity
     ) internal {
         T_BalanceUINT256 burnResult_ = toBalanceUINT256(
-            FullMath.mulDiv128(
-                _self.state.amount0(),
-                _quantity,
-                _self.invest.amount1()
-            ),
+            mulDiv(_self.state.amount0(), _quantity, _self.invest.amount1()),
             _self.invest.getamount0fromamount1(_quantity)
         );
         _self.invest =
@@ -63,21 +58,17 @@ library L_Proof {
         uint128 _quantity
     ) internal {
         T_BalanceUINT256 burnResult1_ = toBalanceUINT256(
-            FullMath.mulDiv128(
-                _self.state.amount0(),
-                _quantity,
-                _self.invest.amount1()
-            ),
+            mulDiv(_self.state.amount0(), _quantity, _self.invest.amount1()),
             _self.invest.getamount0fromamount1(_quantity)
         );
 
         T_BalanceUINT256 burnResult2_ = toBalanceUINT256(
-            FullMath.mulDiv128(
+            mulDiv(
                 _self.valueinvest.amount0(),
                 _quantity,
                 _self.invest.amount1()
             ),
-            FullMath.mulDiv128(
+            mulDiv(
                 _self.valueinvest.amount1(),
                 _quantity,
                 _self.invest.amount1()
@@ -88,6 +79,19 @@ library L_Proof {
             toBalanceUINT256(burnResult1_.amount1(), _quantity);
         _self.valueinvest = _self.valueinvest - burnResult2_;
         _self.state = _self.state - toBalanceUINT256(burnResult1_.amount0(), 0);
+    }
+
+    function mulDiv(
+        uint256 config,
+        uint256 amount,
+        uint256 domitor
+    ) internal pure returns (uint128 a) {
+        unchecked {
+            assembly {
+                config := mul(config, amount)
+                a := div(config, domitor)
+            }
+        }
     }
 }
 

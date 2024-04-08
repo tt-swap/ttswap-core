@@ -5,11 +5,11 @@ import {Test, DSTest, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_GoodState, S_Ralate, S_ProofKey, S_ProofState} from "../Contracts/libraries/L_Struct.sol";
-import {L_GoodIdLibrary} from "../Contracts/libraries/L_Good.sol";
+import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
 
-import {L_Proof, L_ProofIdLibrary} from "../Contracts/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../Contracts/libraries/L_Proof.sol";
+import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
 import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
 import {ProofUtil} from "./util/ProofUtil.sol";
 import {GoodUtil} from "./util/GoodUtil.sol";
@@ -76,8 +76,8 @@ contract disinvestValueGoodFee is BaseSetup {
 
         market.investValueGood(metagood, 20000, address(1));
         p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
-        S_GoodTmpState memory aa = market.getGoodState(metagood);
-        S_ProofState memory _s = market.getProofState(p_);
+        L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
+        L_Proof.S_ProofState memory _s = market.getProofState(p_);
         assertEq(_s.state.amount0(), 19984, "proof's value is error");
         assertEq(_s.invest.amount0(), 0, "proof's contruct quantity is error");
         assertEq(_s.invest.amount1(), 19984, "proof's quantity is error");
@@ -133,7 +133,7 @@ contract disinvestValueGoodFee is BaseSetup {
             address(1)
         );
         snapEnd();
-        S_GoodTmpState memory aa = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
         assertEq(result.amount0(), 0, "disinvest proof 's value is error");
         assertEq(result.amount1(), 0, "disinvest proof 's quantity is error");
         assertEq(
@@ -190,7 +190,7 @@ contract disinvestValueGoodFee is BaseSetup {
             address(1)
         );
         snapEnd();
-        S_GoodTmpState memory aa = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
 
         console2.log(quanity);
         assertEq(result.amount0(), 0, "disinvest proof 's value is error");
@@ -237,7 +237,7 @@ contract disinvestValueGoodFee is BaseSetup {
 
         uint128 quanity = 10000;
         uint256 p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
-        S_ProofState memory _s = market.getProofState(p_);
+        L_Proof.S_ProofState memory _s = market.getProofState(p_);
         console2.log("proof value", _s.state.amount0());
         console2.log("proof invest quanity", _s.invest.amount1());
         T_BalanceUINT256 result = market.disinvestValueProof(
@@ -245,7 +245,7 @@ contract disinvestValueGoodFee is BaseSetup {
             quanity,
             address(1)
         );
-        S_GoodTmpState memory aa = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
 
         console2.log(quanity);
         assertEq(result.amount0(), 2, "disinvest proof 's value is error");

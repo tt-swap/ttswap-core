@@ -5,8 +5,9 @@ import {Test, DSTest, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_GoodState, S_Ralate, S_ProofKey, S_ProofState} from "../Contracts/libraries/L_Struct.sol";
-import {L_GoodIdLibrary} from "../Contracts/libraries/L_Good.sol";
+import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
+import {L_ProofIdLibrary, L_Proof} from "../Contracts/libraries/L_Proof.sol";
+import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
 
 import {L_Proof, L_ProofIdLibrary} from "../Contracts/libraries/L_Proof.sol";
@@ -75,7 +76,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
             address(1)
         );
         snapEnd();
-        S_GoodTmpState memory aa = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
         assertEq(result.amount0(), 0, "disinvest proof 's value is error");
         assertEq(result.amount1(), 0, "disinvest proof 's quantity is error");
         assertEq(
@@ -130,7 +131,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
             address(1)
         );
         snapEnd();
-        S_GoodTmpState memory aa = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
         assertEq(result.amount0(), 0, "disinvest proof 's value is error");
         assertEq(result.amount1(), 0, "disinvest proof 's quantity is error");
         assertEq(

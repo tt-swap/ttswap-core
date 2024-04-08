@@ -6,8 +6,9 @@ import {Test, DSTest, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_ProofKey, S_ProofState, S_Ralate} from "../Contracts/libraries/L_Struct.sol";
-import {L_GoodIdLibrary} from "../Contracts/libraries/L_Good.sol";
+import {S_GoodKey, S_ProofKey, S_Ralate} from "../Contracts/libraries/L_Struct.sol";
+import {L_ProofIdLibrary, L_Proof} from "../Contracts/libraries/L_Proof.sol";
+import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
 import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../Contracts/libraries/L_MarketConfig.sol";
@@ -103,9 +104,9 @@ contract buyGoodFeeChips is BaseSetup {
         deal(address(usdt), users[6], 1000000000, false);
         usdt.approve(address(market), 100000000);
 
-        S_GoodTmpState memory s1 = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory s1 = market.getGoodState(metagood);
         GoodUtil.showGood(s1);
-        S_GoodTmpState memory s2 = market.getGoodState(normalgoodusdt);
+        L_Good.S_GoodTmpState memory s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s2);
 
         uint128 goodid2Quanitity_;
@@ -152,9 +153,9 @@ contract buyGoodFeeChips is BaseSetup {
         deal(address(usdt), users[6], 1000000000, false);
         usdt.approve(address(market), 100000000);
 
-        S_GoodTmpState memory s1 = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory s1 = market.getGoodState(metagood);
         GoodUtil.showGood(s1);
-        S_GoodTmpState memory s2 = market.getGoodState(normalgoodusdt);
+        L_Good.S_GoodTmpState memory s2 = market.getGoodState(normalgoodusdt);
         GoodUtil.showGood(s2);
         uint128 goodid2Quanitity_;
         uint128 goodid2FeeQuanitity_;

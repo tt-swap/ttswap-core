@@ -5,8 +5,9 @@ import {Test, DSTest, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_Ralate, S_ProofKey, S_ProofState} from "../Contracts/libraries/L_Struct.sol";
-import {L_GoodIdLibrary} from "../Contracts/libraries/L_Good.sol";
+import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
+import {L_ProofIdLibrary, L_Proof} from "../Contracts/libraries/L_Proof.sol";
+import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
 
 import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
@@ -65,8 +66,10 @@ contract disinvestNormalGoodNoFee is BaseSetup {
 
     function testdisinvestNormalGood(uint256) public {
         vm.startPrank(users[3]);
-        S_GoodTmpState memory normal = market.getGoodState(normalgoodusdt);
-        S_GoodTmpState memory meta = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory normal = market.getGoodState(
+            normalgoodusdt
+        );
+        L_Good.S_GoodTmpState memory meta = market.getGoodState(metagood);
         deal(meta.erc20address, users[3], 100000, false);
         deal(normal.erc20address, users[3], 100000, false);
         MyToken(meta.erc20address).approve(address(market), 20000);
@@ -79,8 +82,8 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         uint256 p_ = market.proofseq(
             S_ProofKey(users[3], normalgoodusdt, metagood).toId()
         );
-        S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
-        S_ProofState memory _s = market.getProofState(p_);
+        L_Good.S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
+        L_Proof.S_ProofState memory _s = market.getProofState(p_);
 
         assertEq(_s.state.amount0(), 10000, "proof's value is error");
         assertEq(_s.invest.amount0(), 0, "proof's contruct quantity is error");
@@ -142,8 +145,10 @@ contract disinvestNormalGoodNoFee is BaseSetup {
 
     function testdisinvestNormalProof(uint256) public {
         vm.startPrank(users[3]);
-        S_GoodTmpState memory normal = market.getGoodState(normalgoodusdt);
-        S_GoodTmpState memory meta = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory normal = market.getGoodState(
+            normalgoodusdt
+        );
+        L_Good.S_GoodTmpState memory meta = market.getGoodState(metagood);
         deal(meta.erc20address, users[3], 100000, false);
         deal(normal.erc20address, users[3], 100000, false);
         MyToken(meta.erc20address).approve(address(market), 20000);
@@ -157,8 +162,8 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         snapEnd();
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
 
-        S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
-        S_ProofState memory _s = market.getProofState(p_);
+        L_Good.S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
+        L_Proof.S_ProofState memory _s = market.getProofState(p_);
 
         assertEq(_s.state.amount0(), 10000, "proof's value is error");
         assertEq(_s.invest.amount0(), 0, "proof's contruct quantity is error");
@@ -220,8 +225,10 @@ contract disinvestNormalGoodNoFee is BaseSetup {
 
     function testdisinvestNormalProof1(uint256) public {
         vm.startPrank(users[3]);
-        S_GoodTmpState memory normal = market.getGoodState(normalgoodusdt);
-        S_GoodTmpState memory meta = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory normal = market.getGoodState(
+            normalgoodusdt
+        );
+        L_Good.S_GoodTmpState memory meta = market.getGoodState(metagood);
         deal(meta.erc20address, users[3], 100000, false);
         deal(normal.erc20address, users[3], 100000, false);
         MyToken(meta.erc20address).approve(address(market), 20000);
@@ -238,8 +245,10 @@ contract disinvestNormalGoodNoFee is BaseSetup {
 
     function testdisinvestNormalGood1(uint256) public {
         vm.startPrank(users[3]);
-        S_GoodTmpState memory normal = market.getGoodState(normalgoodusdt);
-        S_GoodTmpState memory meta = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory normal = market.getGoodState(
+            normalgoodusdt
+        );
+        L_Good.S_GoodTmpState memory meta = market.getGoodState(metagood);
         deal(meta.erc20address, users[3], 100000, false);
         deal(normal.erc20address, users[3], 100000, false);
         MyToken(meta.erc20address).approve(address(market), 20000);

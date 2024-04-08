@@ -4,15 +4,11 @@ pragma solidity 0.8.24;
 import "./I_Proof.sol";
 import "./I_Good.sol";
 
-import {S_GoodKey, S_GoodInvestReturn, S_ProofKey, S_Ralate} from "../libraries/L_Struct.sol";
+import {S_GoodKey, S_ProofKey, S_Ralate} from "../libraries/L_Struct.sol";
+import {L_Good} from "../libraries/L_Good.sol";
 
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "../libraries/L_BalanceUINT256.sol";
-struct S_BuyResult {
-    uint128 good1Quanitity;
-    uint128 fee1Quanitity;
-    uint128 good2Quanitity;
-    uint128 fee2Quanitity;
-}
+
 /// @title 市场管理接口 market manage interface
 /// @notice 市场管理接口 market manage interface
 interface I_MarketManage is I_Good, I_Proof {
@@ -134,7 +130,10 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodid,
         uint128 _goodQuanitity,
         address _gater
-    ) external payable returns (S_GoodInvestReturn calldata normalinvest);
+    )
+        external
+        payable
+        returns (L_Good.S_GoodInvestReturn calldata normalinvest);
 
     /// @notice 撤资价值商品
     /// @param _goodid   价值商品的ID
@@ -175,8 +174,8 @@ interface I_MarketManage is I_Good, I_Proof {
         external
         payable
         returns (
-            S_GoodInvestReturn calldata normalinvest,
-            S_GoodInvestReturn calldata valueinvest
+            L_Good.S_GoodInvestReturn calldata normalinvest,
+            L_Good.S_GoodInvestReturn calldata valueinvest
         );
 
     /// @notice 撤资普通商品

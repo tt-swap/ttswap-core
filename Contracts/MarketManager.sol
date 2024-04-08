@@ -9,7 +9,7 @@ import {L_Good, L_GoodIdLibrary} from "./libraries/L_Good.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {Multicall} from "./libraries/Multicall.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
-import {S_ProofKey, S_ProofState, S_GoodKey, S_GoodState, S_Ralate} from "./libraries/L_Struct.sol";
+import {S_ProofKey, S_GoodKey, S_Ralate} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {L_CHECK} from "./libraries/L_CHECK.sol";
@@ -18,8 +18,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
-    using L_Good for S_GoodState;
-    using L_Proof for S_ProofState;
+    using L_Good for L_Good.S_GoodState;
+    using L_Proof for L_Proof.S_ProofState;
     using L_CurrencyLibrary for address;
     using L_MarketConfigLibrary for uint256;
     constructor(
@@ -102,7 +102,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         bytes32 normalproof = S_ProofKey(msg.sender, goodnum, valuegood).toId();
         proofnum += 1;
         proofseq[normalproof] = proofnum;
-        proofs[proofnum] = S_ProofState(
+        proofs[proofnum] = L_Proof.S_ProofState(
             msg.sender,
             goodnum,
             valuegood,
@@ -273,7 +273,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         payable
         override
         noReentrant
-        returns (S_GoodInvestReturn memory normalInvest_)
+        returns (L_Good.S_GoodInvestReturn memory normalInvest_)
     {
         require(goods[_goodid].goodConfig.isvaluegood(), "M006");
         goods[_goodid].erc20address.transferFrom(msg.sender, _goodQuanitity);
@@ -348,8 +348,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         override
         noReentrant
         returns (
-            S_GoodInvestReturn memory normalInvest,
-            S_GoodInvestReturn memory valueInvest
+            L_Good.S_GoodInvestReturn memory normalInvest,
+            L_Good.S_GoodInvestReturn memory valueInvest
         )
     {
         require(goods[_valuegood].goodConfig.isvaluegood(), "M002");

@@ -9,7 +9,7 @@ import {L_Good} from "./libraries/L_Good.sol";
 
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
-import {S_GoodKey, S_GoodState} from "./libraries/L_Struct.sol";
+import {S_GoodKey} from "./libraries/L_Struct.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "./libraries/L_BalanceUINT256.sol";
 import {SafeCast} from "./libraries/SafeCast.sol";
 
@@ -18,11 +18,11 @@ abstract contract GoodManage is I_Good, RefererManage {
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
     using SafeCast for *;
-    using L_Good for S_GoodState;
+    using L_Good for L_Good.S_GoodState;
 
     uint256 public override marketconfig;
     uint256 public goodnum;
-    mapping(uint256 => S_GoodState) public goods;
+    mapping(uint256 => L_Good.S_GoodState) public goods;
     mapping(address => uint256[]) public _ownergoods;
     mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
@@ -62,7 +62,7 @@ abstract contract GoodManage is I_Good, RefererManage {
 
     function getGoodState(
         uint256 _goodid
-    ) external view override returns (S_GoodTmpState memory good_) {
+    ) external view override returns (L_Good.S_GoodTmpState memory good_) {
         good_.currentState = goods[_goodid].currentState;
         good_.investState = goods[_goodid].investState;
         good_.feeQunitityState = goods[_goodid].feeQunitityState;

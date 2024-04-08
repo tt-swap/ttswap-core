@@ -5,11 +5,12 @@ import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
-import {L_GoodIdLibrary} from "../Contracts/libraries/L_Good.sol";
+import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
 import {ProofUtil} from "./util/ProofUtil.sol";
 import {GoodUtil} from "./util/GoodUtil.sol";
-import {L_ProofIdLibrary} from "../Contracts/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../Contracts/libraries/L_Proof.sol";
+import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
 
 contract testinvestGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;

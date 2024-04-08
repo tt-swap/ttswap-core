@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {S_GoodKey, S_GoodTmpState, S_Ralate} from "../libraries/L_Struct.sol";
+import {S_GoodKey, S_Ralate} from "../libraries/L_Struct.sol";
+import {L_Good} from "../libraries/L_Good.sol";
 import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 
 /// @title 商品接口good's interface
@@ -25,7 +26,7 @@ interface I_Good {
     /// @return good 商品的状态信息
     function getGoodState(
         uint256 _goodid
-    ) external view returns (S_GoodTmpState memory good);
+    ) external view returns (L_Good.S_GoodTmpState memory good);
 
     /// @notice 更新商品配置 update good's config
     /// @param _goodid   商品的商品ID good's id

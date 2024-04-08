@@ -2,10 +2,10 @@
 pragma solidity 0.8.24;
 
 import {console2} from "forge-std/Test.sol";
-import {S_ProofState} from "../../Contracts/libraries/L_Struct.sol";
+import {L_Proof} from "../../Contracts/libraries/L_Proof.sol";
 
 library ProofUtil {
-    function showproof(S_ProofState memory p_) public pure {
+    function showproof(L_Proof.S_ProofState memory p_) public pure {
         console2.log("proof address", p_.owner);
         // console2.log('proof currentgood',T_GoodId.unwrap(p_.currentgood));
         // console2.log('proof valuegood',p_.valuegood);

@@ -6,7 +6,7 @@ import {SafeCast} from "./SafeCast.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
 
-import {S_GoodInvestReturn, S_Ralate, S_ProofState, S_GoodState, S_GoodKey} from "./L_Struct.sol";
+import {S_Ralate, S_GoodKey} from "./L_Struct.sol";
 
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, getprice} from "./L_BalanceUINT256.sol";
 
@@ -15,7 +15,33 @@ library L_Good {
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
     using L_BalanceUINT256Library for uint256;
-    using L_Proof for S_ProofState;
+    using L_Proof for L_Proof.S_ProofState;
+
+    struct S_GoodState {
+        uint256 goodConfig; //商品配置refer to goodConfig
+        address owner; //商品创建者 good's creator
+        address erc20address; //商品的erc20合约地址good's erc20address
+        T_BalanceUINT256 currentState; //前128位表示商品的价值,后128位表示商品数量 amount0:the good's total value ,amount1:the good's quantity
+        T_BalanceUINT256 investState; //前128位表示商品的投资总价值,后128位表示商品投资总数量 amount0:the good's total invest value,amount1:the good's total invest quantity
+        T_BalanceUINT256 feeQunitityState; //前128位表示商品的手续费总额(包含构建手续费),后128位表示商品的构建手续费总额 amount0:the good's total fee quantity which contain contruct fee,amount1:the good's total contruct fee.
+        mapping(address => uint256) fees;
+    }
+
+    struct S_GoodTmpState {
+        uint256 goodConfig; //商品配置refer to goodConfig
+        address owner; //商品创建者 good's creator
+        address erc20address; //商品的erc20合约地址good's erc20address
+        T_BalanceUINT256 currentState; //前128位表示商品的价值,后128位表示商品数量 amount0:the good's total value ,amount1:the good's quantity
+        T_BalanceUINT256 investState; //前128位表示商品的投资总价值,后128位表示商品投资总数量 amount0:the good's total invest value,amount1:the good's total invest quantity
+        T_BalanceUINT256 feeQunitityState; //前128位表示商品的手续费总额(包含构建手续费),后128位表示商品的构建手续费总额 amount0:the good's total fee quantity which contain contruct fee,amount1:the good's total contruct fee.
+    }
+
+    struct S_GoodInvestReturn {
+        uint128 actualFeeQuantity; //实际手续费
+        uint128 contructFeeQuantity; //构建手续费
+        uint128 actualInvestValue; //实际投资价值
+        uint128 actualInvestQuantity; //实际投资数量
+    }
 
     function getMaxTradeValue(
         S_GoodState storage self
@@ -315,7 +341,7 @@ library L_Good {
     //disinvestResult_ amount0为投资收益 amount1为实际产生手续费
     function disinvestValueGood(
         S_GoodState storage _self,
-        S_ProofState storage _investProof,
+        L_Proof.S_ProofState storage _investProof,
         uint128 _goodQuantity,
         uint256 _marketconfig,
         S_Ralate memory _ralate
@@ -374,7 +400,7 @@ library L_Good {
     function disinvestNormalGood(
         S_GoodState storage _self,
         S_GoodState storage _valueGoodState,
-        S_ProofState storage _investProof,
+        L_Proof.S_ProofState storage _investProof,
         uint128 _goodQuantity,
         uint256 _marketconfig,
         S_Ralate memory _ralate

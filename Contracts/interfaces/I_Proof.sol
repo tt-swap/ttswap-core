@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {S_ProofKey, S_ProofState} from "../libraries/L_Struct.sol";
+import {S_ProofKey} from "../libraries/L_Struct.sol";
+import {L_Proof} from "../libraries/L_Proof.sol";
 
 import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 
@@ -26,5 +27,5 @@ interface I_Proof {
 
     function getProofState(
         uint256 _proof
-    ) external view returns (S_ProofState memory proof_);
+    ) external view returns (L_Proof.S_ProofState memory proof_);
 }

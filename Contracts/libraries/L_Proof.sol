@@ -1,10 +1,18 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.24;
 
-import {S_ProofState, S_ProofKey} from "./L_Struct.sol";
+import {S_ProofKey} from "./L_Struct.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "./L_BalanceUINT256.sol";
 
 library L_Proof {
+    struct S_ProofState {
+        address owner;
+        uint256 currentgood;
+        uint256 valuegood;
+        T_BalanceUINT256 state; //amount0:value amount1:null
+        T_BalanceUINT256 invest; //normalgood   contruct:investquanity
+        T_BalanceUINT256 valueinvest; //valuegood contruct:investquanity
+    }
     function updateValueInvest(
         S_ProofState storage _self,
         uint256 _currenctgood,

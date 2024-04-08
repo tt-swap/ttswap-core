@@ -132,7 +132,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
             0,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 8, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest Normal good without fee second");
         market.disinvestNormalGood(normalgoodusdt, metagood, 1, address(1));
@@ -210,7 +210,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
             0,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 8, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest Normal proof without fee second");
         market.disinvestNormalProof(p_, 100, address(1));

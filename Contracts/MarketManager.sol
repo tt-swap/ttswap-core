@@ -34,7 +34,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     ) external payable override onlyMarketCreator returns (uint256) {
         require(_goodConfig.isvaluegood() && goodnum == 0, "M002");
 
-        _erc20address.transferFrom(msg.sender, uint256(_initial.amount1()));
+        _erc20address.transferFrom(msg.sender, _initial.amount1());
 
         goodnum += 1;
 
@@ -121,7 +121,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         return (goodnum, proofnum);
     }
-
+    event debugg(uint256, uint256);
     function buyGood(
         uint256 _goodid1,
         uint256 _goodid2,
@@ -136,6 +136,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         noReentrant
         returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_)
     {
+        emit debugg(1, gasleft());
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuanitity: _swapQuanitity,
             outputQuanitity: 0,
@@ -145,36 +146,43 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
-
+        emit debugg(2, gasleft());
         swapcache = L_Good.swapCompute1(
             swapcache,
             T_BalanceUINT256.wrap(_limitPrice)
         );
-
+        emit debugg(3, gasleft());
         if (istotal == true && swapcache.remainQuanitity > 0)
             revert err_total();
         goodid2FeeQuanitity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuanitity
         );
         goodid2Quanitity_ = swapcache.outputQuanitity - goodid2FeeQuanitity_;
-
+        emit debugg(4, gasleft());
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
             swapcache.feeQuanitity,
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
+        emit debugg(5, gasleft());
         goods[_goodid2].swapCommit(
             swapcache.good2currentState,
             goodid2FeeQuanitity_,
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
+        emit debugg(6, gasleft());
         goods[_goodid1].erc20address.transferFrom(
             msg.sender,
             _swapQuanitity - swapcache.remainQuanitity
         );
+
+        emit debugg(7, gasleft());
         goods[_goodid2].erc20address.transfer(msg.sender, goodid2Quanitity_);
+        emit debugg(8, gasleft());
+        goods[_goodid2].erc20address.transfer(msg.sender, goodid2Quanitity_);
+        emit debugg(9, gasleft());
         emit e_buyGood(
             _goodid1,
             _goodid2,

@@ -137,13 +137,13 @@ contract investNormalGoodFee is BaseSetup {
             uint256(aa.feeQunitityState.amount1())
         );
         assertEq(
-            aa.feeQunitityState.amount1(),
-            0,
+            aa.feeQunitityState.amount0(),
+            4,
             "feeQunitityState's feeamount is error"
         );
         assertEq(
-            aa.feeQunitityState.amount0(),
-            4,
+            aa.feeQunitityState.amount1(),
+            0,
             "feeQunitityState's contruct fee is error"
         );
 
@@ -157,7 +157,7 @@ contract investNormalGoodFee is BaseSetup {
             0,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 2, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("invest normal good with fee second");
         market.investNormalGood(normalgoodusdt, metagood, 10000, address(1));

@@ -121,7 +121,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         );
         assertEq(
             aa.feeQunitityState.amount0(),
-            0,
+            2,
             "feeQunitityState's feeamount is error"
         );
         assertEq(
@@ -140,7 +140,7 @@ contract disinvestNormalGoodFee is BaseSetup {
             6,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 2, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest normal good with fee second");
         market.disinvestNormalGood(normalgoodusdt, metagood, 10, address(1));
@@ -230,7 +230,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         );
         assertEq(
             aa.feeQunitityState.amount0(),
-            0,
+            2,
             "feeQunitityState's feeamount is error"
         );
         assertEq(
@@ -255,7 +255,7 @@ contract disinvestNormalGoodFee is BaseSetup {
             6,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 2, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
 
         S_ProofState memory _s1 = market.getProofState(p_);

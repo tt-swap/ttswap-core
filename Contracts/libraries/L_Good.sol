@@ -303,12 +303,14 @@ library L_Good {
                 investResult_.actualInvestValue,
                 investResult_.actualInvestQuantity
             );
-        allocateFee(
-            _self,
-            _invest - investResult_.actualInvestQuantity,
-            _marketConfig,
-            _ralate
-        );
+        uint128 actutal_fee = _invest - investResult_.actualInvestQuantity;
+        if (actutal_fee > 0)
+            allocateFee(
+                _self,
+                _invest - investResult_.actualInvestQuantity,
+                _marketConfig,
+                _ralate
+            );
     }
     //disinvestResult_ amount0为投资收益 amount1为实际产生手续费
     function disinvestValueGood(

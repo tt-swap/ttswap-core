@@ -63,11 +63,10 @@ contract buyGoodNoFee is BaseSetup {
         vm.stopPrank();
     }
 
-    function testBuyGood() public {
+    function testBuyGood(uint256) public {
         vm.startPrank(users[6]);
         deal(address(usdt), users[6], 100000, false);
         usdt.approve(address(market), 100000);
-
         S_GoodTmpState memory s1 = market.getGoodState(metagood);
         GoodUtil.showGood(s1);
         S_GoodTmpState memory s2 = market.getGoodState(normalgoodusdt);

@@ -12,7 +12,6 @@ import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
 import {S_ProofKey, S_GoodKey, S_Ralate} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
-import {L_CHECK} from "./libraries/L_CHECK.sol";
 
 contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     using L_GoodConfigLibrary for uint256;
@@ -32,7 +31,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         T_BalanceUINT256 _initial,
         uint256 _goodConfig
     ) external payable override onlyMarketCreator returns (uint256) {
-        require(_goodConfig.isvaluegood() && goodnum == 0, "M002");
+        require(_goodConfig.isvaluegood(), "M002");
 
         _erc20address.transferFrom(msg.sender, _initial.amount1());
 
@@ -41,7 +40,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goodseq[S_GoodKey(_erc20address, msg.sender).toId()] = goodnum;
 
         goods[goodnum].init(_initial, _erc20address, _goodConfig);
-
+        goods[goodnum].updateToValueGood();
         _ownergoods[msg.sender].push(goodnum);
 
         bytes32 normalproof = S_ProofKey(msg.sender, goodnum, 0).toId();
@@ -69,11 +68,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 _goodConfig,
         address _gater
     ) external payable override noReentrant returns (uint256, uint256) {
-        L_CHECK.checkinitNormalGoodParas(
-            goods[valuegood].goodConfig,
-            _erc20address,
-            _goodConfig
-        );
+        require(goods[valuegood].goodConfig.isvaluegood(), "M002");
         bytes32 togood = S_GoodKey(_erc20address, msg.sender).toId();
         require(goodseq[togood] == 0, "M001");
 
@@ -121,7 +116,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         return (goodnum, proofnum);
     }
-    event debugg(uint256, uint256);
     function buyGood(
         uint256 _goodid1,
         uint256 _goodid2,
@@ -136,7 +130,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         noReentrant
         returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_)
     {
-        emit debugg(1, gasleft());
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuanitity: _swapQuanitity,
             outputQuanitity: 0,
@@ -146,43 +139,34 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
-        emit debugg(2, gasleft());
         swapcache = L_Good.swapCompute1(
             swapcache,
             T_BalanceUINT256.wrap(_limitPrice)
         );
-        emit debugg(3, gasleft());
         if (istotal == true && swapcache.remainQuanitity > 0)
             revert err_total();
         goodid2FeeQuanitity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuanitity
         );
         goodid2Quanitity_ = swapcache.outputQuanitity - goodid2FeeQuanitity_;
-        emit debugg(4, gasleft());
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
             swapcache.feeQuanitity,
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
-        emit debugg(5, gasleft());
         goods[_goodid2].swapCommit(
             swapcache.good2currentState,
             goodid2FeeQuanitity_,
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
-        emit debugg(6, gasleft());
         goods[_goodid1].erc20address.transferFrom(
             msg.sender,
             _swapQuanitity - swapcache.remainQuanitity
         );
 
-        emit debugg(7, gasleft());
         goods[_goodid2].erc20address.transfer(msg.sender, goodid2Quanitity_);
-        emit debugg(8, gasleft());
-        goods[_goodid2].erc20address.transfer(msg.sender, goodid2Quanitity_);
-        emit debugg(9, gasleft());
         emit e_buyGood(
             _goodid1,
             _goodid2,
@@ -275,7 +259,12 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         noReentrant
         returns (L_Good.S_GoodInvestReturn memory normalInvest_)
     {
-        require(goods[_goodid].goodConfig.isvaluegood(), "M006");
+        require(
+            goods[_goodid].goodConfig.isvaluegood() &&
+                goods[_goodid].currentState.amount1() <= 2 ** 112 &&
+                goods[_goodid].currentState.amount0() <= 2 ** 112,
+            "M006"
+        );
         goods[_goodid].erc20address.transferFrom(msg.sender, _goodQuanitity);
 
         normalInvest_ = goods[_goodid].investGood(
@@ -314,8 +303,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         returns (T_BalanceUINT256 disinvestResult_)
     {
         uint256 proofno = proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()];
-
-        require(proofs[proofno].owner == msg.sender, "is not yours");
+        require(proofs[proofno].owner == msg.sender, "M003");
         uint128 remainquanitity = _goodQuanitity;
         uint128 protocalfee = marketconfig.getPlatFee128(
             disinvestResult_.amount0()
@@ -352,7 +340,12 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             L_Good.S_GoodInvestReturn memory valueInvest
         )
     {
-        require(goods[_valuegood].goodConfig.isvaluegood(), "M002");
+        require(
+            goods[_valuegood].goodConfig.isvaluegood() &&
+                goods[_togood].currentState.amount1() <= 2 ** 104 &&
+                goods[_togood].currentState.amount0() <= 2 ** 104,
+            "M002"
+        );
 
         normalInvest = goods[_togood].investGood(
             _quanitity,
@@ -423,7 +416,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         ];
         require(
             _normalproofNo > 0 && proofs[_normalproofNo].owner == msg.sender,
-            "M007"
+            "M004"
         );
         uint256 currentgood = proofs[_normalproofNo].currentgood;
         uint256 valuegood = proofs[_normalproofNo].valuegood;
@@ -475,7 +468,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         require(
             proofs[_valueproofid].owner == msg.sender &&
                 proofs[_valueproofid].valuegood == 0,
-            "M008"
+            "M005"
         );
         disinvestResult_ = goods[goodid1].disinvestValueGood(
             proofs[_valueproofid],

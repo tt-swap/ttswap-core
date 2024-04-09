@@ -5,7 +5,6 @@ import {L_Proof} from "./L_Proof.sol";
 import {SafeCast} from "./SafeCast.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
-
 import {S_Ralate, S_GoodKey} from "./L_Struct.sol";
 
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, getprice} from "./L_BalanceUINT256.sol";
@@ -56,7 +55,7 @@ library L_Good {
     }
 
     function updateToValueGood(S_GoodState storage self) internal {
-        require(!self.goodConfig.isvaluegood(), "is valuegood");
+        require(!self.goodConfig.isvaluegood(), "G007");
         uint256 b = self.goodConfig;
         assembly {
             b := shr(1, shl(1, b))
@@ -65,7 +64,7 @@ library L_Good {
     }
 
     function updateToNormalGood(S_GoodState storage self) internal {
-        require(self.goodConfig.isvaluegood(), "is normalgood");
+        require(self.goodConfig.isvaluegood(), "G008");
         uint256 b = self.goodConfig;
         assembly {
             b := shr(1, shl(1, b))
@@ -93,6 +92,9 @@ library L_Good {
     ) internal {
         self.currentState = _init;
         self.investState = _init;
+        assembly {
+            _goodConfig := shr(1, shl(1, _goodConfig))
+        }
         self.goodConfig = _goodConfig;
         self.erc20address = _erc20address;
         self.owner = msg.sender;
@@ -338,7 +340,7 @@ library L_Good {
                 _ralate
             );
     }
-    //disinvestResult_ amount0为投资收益 amount1为实际产生手续费
+
     function disinvestValueGood(
         S_GoodState storage _self,
         L_Proof.S_ProofState storage _investProof,
@@ -358,14 +360,14 @@ library L_Good {
                 _self.goodConfig.getDisinvestChips(
                     _self.currentState.amount0()
                 ),
-            "value good value not enough"
+            "G009"
         );
         require(
             _goodQuantity <
                 _self.goodConfig.getDisinvestChips(
                     _self.currentState.amount1()
                 ),
-            "value good quantity not enough"
+            "G010"
         );
         _self.currentState = _self.currentState - disinvestResult_;
 
@@ -429,28 +431,28 @@ library L_Good {
                 _valueGoodState.goodConfig.getDisinvestChips(
                     _valueGoodState.currentState.amount0()
                 ),
-            "normal good value not enough"
+            "G011"
         );
         require(
             valequanity_ <
                 _valueGoodState.goodConfig.getDisinvestChips(
                     _valueGoodState.currentState.amount1()
                 ),
-            "value good quantiy not enough"
+            "G010"
         );
         require(
             NormalGoodResult1_.amount0() <
                 _self.goodConfig.getDisinvestChips(
                     _self.currentState.amount0()
                 ),
-            "value good value not enough"
+            "G009"
         );
         require(
             NormalGoodResult1_.amount1() <
                 _self.goodConfig.getDisinvestChips(
                     _self.currentState.amount1()
                 ),
-            "normal good quanity not enough"
+            "G012"
         );
 
         _self.currentState = _self.currentState - NormalGoodResult1_;

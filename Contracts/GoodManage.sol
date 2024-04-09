@@ -26,7 +26,8 @@ abstract contract GoodManage is I_Good, RefererManage {
     mapping(address => uint256[]) public _ownergoods;
     mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
-    address public immutable marketcreator;
+    address public marketcreator;
+    mapping(address => bool) public blacklist;
 
     constructor(address _marketcreator, uint256 _marketconfig) {
         marketcreator = _marketcreator;
@@ -35,21 +36,33 @@ abstract contract GoodManage is I_Good, RefererManage {
     }
 
     modifier onlyMarketCreator() {
-        require(msg.sender == marketcreator, "1");
+        require(msg.sender == marketcreator, "G002");
         _;
     }
 
     modifier noReentrant() {
-        require(locked == 0, "No re-entrancy!");
+        require(locked == 0, "G001");
         locked = 1;
         _;
         locked = 0;
     }
 
+    modifier noblacklist() {
+        require(blacklist[msg.sender] == true);
+        _;
+    }
+
+    function addblacklist(address black) external onlyMarketCreator {
+        blacklist[black] = true;
+    }
+
+    function removeblacklist(address black) external onlyMarketCreator {
+        blacklist[black] = false;
+    }
     function setMarketConfig(
         uint256 _marketconfig
     ) external override onlyMarketCreator returns (bool) {
-        require(_marketconfig.checkAllocate(), "sum should 100");
+        require(_marketconfig.checkAllocate(), "G003");
         marketconfig = _marketconfig;
         return true;
     }
@@ -82,7 +95,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         uint256 _goodid,
         uint256 _goodConfig
     ) external override returns (bool) {
-        require(msg.sender == goods[_goodid].owner, "");
+        require(msg.sender == goods[_goodid].owner, "G004");
         goods[_goodid].updateGoodConfig(_goodConfig);
         emit e_updategoodconfig(
             _goodid,
@@ -123,7 +136,7 @@ abstract contract GoodManage is I_Good, RefererManage {
     ) external override returns (bool) {
         require(
             msg.sender == goods[goodid].owner || msg.sender == marketcreator,
-            "you havn't priv"
+            "G005"
         );
         emit e_changeOwner(goodid, goods[goodid].owner, to);
         goods[goodid].owner = to;
@@ -133,9 +146,9 @@ abstract contract GoodManage is I_Good, RefererManage {
 
     function collectProtocolFee(
         uint256 goodid
-    ) external payable override returns (uint256) {
+    ) external payable override noblacklist returns (uint256) {
         uint256 fee = goods[goodid].fees[msg.sender].toUInt128();
-        require(fee > 0, "no fee");
+        require(fee > 0, "G006");
         goods[goodid].fees[msg.sender] = 0;
         uint256 protocol = marketconfig.getPlatFee256(fee);
         emit e_collectProtocolFee(goodid, msg.sender, protocol);

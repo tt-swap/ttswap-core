@@ -36,7 +36,7 @@ contract buyGoodFee is BaseSetup {
         deal(address(btc), marketcreator, 1000000000, false);
         btc.approve(address(market), 20000000);
 
-        uint256 _goodConfig = 2 ** 255 +
+        uint256 _goodConfig = (2 ** 255) +
             8 *
             2 ** 245 +
             8 *
@@ -59,7 +59,6 @@ contract buyGoodFee is BaseSetup {
 
         market.setMarketConfig(_marketConfig);
 
-        //market.updatetoValueGood(metagood);
         vm.stopPrank();
     }
 
@@ -93,6 +92,13 @@ contract buyGoodFee is BaseSetup {
     function testBuyGood() public {
         vm.startPrank(users[6]);
         deal(address(usdt), users[6], 1000000000, false);
+        deal(address(btc), users[6], 1000000000, false);
+        deal(address(usdt), address(1), 1000000000, false);
+        deal(address(btc), address(1), 1000000000, false);
+        deal(address(usdt), address(marketcreator), 1000000000, false);
+        deal(address(btc), address(marketcreator), 1000000000, false);
+        deal(address(usdt), address(market), 1000000000, false);
+        deal(address(btc), address(market), 1000000000, false);
         usdt.approve(address(market), 100000000);
         L_Good.S_GoodTmpState memory s1 = market.getGoodState(metagood);
         GoodUtil.showGood(s1);

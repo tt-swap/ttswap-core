@@ -54,6 +54,9 @@ contract buyGoodNoFee is BaseSetup {
         MyToken(token).approve(address(market), 20000);
         uint256 _goodConfig = 0;
 
+        console2.log("12121", metagood);
+        L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
+        console2.log("12121", aa.goodConfig.isvaluegood());
         (normalgood, ) = market.initNormalGood(
             metagood,
             toBalanceUINT256(20000, 20000),

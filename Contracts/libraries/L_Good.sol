@@ -2,7 +2,6 @@
 pragma solidity 0.8.24;
 
 import {L_Proof} from "./L_Proof.sol";
-import {SafeCast} from "./SafeCast.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
 import {S_Ralate, S_GoodKey} from "./L_Struct.sol";
@@ -10,7 +9,6 @@ import {S_Ralate, S_GoodKey} from "./L_Struct.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, getprice} from "./L_BalanceUINT256.sol";
 
 library L_Good {
-    using SafeCast for *;
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
     using L_BalanceUINT256Library for uint256;

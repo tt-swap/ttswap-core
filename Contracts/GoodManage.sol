@@ -11,66 +11,64 @@ import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {S_GoodKey} from "./libraries/L_Struct.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "./libraries/L_BalanceUINT256.sol";
-import {SafeCast} from "./libraries/SafeCast.sol";
 
 abstract contract GoodManage is I_Good, RefererManage {
     using L_CurrencyLibrary for address;
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
-    using SafeCast for *;
     using L_Good for L_Good.S_GoodState;
 
-    uint256 public override marketconfig;
+    uint256 public marketconfig;
     uint256 public goodnum;
     mapping(uint256 => L_Good.S_GoodState) public goods;
-    mapping(address => uint256[]) public _ownergoods;
+    mapping(address => uint256[]) public ownergoods;
     mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
     address public marketcreator;
-    mapping(address => bool) public blacklist;
+    mapping(address => uint256) public banlist;
 
     constructor(address _marketcreator, uint256 _marketconfig) {
         marketcreator = _marketcreator;
         marketconfig = _marketconfig;
-        emit e_initMarket(_marketcreator, _marketconfig);
+        // emit e_initMarket(_marketcreator, _marketconfig);
     }
 
     modifier onlyMarketCreator() {
-        require(msg.sender == marketcreator, "G002");
+        require(msg.sender == marketcreator, "G02");
         _;
     }
 
     modifier noReentrant() {
-        require(locked == 0, "G001");
+        require(locked == 0, "G01");
         locked = 1;
         _;
         locked = 0;
     }
 
     modifier noblacklist() {
-        require(blacklist[msg.sender] == true);
+        require(banlist[msg.sender] == 0);
         _;
     }
 
-    function addblacklist(address black) external onlyMarketCreator {
-        blacklist[black] = true;
+    function addbanlist(address _user) external override onlyMarketCreator {
+        banlist[_user] = 1;
     }
 
-    function removeblacklist(address black) external onlyMarketCreator {
-        blacklist[black] = false;
+    function removebanlist(address _user) external override onlyMarketCreator {
+        banlist[_user] = 0;
     }
+
     function setMarketConfig(
         uint256 _marketconfig
-    ) external override onlyMarketCreator returns (bool) {
-        require(_marketconfig.checkAllocate(), "G003");
+    ) external override onlyMarketCreator {
+        require(_marketconfig.checkAllocate(), "G03");
         marketconfig = _marketconfig;
-        return true;
     }
 
     function getGoodIdByAddress(
         address _owner
     ) external view returns (uint256[] memory) {
-        return _ownergoods[_owner];
+        return ownergoods[_owner];
     }
 
     function getGoodState(
@@ -95,65 +93,61 @@ abstract contract GoodManage is I_Good, RefererManage {
         uint256 _goodid,
         uint256 _goodConfig
     ) external override returns (bool) {
-        require(msg.sender == goods[_goodid].owner, "G004");
+        require(msg.sender == goods[_goodid].owner, "G04");
         goods[_goodid].updateGoodConfig(_goodConfig);
-        emit e_updategoodconfig(
-            _goodid,
-            goods[_goodid].goodConfig,
-            _goodConfig
-        );
+
         return true;
     }
 
     function updatetoValueGood(
-        uint256 goodid
+        uint256 _goodid
     ) external override onlyMarketCreator returns (bool) {
-        goods[goodid].updateToValueGood();
-        emit e_updateGood(goodid, 1);
+        goods[_goodid].updateToValueGood();
+        emit e_updateGood(_goodid, 1);
         return true;
     }
 
     function updatetoNormalGood(
-        uint256 goodid
+        uint256 _goodid
     ) external override onlyMarketCreator returns (bool) {
-        goods[goodid].updateToNormalGood();
-        emit e_updateGood(goodid, 0);
+        goods[_goodid].updateToNormalGood();
+        emit e_updateGood(_goodid, 0);
         return true;
     }
 
     function payGood(
-        uint256 goodid,
-        uint256 payquanity,
-        address recipent
+        uint256 _goodid,
+        uint256 _payquanity,
+        address _recipent
     ) external returns (bool) {
-        goods[goodid].erc20address.transferFrom(recipent, payquanity);
+        goods[_goodid].erc20address.transfer(_recipent, _payquanity);
         return true;
     }
 
     function changeOwner(
-        uint256 goodid,
-        address to
+        uint256 _goodid,
+        address _to
     ) external override returns (bool) {
         require(
-            msg.sender == goods[goodid].owner || msg.sender == marketcreator,
-            "G005"
+            msg.sender == goods[_goodid].owner || msg.sender == marketcreator,
+            "G05"
         );
-        emit e_changeOwner(goodid, goods[goodid].owner, to);
-        goods[goodid].owner = to;
-        _ownergoods[to].push(goodid);
+        emit e_changeOwner(_goodid, goods[_goodid].owner, _to);
+        goods[_goodid].owner = _to;
+        ownergoods[_to].push(_goodid);
         return true;
     }
 
     function collectProtocolFee(
-        uint256 goodid
+        uint256 _goodid
     ) external payable override noblacklist returns (uint256) {
-        uint256 fee = goods[goodid].fees[msg.sender].toUInt128();
-        require(fee > 0, "G006");
-        goods[goodid].fees[msg.sender] = 0;
+        uint256 fee = goods[_goodid].fees[msg.sender];
+        require(fee > 0, "G06");
+        goods[_goodid].fees[msg.sender] = 0;
         uint256 protocol = marketconfig.getPlatFee256(fee);
-        emit e_collectProtocolFee(goodid, msg.sender, protocol);
-        goods[goodid].fees[marketcreator] += protocol;
-        goods[goodid].erc20address.transfer(msg.sender, fee - protocol);
+        emit e_collectProtocolFee(_goodid, msg.sender, protocol);
+        goods[_goodid].fees[marketcreator] += protocol;
+        goods[_goodid].erc20address.transfer(msg.sender, fee - protocol);
         return fee;
     }
 }

@@ -51,7 +51,7 @@ TTSWAP(token-token swap)是一个建立在以太坊区块链上的自动做市�
 平台中商品的单位价值P(A)发生变化 P(A2)=0.3333
 
 展示如下图
-![Alt text](./docs/image/GOOD_BUYSELL.png)
+![Alt text](./tree/master/docs/docs/image/GOOD_BUYSELL.png)
 
 ## 3.3 市场中用户行为与商品状态的关系
 用户出售与购买，商品的商场价值V与商品数量Q发生变化，商品的价格也发生相应变化,商品的市场价值V与商品数量Q的变化如图

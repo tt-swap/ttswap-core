@@ -35,10 +35,10 @@ abstract contract ProofManage is I_Proof {
 
     function changeProofOwner(
         uint256 _proofid,
-        address to
+        address _to
     ) external override returns (bool) {
-        require(msg.sender == proofs[_proofid].owner, "");
-        proofs[_proofid].owner = to;
+        require(msg.sender == proofs[_proofid].owner, "P1");
+        proofs[_proofid].owner = _to;
         return true;
     }
 }

@@ -50,19 +50,26 @@ abstract contract GoodManage is I_Good, RefererManage {
         _;
     }
 
-    function addbanlist(address _user) external override onlyMarketCreator {
+    function addbanlist(
+        address _user
+    ) external override onlyMarketCreator returns (bool) {
         banlist[_user] = 1;
+        return true;
     }
 
-    function removebanlist(address _user) external override onlyMarketCreator {
+    function removebanlist(
+        address _user
+    ) external override onlyMarketCreator returns (bool) {
         banlist[_user] = 0;
+        return true;
     }
 
     function setMarketConfig(
         uint256 _marketconfig
-    ) external override onlyMarketCreator {
+    ) external override onlyMarketCreator returns (bool) {
         require(_marketconfig.checkAllocate(), "G03");
         marketconfig = _marketconfig;
+        return true;
     }
 
     function getGoodIdByAddress(

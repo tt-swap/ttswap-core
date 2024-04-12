@@ -30,7 +30,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _erc20address,
         T_BalanceUINT256 _initial,
         uint256 _goodConfig
-    ) external payable override onlyMarketCreator returns (uint256) {
+    ) external payable override onlyMarketCreator returns (uint256, uint256) {
         require(_goodConfig.isvaluegood(), "M02");
 
         _erc20address.transferFrom(msg.sender, _initial.amount1());
@@ -58,7 +58,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         //     _erc20address,
         //     msg.sender
         // );
-        return goodnum;
+        return (goodnum, proofnum);
     }
 
     function initNormalGood(

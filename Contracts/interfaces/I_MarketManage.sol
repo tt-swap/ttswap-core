@@ -48,12 +48,13 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _initial   初始化的商品的参数,前128位为价值,后128位为数量.initial good,amount0:value,amount1:quantity
     /// @param _goodconfig   初始化的商品的参数,前128位为价值,后128位为数量.initial good,amount0:value,amount1:quantity
     /// @return  元商品编号
+    /// @return  投资证明编号
 
     function initMetaGood(
         address _erc20address,
         T_BalanceUINT256 _initial,
         uint256 _goodconfig
-    ) external payable returns (uint256);
+    ) external payable returns (uint256, uint256);
 
     /// @notice 获取商品状态 get good's state
     /// @param _valuegood   使用什么价值物品度量普通物品的价值  use which value good to measure the normal good

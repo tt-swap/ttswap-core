@@ -28,7 +28,7 @@ contract testinvestGood is BaseSetup {
         deal(address(btc), marketcreator, 100000, false);
         btc.approve(address(market), 30000);
         uint256 _goodconfig = 2 ** 255;
-        metagood = market.initMetaGood(
+        (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
             _goodconfig

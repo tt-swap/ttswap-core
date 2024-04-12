@@ -16,7 +16,7 @@ interface I_Good {
 
     /// @notice config market config 设置市场中市场配置
     /// @param _marketconfig   seller address 卖家地址
-    function setMarketConfig(uint256 _marketconfig) external;
+    function setMarketConfig(uint256 _marketconfig) external returns (bool);
 
     /// @notice get seller's good 获取卖家的商品列表
     /// @param _owner   seller address 卖家地址
@@ -74,8 +74,8 @@ interface I_Good {
     ) external payable returns (uint256);
     /// @notice add ban list  增加禁止名单
     /// @param _user  address 地址
-    function addbanlist(address _user) external;
+    function addbanlist(address _user) external returns (bool);
     /// @notice  rm ban list  移除禁止名单
     /// @param _user  address 地址
-    function removebanlist(address _user) external;
+    function removebanlist(address _user) external returns (bool);
 }

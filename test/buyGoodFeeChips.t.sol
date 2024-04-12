@@ -48,7 +48,7 @@ contract buyGoodFeeChips is BaseSetup {
             2 ** 205;
 
         snapStart("init metagood with fee with config");
-        metagood = market.initMetaGood(
+        (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000000, 20000000),
             _goodConfig

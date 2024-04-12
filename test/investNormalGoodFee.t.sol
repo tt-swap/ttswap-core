@@ -39,7 +39,7 @@ contract investNormalGoodFee is BaseSetup {
         btc.approve(address(market), 30000);
 
         uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 244 + 8 * 2 ** 234;
-        metagood = market.initMetaGood(
+        (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
             _goodConfig

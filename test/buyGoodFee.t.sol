@@ -45,7 +45,7 @@ contract buyGoodFee is BaseSetup {
             2 ** 225 +
             8 *
             2 ** 215;
-        metagood = market.initMetaGood(
+        (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000000, 20000000),
             _goodConfig

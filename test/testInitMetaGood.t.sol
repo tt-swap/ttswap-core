@@ -29,7 +29,7 @@ contract testInitMetaGood is BaseSetup {
         console2.log(btc.balanceOf(marketcreator));
         btc.approve(address(market), 30000);
         snapStart("init metagood");
-        metagood = market.initMetaGood(
+        (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
             goodconfig

@@ -39,7 +39,7 @@ contract investValueGoodFee is BaseSetup {
             (15 << 232) +
             (20 << 226) +
             (20 << 220);
-        metagood = market.initMetaGood(
+        (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
             _goodconfig

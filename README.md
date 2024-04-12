@@ -33,7 +33,7 @@ TTSWAP(token-token swap)是一个建立在以太坊区块链上的自动做市�
 ## 3.1 市场中的商品
 市场价值是衡量用户对于平台商品的需求程度.
 例:在市场中有2000个商品A1,由于1个商品的单位价值是1,那么这个商品的市场价值2000.
-![Alt text](./docs/image/GOOD_STATES.png)
+![Alt text](https://github.com/ttswap/ttswap-core/tree/6ed0154bd184860c1a4f8abe4469356bf3bbf9d6/docs/image/GOOD_STATES.png) 
 定义:
 市场价值V(A1):2000
 商品数量Q(A1):2000.

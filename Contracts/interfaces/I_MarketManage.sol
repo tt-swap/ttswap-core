@@ -146,7 +146,10 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodid,
         uint128 _goodQuanitity,
         address _gater
-    ) external payable returns (T_BalanceUINT256 disinvestResult_);
+    )
+        external
+        payable
+        returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_);
 
     /// @notice 投资普通商品
     /// @param _togood   普通商品的ID
@@ -209,7 +212,10 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _valueproofid,
         uint128 _goodQuanitity,
         address _gater
-    ) external payable returns (T_BalanceUINT256 disinvestResult_);
+    )
+        external
+        payable
+        returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_);
 
     /// @notice 撤资普通商品证明
     /// @param _normalProof   投资ID

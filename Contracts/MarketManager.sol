@@ -301,28 +301,29 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         payable
         override
         noReentrant
-        returns (T_BalanceUINT256 disinvestResult_)
+        returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_)
     {
         uint256 proofno = proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()];
         require(proofs[proofno].owner == msg.sender, "M03");
         uint128 remainquanitity = _goodQuanitity;
-        uint128 protocalfee = marketconfig.getPlatFee128(
-            disinvestResult_.amount0()
-        );
-        goods[_goodid].fees[marketcreator] += protocalfee;
+
         disinvestResult_ = goods[_goodid].disinvestValueGood(
             proofs[proofno],
             remainquanitity,
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
+        uint128 protocalfee = marketconfig.getPlatFee128(
+            disinvestResult_.profit
+        );
 
+        goods[_goodid].fees[marketcreator] += protocalfee;
+        disinvestResult_.actual_fee = disinvestResult_.actual_fee + protocalfee;
         goods[_goodid].erc20address.transfer(
             msg.sender,
             _goodQuanitity +
-                disinvestResult_.amount0() -
-                disinvestResult_.amount1() -
-                protocalfee
+                disinvestResult_.profit -
+                disinvestResult_.actual_fee
         );
     }
 
@@ -463,7 +464,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         payable
         override
         noReentrant
-        returns (T_BalanceUINT256 disinvestResult_)
+        returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_)
     {
         uint256 goodid1 = proofs[_valueproofid].currentgood;
         require(
@@ -478,15 +479,15 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             S_Ralate(_gater, relations[msg.sender])
         );
         uint128 protocalfee = marketconfig.getPlatFee128(
-            disinvestResult_.amount0()
+            disinvestResult_.profit
         );
+        disinvestResult_.actual_fee += protocalfee;
         goods[goodid1].fees[marketcreator] += protocalfee;
         goods[goodid1].erc20address.transfer(
             msg.sender,
             _goodQuanitity +
-                disinvestResult_.amount0() -
-                disinvestResult_.amount1() -
-                protocalfee
+                disinvestResult_.profit -
+                disinvestResult_.actual_fee
         );
         emit e_disinvestGood(_valueproofid);
     }

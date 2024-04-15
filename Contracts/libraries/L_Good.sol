@@ -43,8 +43,8 @@ library L_Good {
     struct S_GoodDisinvestReturn {
         uint128 profit; //实际手续费
         uint128 actual_fee; //构建手续费
-        uint128 actualInvestValue; //实际投资价值
-        uint128 actualInvestQuantity; //实际投资数量
+        uint128 actualDisinvestValue; //实际投资价值
+        uint128 actualDisinvestQuantity; //实际投资数量
     }
 
     function getMaxTradeValue(
@@ -370,7 +370,7 @@ library L_Good {
         );
 
         require(
-            disinvestResult_.actualInvestQuantity <
+            disinvestResult_.actualDisinvestQuantity <
                 _self.goodConfig.getDisinvestChips(
                     _self.currentState.amount0()
                 ) &&
@@ -384,15 +384,15 @@ library L_Good {
         _self.currentState =
             _self.currentState -
             toBalanceUINT256(
-                disinvestResult_.actualInvestValue,
-                disinvestResult_.actualInvestQuantity
+                disinvestResult_.actualDisinvestValue,
+                disinvestResult_.actualDisinvestQuantity
             );
 
         _self.investState =
             _self.investState -
             toBalanceUINT256(
-                disinvestResult_.actualInvestValue,
-                disinvestResult_.actualInvestQuantity
+                disinvestResult_.actualDisinvestValue,
+                disinvestResult_.actualDisinvestQuantity
             );
 
         _investProof.burnValueProofSome(_goodQuantity);
@@ -408,7 +408,7 @@ library L_Good {
             disinvestResult_.profit -
             disinvestResult_.actual_fee;
         disinvestResult_.actual_fee = _self.goodConfig.getDisinvestFee(
-            disinvestResult_.actualInvestQuantity
+            disinvestResult_.actualDisinvestQuantity
         );
 
         _self.feeQunitityState =

@@ -70,15 +70,23 @@ contract disinvestValueGoodNoFee is BaseSetup {
         uint128 quanity = uint128(aquanity);
 
         snapStart("disinvest Value good No Fee first");
-        T_BalanceUINT256 result = market.disinvestValueGood(
+        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueGood(
             metagood,
             quanity,
             address(1)
         );
         snapEnd();
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
-        assertEq(result.amount0(), 0, "disinvest proof 's value is error");
-        assertEq(result.amount1(), 0, "disinvest proof 's quantity is error");
+        assertEq(
+            result.actualDisinvestValue,
+            aquanity,
+            "disinvest proof 's value is error"
+        );
+        assertEq(
+            result.actualDisinvestQuantity,
+            aquanity,
+            "disinvest proof 's quantity is error"
+        );
         assertEq(
             aa.currentState.amount0(),
             40000 - quanity,
@@ -125,15 +133,23 @@ contract disinvestValueGoodNoFee is BaseSetup {
         uint256 p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
 
         snapStart("disinvest Value proof No Fee first");
-        T_BalanceUINT256 result = market.disinvestValueProof(
+        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueProof(
             p_,
             quanity,
             address(1)
         );
         snapEnd();
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
-        assertEq(result.amount0(), 0, "disinvest proof 's value is error");
-        assertEq(result.amount1(), 0, "disinvest proof 's quantity is error");
+        assertEq(
+            result.actualDisinvestValue,
+            aquanity,
+            "disinvest proof 's value is error"
+        );
+        assertEq(
+            result.actualDisinvestQuantity,
+            aquanity,
+            "disinvest proof 's quantity is error"
+        );
         assertEq(
             aa.currentState.amount0(),
             40000 - quanity,

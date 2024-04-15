@@ -122,20 +122,29 @@ contract disinvestValueGoodFee is BaseSetup {
     }
 
     function testdisinvestvaluegood(uint256 aquanity) public {
+        console2.log("111", aquanity);
         vm.startPrank(users[2]);
         vm.assume(aquanity > 1 && aquanity < 1000);
         uint128 quanity = uint128(aquanity);
 
         snapStart("disinvest Value Good With Fee first");
-        T_BalanceUINT256 result = market.disinvestValueGood(
+        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueGood(
             metagood,
             quanity,
             address(1)
         );
         snapEnd();
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
-        assertEq(result.amount0(), 0, "disinvest proof 's value is error");
-        assertEq(result.amount1(), 0, "disinvest proof 's quantity is error");
+        assertEq(
+            result.actualDisinvestValue,
+            aquanity,
+            "disinvest proof 's value is error"
+        );
+        assertEq(
+            result.actualDisinvestQuantity,
+            aquanity,
+            "disinvest proof 's quantity is error"
+        );
         assertEq(
             aa.currentState.amount0(),
             39984 - quanity,
@@ -184,7 +193,7 @@ contract disinvestValueGoodFee is BaseSetup {
         uint128 quanity = uint128(aquanity);
         uint256 p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
         snapStart("disinvest Value Proof with fee first");
-        T_BalanceUINT256 result = market.disinvestValueProof(
+        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueProof(
             p_,
             quanity,
             address(1)
@@ -193,8 +202,16 @@ contract disinvestValueGoodFee is BaseSetup {
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
 
         console2.log(quanity);
-        assertEq(result.amount0(), 0, "disinvest proof 's value is error");
-        assertEq(result.amount1(), 0, "disinvest proof 's quantity is error");
+        assertEq(
+            result.actualDisinvestValue,
+            aquanity,
+            "disinvest proof 's value is error"
+        );
+        assertEq(
+            result.actualDisinvestQuantity,
+            aquanity,
+            "disinvest proof 's quantity is error"
+        );
         assertEq(
             aa.currentState.amount0(),
             39984 - quanity,
@@ -240,7 +257,7 @@ contract disinvestValueGoodFee is BaseSetup {
         L_Proof.S_ProofState memory _s = market.getProofState(p_);
         console2.log("proof value", _s.state.amount0());
         console2.log("proof invest quanity", _s.invest.amount1());
-        T_BalanceUINT256 result = market.disinvestValueProof(
+        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueProof(
             p_,
             quanity,
             address(1)
@@ -248,8 +265,16 @@ contract disinvestValueGoodFee is BaseSetup {
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
 
         console2.log(quanity);
-        assertEq(result.amount0(), 2, "disinvest proof 's value is error");
-        assertEq(result.amount1(), 8, "disinvest proof 's quantity is error");
+        assertEq(
+            result.actualDisinvestValue,
+            10000,
+            "disinvest proof 's value is error"
+        );
+        assertEq(
+            result.actualDisinvestQuantity,
+            10000,
+            "disinvest proof 's quantity is error"
+        );
         assertEq(
             aa.currentState.amount0(),
             39984 - quanity,
@@ -289,7 +314,7 @@ contract disinvestValueGoodFee is BaseSetup {
 
         uint128 quanity = 500;
         uint256 p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
-        T_BalanceUINT256 result = market.disinvestValueProof(
+        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueProof(
             p_,
             quanity,
             address(1)

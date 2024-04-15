@@ -120,7 +120,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _goodid   价值商品的ID
     /// @param _goodQuanitity   投资价值商品的数量
     /// @param _gater   门户地址
-    /// @return normalinvest
+    /// @return valueInvest_
     /// struct S_GoodinvestReturn {
     /// uint128 actualFeeQuantity; //实际手续费
     /// uint128 contructFeeQuantity; //构建手续费
@@ -135,7 +135,7 @@ interface I_MarketManage is I_Good, I_Proof {
     )
         external
         payable
-        returns (L_Good.S_GoodInvestReturn calldata normalinvest);
+        returns (L_Good.S_GoodInvestReturn calldata valueInvest_);
 
     /// @notice 撤资价值商品
     /// @param _goodid   价值商品的ID

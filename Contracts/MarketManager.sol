@@ -258,7 +258,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         payable
         override
         noReentrant
-        returns (L_Good.S_GoodInvestReturn memory normalInvest_)
+        returns (L_Good.S_GoodInvestReturn memory valueInvest_)
     {
         require(
             goods[_goodid].goodConfig.isvaluegood() &&
@@ -268,7 +268,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         goods[_goodid].erc20address.transferFrom(msg.sender, _goodQuanitity);
 
-        normalInvest_ = goods[_goodid].investGood(
+        valueInvest_ = goods[_goodid].investGood(
             _goodQuanitity,
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
@@ -283,10 +283,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
         proofs[proofno].updateValueInvest(
             _goodid,
-            toBalanceUINT256(normalInvest_.actualInvestValue, 0),
+            toBalanceUINT256(valueInvest_.actualInvestValue, 0),
             toBalanceUINT256(
-                normalInvest_.contructFeeQuantity,
-                normalInvest_.actualInvestQuantity
+                valueInvest_.contructFeeQuantity,
+                valueInvest_.actualInvestQuantity
             )
         );
         emit e_investGood(proofno);

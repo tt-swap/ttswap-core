@@ -172,7 +172,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _goodid1,
             _goodid2,
             msg.sender,
-            _swapQuanitity,
             toBalanceUINT256(
                 _swapQuanitity - swapcache.remainQuanitity,
                 swapcache.feeQuanitity
@@ -240,7 +239,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _goodid1,
             _goodid2,
             msg.sender,
-            _swapQuanitity,
+            _recipent,
             toBalanceUINT256(
                 _swapQuanitity - swapcache.remainQuanitity,
                 swapcache.feeQuanitity
@@ -398,6 +397,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
         emit e_investGood(proofno);
     }
+
     function disinvestNormalGood(
         uint256 _togood,
         uint256 _valuegood,

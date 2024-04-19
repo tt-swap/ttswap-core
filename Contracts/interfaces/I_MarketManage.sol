@@ -23,21 +23,20 @@ interface I_MarketManage is I_Good, I_Proof {
     );
 
     event e_buyGood(
-        uint256 indexed,
-        uint256 indexed,
-        address,
-        uint128,
-        T_BalanceUINT256,
-        T_BalanceUINT256
+        uint256 indexed sellgood,
+        uint256 indexed forgood,
+        address fromer,
+        T_BalanceUINT256 sellgoodstate,
+        T_BalanceUINT256 forgoodstate
     );
 
     event e_buyGoodForPay(
-        uint256 indexed,
-        uint256 indexed,
-        address,
-        uint128,
-        T_BalanceUINT256,
-        T_BalanceUINT256
+        uint256 indexed buygood,
+        uint256 indexed usegood,
+        address fromer,
+        address receipt,
+        T_BalanceUINT256 buygoodstate,
+        T_BalanceUINT256 usegoodstate
     );
     event e_investGood(uint256 indexed);
     event e_disinvestGood(uint256 indexed);

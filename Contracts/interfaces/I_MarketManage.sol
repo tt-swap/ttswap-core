@@ -198,8 +198,8 @@ interface I_MarketManage is I_Good, I_Proof {
         external
         payable
         returns (
-            T_BalanceUINT256 disinvestResult1_,
-            T_BalanceUINT256 disinvestResult2_
+            L_Good.S_GoodDisinvestReturn memory disinvestResult1_,
+            L_Good.S_GoodDisinvestReturn memory disinvestResult2_
         );
 
     /// @notice 撤资价值商品证明
@@ -230,7 +230,7 @@ interface I_MarketManage is I_Good, I_Proof {
         external
         payable
         returns (
-            T_BalanceUINT256 disinvestResult1_,
-            T_BalanceUINT256 disinvestResult2_
+            L_Good.S_GoodDisinvestReturn memory disinvestResult1_,
+            L_Good.S_GoodDisinvestReturn memory disinvestResult2_
         );
 }

@@ -109,6 +109,7 @@ library L_Good {
         uint128 remainQuanitity;
         uint128 outputQuanitity;
         uint128 feeQuanitity;
+        uint128 swapvalue;
         T_BalanceUINT256 good1currentState;
         uint256 good1config;
         T_BalanceUINT256 good2currentState;
@@ -121,12 +122,9 @@ library L_Good {
     ) internal pure returns (swapCache memory) {
         uint128 minValue;
         uint128 minQuanitity;
-        uint128 good1;
-        uint128 good2;
         _stepCache.feeQuanitity = _stepCache.good1config.getSellFee(
             _stepCache.remainQuanitity
         );
-
         _stepCache.remainQuanitity -= _stepCache.feeQuanitity;
         while (
             _stepCache.remainQuanitity > 0 &&
@@ -136,26 +134,24 @@ library L_Good {
                 _limitPrice
             )
         ) {
-            good1 = _stepCache.good1config.getSwapChips(
+            minValue = _stepCache.good1config.getSwapChips(
                 _stepCache.good1currentState.amount0()
-            );
-
-            good2 = _stepCache.good2config.getSwapChips(
-                _stepCache.good2currentState.amount0()
-            );
-
-            minValue = good1 >= good2 ? good2 : good1;
+            ) >=
+                _stepCache.good2config.getSwapChips(
+                    _stepCache.good2currentState.amount0()
+                )
+                ? _stepCache.good2config.getSwapChips(
+                    _stepCache.good2currentState.amount0()
+                )
+                : _stepCache.good1config.getSwapChips(
+                    _stepCache.good1currentState.amount0()
+                );
             minQuanitity = _stepCache.good1currentState.getamount1fromamount0(
                 minValue
             );
 
             if (_stepCache.remainQuanitity > minQuanitity) {
                 _stepCache.remainQuanitity -= minQuanitity;
-
-                minQuanitity -= good1;
-                minValue = _stepCache.good1currentState.getamount0fromamount1(
-                    minQuanitity
-                );
 
                 _stepCache.outputQuanitity += _stepCache
                     .good2currentState
@@ -165,14 +161,14 @@ library L_Good {
                     _stepCache.good1currentState,
                     toBalanceUINT256(minValue, minQuanitity)
                 );
-
-                good2 = _stepCache.good2currentState.getamount1fromamount0(
-                    minValue
-                );
-
                 _stepCache.good2currentState = addsub(
                     _stepCache.good2currentState,
-                    toBalanceUINT256(minValue, good2)
+                    toBalanceUINT256(
+                        minValue,
+                        _stepCache.good2currentState.getamount1fromamount0(
+                            minValue
+                        )
+                    )
                 );
             } else {
                 minValue = _stepCache.good1currentState.getamount0fromamount1(
@@ -188,21 +184,25 @@ library L_Good {
                     toBalanceUINT256(minValue, _stepCache.remainQuanitity)
                 );
 
-                good2 = _stepCache.good2currentState.getamount1fromamount0(
-                    minValue
-                );
-
                 _stepCache.good2currentState = addsub(
                     _stepCache.good2currentState,
-                    toBalanceUINT256(minValue, good2)
+                    toBalanceUINT256(
+                        minValue,
+                        _stepCache.good2currentState.getamount1fromamount0(
+                            minValue
+                        )
+                    )
                 );
-
                 _stepCache.remainQuanitity = 0;
             }
+            _stepCache.swapvalue += minValue;
         }
 
         if (_stepCache.remainQuanitity > 0) {
             _stepCache.feeQuanitity -= _stepCache.good1config.getSellerFee(
+                _stepCache.remainQuanitity
+            );
+            _stepCache.remainQuanitity += _stepCache.good1config.getSellerFee(
                 _stepCache.remainQuanitity
             );
         }
@@ -216,8 +216,6 @@ library L_Good {
     ) internal pure returns (swapCache memory) {
         uint128 minValue;
         uint128 minQuanitity;
-        uint128 good1;
-        uint128 good2;
         while (
             stepCache.remainQuanitity > 0 &&
             getprice(
@@ -226,22 +224,25 @@ library L_Good {
                 limitPrice
             )
         ) {
-            good1 = stepCache.good1config.getSwapChips(
+            minValue = stepCache.good1config.getSwapChips(
                 stepCache.good1currentState.amount0()
-            );
-            good2 = stepCache.good2config.getSwapChips(
-                stepCache.good2currentState.amount0()
-            );
-            minValue = good1 >= good2 ? good2 : good1;
+            ) >=
+                stepCache.good2config.getSwapChips(
+                    stepCache.good2currentState.amount0()
+                )
+                ? stepCache.good2config.getSwapChips(
+                    stepCache.good2currentState.amount0()
+                )
+                : stepCache.good1config.getSwapChips(
+                    stepCache.good1currentState.amount0()
+                );
             minQuanitity = stepCache.good2currentState.getamount1fromamount0(
                 minValue
             );
 
             if (stepCache.remainQuanitity > minQuanitity) {
                 stepCache.remainQuanitity -= minQuanitity;
-                minValue = stepCache.good1currentState.getamount0fromamount1(
-                    minQuanitity
-                );
+
                 stepCache.outputQuanitity += stepCache
                     .good1currentState
                     .getamount1fromamount0(minValue);
@@ -249,12 +250,14 @@ library L_Good {
                     stepCache.good2currentState,
                     toBalanceUINT256(minValue, minQuanitity)
                 );
-                good1 = stepCache.good2currentState.getamount1fromamount0(
-                    minValue
-                );
                 stepCache.good1currentState = subadd(
-                    stepCache.good2currentState,
-                    toBalanceUINT256(minValue, good2)
+                    stepCache.good1currentState,
+                    toBalanceUINT256(
+                        minValue,
+                        stepCache.good1currentState.getamount1fromamount0(
+                            minValue
+                        )
+                    )
                 );
             } else {
                 minValue = stepCache.good2currentState.getamount0fromamount1(
@@ -267,15 +270,24 @@ library L_Good {
                     stepCache.good2currentState,
                     toBalanceUINT256(minValue, stepCache.remainQuanitity)
                 );
-                good1 = stepCache.good1currentState.getamount1fromamount0(
-                    minValue
-                );
+
                 stepCache.good1currentState = subadd(
                     stepCache.good1currentState,
-                    toBalanceUINT256(minValue, good2)
+                    toBalanceUINT256(
+                        minValue,
+                        stepCache.good1currentState.getamount1fromamount0(
+                            minValue
+                        )
+                    )
                 );
                 stepCache.remainQuanitity = 0;
             }
+            if (stepCache.remainQuanitity > 0) {
+                stepCache.feeQuanitity -= stepCache.good1config.getSellerFee(
+                    stepCache.remainQuanitity
+                );
+            }
+            stepCache.swapvalue += minValue;
         }
         return stepCache;
     }

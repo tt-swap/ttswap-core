@@ -135,6 +135,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             remainQuanitity: _swapQuanitity,
             outputQuanitity: 0,
             feeQuanitity: 0,
+            swapvalue: 0,
             good1currentState: goods[_goodid1].currentState,
             good1config: goods[_goodid1].goodConfig,
             good2currentState: goods[_goodid2].currentState,
@@ -172,6 +173,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _goodid1,
             _goodid2,
             msg.sender,
+            swapcache.swapvalue,
             toBalanceUINT256(
                 _swapQuanitity - swapcache.remainQuanitity,
                 swapcache.feeQuanitity
@@ -198,6 +200,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             remainQuanitity: _swapQuanitity,
             outputQuanitity: 0,
             feeQuanitity: 0,
+            swapvalue: 0,
             good1currentState: goods[_goodid1].currentState,
             good1config: goods[_goodid1].goodConfig,
             good2currentState: goods[_goodid2].currentState,
@@ -240,6 +243,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _goodid2,
             msg.sender,
             _recipent,
+            swapcache.swapvalue,
             toBalanceUINT256(
                 _swapQuanitity - swapcache.remainQuanitity,
                 swapcache.feeQuanitity
@@ -288,7 +292,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 valueInvest_.actualInvestQuantity
             )
         );
-        emit e_investGood(proofno);
+        emit e_proof(proofno);
     }
 
     function disinvestValueGood(
@@ -324,6 +328,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 disinvestResult_.profit -
                 disinvestResult_.actual_fee
         );
+
+        emit e_proof(proofno);
     }
 
     function investNormalGood(
@@ -395,7 +401,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             )
         );
 
-        emit e_investGood(proofno);
+        emit e_proof(proofno);
     }
 
     function disinvestNormalGood(
@@ -455,7 +461,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 disinvestValueResult2_.profit -
                 disinvestValueResult2_.actual_fee
         );
-        emit e_disinvestGood(_normalproofNo);
+        emit e_proof(_normalproofNo);
     }
 
     function disinvestValueProof(
@@ -492,7 +498,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 disinvestResult_.profit -
                 disinvestResult_.actual_fee
         );
-        emit e_disinvestGood(_valueproofid);
     }
     function disinvestNormalProof(
         uint256 _normalProof,
@@ -547,6 +552,5 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 disinvestValueResult2_.profit -
                 disinvestValueResult2_.actual_fee
         );
-        emit e_disinvestGood(_normalProof);
     }
 }

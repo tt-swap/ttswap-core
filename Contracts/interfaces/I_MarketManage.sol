@@ -26,6 +26,7 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 indexed sellgood,
         uint256 indexed forgood,
         address fromer,
+        uint128 swapvalue,
         T_BalanceUINT256 sellgoodstate,
         T_BalanceUINT256 forgoodstate
     );
@@ -35,11 +36,11 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 indexed usegood,
         address fromer,
         address receipt,
+        uint128 swapvalue,
         T_BalanceUINT256 buygoodstate,
         T_BalanceUINT256 usegoodstate
     );
-    event e_investGood(uint256 indexed);
-    event e_disinvestGood(uint256 indexed);
+    event e_proof(uint256 indexed);
 
     error err_total();
     /// @notice 获取商品状态 get good's state

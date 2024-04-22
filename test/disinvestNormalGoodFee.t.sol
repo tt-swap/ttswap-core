@@ -35,7 +35,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         deal(address(btc), marketcreator, 100000, false);
         btc.approve(address(market), 30000);
 
-        uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 244 + 8 * 2 ** 234;
+        uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 238;
         (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
@@ -66,7 +66,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         deal(token, users[3], 100000, false);
         MyToken(token).approve(address(market), 20000);
 
-        uint256 _goodConfig = 8 * 2 ** 244 + 8 * 2 ** 234;
+        uint256 _goodConfig = 8 * 2 ** 245 + 8 * 2 ** 238;
 
         (normalgood, ) = market.initNormalGood(
             metagood,
@@ -122,7 +122,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         );
         assertEq(
             aa.feeQunitityState.amount0(),
-            2,
+            4,
             "feeQunitityState's feeamount is error"
         );
         assertEq(
@@ -138,10 +138,10 @@ contract disinvestNormalGoodFee is BaseSetup {
         );
         assertEq(
             uint256(market.getGoodsFee(metagood, marketcreator)),
-            5,
+            10,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 1, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 2, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest normal good with fee second");
         market.disinvestNormalGood(normalgoodusdt, metagood, 10, address(1));
@@ -231,7 +231,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         );
         assertEq(
             aa.feeQunitityState.amount0(),
-            2,
+            4,
             "feeQunitityState's feeamount is error"
         );
         assertEq(
@@ -253,10 +253,10 @@ contract disinvestNormalGoodFee is BaseSetup {
         console2.log(market.getGoodsFee(metagood, address(2)), "refer fee1");
         assertEq(
             uint256(market.getGoodsFee(metagood, marketcreator)),
-            5,
+            10,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 1, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 2, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
 
         L_Proof.S_ProofState memory _s1 = market.getProofState(p_);

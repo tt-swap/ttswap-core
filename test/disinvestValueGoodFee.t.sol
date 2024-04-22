@@ -298,7 +298,7 @@ contract disinvestValueGoodFee is BaseSetup {
         );
         assertEq(
             aa.feeQunitityState.amount0(),
-            10,
+            6,
             "feeQunitityState's feeamount is error"
         );
         assertEq(

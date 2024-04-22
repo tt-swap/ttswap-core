@@ -38,7 +38,7 @@ contract investNormalGoodFee is BaseSetup {
         deal(address(btc), marketcreator, 100000, false);
         btc.approve(address(market), 30000);
 
-        uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 244 + 8 * 2 ** 234;
+        uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 238;
         (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
@@ -66,7 +66,7 @@ contract investNormalGoodFee is BaseSetup {
         deal(token, users[3], 100000, false);
         MyToken(token).approve(address(market), 10000);
 
-        uint256 _goodConfig = 0 * 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 235;
+        uint256 _goodConfig = 0 * 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 238;
 
         (normalgood, normalproof) = market.initNormalGood(
             metagood,
@@ -155,10 +155,10 @@ contract investNormalGoodFee is BaseSetup {
         );
         assertEq(
             uint256(market.getGoodsFee(metagood, marketcreator)),
-            0,
+            3,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 2, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 3, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("invest normal good with fee second");
         market.investNormalGood(normalgoodusdt, metagood, 10000, address(1));

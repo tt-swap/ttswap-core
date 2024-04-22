@@ -40,11 +40,11 @@ contract buyGoodFee is BaseSetup {
             8 *
             2 ** 245 +
             8 *
-            2 ** 235 +
+            2 ** 238 +
             8 *
-            2 ** 225 +
+            2 ** 231 +
             8 *
-            2 ** 215;
+            2 ** 224;
         (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000000, 20000000),
@@ -73,11 +73,11 @@ contract buyGoodFee is BaseSetup {
             8 *
             2 ** 245 +
             8 *
-            2 ** 235 +
+            2 ** 238 +
             8 *
-            2 ** 225 +
+            2 ** 231 +
             8 *
-            2 ** 215;
+            2 ** 224;
 
         (normalgood, ) = market.initNormalGood(
             metagood,

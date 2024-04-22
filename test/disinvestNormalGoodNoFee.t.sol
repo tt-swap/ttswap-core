@@ -35,7 +35,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         deal(address(btc), marketcreator, 100000, false);
         btc.approve(address(market), 30000);
 
-        uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 235;
+        uint256 _goodConfig = 2 ** 255;
         (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
@@ -135,7 +135,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
             0,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 8, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest Normal good without fee second");
         market.disinvestNormalGood(normalgoodusdt, metagood, 1, address(1));
@@ -215,7 +215,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
             0,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 8, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest Normal proof without fee second");
         market.disinvestNormalProof(p_, 100, address(1));

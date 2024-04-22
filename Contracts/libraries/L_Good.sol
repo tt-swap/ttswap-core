@@ -82,11 +82,9 @@ library L_Good {
         uint256 _goodConfig
     ) internal {
         assembly {
-            _goodConfig := shr(1, shl(1, _goodConfig))
+            _goodConfig := shr(4, shl(4, _goodConfig))
         }
-        _self.goodConfig.isvaluegood()
-            ? _self.goodConfig = 1 * 2 ** 255 + _goodConfig
-            : _self.goodConfig = _goodConfig;
+        _self.goodConfig = (_self.goodConfig & (15 * 2 ** 252)) + _goodConfig;
     }
 
     function init(

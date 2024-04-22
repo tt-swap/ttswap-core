@@ -39,13 +39,13 @@ contract buyGoodFeeChips is BaseSetup {
             8 *
             2 ** 245 +
             8 *
-            2 ** 235 +
+            2 ** 238 +
             8 *
-            2 ** 225 +
+            2 ** 231 +
             8 *
-            2 ** 215 +
+            2 ** 224 +
             1 *
-            2 ** 205;
+            2 ** 214;
 
         snapStart("init metagood with fee with config");
         (metagood, ) = market.initMetaGood(
@@ -80,12 +80,12 @@ contract buyGoodFeeChips is BaseSetup {
             8 *
             2 ** 245 +
             8 *
-            2 ** 235 +
+            2 ** 238 +
             8 *
-            2 ** 225 +
+            2 ** 231 +
             8 *
-            2 ** 215;
-        _goodConfig += 1 * 2 ** 205;
+            2 ** 224;
+        _goodConfig += 1 * 2 ** 214;
 
         (normalgood, ) = market.initNormalGood(
             metagood,

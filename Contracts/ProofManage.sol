@@ -13,6 +13,7 @@ abstract contract ProofManage is I_Proof {
     mapping(uint256 => L_Proof.S_ProofState) public proofs;
     mapping(address => uint256[]) public _ownerproofs;
     mapping(bytes32 => uint256) public proofseq;
+    mapping(uint256 => address) public proof_allownance;
 
     constructor() {}
 

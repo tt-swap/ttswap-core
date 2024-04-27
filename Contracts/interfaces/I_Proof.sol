@@ -9,6 +9,10 @@ import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 /// @title 投资证明接口good's interface
 /// @notice 包含商品的一系列接口  contain good's all interfaces
 interface I_Proof {
+    /// @notice Returns the total number of market's proof 返回市场证明总数
+    /// @return proofnum_ The address of the factory manager
+    function proofnum() external view returns (uint256 proofnum_);
+
     /// @notice 获取投资证明ID get the invest proof'id
     /// @param _investproofkey   生成投资证明的参数据
     /// @return proof_ 投资证明的ID
@@ -25,6 +29,9 @@ interface I_Proof {
         address _to
     ) external returns (bool);
 
+    /// @notice get the invest proof'id 获取投资证明ID详情
+    /// @param _proof   证明编号
+    /// @return proof_  证明信息
     function getProofState(
         uint256 _proof
     ) external view returns (L_Proof.S_ProofState memory proof_);

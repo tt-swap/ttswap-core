@@ -18,19 +18,20 @@ abstract contract GoodManage is I_Good, RefererManage {
     using L_MarketConfigLibrary for uint256;
     using L_Good for L_Good.S_GoodState;
 
-    uint256 public marketconfig;
-    uint256 public goodnum;
-    mapping(uint256 => L_Good.S_GoodState) public goods;
+    /// @inheritdoc I_Good
+    uint256 public override marketconfig;
+    /// @inheritdoc I_Good
+    uint256 public override goodnum;
+    mapping(uint256 => L_Good.S_GoodState) internal goods;
     mapping(address => uint256[]) public ownergoods;
     mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
-    address public marketcreator;
+    address public override marketcreator;
     mapping(address => uint256) public banlist;
 
     constructor(address _marketcreator, uint256 _marketconfig) {
         marketcreator = _marketcreator;
         marketconfig = _marketconfig;
-        // emit e_initMarket(_marketcreator, _marketconfig);
     }
 
     modifier onlyMarketCreator() {
@@ -50,6 +51,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         _;
     }
 
+    /// @inheritdoc I_Good
     function addbanlist(
         address _user
     ) external override onlyMarketCreator returns (bool) {
@@ -57,6 +59,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         return true;
     }
 
+    /// @inheritdoc I_Good
     function removebanlist(
         address _user
     ) external override onlyMarketCreator returns (bool) {
@@ -64,6 +67,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         return true;
     }
 
+    /// @inheritdoc I_Good
     function setMarketConfig(
         uint256 _marketconfig
     ) external override onlyMarketCreator returns (bool) {
@@ -72,12 +76,14 @@ abstract contract GoodManage is I_Good, RefererManage {
         return true;
     }
 
+    /// @inheritdoc I_Good
     function getGoodIdByAddress(
         address _owner
-    ) external view returns (uint256[] memory) {
+    ) external view override returns (uint256[] memory) {
         return ownergoods[_owner];
     }
 
+    /// @inheritdoc I_Good
     function getGoodState(
         uint256 _goodid
     ) external view override returns (L_Good.S_GoodTmpState memory good_) {
@@ -89,10 +95,11 @@ abstract contract GoodManage is I_Good, RefererManage {
         good_.erc20address = goods[_goodid].erc20address;
     }
 
+    /// @inheritdoc I_Good
     function getGoodsFee(
         uint256 _goodid,
         address user
-    ) external view returns (uint256) {
+    ) external view override returns (uint256) {
         return goods[_goodid].fees[user];
     }
 
@@ -106,22 +113,23 @@ abstract contract GoodManage is I_Good, RefererManage {
         return true;
     }
 
+    /// @inheritdoc I_Good
     function updatetoValueGood(
         uint256 _goodid
     ) external override onlyMarketCreator returns (bool) {
         goods[_goodid].updateToValueGood();
-        emit e_updateGood(_goodid, 1);
         return true;
     }
 
+    /// @inheritdoc I_Good
     function updatetoNormalGood(
         uint256 _goodid
     ) external override onlyMarketCreator returns (bool) {
         goods[_goodid].updateToNormalGood();
-        emit e_updateGood(_goodid, 0);
         return true;
     }
 
+    /// @inheritdoc I_Good
     function payGood(
         uint256 _goodid,
         uint256 _payquanity,
@@ -131,7 +139,8 @@ abstract contract GoodManage is I_Good, RefererManage {
         return true;
     }
 
-    function changeOwner(
+    /// @inheritdoc I_Good
+    function changeGoodOwner(
         uint256 _goodid,
         address _to
     ) external override returns (bool) {
@@ -145,6 +154,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         return true;
     }
 
+    /// @inheritdoc I_Good
     function collectProtocolFee(
         uint256 _goodid
     ) external payable override noblacklist returns (uint256) {
@@ -152,9 +162,15 @@ abstract contract GoodManage is I_Good, RefererManage {
         require(fee > 0, "G06");
         goods[_goodid].fees[msg.sender] = 0;
         uint256 protocol = marketconfig.getPlatFee256(fee);
-        emit e_collectProtocolFee(_goodid, msg.sender, protocol);
         goods[_goodid].fees[marketcreator] += protocol;
         goods[_goodid].erc20address.transfer(msg.sender, fee - protocol);
         return fee;
+    }
+
+    /// @inheritdoc I_Good
+    function check_banlist(
+        address _user
+    ) external view override returns (bool _isban) {
+        return banlist[_user] == 1 ? true : false;
     }
 }

@@ -328,7 +328,7 @@ Documents using the BUSL-1.1 license can only be used for learning purposes with
     └── T_ProofId.sol(MIT)
 
 
-# 11 参与和合作联系方式
+# 12 contract 
 X:@ttswap_exchange   
 TG:@ttswap01   
 Email:ttswap.exchange@gmail.com   

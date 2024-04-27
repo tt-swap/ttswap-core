@@ -9,20 +9,21 @@ abstract contract ProofManage is I_Proof {
     using L_Proof for *;
     using L_ProofIdLibrary for S_ProofKey;
 
-    uint256 proofnum;
+    uint256 public override proofnum;
     mapping(uint256 => L_Proof.S_ProofState) public proofs;
-    mapping(address => uint256[]) public _ownerproofs;
+    mapping(address => uint256[]) public ownerproofs;
     mapping(bytes32 => uint256) public proofseq;
-    mapping(uint256 => address) public proof_allownance;
 
     constructor() {}
 
+    /// @inheritdoc I_Proof
     function getProofId(
-        S_ProofKey calldata investproofkey
-    ) external view returns (uint256 _proof) {
-        _proof = proofseq[investproofkey.toId()];
+        S_ProofKey calldata _investproofkey
+    ) external view override returns (uint256 proof_) {
+        proof_ = proofseq[_investproofkey.toId()];
     }
 
+    /// @inheritdoc I_Proof
     function getProofState(
         uint256 _proof
     ) external view override returns (L_Proof.S_ProofState memory proof_) {
@@ -34,6 +35,7 @@ abstract contract ProofManage is I_Proof {
         proof_.valueinvest = proofs[_proof].valueinvest;
     }
 
+    /// @inheritdoc I_Proof
     function changeProofOwner(
         uint256 _proofid,
         address _to

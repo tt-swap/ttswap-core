@@ -172,4 +172,12 @@ library L_GoodConfigLibrary {
         }
         return a;
     }
+
+    //纬度
+    function getReInvest(uint256 config) internal pure returns (uint128 a) {
+        assembly {
+            a := shr(208, shl(181, config))
+        }
+        return a;
+    }
 }

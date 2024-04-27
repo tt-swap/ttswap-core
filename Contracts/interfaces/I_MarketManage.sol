@@ -12,16 +12,13 @@ import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, sub
 /// @title 市场管理接口 market manage interface
 /// @notice 市场管理接口 market manage interface
 interface I_MarketManage is I_Good, I_Proof {
-    // event e_initMetaGood(uint256, T_BalanceUINT256, uint256, address, address);
-    event e_initNormalGood(
-        uint256,
-        uint256,
-        T_BalanceUINT256,
-        uint256,
-        address,
-        address
-    );
-
+    /// @notice emit when customer buy good :当用户购买商品时触发
+    /// @param sellgood good's id  商品的商品ID
+    /// @param forgood   initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.
+    /// @param fromer   seller or buyer address 卖家或买家地址
+    /// @param swapvalue   trade value  交易价值
+    /// @param sellgoodstate   the sellgood status amount0:fee,amount1:quantity 使用商品的交易结果 amount0:手续费,amount1:数量
+    /// @param forgoodstate   the forgood status amount0:fee,amount1:quantity 获得商品的交易结果amount0:手续费,amount1:数量
     event e_buyGood(
         uint256 indexed sellgood,
         uint256 indexed forgood,
@@ -30,7 +27,14 @@ interface I_MarketManage is I_Good, I_Proof {
         T_BalanceUINT256 sellgoodstate,
         T_BalanceUINT256 forgoodstate
     );
-
+    /// @notice emit when customer buy good pay to the seller :当用户购买商品支付给卖家时触发
+    /// @param buygood good's id  商品的商品ID
+    /// @param usegood   initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.
+    /// @param fromer   seller or buyer address 卖家或买家地址
+    /// @param receipt   receipt  收款方
+    /// @param swapvalue   trade value  交易价值
+    /// @param buygoodstate   the buygood status amount0:fee,amount1:quantity 使用商品的交易结果 amount0:手续费,amount1:数量
+    /// @param usegoodstate   the usegood status amount0:fee,amount1:quantity 获得商品的交易结果amount0:手续费,amount1:数量
     event e_buyGoodForPay(
         uint256 indexed buygood,
         uint256 indexed usegood,
@@ -43,18 +47,17 @@ interface I_MarketManage is I_Good, I_Proof {
     event e_proof(uint256 indexed);
 
     error err_total();
-    /// @notice 获取商品状态 get good's state
-    /// @param _erc20address   商品的商品ID good's id
-    /// @param _initial   初始化的商品的参数,前128位为价值,后128位为数量.initial good,amount0:value,amount1:quantity
-    /// @param _goodconfig   初始化的商品的参数,前128位为价值,后128位为数量.initial good,amount0:value,amount1:quantity
-    /// @return  元商品编号
-    /// @return  投资证明编号
-
+    /// @notice get good's state 获取商品状态
+    /// @param _erc20address good's id  商品的商品ID
+    /// @param _initial   initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.
+    /// @param _goodconfig   initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.
+    /// @return metagood_no_ 元商品编号
+    /// @return proof_no_ 投资证明编号
     function initMetaGood(
         address _erc20address,
         T_BalanceUINT256 _initial,
         uint256 _goodconfig
-    ) external payable returns (uint256, uint256);
+    ) external payable returns (uint256 metagood_no_, uint256 proof_no_);
 
     /// @notice 获取商品状态 get good's state
     /// @param _valuegood   使用什么价值物品度量普通物品的价值  use which value good to measure the normal good

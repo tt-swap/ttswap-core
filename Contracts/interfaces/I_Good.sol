@@ -8,11 +8,29 @@ import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 /// @title 商品接口good's interface
 /// @notice 包含商品的一系列接口  contain good's all interfaces
 interface I_Good {
-    event e_updategoodconfig(uint256 indexed, uint256, uint256);
-    event e_updateGood(uint256 indexed, uint256);
-    event e_changeOwner(uint256 indexed, address, address);
-    // event e_initMarket(address, uint256);
-    event e_collectProtocolFee(uint256 indexed, address, uint256);
+    /// @notice emitted when good's user tranfer the good to another 商品拥有者转移关系给另一人
+    /// @param _goodid good number,商品编号
+    /// @param _owner the older owner,原拥有者
+    /// @param _to the new owner,新拥有者
+    event e_changeOwner(uint256 indexed _goodid, address _owner, address _to);
+
+    /// @notice Returns the config of the market 返回市场的配置
+    /// @dev Can be changed by the marketmanager
+    /// @return marketconfig_ The address of the factory owner
+    function marketconfig() external view returns (uint256 marketconfig_);
+
+    /// @notice Returns the manger of market 返回市场管理者 返回市场商品总数
+    /// @return marketcreator_ The address of the factory manager
+    function marketcreator() external view returns (address marketcreator_);
+
+    /// @notice Returns the good's total number of the market 返回市场商品总数
+    /// @return goodnum_ The address of the factory owner
+    function goodnum() external view returns (uint256 goodnum_);
+
+    /// @notice Returns the address's status 查询地址是否被禁止提手续费
+    /// @param _user 用户地址
+    /// @return _isban The address of the factory owner
+    function check_banlist(address _user) external view returns (bool _isban);
 
     /// @notice config market config 设置市场中市场配置
     /// @param _marketconfig   seller address 卖家地址
@@ -65,7 +83,10 @@ interface I_Good {
     /// @param _goodid  good's id 商品的商品ID
     /// @param _to  recipent 接收者
     /// @return the result
-    function changeOwner(uint256 _goodid, address _to) external returns (bool);
+    function changeGoodOwner(
+        uint256 _goodid,
+        address _to
+    ) external returns (bool);
     /// @notice collect protocalFee 收益协议手续费
     /// @param _goodid  good's id 商品的商品ID
     /// @return the result 手续费数量
@@ -74,8 +95,19 @@ interface I_Good {
     ) external payable returns (uint256);
     /// @notice add ban list  增加禁止名单
     /// @param _user  address 地址
-    function addbanlist(address _user) external returns (bool);
+    /// @return is_success_ 是否成功
+    function addbanlist(address _user) external returns (bool is_success_);
     /// @notice  rm ban list  移除禁止名单
     /// @param _user  address 地址
-    function removebanlist(address _user) external returns (bool);
+    /// @return is_success_ 是否成功
+    function removebanlist(address _user) external returns (bool is_success_);
+
+    /// @notice 获取商品的用户协议手续费
+    /// @param _goodid   商品编号
+    /// @param _user   用户地址
+    /// @return fee_ 是否成功
+    function getGoodsFee(
+        uint256 _goodid,
+        address _user
+    ) external view returns (uint256 fee_);
 }

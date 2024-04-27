@@ -26,6 +26,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 _marketconfig
     ) GoodManage(_marketcreator, _marketconfig) {}
 
+    /// @inheritdoc I_MarketManage
     function initMetaGood(
         address _erc20address,
         T_BalanceUINT256 _initial,
@@ -51,16 +52,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             toBalanceUINT256(_initial.amount0(), 0),
             toBalanceUINT256(0, _initial.amount1())
         );
-        // emit e_initMetaGood(
-        //     goodnum,
-        //     _initial,
-        //     _goodConfig,
-        //     _erc20address,
-        //     msg.sender
-        // );
         return (goodnum, proofnum);
     }
 
+    /// @inheritdoc I_MarketManage
     function initNormalGood(
         uint256 _valuegood,
         T_BalanceUINT256 _initial,
@@ -106,17 +101,11 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             toBalanceUINT256(0, _initial.amount0()),
             toBalanceUINT256(0, _initial.amount1())
         );
-        _ownerproofs[msg.sender].push(proofnum);
-        emit e_initNormalGood(
-            _valuegood,
-            goodnum,
-            _initial,
-            _goodConfig,
-            _erc20address,
-            msg.sender
-        );
+        ownerproofs[msg.sender].push(proofnum);
         return (goodnum, proofnum);
     }
+
+    /// @inheritdoc I_MarketManage
     function buyGood(
         uint256 _goodid1,
         uint256 _goodid2,
@@ -182,6 +171,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
     }
 
+    /// @inheritdoc I_MarketManage
     function buyGoodForPay(
         uint256 _goodid1,
         uint256 _goodid2,
@@ -252,6 +242,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
     }
 
+    /// @inheritdoc I_MarketManage
     function investValueGood(
         uint256 _goodid,
         uint128 _goodQuanitity,
@@ -295,6 +286,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         emit e_proof(proofno);
     }
 
+    /// @inheritdoc I_MarketManage
     function disinvestValueGood(
         uint256 _goodid,
         uint128 _goodQuanitity,
@@ -332,6 +324,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         emit e_proof(proofno);
     }
 
+    /// @inheritdoc I_MarketManage
     function investNormalGood(
         uint256 _togood,
         uint256 _valuegood,
@@ -404,6 +397,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         emit e_proof(proofno);
     }
 
+    /// @inheritdoc I_MarketManage
     function disinvestNormalGood(
         uint256 _togood,
         uint256 _valuegood,
@@ -464,6 +458,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         emit e_proof(_normalproofNo);
     }
 
+    /// @inheritdoc I_MarketManage
     function disinvestValueProof(
         uint256 _valueproofid,
         uint128 _goodQuanitity,
@@ -499,6 +494,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 disinvestResult_.actual_fee
         );
     }
+
+    /// @inheritdoc I_MarketManage
     function disinvestNormalProof(
         uint256 _normalProof,
         uint128 _goodQuanitity,

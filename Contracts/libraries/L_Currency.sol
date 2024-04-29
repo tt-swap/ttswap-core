@@ -16,27 +16,11 @@ library L_CurrencyLibrary {
 
     address public constant NATIVE = address(0);
 
-    function approve(address currency, uint256 amount) internal {
-        IERC20Minimal(currency).approve(address(this), amount);
-    }
-
-    function decimals(address currency) internal view returns (uint8) {
-        return IERC20Minimal(currency).decimals();
-    }
-
-    function totalSupply(address currency) internal view returns (uint256) {
-        return IERC20Minimal(currency).totalSupply();
-    }
-
-    function transferFrom(
+    function safeTransfer(
         address currency,
-        address from,
+        address to,
         uint256 amount
     ) internal {
-        IERC20Minimal(currency).transferFrom(from, address(this), amount);
-    }
-
-    function transfer(address currency, address to, uint256 amount) internal {
         // implementation from
         // https://github.com/transmissions11/solmate/blob/e8f96f25d48fe702117ce76c79228ca4f20206cb/src/utils/SafeTransferLib.sol
 
@@ -82,23 +66,39 @@ library L_CurrencyLibrary {
         }
     }
 
-    function balanceOfSelf(address currency) internal view returns (uint256) {
-        if (currency.isNative()) {
-            return address(this).balance;
-        } else {
-            return IERC20Minimal(currency).balanceOf(address(this));
-        }
+    function safeTransferFrom(
+        address token,
+        address from,
+        address to,
+        uint256 value
+    ) internal {
+        (bool success, bytes memory data) = address(token).call(
+            abi.encodeWithSelector(
+                IERC20Minimal(token).transferFrom.selector,
+                from,
+                to,
+                value
+            )
+        );
+        require(
+            success && (data.length == 0 || abi.decode(data, (bool))),
+            "STF"
+        );
     }
 
-    function balanceOf(
-        address currency,
-        address owner
-    ) internal view returns (uint256) {
-        if (currency.isNative()) {
-            return owner.balance;
-        } else {
-            return IERC20Minimal(currency).balanceOf(owner);
-        }
+    function transferFrom(address token, address from, uint256 value) internal {
+        (bool success, bytes memory data) = address(token).call(
+            abi.encodeWithSelector(
+                IERC20Minimal(token).transferFrom.selector,
+                from,
+                address(this),
+                value
+            )
+        );
+        require(
+            success && (data.length == 0 || abi.decode(data, (bool))),
+            "STF"
+        );
     }
 
     function isNative(address currency) internal pure returns (bool) {

@@ -76,8 +76,8 @@ interface I_Good {
     function payGood(
         uint256 _goodid,
         uint256 _payquanity,
-        address _recipent
-    ) external returns (bool);
+        address payable _recipent
+    ) external payable returns (bool);
 
     /// @notice set good's Owner 改变商品的拥有者
     /// @param _goodid  good's id 商品的商品ID

@@ -133,9 +133,13 @@ abstract contract GoodManage is I_Good, RefererManage {
     function payGood(
         uint256 _goodid,
         uint256 _payquanity,
-        address _recipent
-    ) external returns (bool) {
-        goods[_goodid].erc20address.transfer(_recipent, _payquanity);
+        address payable _recipent
+    ) external payable returns (bool) {
+        goods[_goodid].erc20address.safeTransferFrom(
+            msg.sender,
+            _recipent,
+            _payquanity
+        );
         return true;
     }
 
@@ -163,7 +167,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         goods[_goodid].fees[msg.sender] = 0;
         uint256 protocol = marketconfig.getPlatFee256(fee);
         goods[_goodid].fees[marketcreator] += protocol;
-        goods[_goodid].erc20address.transfer(msg.sender, fee - protocol);
+        goods[_goodid].erc20address.safeTransfer(msg.sender, fee - protocol);
         return fee;
     }
 

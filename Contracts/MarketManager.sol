@@ -157,7 +157,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _swapQuanitity - swapcache.remainQuanitity
         );
 
-        goods[_goodid2].erc20address.transfer(msg.sender, goodid2Quanitity_);
+        goods[_goodid2].erc20address.safeTransfer(
+            msg.sender,
+            goodid2Quanitity_
+        );
         emit e_buyGood(
             _goodid1,
             _goodid2,
@@ -220,7 +223,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
-        goods[_goodid2].erc20address.transfer(
+        goods[_goodid2].erc20address.safeTransfer(
             _recipent,
             _swapQuanitity - swapcache.remainQuanitity
         );
@@ -314,7 +317,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
         goods[_goodid].fees[marketcreator] += protocalfee;
         disinvestResult_.actual_fee = disinvestResult_.actual_fee + protocalfee;
-        goods[_goodid].erc20address.transfer(
+        goods[_goodid].erc20address.safeTransfer(
             msg.sender,
             _goodQuanitity +
                 disinvestResult_.profit -
@@ -442,14 +445,14 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goods[_togood].fees[marketcreator] += protocalfee.amount0();
         goods[_valuegood].fees[marketcreator] += protocalfee.amount1();
 
-        goods[_togood].erc20address.transfer(
+        goods[_togood].erc20address.safeTransfer(
             msg.sender,
             _goodQuanitity +
                 disinvestNormalResult1_.profit -
                 disinvestNormalResult1_.actual_fee
         );
 
-        goods[_valuegood].erc20address.transfer(
+        goods[_valuegood].erc20address.safeTransfer(
             msg.sender,
             disinvestValueResult2_.actualDisinvestQuantity +
                 disinvestValueResult2_.profit -
@@ -487,7 +490,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         disinvestResult_.actual_fee += protocalfee;
         goods[goodid1].fees[marketcreator] += protocalfee;
-        goods[goodid1].erc20address.transfer(
+        goods[goodid1].erc20address.safeTransfer(
             msg.sender,
             _goodQuanitity +
                 disinvestResult_.profit -
@@ -536,14 +539,14 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goods[currentgood].fees[marketcreator] += protocalfee.amount0();
         goods[valuegood].fees[marketcreator] += protocalfee.amount1();
 
-        goods[currentgood].erc20address.transfer(
+        goods[currentgood].erc20address.safeTransfer(
             msg.sender,
             _goodQuanitity +
                 disinvestNormalResult1_.profit -
                 disinvestNormalResult1_.actual_fee
         );
 
-        goods[valuegood].erc20address.transfer(
+        goods[valuegood].erc20address.safeTransfer(
             msg.sender,
             disinvestValueResult2_.actualDisinvestQuantity +
                 disinvestValueResult2_.profit -

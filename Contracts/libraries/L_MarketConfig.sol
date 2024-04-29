@@ -4,7 +4,7 @@ pragma solidity 0.8.24;
 /// @notice Library for computing the ID of a pool
 
 library L_MarketConfigLibrary {
-    //商品出售费率 单位万分之一
+    //流动性提供者占比 单位百分之一
     //起始位 1 长度
     function getLiquidFee(uint256 config) internal pure returns (uint8 a) {
         assembly {

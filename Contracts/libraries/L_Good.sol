@@ -301,7 +301,7 @@ library L_Good {
         _self.feeQunitityState =
             _self.feeQunitityState +
             toBalanceUINT256(_marketconfig.getLiquidFee(_fee), 0);
-        allocateFee(_self, _fee, _marketconfig, _ralate);
+        if (_fee > 0) allocateFee(_self, _fee, _marketconfig, _ralate);
     }
 
     function investGood(
@@ -426,7 +426,13 @@ library L_Good {
                 _marketconfig.getLiquidFee(disinvestResult_.actual_fee),
                 0
             );
-        allocateFee(_self, disinvestResult_.actual_fee, _marketconfig, _ralate);
+        if (disinvestResult_.actual_fee > 0)
+            allocateFee(
+                _self,
+                disinvestResult_.actual_fee,
+                _marketconfig,
+                _ralate
+            );
     }
 
     function disinvestNormalGood(

@@ -37,7 +37,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         _erc20address.transferFrom(msg.sender, _initial.amount1());
 
         goodnum += 1;
-
         goodseq[S_GoodKey(_erc20address, msg.sender).toId()] = goodnum;
 
         goods[goodnum].init(_initial, _erc20address, _goodConfig);

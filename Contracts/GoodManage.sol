@@ -22,11 +22,13 @@ abstract contract GoodManage is I_Good, RefererManage {
     uint256 public override marketconfig;
     /// @inheritdoc I_Good
     uint256 public override goodnum;
+    /// @inheritdoc I_Good
+    address public override marketcreator;
+
     mapping(uint256 => L_Good.S_GoodState) internal goods;
     mapping(address => uint256[]) public ownergoods;
     mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
-    address public override marketcreator;
     mapping(address => uint256) public banlist;
 
     constructor(address _marketcreator, uint256 _marketconfig) {
@@ -109,7 +111,6 @@ abstract contract GoodManage is I_Good, RefererManage {
     ) external override returns (bool) {
         require(msg.sender == goods[_goodid].owner, "G04");
         goods[_goodid].updateGoodConfig(_goodConfig);
-
         return true;
     }
 
@@ -152,7 +153,6 @@ abstract contract GoodManage is I_Good, RefererManage {
             msg.sender == goods[_goodid].owner || msg.sender == marketcreator,
             "G05"
         );
-        emit e_changeOwner(_goodid, goods[_goodid].owner, _to);
         goods[_goodid].owner = _to;
         ownergoods[_to].push(_goodid);
         return true;

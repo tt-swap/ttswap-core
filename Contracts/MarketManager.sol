@@ -12,6 +12,8 @@ import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
 import {S_ProofKey, S_GoodKey, S_Ralate} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
+import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     using L_GoodConfigLibrary for uint256;
@@ -21,6 +23,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     using L_Proof for L_Proof.S_ProofState;
     using L_CurrencyLibrary for address;
     using L_MarketConfigLibrary for uint256;
+    using L_ArrayStorage for L_ArrayStorage.S_ArrayStorage;
     constructor(
         address _marketcreator,
         uint256 _marketconfig
@@ -41,17 +44,17 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
         goods[goodnum].init(_initial, _erc20address, _goodConfig);
         goods[goodnum].updateToValueGood();
-        ownergoods[msg.sender].push(goodnum);
+        ownergoods[msg.sender].addvalue(goodnum);
 
         bytes32 normalproof = S_ProofKey(msg.sender, goodnum, 0).toId();
-        proofnum += 1;
-        proofseq[normalproof] = proofnum;
-        proofs[proofnum].updateValueInvest(
+        totalSupply += 1;
+        proofseq[normalproof] = totalSupply;
+        proofs[totalSupply].updateValueInvest(
             goodnum,
             toBalanceUINT256(_initial.amount0(), 0),
             toBalanceUINT256(0, _initial.amount1())
         );
-        return (goodnum, proofnum);
+        return (goodnum, totalSupply);
     }
 
     /// @inheritdoc I_MarketManage
@@ -76,7 +79,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         goodnum += 1;
         goodseq[togood] = goodnum;
-        ownergoods[msg.sender].push(goodnum);
+        ownergoods[msg.sender].addvalue(goodnum);
         goods[goodnum].init(
             toBalanceUINT256(value, _initial.amount0()),
             _erc20address,
@@ -90,18 +93,20 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         bytes32 normalproof = S_ProofKey(msg.sender, goodnum, _valuegood)
             .toId();
-        proofnum += 1;
-        proofseq[normalproof] = proofnum;
-        proofs[proofnum] = L_Proof.S_ProofState(
+        totalSupply += 1;
+        proofseq[normalproof] = totalSupply;
+        proofs[totalSupply] = L_Proof.S_ProofState(
             msg.sender,
             goodnum,
             _valuegood,
             toBalanceUINT256(value, 0),
             toBalanceUINT256(0, _initial.amount0()),
-            toBalanceUINT256(0, _initial.amount1())
+            toBalanceUINT256(0, _initial.amount1()),
+            address(0),
+            address(0)
         );
-        ownerproofs[msg.sender].push(proofnum);
-        return (goodnum, proofnum);
+        ownerproofs[msg.sender].addvalue(totalSupply);
+        return (goodnum, totalSupply);
     }
 
     /// @inheritdoc I_MarketManage
@@ -272,9 +277,9 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
         uint256 proofno = proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()];
         if (proofno == 0) {
-            proofnum += 1;
-            proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()] = proofnum;
-            proofno = proofnum;
+            totalSupply += 1;
+            proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()] = totalSupply;
+            proofno = totalSupply;
         }
 
         proofs[proofno].updateValueInvest(
@@ -375,11 +380,11 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             S_ProofKey(msg.sender, _togood, _valuegood).toId()
         ];
         if (proofno == 0) {
-            proofnum += 1;
+            totalSupply += 1;
             proofseq[
                 S_ProofKey(msg.sender, _togood, _valuegood).toId()
-            ] = proofnum;
-            proofno = proofnum;
+            ] = totalSupply;
+            proofno = totalSupply;
         }
 
         proofs[proofno].updateNormalInvest(
@@ -550,6 +555,58 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             disinvestValueResult2_.actualDisinvestQuantity +
                 disinvestValueResult2_.profit -
                 disinvestValueResult2_.actual_fee
+        );
+    }
+
+    function collectValueProofFee(
+        uint256 _valueProofid
+    ) public returns (uint128 profit) {
+        require(
+            (proofs[_valueProofid].owner == msg.sender ||
+                proofs[_valueProofid].beneficiary == msg.sender) &&
+                proofs[_valueProofid].valuegood == 0,
+            "M09"
+        );
+
+        uint256 goodid1 = proofs[_valueProofid].currentgood;
+        profit = goods[goodid1].collectValueGoodFee(proofs[_valueProofid]);
+        uint128 protocalfee = marketconfig.getPlatFee128(profit);
+        profit -= protocalfee;
+        goods[goodid1].fees[marketcreator] += protocalfee;
+        goods[goodid1].erc20address.safeTransfer(msg.sender, profit);
+    }
+
+    function collectNormalProofFee(
+        uint256 _normalProofid
+    ) public returns (T_BalanceUINT256 profit) {
+        require(
+            (proofs[_normalProofid].owner == msg.sender ||
+                proofs[_normalProofid].beneficiary == msg.sender) &&
+                proofs[_normalProofid].valuegood != 0,
+            "M09"
+        );
+        uint256 valuegood = proofs[_normalProofid].valuegood;
+        uint256 currentgood = proofs[_normalProofid].currentgood;
+
+        profit = goods[currentgood].collectNormalGoodFee(
+            goods[valuegood],
+            proofs[_normalProofid]
+        );
+
+        T_BalanceUINT256 protocalfee = toBalanceUINT256(
+            marketconfig.getPlatFee128(profit.amount0()),
+            marketconfig.getPlatFee128(profit.amount1())
+        );
+        profit = profit - protocalfee;
+        goods[currentgood].fees[marketcreator] += protocalfee.amount0();
+        goods[valuegood].fees[marketcreator] += protocalfee.amount1();
+        goods[currentgood].erc20address.safeTransfer(
+            msg.sender,
+            profit.amount0()
+        );
+        goods[valuegood].erc20address.safeTransfer(
+            msg.sender,
+            profit.amount1()
         );
     }
 }

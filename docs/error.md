@@ -17,3 +17,6 @@ G11 "normal good's value not enough"
 G12 "normal good's quantity not enough"
 U1 "you refer exists"
 P1 "not your proof"
+
+
+

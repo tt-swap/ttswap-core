@@ -10,12 +10,14 @@ import {L_Good} from "./libraries/L_Good.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {S_GoodKey} from "./libraries/L_Struct.sol";
+import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "./libraries/L_BalanceUINT256.sol";
 
 abstract contract GoodManage is I_Good, RefererManage {
     using L_CurrencyLibrary for address;
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
+    using L_ArrayStorage for L_ArrayStorage.S_ArrayStorage;
     using L_Good for L_Good.S_GoodState;
 
     /// @inheritdoc I_Good
@@ -26,7 +28,7 @@ abstract contract GoodManage is I_Good, RefererManage {
     address public override marketcreator;
 
     mapping(uint256 => L_Good.S_GoodState) internal goods;
-    mapping(address => uint256[]) public ownergoods;
+    mapping(address => L_ArrayStorage.S_ArrayStorage) public ownergoods;
     mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
     mapping(address => uint256) public banlist;
@@ -80,9 +82,13 @@ abstract contract GoodManage is I_Good, RefererManage {
 
     /// @inheritdoc I_Good
     function getGoodIdByAddress(
-        address _owner
-    ) external view override returns (uint256[] memory) {
-        return ownergoods[_owner];
+        address _owner,
+        uint256 _key
+    ) external view override returns (uint256) {
+        return
+            _key <= ownergoods[_owner].key
+                ? ownergoods[_owner].key_value[_key]
+                : 0;
     }
 
     /// @inheritdoc I_Good
@@ -154,7 +160,7 @@ abstract contract GoodManage is I_Good, RefererManage {
             "G05"
         );
         goods[_goodid].owner = _to;
-        ownergoods[_to].push(_goodid);
+        ownergoods[_to].addvalue(_goodid);
         return true;
     }
 

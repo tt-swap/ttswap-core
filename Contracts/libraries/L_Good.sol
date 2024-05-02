@@ -348,12 +348,7 @@ library L_Good {
             );
         uint128 actutal_fee = _invest - investResult_.actualInvestQuantity;
         if (actutal_fee > 0)
-            allocateFee(
-                _self,
-                _invest - investResult_.actualInvestQuantity,
-                _marketConfig,
-                _ralate
-            );
+            allocateFee(_self, actutal_fee, _marketConfig, _ralate);
     }
 
     function disinvestValueGood(
@@ -364,14 +359,17 @@ library L_Good {
         S_Ralate memory _ralate
     ) internal returns (S_GoodDisinvestReturn memory disinvestResult_) {
         disinvestResult_ = S_GoodDisinvestReturn(
+            //feeamount
             toBalanceUINT256(
                 _self.feeQunitityState.amount0(),
                 _self.investState.amount1()
             ).getamount0fromamount1(_goodQuantity),
+            //disvest contruct fee
             toBalanceUINT256(
                 _investProof.invest.amount0(),
                 _investProof.invest.amount1()
             ).getamount0fromamount1(_goodQuantity),
+            //disvest value
             toBalanceUINT256(
                 _investProof.state.amount0(),
                 _investProof.invest.amount1()
@@ -420,19 +418,63 @@ library L_Good {
             disinvestResult_.actualDisinvestQuantity
         );
 
-        _self.feeQunitityState =
-            _self.feeQunitityState +
-            toBalanceUINT256(
-                _marketconfig.getLiquidFee(disinvestResult_.actual_fee),
-                0
-            );
-        if (disinvestResult_.actual_fee > 0)
+        if (disinvestResult_.actual_fee > 0) {
+            _self.feeQunitityState =
+                _self.feeQunitityState +
+                toBalanceUINT256(
+                    _marketconfig.getLiquidFee(disinvestResult_.actual_fee),
+                    0
+                );
             allocateFee(
                 _self,
                 disinvestResult_.actual_fee,
                 _marketconfig,
                 _ralate
             );
+        }
+    }
+    function collectValueGoodFee(
+        S_GoodState storage _self,
+        L_Proof.S_ProofState storage _investProof
+    ) internal returns (uint128 profit) {
+        profit =
+            toBalanceUINT256(
+                _self.feeQunitityState.amount0(),
+                _self.investState.amount1()
+            ).getamount0fromamount1(_investProof.invest.amount1()) -
+            _investProof.invest.amount0();
+
+        _self.feeQunitityState =
+            _self.feeQunitityState +
+            toBalanceUINT256(0, profit);
+        _investProof.collectValueProofFee(profit);
+    }
+
+    function collectNormalGoodFee(
+        S_GoodState storage _self,
+        S_GoodState storage _valuegood,
+        L_Proof.S_ProofState storage _investProof
+    ) internal returns (T_BalanceUINT256 profit) {
+        profit = toBalanceUINT256(
+            toBalanceUINT256(
+                _self.feeQunitityState.amount0(),
+                _self.investState.amount1()
+            ).getamount0fromamount1(_investProof.invest.amount1()) -
+                _investProof.invest.amount0(),
+            toBalanceUINT256(
+                _valuegood.feeQunitityState.amount0(),
+                _valuegood.investState.amount1()
+            ).getamount0fromamount1(_investProof.valueinvest.amount1()) -
+                _investProof.valueinvest.amount1()
+        );
+
+        _self.feeQunitityState =
+            _self.feeQunitityState +
+            toBalanceUINT256(0, profit.amount0());
+        _self.feeQunitityState =
+            _self.feeQunitityState +
+            toBalanceUINT256(0, profit.amount1());
+        _investProof.collectNormalProofFee(profit);
     }
 
     function disinvestNormalGood(
@@ -598,8 +640,8 @@ library L_Good {
         uint256 _marketconfig,
         S_Ralate memory _ralate
     ) private {
-        uint128 temfee;
         if (_ralate.refer == address(0)) {
+            uint128 temfee;
             temfee =
                 _marketconfig.getSellerFee(_actualFeeQuantity) +
                 _marketconfig.getCustomerFee(_actualFeeQuantity);

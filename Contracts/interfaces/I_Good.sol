@@ -5,6 +5,7 @@ import {S_GoodKey, S_Ralate} from "../libraries/L_Struct.sol";
 import {L_Good} from "../libraries/L_Good.sol";
 import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 
+
 /// @title 商品接口good's interface
 /// @notice 包含商品的一系列接口  contain good's all interfaces
 interface I_Good {
@@ -38,10 +39,12 @@ interface I_Good {
 
     /// @notice get seller's good 获取卖家的商品列表
     /// @param _owner   seller address 卖家地址
+    /// @param _seq   seller address 第几个商品
     /// @return  goods list 商品编号列表
     function getGoodIdByAddress(
-        address _owner
-    ) external view returns (uint256[] memory);
+        address _owner,
+        uint256 _seq
+    ) external view returns (uint256);
 
     /// @notice get good's state 获取商品状态
     /// @param _goodid  good's id  商品的商品ID

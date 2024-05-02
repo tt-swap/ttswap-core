@@ -9,9 +9,11 @@ library L_Proof {
         address owner;
         uint256 currentgood;
         uint256 valuegood;
-        T_BalanceUINT256 state;
-        T_BalanceUINT256 invest;
-        T_BalanceUINT256 valueinvest;
+        T_BalanceUINT256 state; //前128位表示投资的价值, amount0:invest value
+        T_BalanceUINT256 invest; //前128位表示投资的构建手续费,后128位表示投资数量 amount0:contrunct fee ,amount1:invest quantity
+        T_BalanceUINT256 valueinvest; //前128位表示投资的构建手续费,后128位表示投资数量 amount0:contrunct fee ,amount1:invest quantity
+        address approval;
+        address beneficiary;
     }
     function updateValueInvest(
         S_ProofState storage _self,
@@ -100,6 +102,33 @@ library L_Proof {
                 a := div(config, domitor)
             }
         }
+    }
+
+    function _approve(S_ProofState storage _self, address to) internal {
+        _self.approval = to;
+    }
+
+    function collectValueProofFee(
+        S_ProofState storage _self,
+        uint128 profit
+    ) internal {
+        _self.invest = _self.invest + toBalanceUINT256(profit, 0);
+    }
+
+    function collectNormalProofFee(
+        S_ProofState storage _self,
+        T_BalanceUINT256 profit
+    ) internal {
+        _self.invest = _self.invest + toBalanceUINT256(profit.amount0(), 0);
+        _self.valueinvest =
+            _self.valueinvest +
+            toBalanceUINT256(profit.amount1(), 0);
+    }
+}
+
+library L_ProofKeyLibrary {
+    function toId(S_ProofKey memory proofKey) internal pure returns (bytes32) {
+        return keccak256(abi.encode(proofKey));
     }
 }
 

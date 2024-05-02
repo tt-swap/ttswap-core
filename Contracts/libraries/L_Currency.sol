@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {IERC20Minimal} from "../interfaces/IERC20Minimal.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /// @title L_CurrencyLibrary
 /// @dev This library allows for transferring and holding native tokens and ERC20 tokens
@@ -74,7 +74,7 @@ library L_CurrencyLibrary {
     ) internal {
         (bool success, bytes memory data) = address(token).call(
             abi.encodeWithSelector(
-                IERC20Minimal(token).transferFrom.selector,
+                IERC20(token).transferFrom.selector,
                 from,
                 to,
                 value
@@ -89,7 +89,7 @@ library L_CurrencyLibrary {
     function transferFrom(address token, address from, uint256 value) internal {
         (bool success, bytes memory data) = address(token).call(
             abi.encodeWithSelector(
-                IERC20Minimal(token).transferFrom.selector,
+                IERC20(token).transferFrom.selector,
                 from,
                 address(this),
                 value

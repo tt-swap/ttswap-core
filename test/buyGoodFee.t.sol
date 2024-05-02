@@ -45,17 +45,26 @@ contract buyGoodFee is BaseSetup {
             2 ** 231 +
             8 *
             2 ** 224;
+
+        console2.log(_goodConfig);
         (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000000, 20000000),
             _goodConfig
         );
+
+        console2.log(1, _goodConfig);
+        console2.log(2, (20000000 * 10 ** 18) * 2 ** 128 + 20000000 * 10 ** 18);
+        console2.log(3, 20000000 * 10 ** 18);
+        console2.log(address(0));
+
         uint256 _marketConfig = (50 << 250) +
             (5 << 244) +
             (10 << 238) +
             (15 << 232) +
             (20 << 226) +
             (20 << 220);
+        console2.log(_marketConfig);
 
         market.setMarketConfig(_marketConfig);
 

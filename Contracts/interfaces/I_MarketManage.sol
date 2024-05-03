@@ -57,7 +57,7 @@ interface I_MarketManage is I_Good, I_Proof {
         address _erc20address,
         T_BalanceUINT256 _initial,
         uint256 _goodconfig
-    ) external payable returns (uint256 metagood_no_, uint256 proof_no_);
+    ) external returns (uint256 metagood_no_, uint256 proof_no_);
 
     /// @notice 获取商品状态 get good's state
     /// @param _valuegood   使用什么价值物品度量普通物品的价值  use which value good to measure the normal good
@@ -73,7 +73,7 @@ interface I_MarketManage is I_Good, I_Proof {
         address _erc20address,
         uint256 _goodConfig,
         address _gater
-    ) external payable returns (uint256 goodNo_, uint256 proofNo_);
+    ) external returns (uint256 goodNo_, uint256 proofNo_);
 
     /// @notice 出售商品1购买商品2
     /// @dev 如果购买商品1而出售商品2,开发者需求折算成使用商品2购买商品1
@@ -94,7 +94,6 @@ interface I_MarketManage is I_Good, I_Proof {
         address _gater
     )
         external
-        payable
         returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_);
 
     /// @notice 出售商品1购买商品2
@@ -116,7 +115,6 @@ interface I_MarketManage is I_Good, I_Proof {
         address _gater
     )
         external
-        payable
         returns (uint128 goodid2_quanitity_, uint128 goodid2_fee_quanitity_);
 
     /// @notice 投资价值商品
@@ -135,10 +133,7 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodid,
         uint128 _goodQuanitity,
         address _gater
-    )
-        external
-        payable
-        returns (L_Good.S_GoodInvestReturn calldata valueInvest_);
+    ) external returns (L_Good.S_GoodInvestReturn calldata valueInvest_);
 
     /// @notice 撤资价值商品
     /// @param _goodid   价值商品的ID
@@ -149,10 +144,7 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodid,
         uint128 _goodQuanitity,
         address _gater
-    )
-        external
-        payable
-        returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_);
+    ) external returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_);
 
     /// @notice 投资普通商品
     /// @param _togood   普通商品的ID
@@ -180,7 +172,6 @@ interface I_MarketManage is I_Good, I_Proof {
         address _gater
     )
         external
-        payable
         returns (
             L_Good.S_GoodInvestReturn calldata normalinvest,
             L_Good.S_GoodInvestReturn calldata valueinvest
@@ -200,7 +191,6 @@ interface I_MarketManage is I_Good, I_Proof {
         address _gater
     )
         external
-        payable
         returns (
             L_Good.S_GoodDisinvestReturn memory disinvestResult1_,
             L_Good.S_GoodDisinvestReturn memory disinvestResult2_
@@ -215,10 +205,7 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _valueproofid,
         uint128 _goodQuanitity,
         address _gater
-    )
-        external
-        payable
-        returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_);
+    ) external returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_);
 
     /// @notice 撤资普通商品证明
     /// @param _normalProof   投资ID
@@ -232,9 +219,22 @@ interface I_MarketManage is I_Good, I_Proof {
         address _gater
     )
         external
-        payable
         returns (
             L_Good.S_GoodDisinvestReturn memory disinvestResult1_,
             L_Good.S_GoodDisinvestReturn memory disinvestResult2_
         );
+
+    /// @notice collect the profit of normal proof 提取普通投资证明的收益
+    /// @param _normalProofid   投资ID
+    /// @return profit_   amount0 普通商品的投资收益 amount1价值商品的投资收益
+    function collectNormalProofFee(
+        uint256 _normalProofid
+    ) external returns (T_BalanceUINT256 profit_);
+
+    /// @notice collect the profit of normal proof 提取普通投资证明的收益
+    /// @param _valueProofid   投资ID
+    /// @return profit_  价值商品的投资收益
+    function collectValueProofFee(
+        uint256 _valueProofid
+    ) external returns (uint128 profit_);
 }

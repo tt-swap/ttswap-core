@@ -79,8 +79,8 @@ interface I_Good {
     function payGood(
         uint256 _goodid,
         uint256 _payquanity,
-        address payable _recipent
-    ) external payable returns (bool);
+        address  _recipent
+    ) external  returns (bool);
 
     /// @notice set good's Owner 改变商品的拥有者
     /// @param _goodid  good's id 商品的商品ID
@@ -95,7 +95,7 @@ interface I_Good {
     /// @return the result 手续费数量
     function collectProtocolFee(
         uint256 _goodid
-    ) external payable returns (uint256);
+    ) external  returns (uint256);
     /// @notice add ban list  增加禁止名单
     /// @param _user  address 地址
     /// @return is_success_ 是否成功

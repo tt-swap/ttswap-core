@@ -13,7 +13,6 @@ import {S_ProofKey, S_GoodKey, S_Ralate} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     using L_GoodConfigLibrary for uint256;
@@ -34,7 +33,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _erc20address,
         T_BalanceUINT256 _initial,
         uint256 _goodConfig
-    ) external payable override onlyMarketCreator returns (uint256, uint256) {
+    ) external override onlyMarketCreator returns (uint256, uint256) {
         require(_goodConfig.isvaluegood(), "M02");
 
         _erc20address.transferFrom(msg.sender, _initial.amount1());
@@ -64,7 +63,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _erc20address,
         uint256 _goodConfig,
         address _gater
-    ) external payable override noReentrant returns (uint256, uint256) {
+    ) external override noReentrant returns (uint256, uint256) {
         require(goods[_valuegood].goodConfig.isvaluegood(), "M02");
         bytes32 togood = S_GoodKey(_erc20address, msg.sender).toId();
         require(goodseq[togood] == 0, "M01");
@@ -119,7 +118,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
-        payable
         override
         noReentrant
         returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_)
@@ -188,7 +186,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
-        payable
         override
         noReentrant
         returns (uint128 goodid1Quanitity_, uint128 goodid1FeeQuanitity_)
@@ -256,7 +253,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
-        payable
         override
         noReentrant
         returns (L_Good.S_GoodInvestReturn memory valueInvest_)
@@ -300,7 +296,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
-        payable
         override
         noReentrant
         returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_)
@@ -339,7 +334,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
-        payable
         override
         noReentrant
         returns (
@@ -412,7 +406,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
-        payable
         override
         noReentrant
         returns (
@@ -472,7 +465,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
-        payable
         override
         noReentrant
         returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_)
@@ -509,7 +501,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
-        payable
         override
         noReentrant
         returns (
@@ -560,7 +551,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
     function collectValueProofFee(
         uint256 _valueProofid
-    ) public returns (uint128 profit) {
+    ) external override returns (uint128 profit) {
         require(
             (proofs[_valueProofid].owner == msg.sender ||
                 proofs[_valueProofid].beneficiary == msg.sender) &&
@@ -578,7 +569,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
     function collectNormalProofFee(
         uint256 _normalProofid
-    ) public returns (T_BalanceUINT256 profit) {
+    ) external override returns (T_BalanceUINT256 profit) {
         require(
             (proofs[_normalProofid].owner == msg.sender ||
                 proofs[_normalProofid].beneficiary == msg.sender) &&

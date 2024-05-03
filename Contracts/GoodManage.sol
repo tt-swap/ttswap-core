@@ -140,8 +140,8 @@ abstract contract GoodManage is I_Good, RefererManage {
     function payGood(
         uint256 _goodid,
         uint256 _payquanity,
-        address payable _recipent
-    ) external payable returns (bool) {
+        address _recipent
+    ) external returns (bool) {
         goods[_goodid].erc20address.safeTransferFrom(
             msg.sender,
             _recipent,
@@ -167,7 +167,7 @@ abstract contract GoodManage is I_Good, RefererManage {
     /// @inheritdoc I_Good
     function collectProtocolFee(
         uint256 _goodid
-    ) external payable override noblacklist returns (uint256) {
+    ) external override noblacklist returns (uint256) {
         uint256 fee = goods[_goodid].fees[msg.sender];
         require(fee > 0, "G06");
         goods[_goodid].fees[msg.sender] = 0;

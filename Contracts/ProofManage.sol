@@ -30,14 +30,14 @@ abstract contract ProofManage is I_Proof, ERC165 {
         private _operatorApprovals;
 
     modifier onlyOwner(uint256 proofid) {
-        require(proofs[proofid].owner == msg.sender, "");
+        require(proofs[proofid].owner == msg.sender, "only owner");
         _;
     }
     modifier onlyApproval(uint256 proofid) {
         require(
             proofs[proofid].owner == msg.sender ||
                 proofs[proofid].approval == msg.sender,
-            ""
+            "only approval"
         );
         _;
     }

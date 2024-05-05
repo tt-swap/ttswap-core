@@ -91,13 +91,13 @@ contract disinvestNormalGoodFee is BaseSetup {
         L_Good.S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
         L_Proof.S_ProofState memory _s = market.getProofState(p_);
 
-        assertEq(_s.state.amount0(), 10000, "proof's value is error");
+        assertEq(_s.state.amount0(), 9992, "proof's value is error");
         assertEq(_s.invest.amount0(), 0, "proof's contruct quantity is error");
         assertEq(_s.invest.amount1(), 10000, "proof's quantity is error");
 
         assertEq(
             aa.currentState.amount0(),
-            10000,
+            9992,
             "currentState's value is error"
         );
         assertEq(
@@ -108,7 +108,7 @@ contract disinvestNormalGoodFee is BaseSetup {
 
         assertEq(
             aa.investState.amount0(),
-            10000,
+            9992,
             "investState's value is error"
         );
         assertEq(
@@ -200,13 +200,13 @@ contract disinvestNormalGoodFee is BaseSetup {
         L_Good.S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
         L_Proof.S_ProofState memory _s = market.getProofState(p_);
 
-        assertEq(_s.state.amount0(), 10000, "proof's value is error");
+        assertEq(_s.state.amount0(), 9992, "proof's value is error");
         assertEq(_s.invest.amount0(), 0, "proof's contruct quantity is error");
         assertEq(_s.invest.amount1(), 10000, "proof's quantity is error");
 
         assertEq(
             aa.currentState.amount0(),
-            10000,
+            9992,
             "currentState's value is error"
         );
         assertEq(
@@ -217,7 +217,7 @@ contract disinvestNormalGoodFee is BaseSetup {
 
         assertEq(
             aa.investState.amount0(),
-            10000,
+            9992,
             "investState's value is error"
         );
         assertEq(
@@ -264,7 +264,7 @@ contract disinvestNormalGoodFee is BaseSetup {
             market.getGoodState(metagood).feeQunitityState.amount0(),
             "11111"
         );
-        assertEq(_s1.state.amount0(), 10000, "proof's value is error");
+        assertEq(_s1.state.amount0(), 9992, "proof's value is error");
         assertEq(_s1.invest.amount0(), 0, "proof's contruct quantity is error");
         assertEq(_s1.invest.amount1(), 10000, "proof's quantity is error");
         snapStart("disinvest normal proof with fee second");

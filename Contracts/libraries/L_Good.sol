@@ -303,7 +303,6 @@ library L_Good {
             toBalanceUINT256(_marketconfig.getLiquidFee(_fee), 0);
         if (_fee > 0) allocateFee(_self, _fee, _marketconfig, _ralate);
     }
-
     function investGood(
         S_GoodState storage _self,
         uint128 _invest,

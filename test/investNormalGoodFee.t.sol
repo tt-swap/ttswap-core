@@ -108,13 +108,13 @@ contract investNormalGoodFee is BaseSetup {
         L_Good.S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
         L_Proof.S_ProofState memory _s = market.getProofState(normalproofusdt);
 
-        assertEq(_s.state.amount0(), 19992, "proof's value is error");
+        assertEq(_s.state.amount0(), 19976, "proof's value is error");
         assertEq(_s.invest.amount0(), 0, "proof's contruct quantity is error");
         assertEq(_s.invest.amount1(), 19992, "proof's quantity is error");
 
         assertEq(
             aa.currentState.amount0(),
-            19992,
+            19976,
             "currentState's value is error"
         );
         assertEq(
@@ -125,7 +125,7 @@ contract investNormalGoodFee is BaseSetup {
 
         assertEq(
             aa.investState.amount0(),
-            19992,
+            19976,
             "investState's value is error"
         );
         assertEq(

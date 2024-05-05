@@ -54,8 +54,8 @@ contract buyGoodFee is BaseSetup {
         );
 
         console2.log(1, _goodConfig);
-        console2.log(2, (20000000 * 10 ** 18) * 2 ** 128 + 20000000 * 10 ** 18);
-        console2.log(3, 20000000 * 10 ** 18);
+        console2.log(2, (1 * 10 ** 18) * 2 ** 128 + 3100 * 10 ** 6);
+        console2.log(3, 10000 * 10 ** 6);
         console2.log(address(0));
 
         uint256 _marketConfig = (50 << 250) +
@@ -64,7 +64,7 @@ contract buyGoodFee is BaseSetup {
             (15 << 232) +
             (20 << 226) +
             (20 << 220);
-        console2.log(_marketConfig);
+        console2.log("marketconfig", _marketConfig);
 
         market.setMarketConfig(_marketConfig);
 

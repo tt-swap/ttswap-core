@@ -53,6 +53,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             toBalanceUINT256(_initial.amount0(), 0),
             toBalanceUINT256(0, _initial.amount1())
         );
+        ownerproofs[msg.sender].addvalue(totalSupply);
         return (goodnum, totalSupply);
     }
 
@@ -73,9 +74,19 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             msg.sender,
             _initial.amount1()
         );
-        uint128 value = goods[_valuegood].currentState.getamount0fromamount1(
-            _initial.amount1()
-        );
+
+        uint128 value = goods[_valuegood]
+            .investGood(
+                _initial.amount1(),
+                marketconfig,
+                S_Ralate(_gater, relations[msg.sender])
+            )
+            .actualInvestValue;
+
+        // uint128 value = goods[_valuegood].currentState.getamount0fromamount1(
+        //     _initial.amount1()
+        // );
+
         goodnum += 1;
         goodseq[togood] = goodnum;
         ownergoods[msg.sender].addvalue(goodnum);
@@ -85,11 +96,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _goodConfig
         );
 
-        goods[_valuegood].investGood(
-            _initial.amount1(),
-            marketconfig,
-            S_Ralate(_gater, relations[msg.sender])
-        );
         bytes32 normalproof = S_ProofKey(msg.sender, goodnum, _valuegood)
             .toId();
         totalSupply += 1;
@@ -565,6 +571,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         profit -= protocalfee;
         goods[goodid1].fees[marketcreator] += protocalfee;
         goods[goodid1].erc20address.safeTransfer(msg.sender, profit);
+
+        emit e_proof(_valueProofid);
     }
 
     function collectNormalProofFee(
@@ -599,5 +607,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             msg.sender,
             profit.amount1()
         );
+        emit e_proof(_normalProofid);
     }
 }

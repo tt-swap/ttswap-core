@@ -83,10 +83,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             )
             .actualInvestValue;
 
-        // uint128 value = goods[_valuegood].currentState.getamount0fromamount1(
-        //     _initial.amount1()
-        // );
-
         goodnum += 1;
         goodseq[togood] = goodnum;
         ownergoods[msg.sender].addvalue(goodnum);
@@ -609,4 +605,5 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         emit e_proof(_normalProofid);
     }
+
 }

@@ -54,7 +54,7 @@ function subadd(
         toBalanceUINT256(a.amount0() - b.amount0(), a.amount1() + b.amount1());
 }
 
-function getprice(
+function lowerprice(
     T_BalanceUINT256 a,
     T_BalanceUINT256 b,
     T_BalanceUINT256 c
@@ -103,8 +103,6 @@ library L_BalanceUINT256Library {
         uint256 result = (uint256(balanceDelta.amount0()) *
             uint256(amount1delta)) / uint256(balanceDelta.amount1());
         return uint128(result <= type(uint128).max ? result : 0);
-        // if(balanceDelta.amount1()==0) return 0;
-        // _amount0=mulDiv128(balanceDelta.amount0(),amount1delta,balanceDelta.amount1());
     }
 
     function getamount1fromamount0(
@@ -115,8 +113,6 @@ library L_BalanceUINT256Library {
         uint256 result = (uint256(balanceDelta.amount1()) *
             uint256(amount0delta)) / uint256(balanceDelta.amount0());
         return uint128(result <= type(uint128).max ? result : 0);
-        // if(balanceDelta.amount0()==0) return 0;
-        //  _amount1=mulDiv128(balanceDelta.amount1(),amount0delta,balanceDelta.amount0());
     }
 
     function checkvalid(

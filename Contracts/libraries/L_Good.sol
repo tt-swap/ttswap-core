@@ -6,7 +6,7 @@ import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
 import {S_Ralate, S_GoodKey} from "./L_Struct.sol";
 
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, getprice} from "./L_BalanceUINT256.sol";
+import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice} from "./L_BalanceUINT256.sol";
 
 library L_Good {
     using L_GoodConfigLibrary for uint256;
@@ -126,7 +126,7 @@ library L_Good {
         _stepCache.remainQuanitity -= _stepCache.feeQuanitity;
         while (
             _stepCache.remainQuanitity > 0 &&
-            getprice(
+            lowerprice(
                 _stepCache.good1currentState,
                 _stepCache.good2currentState,
                 _limitPrice
@@ -216,7 +216,7 @@ library L_Good {
         uint128 minQuanitity;
         while (
             stepCache.remainQuanitity > 0 &&
-            getprice(
+            lowerprice(
                 stepCache.good1currentState,
                 stepCache.good2currentState,
                 limitPrice

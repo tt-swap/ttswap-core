@@ -13,9 +13,10 @@ import {ERC721Utils} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Util
 
 abstract contract ProofManage is I_Proof, ERC165 {
     using L_Proof for *;
+    using Strings for uint256;
     using L_ProofKeyLibrary for S_ProofKey;
     using L_ArrayStorage for L_ArrayStorage.S_ArrayStorage;
-    using Strings for uint256;
+
     // Token name
     string constant _name = "TTSWAP NFT";
 
@@ -25,7 +26,6 @@ abstract contract ProofManage is I_Proof, ERC165 {
     mapping(uint256 => L_Proof.S_ProofState) public proofs;
     mapping(address => L_ArrayStorage.S_ArrayStorage) public ownerproofs;
     mapping(bytes32 => uint256) public proofseq;
-
     mapping(address owner => mapping(address operator => bool))
         private _operatorApprovals;
 

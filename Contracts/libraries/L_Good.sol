@@ -209,85 +209,88 @@ library L_Good {
     }
 
     function swapCompute2(
-        swapCache memory stepCache,
-        T_BalanceUINT256 limitPrice
+        swapCache memory _stepCache,
+        T_BalanceUINT256 _limitPrice
     ) internal pure returns (swapCache memory) {
         uint128 minValue;
         uint128 minQuanitity;
+        _stepCache.feeQuanitity = _stepCache.good2config.getBuyFee(
+            _stepCache.remainQuanitity
+        );
         while (
-            stepCache.remainQuanitity > 0 &&
+            _stepCache.remainQuanitity > 0 &&
             lowerprice(
-                stepCache.good1currentState,
-                stepCache.good2currentState,
-                limitPrice
+                _stepCache.good1currentState,
+                _stepCache.good2currentState,
+                _limitPrice
             )
         ) {
-            minValue = stepCache.good1config.getSwapChips(
-                stepCache.good1currentState.amount0()
+            minValue = _stepCache.good1config.getSwapChips(
+                _stepCache.good1currentState.amount0()
             ) >=
-                stepCache.good2config.getSwapChips(
-                    stepCache.good2currentState.amount0()
+                _stepCache.good2config.getSwapChips(
+                    _stepCache.good2currentState.amount0()
                 )
-                ? stepCache.good2config.getSwapChips(
-                    stepCache.good2currentState.amount0()
+                ? _stepCache.good2config.getSwapChips(
+                    _stepCache.good2currentState.amount0()
                 )
-                : stepCache.good1config.getSwapChips(
-                    stepCache.good1currentState.amount0()
+                : _stepCache.good1config.getSwapChips(
+                    _stepCache.good1currentState.amount0()
                 );
-            minQuanitity = stepCache.good2currentState.getamount1fromamount0(
+            minQuanitity = _stepCache.good2currentState.getamount1fromamount0(
                 minValue
             );
 
-            if (stepCache.remainQuanitity > minQuanitity) {
-                stepCache.remainQuanitity -= minQuanitity;
+            if (_stepCache.remainQuanitity > minQuanitity) {
+                _stepCache.remainQuanitity -= minQuanitity;
 
-                stepCache.outputQuanitity += stepCache
+                _stepCache.outputQuanitity += _stepCache
                     .good1currentState
                     .getamount1fromamount0(minValue);
-                stepCache.good2currentState = addsub(
-                    stepCache.good2currentState,
+                _stepCache.good2currentState = addsub(
+                    _stepCache.good2currentState,
                     toBalanceUINT256(minValue, minQuanitity)
                 );
-                stepCache.good1currentState = subadd(
-                    stepCache.good1currentState,
+                _stepCache.good1currentState = subadd(
+                    _stepCache.good1currentState,
                     toBalanceUINT256(
                         minValue,
-                        stepCache.good1currentState.getamount1fromamount0(
+                        _stepCache.good1currentState.getamount1fromamount0(
                             minValue
                         )
                     )
                 );
             } else {
-                minValue = stepCache.good2currentState.getamount0fromamount1(
-                    stepCache.remainQuanitity
+                minValue = _stepCache.good2currentState.getamount0fromamount1(
+                    _stepCache.remainQuanitity
                 );
-                stepCache.outputQuanitity += stepCache
+                _stepCache.outputQuanitity += _stepCache
                     .good1currentState
                     .getamount1fromamount0(minValue);
-                stepCache.good2currentState = addsub(
-                    stepCache.good2currentState,
-                    toBalanceUINT256(minValue, stepCache.remainQuanitity)
+                _stepCache.good2currentState = addsub(
+                    _stepCache.good2currentState,
+                    toBalanceUINT256(minValue, _stepCache.remainQuanitity)
                 );
 
-                stepCache.good1currentState = subadd(
-                    stepCache.good1currentState,
+                _stepCache.good1currentState = subadd(
+                    _stepCache.good1currentState,
                     toBalanceUINT256(
                         minValue,
-                        stepCache.good1currentState.getamount1fromamount0(
+                        _stepCache.good1currentState.getamount1fromamount0(
                             minValue
                         )
                     )
                 );
-                stepCache.remainQuanitity = 0;
+                _stepCache.remainQuanitity = 0;
             }
-            if (stepCache.remainQuanitity > 0) {
-                stepCache.feeQuanitity -= stepCache.good1config.getSellerFee(
-                    stepCache.remainQuanitity
+            if (_stepCache.remainQuanitity > 0) {
+                _stepCache.feeQuanitity -= _stepCache.good1config.getSellerFee(
+                    _stepCache.remainQuanitity
                 );
             }
-            stepCache.swapvalue += minValue;
+            _stepCache.swapvalue += minValue;
         }
-        return stepCache;
+        return _stepCache;
     }
 
     function swapCommit(

@@ -75,7 +75,7 @@ interface I_MarketManage is I_Good, I_Proof {
         address _gater
     ) external returns (uint256 goodNo_, uint256 proofNo_);
 
-    /// @notice 出售商品1购买商品2
+    /// @notice 用户出售_swapQuanitity个_goodid1去购买 _goodid2
     /// @dev 如果购买商品1而出售商品2,开发者需求折算成使用商品2购买商品1
     /// @param _goodid1   商品1的ID
     /// @param _goodid2   商品2的ID
@@ -96,7 +96,7 @@ interface I_MarketManage is I_Good, I_Proof {
         external
         returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_);
 
-    /// @notice 出售商品1购买商品2
+    /// @notice 用户使用_goodid1购买_swapQuanitity个_goodid2,同时支付给_recipent
     /// @dev 如果购买商品1而出售商品2,开发者需求折算成使用商品2购买商品1
     /// @param _goodid1   商品1的ID
     /// @param _goodid2   商品2的ID

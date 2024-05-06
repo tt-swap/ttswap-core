@@ -19,12 +19,12 @@ contract investNormalGoodFee is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodeth;
+    uint256 public metagood;
+    uint256 public normalgoodusdt;
+    uint256 public normalgoodeth;
 
-    uint256 normalproofusdt;
-    uint256 normalproofeth;
+    uint256 public normalproofusdt;
+    uint256 public normalproofeth;
 
     function setUp() public override {
         BaseSetup.setUp();

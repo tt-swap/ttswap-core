@@ -114,14 +114,4 @@ library L_BalanceUINT256Library {
             uint256(amount0delta)) / uint256(balanceDelta.amount0());
         return uint128(result <= type(uint128).max ? result : 0);
     }
-
-    function checkvalid(
-        T_BalanceUINT256 balanceDelta
-    ) internal pure returns (bool) {
-        if (balanceDelta.amount0() > 0 && balanceDelta.amount1() > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

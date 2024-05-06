@@ -23,8 +23,8 @@ abstract contract ProofManage is I_Proof, ERC165 {
     // Token symbol
     string constant _symbol = "TTN";
     uint256 public override totalSupply;
-    mapping(uint256 => L_Proof.S_ProofState) public proofs;
-    mapping(address => L_ArrayStorage.S_ArrayStorage) public ownerproofs;
+    mapping(uint256 => L_Proof.S_ProofState) internal proofs;
+    mapping(address => L_ArrayStorage.S_ArrayStorage) internal ownerproofs;
     mapping(bytes32 => uint256) public proofseq;
     mapping(address owner => mapping(address operator => bool))
         private _operatorApprovals;

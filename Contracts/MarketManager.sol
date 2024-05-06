@@ -7,7 +7,7 @@ import "./ProofManage.sol";
 import "./interfaces/I_MarketManage.sol";
 import {L_Good, L_GoodIdLibrary} from "./libraries/L_Good.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
-import {Multicall} from "./libraries/Multicall.sol";
+import {Multicall} from "./Multicall.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
 import {S_ProofKey, S_GoodKey, S_Ralate} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
@@ -65,7 +65,11 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 _goodConfig,
         address _gater
     ) external override noReentrant returns (uint256, uint256) {
-        require(goods[_valuegood].goodConfig.isvaluegood(), "M02");
+        require(
+            goods[_valuegood].goodConfig.isvaluegood() &&
+                _initial.amount0() < 2 ** 104,
+            "M02"
+        );
         bytes32 togood = S_GoodKey(_erc20address, msg.sender).toId();
         require(goodseq[togood] == 0, "M01");
 
@@ -209,10 +213,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
 
         if (swapcache.remainQuanitity > 0) revert err_total();
-        goodid1FeeQuanitity_ = goods[_goodid1].goodConfig.getBuyFee(
+        goodid1FeeQuanitity_ = goods[_goodid1].goodConfig.getSellFee(
             swapcache.outputQuanitity
         );
-        goodid1Quanitity_ = swapcache.outputQuanitity - goodid1FeeQuanitity_;
+        goodid1Quanitity_ = swapcache.outputQuanitity + goodid1FeeQuanitity_;
 
         goods[_goodid2].swapCommit(
             swapcache.good2currentState,
@@ -220,6 +224,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
+
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
             goodid1FeeQuanitity_,
@@ -228,7 +233,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         goods[_goodid2].erc20address.safeTransfer(
             _recipent,
-            _swapQuanitity - swapcache.remainQuanitity
+            _swapQuanitity - swapcache.remainQuanitity - swapcache.feeQuanitity
         );
         goods[_goodid1].erc20address.transferFrom(
             msg.sender,
@@ -605,5 +610,4 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         emit e_proof(_normalProofid);
     }
-
 }

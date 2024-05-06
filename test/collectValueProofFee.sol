@@ -33,10 +33,9 @@ contract collectValueProofFee is Test, BaseSetup {
         showconfig(market.getGoodState(metagood).goodConfig);
         goodPrice(metagood);
         normalgoodeth = initNormalGood(address(eth), 100, 3100);
-
         goodPrice(metagood);
         goodPrice(normalgoodbtc);
-        goodPrice(normalgoodeth);
+        //goodPrice(normalgoodeth);
     }
 
     function initmetagood() public {
@@ -84,7 +83,6 @@ contract collectValueProofFee is Test, BaseSetup {
         uint128 decimals = uint128(10 ** MyToken(token).decimals());
         deal(token, users[3], amount * decimals, false);
         MyToken(token).approve(address(market), amount * decimals);
-
         deal(
             address(usdt),
             users[3],
@@ -174,5 +172,66 @@ contract collectValueProofFee is Test, BaseSetup {
             uint256(_goodConfig.getSwapChips())
         );
     }
-    function testbuy() public {}
+    function testBuy(uint256 aa) public {
+        address alice = address(20);
+        vm.startPrank(alice);
+        deal(address(usdt), alice, 10000000 * 10 ** 6, false);
+        usdt.approve(address(market), 10000000 * 10 ** 6);
+        getcompareprice(metagood, normalgoodbtc);
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            10000000000,
+            65000 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            true,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
+        getcompareprice(metagood, normalgoodbtc);
+        console2.log("btc :", btc.balanceOf(alice));
+        goodPrice(metagood);
+        goodPrice(normalgoodbtc);
+        vm.stopPrank();
+    }
+
+    function testBuyForPay(uint256 aa) public {
+        address alice = address(20);
+        address xx = address(21);
+        vm.startPrank(alice);
+        deal(address(usdt), alice, 10000000 * 10 ** 6, false);
+        usdt.approve(address(market), 1000000 * 10 ** 6);
+
+        deal(address(btc), xx, 1, false);
+        market.buyGoodForPay(
+            metagood,
+            normalgoodbtc,
+            1000000,
+            65000 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            xx,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
+        console2.log("btc:", btc.balanceOf(alice));
+        console2.log("btc:", btc.balanceOf(xx));
+        goodPrice(metagood);
+        goodPrice(normalgoodbtc);
+        market.buyGoodForPay(
+            metagood,
+            normalgoodbtc,
+            1000000,
+            65000 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            xx,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
+        vm.stopPrank();
+    }
+
+    function testinvestvaluegood() public {}
+
+    function getcompareprice(uint256 good1, uint256 good2) public view {
+        console2.log(
+            market.getGoodState(good1).currentState.amount0() *
+                market.getGoodState(good2).currentState.amount1(),
+            market.getGoodState(good1).currentState.amount1() *
+                market.getGoodState(good2).currentState.amount0()
+        );
+    }
 }

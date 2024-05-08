@@ -155,10 +155,10 @@ contract investNormalGoodFee is BaseSetup {
         );
         assertEq(
             uint256(market.getGoodsFee(metagood, marketcreator)),
-            3,
+            2,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 3, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("invest normal good with fee second");
         market.investNormalGood(normalgoodusdt, metagood, 10000, address(1));

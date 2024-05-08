@@ -33,6 +33,19 @@ library L_GoodConfigLibrary {
         }
     }
 
+    function getInvestFulFee(
+        uint256 config,
+        uint256 amount
+    ) internal pure returns (uint128 a) {
+        unchecked {
+            assembly {
+                config := shr(249, shl(4, config))
+                amount := div(amount, sub(10000, config))
+                a := mul(amount, 10000)
+            }
+        }
+    }
+
     //商品撤资费率 单位万分之一
     //起始位 13 长度 7
     function getDisinvestFee(uint256 config) internal pure returns (uint16 a) {

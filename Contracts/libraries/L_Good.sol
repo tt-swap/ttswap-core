@@ -352,7 +352,6 @@ library L_Good {
         if (actutal_fee > 0)
             allocateFee(_self, actutal_fee, _marketConfig, _ralate);
     }
-
     function disinvestValueGood(
         S_GoodState storage _self,
         L_Proof.S_ProofState storage _investProof,
@@ -413,9 +412,6 @@ library L_Good {
             );
 
         _investProof.burnValueProofSome(_goodQuantity);
-        disinvestResult_.profit =
-            disinvestResult_.profit -
-            disinvestResult_.actual_fee;
         disinvestResult_.actual_fee = _self.goodConfig.getDisinvestFee(
             disinvestResult_.actualDisinvestQuantity
         );

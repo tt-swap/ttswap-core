@@ -56,6 +56,7 @@ library L_Proof {
             mulDiv(_self.state.amount0(), _quantity, _self.invest.amount1()),
             _self.invest.getamount0fromamount1(_quantity)
         );
+
         _self.invest =
             _self.invest -
             toBalanceUINT256(burnResult_.amount1(), _quantity);

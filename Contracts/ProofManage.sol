@@ -18,10 +18,10 @@ abstract contract ProofManage is I_Proof, ERC165 {
     using L_ArrayStorage for L_ArrayStorage.S_ArrayStorage;
 
     // Token name
-    string constant _name = "TTSWAP NFT";
+    string private constant _name = "TTSWAP NFT";
 
     // Token symbol
-    string constant _symbol = "TTN";
+    string private constant _symbol = "TTN";
     uint256 public override totalSupply;
     mapping(uint256 => L_Proof.S_ProofState) internal proofs;
     mapping(address => L_ArrayStorage.S_ArrayStorage) internal ownerproofs;
@@ -58,7 +58,7 @@ abstract contract ProofManage is I_Proof, ERC165 {
      */
     function tokenURI(
         uint256 proofId
-    ) public view onlyOwner(proofId) returns (string memory) {
+    ) external view onlyOwner(proofId) returns (string memory) {
         return
             string.concat(
                 "http://www.tt-swap.com/nft721?id=",
@@ -72,15 +72,15 @@ abstract contract ProofManage is I_Proof, ERC165 {
      * by default, can be overridden in child contracts.
      */
 
-    function balanceOf(address owner) public view returns (uint256) {
+    function balanceOf(address owner) external view returns (uint256) {
         return ownerproofs[owner].key;
     }
 
-    function ownerOf(uint256 proofId) public view returns (address) {
+    function ownerOf(uint256 proofId) external view returns (address) {
         return proofs[proofId].owner;
     }
 
-    function tokenByIndex(uint256 _index) public pure returns (uint256) {
+    function tokenByIndex(uint256 _index) external pure returns (uint256) {
         return _index;
     }
 
@@ -98,24 +98,27 @@ abstract contract ProofManage is I_Proof, ERC165 {
         proof_ = proofseq[_investproofkey.toId()];
     }
 
-    function name() public pure returns (string memory) {
+    function name() external pure returns (string memory) {
         return _name;
     }
 
-    function symbol() public pure returns (string memory) {
+    function symbol() external pure returns (string memory) {
         return _symbol;
     }
 
-    function approve(address to, uint256 proofId) public onlyApproval(proofId) {
+    function approve(
+        address to,
+        uint256 proofId
+    ) external onlyApproval(proofId) {
         proofs[proofId]._approve(to);
         emit Approval(msg.sender, to, proofId);
     }
 
-    function getApproved(uint256 proofId) public view returns (address) {
+    function getApproved(uint256 proofId) external view returns (address) {
         return proofs[proofId].approval;
     }
 
-    function setApprovalForAll(address operator, bool approved) public {
+    function setApprovalForAll(address operator, bool approved) external {
         _operatorApprovals[msg.sender][operator] = approved;
         emit ApprovalForAll(msg.sender, operator, approved);
     }
@@ -123,7 +126,7 @@ abstract contract ProofManage is I_Proof, ERC165 {
     function isApprovedForAll(
         address owner,
         address operator
-    ) public view returns (bool) {
+    ) external view returns (bool) {
         return _operatorApprovals[owner][operator];
     }
 
@@ -144,7 +147,7 @@ abstract contract ProofManage is I_Proof, ERC165 {
         address from,
         address to,
         uint256 proofid
-    ) public {
+    ) external {
         safeTransferFrom(from, to, proofid, "");
     }
 
@@ -175,7 +178,11 @@ abstract contract ProofManage is I_Proof, ERC165 {
         uint256 _proofid,
         address _to
     ) external override returns (bool) {
-        require(msg.sender == proofs[_proofid].owner, "P1");
+        require(
+            msg.sender == proofs[_proofid].owner ||
+                msg.sender == proofs[_proofid].approval,
+            "P1"
+        );
         proofs[_proofid].owner = _to;
         return true;
     }

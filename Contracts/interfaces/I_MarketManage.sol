@@ -127,24 +127,36 @@ interface I_MarketManage is I_Good, I_Proof {
     /// uint128 contructFeeQuantity; //构建手续费
     /// uint128 actualinvestValue; //实际投资价值
     /// uint128 actualinvestQuantity; //实际投资数量
+    /// @return valueProofno_ 证明编号
     /// }
 
     function investValueGood(
         uint256 _goodid,
         uint128 _goodQuanitity,
         address _gater
-    ) external returns (L_Good.S_GoodInvestReturn calldata valueInvest_);
+    )
+        external
+        returns (
+            L_Good.S_GoodInvestReturn calldata valueInvest_,
+            uint256 valueProofno_
+        );
 
     /// @notice 撤资价值商品
     /// @param _goodid   价值商品的ID
     /// @param _goodQuanitity   取消价值商品的数量
     /// @param _gater   门户
     /// @return disinvestResult_   amount0 为投资收益 amount1为实际产生手续费
+    /// @return valueProofno_
     function disinvestValueGood(
         uint256 _goodid,
         uint128 _goodQuanitity,
         address _gater
-    ) external returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_);
+    )
+        external
+        returns (
+            L_Good.S_GoodDisinvestReturn memory disinvestResult_,
+            uint256 valueProofno_
+        );
 
     /// @notice 投资普通商品
     /// @param _togood   普通商品的ID
@@ -165,6 +177,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// uint128 actualinvestValue; //实际投资价值
     /// uint128 actualinvestQuantity; //实际投资数量
     /// }
+    /// @return normalProofno_  证明编号
     function investNormalGood(
         uint256 _togood,
         uint256 _valuegood,
@@ -174,7 +187,8 @@ interface I_MarketManage is I_Good, I_Proof {
         external
         returns (
             L_Good.S_GoodInvestReturn calldata normalinvest,
-            L_Good.S_GoodInvestReturn calldata valueinvest
+            L_Good.S_GoodInvestReturn calldata valueinvest,
+            uint256 normalProofno_
         );
 
     /// @notice 撤资普通商品
@@ -184,6 +198,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _gater   门户
     /// @return disinvestResult1_   普通商品:amount0 为投资收益 amount1为实际产生手续费
     /// @return disinvestResult2_   价值商品:amount0 为投资收益 amount1为实际产生手续费
+    /// @return normalProofno_  证明编号
     function disinvestNormalGood(
         uint256 _togood,
         uint256 _valuegood,
@@ -193,7 +208,8 @@ interface I_MarketManage is I_Good, I_Proof {
         external
         returns (
             L_Good.S_GoodDisinvestReturn memory disinvestResult1_,
-            L_Good.S_GoodDisinvestReturn memory disinvestResult2_
+            L_Good.S_GoodDisinvestReturn memory disinvestResult2_,
+            uint256 normalProofno_
         );
 
     /// @notice 撤资价值商品证明

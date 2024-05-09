@@ -445,7 +445,7 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         goodInfo(metagood);
         proofInfo(metaproofid);
-        L_Good.S_GoodDisinvestReturn memory aa = market.disinvestValueGood(
+        (L_Good.S_GoodDisinvestReturn memory aa, ) = market.disinvestValueGood(
             metagood,
             10000 * 10 ** 6,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
@@ -547,7 +547,57 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         console2.log("usdt:", usdt.balanceOf(alice));
     }
+    function testcollectValueProofFee() public {
+        address alice = address(20);
+        vm.startPrank(marketcreator);
+        deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
+        usdt.approve(address(market), 2000000 * 10 ** 6);
 
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            10000 * 10 ** 6,
+            65000 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            true,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
+        goodInfo(metagood);
+        proofInfo(metaproofid);
+        market.collectValueProofFee(1);
+        goodInfo(metagood);
+        proofInfo(metaproofid);
+        assertEq(
+            market.getGoodState(metagood).currentState.amount0(),
+            6704640000000,
+            "metagood's currentState amount0"
+        );
+        assertEq(
+            market.getGoodState(metagood).currentState.amount1(),
+            6724624000000,
+            "metagood's currentState amount1"
+        );
+        assertEq(
+            market.getGoodState(metagood).investState.amount0(),
+            6714632000000,
+            "metagood's investState amount0"
+        );
+        assertEq(
+            market.getGoodState(metagood).investState.amount1(),
+            6714632000000,
+            "metagood's investState amount1"
+        );
+        assertEq(
+            market.getGoodState(metagood).feeQunitityState.amount0(),
+            2811432332,
+            "metagood's feeQunitityState amount0"
+        );
+        assertEq(
+            market.getGoodState(metagood).feeQunitityState.amount1(),
+            123613398,
+            "metagood's feeQunitityState amount1"
+        );
+        console2.log("usdt:", usdt.balanceOf(alice));
+    }
     function _testinvestNormalgood() public {
         address alice = address(20);
         vm.startPrank(alice);
@@ -631,9 +681,23 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         console2.log("usdt:", usdt.balanceOf(alice));
     }
-    function _testdisinvestvaluegood() public {
+
+    function _testdisinvestnormalgoodaa() public {
+        uint256 normalproofid;
         address alice = address(20);
         vm.startPrank(marketcreator);
+        deal(address(usdt), marketcreator, 10000 * 65000 * 10 ** 6, false);
+        usdt.approve(address(market), 10000 * 65000 * 10 ** 6);
+        deal(address(btc), marketcreator, 10000 * 10 ** 8, false);
+        btc.approve(address(market), 10000 * 10 ** 8);
+
+        console2.log("--------------");
+        (, , normalproofid) = market.investNormalGood(
+            normalgoodbtc,
+            metagood,
+            100 * 10 ** 8,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
         deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
         usdt.approve(address(market), 2000000 * 10 ** 6);
 
@@ -646,112 +710,73 @@ contract collectValueProofFee is Test, BaseSetup {
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
         goodInfo(metagood);
-        proofInfo(metaproofid);
-        L_Good.S_GoodDisinvestReturn memory aa = market.disinvestValueGood(
-            metagood,
-            10000 * 10 ** 6,
-            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
-        );
+        goodInfo(normalgoodbtc);
+        proofInfo(4);
+        (
+            L_Good.S_GoodDisinvestReturn memory aa,
+            L_Good.S_GoodDisinvestReturn memory bb,
+            uint256 kk
+        ) = market.disinvestNormalGood(
+                normalgoodbtc,
+                metagood,
+                10 * 10 ** 8,
+                0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+            );
         console2.log("profit", aa.profit);
         console2.log("actual_fee", aa.actual_fee);
         console2.log("actualDisinvestValue", aa.actualDisinvestValue);
         console2.log("actualDisinvestQuantity", aa.actualDisinvestQuantity);
         goodInfo(metagood);
-        proofInfo(metaproofid);
+        goodInfo(normalgoodbtc);
+        proofInfo(kk);
         assertEq(
             market.getGoodState(metagood).currentState.amount0(),
-            6704640000000,
+            12464916096000,
             "metagood's currentState amount0"
         );
         assertEq(
             market.getGoodState(metagood).currentState.amount1(),
-            6724624000000,
+            12484900096000,
             "metagood's currentState amount1"
         );
         assertEq(
             market.getGoodState(metagood).investState.amount0(),
-            6714632000000,
+            12474908096000,
             "metagood's investState amount0"
         );
         assertEq(
             market.getGoodState(metagood).investState.amount1(),
-            6714632000000,
+            12474908096000,
             "metagood's investState amount1"
         );
         assertEq(
             market.getGoodState(metagood).feeQunitityState.amount0(),
-            2811432332,
+            7901242233,
             "metagood's feeQunitityState amount0"
         );
         assertEq(
             market.getGoodState(metagood).feeQunitityState.amount1(),
-            123613398,
-            "metagood's feeQunitityState amount1"
-        );
-        console2.log("usdt:", usdt.balanceOf(alice));
-    }
-    function _testdisinvestnormalgood() public {
-        address alice = address(20);
-        vm.startPrank(marketcreator);
-        deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
-        usdt.approve(address(market), 2000000 * 10 ** 6);
-
-        market.buyGood(
-            metagood,
-            normalgoodbtc,
-            10000 * 10 ** 6,
-            65000 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
-            true,
-            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
-        );
-        goodInfo(metagood);
-        proofInfo(metaproofid);
-        L_Good.S_GoodDisinvestReturn memory aa = market.disinvestValueGood(
-            metagood,
-            10000 * 10 ** 6,
-            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
-        );
-        console2.log("profit", aa.profit);
-        console2.log("actual_fee", aa.actual_fee);
-        console2.log("actualDisinvestValue", aa.actualDisinvestValue);
-        console2.log("actualDisinvestQuantity", aa.actualDisinvestQuantity);
-        goodInfo(metagood);
-        proofInfo(metaproofid);
-        assertEq(
-            market.getGoodState(metagood).currentState.amount0(),
-            6704640000000,
-            "metagood's currentState amount0"
-        );
-        assertEq(
-            market.getGoodState(metagood).currentState.amount1(),
-            6724624000000,
-            "metagood's currentState amount1"
-        );
-        assertEq(
-            market.getGoodState(metagood).investState.amount0(),
-            6714632000000,
-            "metagood's investState amount0"
-        );
-        assertEq(
-            market.getGoodState(metagood).investState.amount1(),
-            6714632000000,
-            "metagood's investState amount1"
-        );
-        assertEq(
-            market.getGoodState(metagood).feeQunitityState.amount0(),
-            2811432332,
-            "metagood's feeQunitityState amount0"
-        );
-        assertEq(
-            market.getGoodState(metagood).feeQunitityState.amount1(),
-            123613398,
+            2524421682,
             "metagood's feeQunitityState amount1"
         );
         console2.log("usdt:", usdt.balanceOf(alice));
     }
     function _testdisinvestnormalproof() public {
+        uint256 normalproofid;
         address alice = address(20);
         vm.startPrank(marketcreator);
+        deal(address(usdt), marketcreator, 10000 * 65000 * 10 ** 6, false);
+        usdt.approve(address(market), 10000 * 65000 * 10 ** 6);
+        deal(address(btc), marketcreator, 10000 * 10 ** 8, false);
+        btc.approve(address(market), 10000 * 10 ** 8);
+
+        console2.log("--------------");
+        (, , normalproofid) = market.investNormalGood(
+            normalgoodbtc,
+            metagood,
+            100 * 10 ** 8,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
         deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
         usdt.approve(address(market), 2000000 * 10 ** 6);
 
@@ -764,51 +789,122 @@ contract collectValueProofFee is Test, BaseSetup {
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
         goodInfo(metagood);
-        proofInfo(metaproofid);
-        L_Good.S_GoodDisinvestReturn memory aa = market.disinvestValueProof(
-            metaproofid,
-            10000 * 10 ** 6,
-            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
-        );
+        goodInfo(normalgoodbtc);
+        proofInfo(4);
+        (
+            L_Good.S_GoodDisinvestReturn memory aa,
+            L_Good.S_GoodDisinvestReturn memory bb
+        ) = market.disinvestNormalProof(
+                4,
+                10 * 10 ** 8,
+                0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+            );
         console2.log("profit", aa.profit);
         console2.log("actual_fee", aa.actual_fee);
         console2.log("actualDisinvestValue", aa.actualDisinvestValue);
         console2.log("actualDisinvestQuantity", aa.actualDisinvestQuantity);
         goodInfo(metagood);
-        proofInfo(metaproofid);
+        goodInfo(normalgoodbtc);
+        proofInfo(4);
         assertEq(
             market.getGoodState(metagood).currentState.amount0(),
-            6704640000000,
+            12464916096000,
             "metagood's currentState amount0"
         );
         assertEq(
             market.getGoodState(metagood).currentState.amount1(),
-            6724624000000,
+            12484900096000,
             "metagood's currentState amount1"
         );
         assertEq(
             market.getGoodState(metagood).investState.amount0(),
-            6714632000000,
+            12474908096000,
             "metagood's investState amount0"
         );
         assertEq(
             market.getGoodState(metagood).investState.amount1(),
-            6714632000000,
+            12474908096000,
             "metagood's investState amount1"
         );
         assertEq(
             market.getGoodState(metagood).feeQunitityState.amount0(),
-            2811432332,
+            7901242233,
             "metagood's feeQunitityState amount0"
         );
         assertEq(
             market.getGoodState(metagood).feeQunitityState.amount1(),
-            123613398,
+            2524421682,
             "metagood's feeQunitityState amount1"
         );
         console2.log("usdt:", usdt.balanceOf(alice));
     }
 
+    function _testcollectNormalProofFee() public {
+        uint256 normalproofid;
+        address alice = address(20);
+        vm.startPrank(marketcreator);
+        deal(address(usdt), marketcreator, 10000 * 65000 * 10 ** 6, false);
+        usdt.approve(address(market), 10000 * 65000 * 10 ** 6);
+        deal(address(btc), marketcreator, 10000 * 10 ** 8, false);
+        btc.approve(address(market), 10000 * 10 ** 8);
+
+        console2.log("--------------");
+        (, , normalproofid) = market.investNormalGood(
+            normalgoodbtc,
+            metagood,
+            100 * 10 ** 8,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
+        deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
+        usdt.approve(address(market), 2000000 * 10 ** 6);
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            10000 * 10 ** 6,
+            65000 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            true,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
+        goodInfo(metagood);
+        goodInfo(normalgoodbtc);
+        proofInfo(4);
+        T_BalanceUINT256 profit = market.collectNormalProofFee(4);
+        goodInfo(metagood);
+        goodInfo(normalgoodbtc);
+        proofInfo(4);
+        assertEq(
+            market.getGoodState(metagood).currentState.amount0(),
+            13104404096000,
+            "metagood's currentState amount0"
+        );
+        assertEq(
+            market.getGoodState(metagood).currentState.amount1(),
+            13124388096000,
+            "metagood's currentState amount1"
+        );
+        assertEq(
+            market.getGoodState(metagood).investState.amount0(),
+            13114396096000,
+            "metagood's investState amount0"
+        );
+        assertEq(
+            market.getGoodState(metagood).investState.amount1(),
+            13114396096000,
+            "metagood's investState amount1"
+        );
+        assertEq(
+            market.getGoodState(metagood).feeQunitityState.amount0(),
+            8037367485,
+            "metagood's feeQunitityState amount0"
+        );
+        assertEq(
+            market.getGoodState(metagood).feeQunitityState.amount1(),
+            4039682563,
+            "metagood's feeQunitityState amount1"
+        );
+        console2.log("usdt:", usdt.balanceOf(alice));
+    }
     function getcompareprice(uint256 good1, uint256 good2) public view {
         console2.log(
             market.getGoodState(good1).currentState.amount0() *

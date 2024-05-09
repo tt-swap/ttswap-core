@@ -447,7 +447,6 @@ library L_Good {
             toBalanceUINT256(0, profit);
         _investProof.collectValueProofFee(profit);
     }
-
     function collectNormalGoodFee(
         S_GoodState storage _self,
         S_GoodState storage _valuegood,
@@ -463,15 +462,16 @@ library L_Good {
                 _valuegood.feeQunitityState.amount0(),
                 _valuegood.investState.amount1()
             ).getamount0fromamount1(_investProof.valueinvest.amount1()) -
-                _investProof.valueinvest.amount1()
+                _investProof.valueinvest.amount0()
         );
 
         _self.feeQunitityState =
             _self.feeQunitityState +
             toBalanceUINT256(0, profit.amount0());
-        _self.feeQunitityState =
-            _self.feeQunitityState +
+        _valuegood.feeQunitityState =
+            _valuegood.feeQunitityState +
             toBalanceUINT256(0, profit.amount1());
+
         _investProof.collectNormalProofFee(profit);
     }
 

@@ -257,7 +257,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         external
         override
         noReentrant
-        returns (L_Good.S_GoodInvestReturn memory valueInvest_)
+        returns (
+            L_Good.S_GoodInvestReturn memory valueInvest_,
+            uint256 valueProofno_
+        )
     {
         require(
             goods[_goodid].goodConfig.isvaluegood() &&
@@ -273,14 +276,14 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             S_Ralate(_gater, relations[msg.sender])
         );
 
-        uint256 proofno = proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()];
-        if (proofno == 0) {
+        valueProofno_ = proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()];
+        if (valueProofno_ == 0) {
             totalSupply += 1;
             proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()] = totalSupply;
-            proofno = totalSupply;
+            valueProofno_ = totalSupply;
         }
 
-        proofs[proofno].updateValueInvest(
+        proofs[valueProofno_].updateValueInvest(
             _goodid,
             toBalanceUINT256(valueInvest_.actualInvestValue, 0),
             toBalanceUINT256(
@@ -288,10 +291,9 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 valueInvest_.actualInvestQuantity
             )
         );
-        emit e_proof(proofno);
+        emit e_proof(valueProofno_);
     }
 
-    event debuggg(uint128);
     /// @inheritdoc I_MarketManage
     function disinvestValueGood(
         uint256 _goodid,
@@ -301,14 +303,21 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         external
         override
         noReentrant
-        returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_)
+        returns (
+            L_Good.S_GoodDisinvestReturn memory disinvestResult_,
+            uint256 valueProofno_
+        )
     {
-        uint256 proofno = proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()];
-        require(proofs[proofno].owner == msg.sender, "M03");
+        valueProofno_ = proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()];
+        require(
+            proofs[valueProofno_].owner == msg.sender &&
+                _goodQuanitity <= proofs[valueProofno_].invest.amount1(),
+            "M03"
+        );
         uint128 remainquanitity = _goodQuanitity;
 
         disinvestResult_ = goods[_goodid].disinvestValueGood(
-            proofs[proofno],
+            proofs[valueProofno_],
             remainquanitity,
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
@@ -326,7 +335,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 disinvestResult_.profit -
                 disinvestResult_.actual_fee
         );
-        emit e_proof(proofno);
+        emit e_proof(valueProofno_);
     }
 
     /// @inheritdoc I_MarketManage
@@ -341,7 +350,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         noReentrant
         returns (
             L_Good.S_GoodInvestReturn memory normalInvest,
-            L_Good.S_GoodInvestReturn memory valueInvest
+            L_Good.S_GoodInvestReturn memory valueInvest,
+            uint256 proofno_
         )
     {
         require(
@@ -376,18 +386,16 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
         goods[_togood].erc20address.transferFrom(msg.sender, _quanitity);
 
-        uint256 proofno = proofseq[
-            S_ProofKey(msg.sender, _togood, _valuegood).toId()
-        ];
-        if (proofno == 0) {
+        proofno_ = proofseq[S_ProofKey(msg.sender, _togood, _valuegood).toId()];
+        if (proofno_ == 0) {
             totalSupply += 1;
             proofseq[
                 S_ProofKey(msg.sender, _togood, _valuegood).toId()
             ] = totalSupply;
-            proofno = totalSupply;
+            proofno_ = totalSupply;
         }
 
-        proofs[proofno].updateNormalInvest(
+        proofs[proofno_].updateNormalInvest(
             _togood,
             _valuegood,
             toBalanceUINT256(normalInvest.actualInvestValue, 0),
@@ -401,7 +409,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             )
         );
 
-        emit e_proof(proofno);
+        emit e_proof(proofno_);
     }
 
     /// @inheritdoc I_MarketManage
@@ -416,14 +424,17 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         noReentrant
         returns (
             L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_,
-            L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_
+            L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_,
+            uint256 normalproofno_
         )
     {
-        uint256 _normalproofNo = proofseq[
+        normalproofno_ = proofseq[
             S_ProofKey(msg.sender, _togood, _valuegood).toId()
         ];
         require(
-            _normalproofNo > 0 && proofs[_normalproofNo].owner == msg.sender,
+            normalproofno_ > 0 &&
+                proofs[normalproofno_].owner == msg.sender &&
+                _goodQuanitity <= proofs[normalproofno_].invest.amount1(),
             "M04"
         );
 
@@ -461,7 +472,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 disinvestValueResult2_.profit -
                 disinvestValueResult2_.actual_fee
         );
-        emit e_proof(_normalproofNo);
+        emit e_proof(normalproofno_);
     }
 
     /// @inheritdoc I_MarketManage
@@ -586,7 +597,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         uint256 valuegood = proofs[_normalProofid].valuegood;
         uint256 currentgood = proofs[_normalProofid].currentgood;
-
         profit = goods[currentgood].collectNormalGoodFee(
             goods[valuegood],
             proofs[_normalProofid]

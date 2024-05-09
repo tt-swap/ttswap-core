@@ -128,11 +128,8 @@ contract disinvestValueGoodFee is BaseSetup {
         uint128 quanity = uint128(aquanity);
 
         snapStart("disinvest Value Good With Fee first");
-        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueGood(
-            metagood,
-            quanity,
-            address(1)
-        );
+        (L_Good.S_GoodDisinvestReturn memory result, ) = market
+            .disinvestValueGood(metagood, quanity, address(1));
         snapEnd();
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
         assertEq(
@@ -181,7 +178,7 @@ contract disinvestValueGoodFee is BaseSetup {
             uint256(aa.feeQunitityState.amount1())
         );
         snapStart("disinvest Value Good With Fee second");
-        result = market.disinvestValueGood(metagood, 10, address(1));
+        (result, ) = market.disinvestValueGood(metagood, 10, address(1));
         snapEnd();
         vm.stopPrank();
     }

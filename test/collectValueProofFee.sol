@@ -563,7 +563,9 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         goodInfo(metagood);
         proofInfo(metaproofid);
+        snapStart("collectValueProofFee");
         market.collectValueProofFee(1);
+        snapEnd();
         goodInfo(metagood);
         proofInfo(metaproofid);
         assertEq(
@@ -869,7 +871,10 @@ contract collectValueProofFee is Test, BaseSetup {
         goodInfo(metagood);
         goodInfo(normalgoodbtc);
         proofInfo(4);
+
+        snapStart("collectNormalProofFee");
         T_BalanceUINT256 profit = market.collectNormalProofFee(4);
+        snapEnd();
         goodInfo(metagood);
         goodInfo(normalgoodbtc);
         proofInfo(4);

@@ -5,7 +5,6 @@ import {S_GoodKey, S_Ralate} from "../libraries/L_Struct.sol";
 import {L_Good} from "../libraries/L_Good.sol";
 import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 
-
 /// @title 商品接口good's interface
 /// @notice 包含商品的一系列接口  contain good's all interfaces
 interface I_Good {
@@ -15,9 +14,9 @@ interface I_Good {
     /// @param _to the new owner,新拥有者
     event e_changeOwner(uint256 indexed _goodid, address _owner, address _to);
 
-    /// @notice Returns the config of the market 返回市场的配置
-    /// @dev Can be changed by the marketmanager
-    /// @return marketconfig_ The address of the factory owner
+    /// @notice Returns the config of the market~返回市场的配置
+    /// @dev Can be changed by the marketmanager~可以被管理员调整
+    /// @return marketconfig_ the config of market(according the white paper)~市场配置(参见白皮书)
     function marketconfig() external view returns (uint256 marketconfig_);
 
     /// @notice Returns the manger of market 返回市场管理者 返回市场商品总数
@@ -25,33 +24,34 @@ interface I_Good {
     function marketcreator() external view returns (address marketcreator_);
 
     /// @notice Returns the good's total number of the market 返回市场商品总数
-    /// @return goodnum_ The address of the factory owner
+    /// @return goodnum_ the good number of the market~市场商品总数
     function goodnum() external view returns (uint256 goodnum_);
 
     /// @notice Returns the address's status 查询地址是否被禁止提手续费
     /// @param _user 用户地址
-    /// @return _isban The address of the factory owner
+    /// @return _isban the address status~地址是否被禁
     function check_banlist(address _user) external view returns (bool _isban);
 
     /// @notice config market config 设置市场中市场配置
-    /// @param _marketconfig   seller address 卖家地址
+    /// @param _marketconfig   the market config ~市场配置
+    /// @return 是否成功
     function setMarketConfig(uint256 _marketconfig) external returns (bool);
 
-    /// @notice get seller's good 获取卖家的商品列表
-    /// @param _owner   seller address 卖家地址
-    /// @param _seq   seller address 第几个商品
-    /// @return  goods list 商品编号列表
+    /// @notice get seller's good~获取卖家的商品列表
+    /// @param _owner   seller address~卖家地址
+    /// @param _seq   seller's good index~第几个商品
+    /// @return  goods No~商品编号
     function getGoodIdByAddress(
         address _owner,
         uint256 _seq
     ) external view returns (uint256);
 
     /// @notice get good's state 获取商品状态
-    /// @param _goodid  good's id  商品的商品ID
-    /// @return good goodinfo 商品的状态信息
+    /// @param _goodid  good's id  商品的商品编号
+    /// @return good_ goodinfo 商品的状态信息
     function getGoodState(
         uint256 _goodid
-    ) external view returns (L_Good.S_GoodTmpState memory good);
+    ) external view returns (L_Good.S_GoodTmpState memory good_);
 
     /// @notice  update good's config 更新商品配置
     /// @param _goodid   good's id 商品的商品ID
@@ -79,8 +79,8 @@ interface I_Good {
     function payGood(
         uint256 _goodid,
         uint256 _payquanity,
-        address  _recipent
-    ) external  returns (bool);
+        address _recipent
+    ) external returns (bool);
 
     /// @notice set good's Owner 改变商品的拥有者
     /// @param _goodid  good's id 商品的商品ID
@@ -93,9 +93,7 @@ interface I_Good {
     /// @notice collect protocalFee 收益协议手续费
     /// @param _goodid  good's id 商品的商品ID
     /// @return the result 手续费数量
-    function collectProtocolFee(
-        uint256 _goodid
-    ) external  returns (uint256);
+    function collectProtocolFee(uint256 _goodid) external returns (uint256);
     /// @notice add ban list  增加禁止名单
     /// @param _user  address 地址
     /// @return is_success_ 是否成功

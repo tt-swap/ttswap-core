@@ -47,26 +47,27 @@ interface I_MarketManage is I_Good, I_Proof {
     event e_proof(uint256 indexed);
 
     error err_total();
-    /// @notice get good's state 获取商品状态
-    /// @param _erc20address good's id  商品的商品ID
-    /// @param _initial   initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.
-    /// @param _goodconfig   initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.
-    /// @return metagood_no_ 元商品编号
-    /// @return proof_no_ 投资证明编号
+
+    /// @notice initial market's first good~初始化市场中第一个商品
+    /// @param _erc20address good's contract address~商品合约地址
+    /// @param _initial   initial good.amount0:value,amount1:quantity~初始化的商品的参数,前128位为价值,后128位为数量.
+    /// @param _goodconfig   good config (detail config according to the whitepaper)~商品配置(详细配置参见技术白皮书)
+    /// @return metagood_no_  good_no~商品编号
+    /// @return proof_no_  proof_no~投资证明编号
     function initMetaGood(
         address _erc20address,
         T_BalanceUINT256 _initial,
         uint256 _goodconfig
     ) external returns (uint256 metagood_no_, uint256 proof_no_);
 
-    /// @notice 获取商品状态 get good's state
-    /// @param _valuegood   使用什么价值物品度量普通物品的价值  use which value good to measure the normal good
-    /// @param _initial   普通物品的初始化参数
-    /// @param _erc20address  普通物品对应的ERC20代币合约地址
-    /// @param _goodConfig   普通物品的配置信息
-    /// @param _gater   门户地址
-    /// @return goodNo_ 初始化普通物品后的证明 the proof of initial good
-    /// @return proofNo_ 初始化普通物品后的证明 the proof of initial good
+    /// @notice initial the normal good~初始化市场中的普通商品
+    /// @param _valuegood   valuegood_no:measure the normal good value~价值商品编号:衡量普通商品价值
+    /// @param _initial     initial good.amount0:value,amount1:quantity~初始化的商品的参数,前128位为价值,后128位为数量.
+    /// @param _erc20address  good's contract address~商品合约地址
+    /// @param _goodConfig   good config (detail config according to the whitepaper)~商品配置(详细配置参见技术白皮书)
+    /// @param _gater   gater address~门户地址
+    /// @return goodNo_ the_normal_good_No ~普通物品的编号
+    /// @return proofNo_ the_proof_of_initial_good~初始化普通物品的投资证明
     function initNormalGood(
         uint256 _valuegood,
         T_BalanceUINT256 _initial,
@@ -75,15 +76,15 @@ interface I_MarketManage is I_Good, I_Proof {
         address _gater
     ) external returns (uint256 goodNo_, uint256 proofNo_);
 
-    /// @notice 用户出售_swapQuanitity个_goodid1去购买 _goodid2
+    /// @notice sell _swapQuantity units of good1 to buy good2~用户出售_swapQuanitity个_goodid1去购买 _goodid2
     /// @dev 如果购买商品1而出售商品2,开发者需求折算成使用商品2购买商品1
-    /// @param _goodid1   商品1的ID
-    /// @param _goodid2   商品2的ID
-    /// @param _swapQuanitity  出售商品1的数量
-    /// @param _limitprice   在不高于某价值出售
-    /// @param _istotal 是否允许完全成交
-    /// @param _gater   用户地址
-    /// @return goodid2Quanitity_ 实际情况
+    /// @param _goodid1 good1's No~商品1的编号
+    /// @param _goodid2 good2's No~商品2的编号
+    /// @param _swapQuanitity good1's quantity~商品1的数量
+    /// @param _limitprice trade price's limit~交易价格限制
+    /// @param _istotal is need trade all~是否允许全部成交
+    /// @param _gater   gater address~门户地址
+    /// @return goodid2Quanitity_  实际情况
     /// @return goodid2FeeQuanitity_ 实际情况
     function buyGood(
         uint256 _goodid1,
@@ -96,16 +97,15 @@ interface I_MarketManage is I_Good, I_Proof {
         external
         returns (uint128 goodid2Quanitity_, uint128 goodid2FeeQuanitity_);
 
-    /// @notice 用户使用_goodid1购买_swapQuanitity个_goodid2,同时支付给_recipent
-    /// @dev 如果购买商品1而出售商品2,开发者需求折算成使用商品2购买商品1
-    /// @param _goodid1   商品1的ID
-    /// @param _goodid2   商品2的ID
-    /// @param _swapQuanitity  出售商品1的数量
-    /// @param _limitprice   在不高于某价值出售
-    /// @param _recipent   收款方
-    /// @param _gater   门户地址
-    /// @return goodid2_quanitity_ 商品2获得的数量(不包含手续费)
-    /// @return goodid2_fee_quanitity_ 商品2的手续费
+    /// @notice buy _swapQuantity units of good to sell good2 and send good1 to recipent~用户购买_swapQuanitity个_goodid1去出售 _goodid2并且把商品转给RECIPENT
+    /// @param _goodid1 good1's No~商品1的编号
+    /// @param _goodid2 good2's No~商品2的编号
+    /// @param _swapQuanitity buy good2's quantity~购买商品2的数量
+    /// @param _limitprice trade price's limit~交易价格限制
+    /// @param _recipent recipent~收款人
+    /// @param _gater   gater address~门户地址
+    /// @return goodid1Quanitity_  good1 actual quantity~商品1实际数量
+    /// @return goodid1FeeQuanitity_ good1 actual fee~商品1实际手续费
     function buyGoodForPay(
         uint256 _goodid1,
         uint256 _goodid2,
@@ -115,21 +115,18 @@ interface I_MarketManage is I_Good, I_Proof {
         address _gater
     )
         external
-        returns (uint128 goodid2_quanitity_, uint128 goodid2_fee_quanitity_);
+        returns (uint128 goodid1Quanitity_, uint128 goodid1FeeQuanitity_);
 
-    /// @notice 投资价值商品
-    /// @param _goodid   价值商品的ID
-    /// @param _goodQuanitity   投资价值商品的数量
-    /// @param _gater   门户地址
+    /// @notice invest value good~投资价值商品
+    /// @param _goodid   value good No~价值商品的编号
+    /// @param _goodQuanitity  value good quanity~投资价值商品的数量
+    /// @param _gater   gater address~门户地址
     /// @return valueInvest_
-    /// struct S_GoodinvestReturn {
-    /// uint128 actualFeeQuantity; //实际手续费
-    /// uint128 contructFeeQuantity; //构建手续费
-    /// uint128 actualinvestValue; //实际投资价值
-    /// uint128 actualinvestQuantity; //实际投资数量
+    ///  valueInvest_.actualFeeQuantity //actutal fee quantity 实际手续费
+    ///  valueInvest_.contructFeeQuantity //contrunct fee quantity 构建手续费
+    ///  valueInvest_.actualinvestValue //value of invest 实际投资价值
+    ///  valueInvest_.actualinvestQuantity //the quantity of invest 实际投资数量
     /// @return valueProofno_ 证明编号
-    /// }
-
     function investValueGood(
         uint256 _goodid,
         uint128 _goodQuanitity,
@@ -141,12 +138,16 @@ interface I_MarketManage is I_Good, I_Proof {
             uint256 valueProofno_
         );
 
-    /// @notice 撤资价值商品
-    /// @param _goodid   价值商品的ID
-    /// @param _goodQuanitity   取消价值商品的数量
-    /// @param _gater   门户
-    /// @return disinvestResult_   amount0 为投资收益 amount1为实际产生手续费
-    /// @return valueProofno_
+    /// @notice disinvest value good~撤资价值商品
+    /// @param _goodid   value good No~价值商品的ID
+    /// @param _goodQuanitity  the quantity of value good to disinvest~取消价值商品的数量
+    /// @param _gater   gater~门户
+    /// @return disinvestResult_
+    /// disinvestResult_.profit; // profit of stake 投资收入
+    /// disinvestResult_.actual_fee; // actual fee 实际手续费
+    /// disinvestResult_.actualDisinvestValue; // disinvest value  撤资价值
+    /// disinvestResult_.actualDisinvestQuantity; //disinvest quantity 撤资数量
+    /// @return valueProofno_ the proof of value proof~投资证明的编号
     function disinvestValueGood(
         uint256 _goodid,
         uint128 _goodQuanitity,
@@ -158,25 +159,21 @@ interface I_MarketManage is I_Good, I_Proof {
             uint256 valueProofno_
         );
 
-    /// @notice 投资普通商品
-    /// @param _togood   普通商品的ID
-    /// @param _valuegood   价值商品的ID
-    /// @param _quanitity   投资普通商品的数量
-    /// @param _gater   门户
-    /// @return normalinvest 普通商品
-    /// struct S_GoodinvestReturn {
-    /// uint128 actualFeeQuantity; //实际手续费
-    /// uint128 contructFeeQuantity; //构建手续费
-    /// uint128 actualinvestValue; //实际投资价值
-    /// uint128 actualinvestQuantity; //实际投资数量
-    /// }
-    /// @return valueinvest 价值商品
-    /// struct S_GoodinvestReturn {
-    /// uint128 actualFeeQuantity; //实际手续费
-    /// uint128 contructFeeQuantity; //构建手续费
-    /// uint128 actualinvestValue; //实际投资价值
-    /// uint128 actualinvestQuantity; //实际投资数量
-    /// }
+    /// @notice invest normal good~投资普通商品
+    /// @param _togood  normal good No~普通商品的编号
+    /// @param _valuegood value good No~价值商品的编号
+    /// @param _quanitity   invest normal good quantity~投资普通商品的数量
+    /// @param _gater   gater address~门户
+    /// @return normalInvest_
+    ///  normalInvest_.actualFeeQuantity //actutal fee quantity 实际手续费
+    ///  normalInvest_.contructFeeQuantity //contrunct fee quantity 构建手续费
+    ///  normalInvest_.actualinvestValue //value of invest 实际投资价值
+    ///  normalInvest_.actualinvestQuantity //the quantity of invest 实际投资数量
+    /// @return valueInvest_
+    ///  valueInvest_.actualFeeQuantity //actutal fee quantity 实际手续费
+    ///  valueInvest_.contructFeeQuantity //contrunct fee quantity 构建手续费
+    ///  valueInvest_.actualinvestValue //value of invest 实际投资价值
+    ///  valueInvest_.actualinvestQuantity //the quantity of invest 实际投资数量
     /// @return normalProofno_  证明编号
     function investNormalGood(
         uint256 _togood,
@@ -186,18 +183,26 @@ interface I_MarketManage is I_Good, I_Proof {
     )
         external
         returns (
-            L_Good.S_GoodInvestReturn calldata normalinvest,
-            L_Good.S_GoodInvestReturn calldata valueinvest,
+            L_Good.S_GoodInvestReturn memory normalInvest_,
+            L_Good.S_GoodInvestReturn memory valueInvest_,
             uint256 normalProofno_
         );
 
-    /// @notice 撤资普通商品
-    /// @param _togood   普通商品id
-    /// @param _valuegood   投资ID
-    /// @param _goodQuanitity   取消普通商品投资数量
-    /// @param _gater   门户
-    /// @return disinvestResult1_   普通商品:amount0 为投资收益 amount1为实际产生手续费
-    /// @return disinvestResult2_   价值商品:amount0 为投资收益 amount1为实际产生手续费
+    /// @notice disinvest normal good~撤资普通商品
+    /// @param _togood   normal good No~普通商品编号
+    /// @param _valuegood   value Good No~价值商品编号
+    /// @param _goodQuanitity  disinvest quantity~取消普通商品投资数量
+    /// @param _gater   gater address~门户
+    /// @return disinvestResult1_ 普通商品结果
+    /// disinvestResult1_.profit; // profit of stake 投资收入
+    /// disinvestResult1_.actual_fee; // actual fee 实际手续费
+    /// disinvestResult1_.actualDisinvestValue; // disinvest value  撤资价值
+    /// disinvestResult1_.actualDisinvestQuantity; //disinvest quantity 撤资数量
+    /// @return disinvestResult2_ 价值商品结果
+    /// disinvestResult2_.profit; // profit of stake 投资收入
+    /// disinvestResult2_.actual_fee; // actual fee 实际手续费
+    /// disinvestResult2_.actualDisinvestValue; // disinvest value  撤资价值
+    /// disinvestResult2_.actualDisinvestQuantity; //disinvest quantity 撤资数量
     /// @return normalProofno_  证明编号
     function disinvestNormalGood(
         uint256 _togood,
@@ -212,23 +217,35 @@ interface I_MarketManage is I_Good, I_Proof {
             uint256 normalProofno_
         );
 
-    /// @notice 撤资价值商品证明
-    /// @param _valueproofid   投资ID
-    /// @param _goodQuanitity   取消价值商品数量
-    /// @param _gater   门户
-    /// @return disinvestResult_   价值商品:amount0 为投资收益 amount1为实际产生手续费
+    /// @notice disinvest value good~撤资价值商品
+    /// @param _valueproofid   the invest proof No of value good ~价值投资证明的编号编号
+    /// @param _goodQuanitity  the quantity of value good to disinvest~取消价值商品的数量
+    /// @param _gater   gater~门户
+    /// @return disinvestResult_
+    /// disinvestResult_.profit; // profit of stake 投资收入
+    /// disinvestResult_.actual_fee; // actual fee 实际手续费
+    /// disinvestResult_.actualDisinvestValue; // disinvest value  撤资价值
+    /// disinvestResult_.actualDisinvestQuantity; //disinvest quantity 撤资数量
     function disinvestValueProof(
         uint256 _valueproofid,
         uint128 _goodQuanitity,
         address _gater
     ) external returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_);
 
-    /// @notice 撤资普通商品证明
-    /// @param _normalProof   投资ID
-    /// @param _goodQuanitity   取消普通商品数量
-    /// @param _gater   门户
-    /// @return disinvestResult1_   普通商品:amount0 为投资收益 amount1为实际产生手续费
-    /// @return disinvestResult2_   价值商品:amount0 为投资收益 amount1为实际产生手续费
+    /// @notice disinvest normal good~撤资普通商品
+    /// @param _normalProof   the invest proof No of normal good ~普通投资证明的编号编号
+    /// @param _goodQuanitity  disinvest quantity~取消普通商品投资数量
+    /// @param _gater   gater address~门户
+    /// @return disinvestResult1_ 普通商品结果
+    /// disinvestResult1_.profit; // profit of stake 投资收入
+    /// disinvestResult1_.actual_fee; // actual fee 实际手续费
+    /// disinvestResult1_.actualDisinvestValue; // disinvest value  撤资价值
+    /// disinvestResult1_.actualDisinvestQuantity; //disinvest quantity 撤资数量
+    /// @return disinvestResult2_ 价值商品结果
+    /// disinvestResult2_.profit; // profit of stake 投资收入
+    /// disinvestResult2_.actual_fee; // actual fee 实际手续费
+    /// disinvestResult2_.actualDisinvestValue; // disinvest value  撤资价值
+    /// disinvestResult2_.actualDisinvestQuantity; //disinvest quantity 撤资数量
     function disinvestNormalProof(
         uint256 _normalProof,
         uint128 _goodQuanitity,
@@ -240,16 +257,16 @@ interface I_MarketManage is I_Good, I_Proof {
             L_Good.S_GoodDisinvestReturn memory disinvestResult2_
         );
 
-    /// @notice collect the profit of normal proof 提取普通投资证明的收益
-    /// @param _normalProofid   投资ID
+    /// @notice collect the profit of normal proof~提取普通投资证明的收益
+    /// @param _normalProofid   the proof No of invest normal good~普通投资证明编号
     /// @return profit_   amount0 普通商品的投资收益 amount1价值商品的投资收益
     function collectNormalProofFee(
         uint256 _normalProofid
     ) external returns (T_BalanceUINT256 profit_);
 
-    /// @notice collect the profit of normal proof 提取普通投资证明的收益
-    /// @param _valueProofid   投资ID
-    /// @return profit_  价值商品的投资收益
+    /// @notice collect the profit of normal proof~提取普通投资证明的收益
+    /// @param _valueProofid   the proof No of invest value good~价值投资证明编号
+    /// @return profit_  profit of invest value good~价值商品的投资收益
     function collectValueProofFee(
         uint256 _valueProofid
     ) external returns (uint128 profit_);

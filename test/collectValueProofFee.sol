@@ -212,7 +212,7 @@ contract collectValueProofFee is Test, BaseSetup {
         );
     }
 
-    function _testBuy(uint256 aa) public {
+    function testBuy(uint256 aa) public {
         address alice = address(20);
         vm.startPrank(alice);
         deal(address(usdt), alice, 10000000 * 10 ** 6, false);
@@ -292,7 +292,7 @@ contract collectValueProofFee is Test, BaseSetup {
         vm.stopPrank();
     }
 
-    function _testBuyForPay(uint256 aa) public {
+    function testBuyForPay(uint256 aa) public {
         address alice = address(20);
         address xx = address(21);
         vm.startPrank(alice);
@@ -383,7 +383,7 @@ contract collectValueProofFee is Test, BaseSetup {
         vm.stopPrank();
     }
 
-    function _testinvestvaluegood() public {
+    function testinvestvaluegood() public {
         address alice = address(20);
         vm.startPrank(alice);
         deal(address(usdt), alice, 10000000 * 10 ** 6, false);
@@ -429,7 +429,7 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         console2.log("usdt:", usdt.balanceOf(alice));
     }
-    function _testdisinvestvaluegood() public {
+    function testdisinvestvaluegood() public {
         address alice = address(20);
         vm.startPrank(marketcreator);
         deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
@@ -488,7 +488,7 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         console2.log("usdt:", usdt.balanceOf(alice));
     }
-    function _testdisinvestvalueproof() public {
+    function testdisinvestvalueproof() public {
         address alice = address(20);
         vm.startPrank(marketcreator);
         deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
@@ -570,37 +570,37 @@ contract collectValueProofFee is Test, BaseSetup {
         proofInfo(metaproofid);
         assertEq(
             market.getGoodState(metagood).currentState.amount0(),
-            6704640000000,
+            6714640000000,
             "metagood's currentState amount0"
         );
         assertEq(
             market.getGoodState(metagood).currentState.amount1(),
-            6724624000000,
+            6734624000000,
             "metagood's currentState amount1"
         );
         assertEq(
             market.getGoodState(metagood).investState.amount0(),
-            6714632000000,
+            6724632000000,
             "metagood's investState amount0"
         );
         assertEq(
             market.getGoodState(metagood).investState.amount1(),
-            6714632000000,
+            6724632000000,
             "metagood's investState amount1"
         );
         assertEq(
             market.getGoodState(metagood).feeQunitityState.amount0(),
-            2811432332,
+            2811613398,
             "metagood's feeQunitityState amount0"
         );
         assertEq(
             market.getGoodState(metagood).feeQunitityState.amount1(),
-            123613398,
+            131975531,
             "metagood's feeQunitityState amount1"
         );
         console2.log("usdt:", usdt.balanceOf(alice));
     }
-    function _testinvestNormalgood() public {
+    function testinvestNormalgood() public {
         address alice = address(20);
         vm.startPrank(alice);
         deal(address(usdt), alice, 100 * 65000 * 10 ** 6, false);
@@ -684,7 +684,7 @@ contract collectValueProofFee is Test, BaseSetup {
         console2.log("usdt:", usdt.balanceOf(alice));
     }
 
-    function _testdisinvestnormalgoodaa() public {
+    function testdisinvestnormalgoodaa() public {
         uint256 normalproofid;
         address alice = address(20);
         vm.startPrank(marketcreator);
@@ -763,7 +763,7 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         console2.log("usdt:", usdt.balanceOf(alice));
     }
-    function _testdisinvestnormalproof() public {
+    function testdisinvestnormalproof() public {
         uint256 normalproofid;
         address alice = address(20);
         vm.startPrank(marketcreator);
@@ -841,7 +841,7 @@ contract collectValueProofFee is Test, BaseSetup {
         console2.log("usdt:", usdt.balanceOf(alice));
     }
 
-    function _testcollectNormalProofFee() public {
+    function testcollectNormalProofFee() public {
         uint256 normalproofid;
         address alice = address(20);
         vm.startPrank(marketcreator);

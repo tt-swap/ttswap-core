@@ -109,21 +109,16 @@ library L_Proof {
         _self.approval = to;
     }
 
-    function collectValueProofFee(
-        S_ProofState storage _self,
-        uint128 profit
-    ) internal {
-        _self.invest = _self.invest + toBalanceUINT256(profit, 0);
-    }
-
-    function collectNormalProofFee(
+    function collectProofFee(
         S_ProofState storage _self,
         T_BalanceUINT256 profit
     ) internal {
         _self.invest = _self.invest + toBalanceUINT256(profit.amount0(), 0);
-        _self.valueinvest =
-            _self.valueinvest +
-            toBalanceUINT256(profit.amount1(), 0);
+        if (_self.valuegood != 0) {
+            _self.valueinvest =
+                _self.valueinvest +
+                toBalanceUINT256(profit.amount1(), 0);
+        }
     }
 }
 

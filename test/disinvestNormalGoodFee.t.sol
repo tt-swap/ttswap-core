@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
+import {MyToken} from "../src/testtoken/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -138,10 +138,10 @@ contract disinvestNormalGoodFee is BaseSetup {
         );
         assertEq(
             uint256(market.getGoodsFee(metagood, marketcreator)),
-            10,
+            9,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 2, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 3, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest normal good with fee second");
         market.disinvestNormalGood(normalgoodusdt, metagood, 10, address(1));
@@ -185,7 +185,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         );
         console2.log(market.getGoodsFee(metagood, address(1)), "gater fee11");
         console2.log(market.getGoodsFee(metagood, address(2)), "refer fee11");
-        market.disinvestNormalProof(p_, 10000, address(1));
+        market.disinvestProof(p_, 10000, address(1));
 
         console2.log(
             market.getGoodsFee(metagood, marketcreator),
@@ -253,10 +253,10 @@ contract disinvestNormalGoodFee is BaseSetup {
         console2.log(market.getGoodsFee(metagood, address(2)), "refer fee1");
         assertEq(
             uint256(market.getGoodsFee(metagood, marketcreator)),
-            10,
+            9,
             "seller fee"
         );
-        assertEq(market.getGoodsFee(metagood, address(1)), 2, "gater fee");
+        assertEq(market.getGoodsFee(metagood, address(1)), 3, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
 
         L_Proof.S_ProofState memory _s1 = market.getProofState(p_);
@@ -268,7 +268,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         assertEq(_s1.invest.amount0(), 0, "proof's contruct quantity is error");
         assertEq(_s1.invest.amount1(), 10000, "proof's quantity is error");
         snapStart("disinvest normal proof with fee second");
-        market.disinvestNormalProof(p_, 10, address(1));
+        market.disinvestProof(p_, 10, address(1));
         snapEnd();
         vm.stopPrank();
     }

@@ -33,10 +33,14 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _erc20address,
         T_BalanceUINT256 _initial,
         uint256 _goodConfig
-    ) external override onlyMarketCreator returns (uint256, uint256) {
+    ) external payable override onlyMarketCreator returns (uint256, uint256) {
         require(_goodConfig.isvaluegood(), "M02");
 
-        _erc20address.transferFrom(msg.sender, _initial.amount1());
+        _erc20address.safeTransferFrom(
+            msg.sender,
+            address(this),
+            _initial.amount1()
+        );
 
         goodnum += 1;
         goodseq[S_GoodKey(_erc20address, msg.sender).toId()] = goodnum;
@@ -54,6 +58,13 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             toBalanceUINT256(0, _initial.amount1())
         );
         ownerproofs[msg.sender].addvalue(totalSupply);
+        emit e_initMetaGood(
+            goodnum,
+            totalSupply,
+            _erc20address,
+            _goodConfig,
+            _initial
+        );
         return (goodnum, totalSupply);
     }
 
@@ -64,49 +75,70 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _erc20address,
         uint256 _goodConfig,
         address _gater
-    ) external override noReentrant returns (uint256, uint256) {
+    ) external payable override noReentrant returns (uint256, uint256) {
         require(goods[_valuegood].goodConfig.isvaluegood(), "M02");
         bytes32 togood = S_GoodKey(_erc20address, msg.sender).toId();
         require(goodseq[togood] == 0, "M01");
 
-        _erc20address.transferFrom(msg.sender, _initial.amount0());
-        goods[_valuegood].erc20address.transferFrom(
+        _erc20address.safeTransferFrom(
             msg.sender,
+            address(this),
+            _initial.amount0()
+        );
+        goods[_valuegood].erc20address.safeTransferFrom(
+            msg.sender,
+            address(this),
             _initial.amount1()
         );
 
-        uint128 value = goods[_valuegood]
+        L_Good.S_GoodInvestReturn memory investResult = goods[_valuegood]
             .investGood(
                 _initial.amount1(),
                 marketconfig,
                 S_Ralate(_gater, relations[msg.sender])
-            )
-            .actualInvestValue;
+            );
 
         goodnum += 1;
         goodseq[togood] = goodnum;
         ownergoods[msg.sender].addvalue(goodnum);
         goods[goodnum].init(
-            toBalanceUINT256(value, _initial.amount0()),
+            toBalanceUINT256(
+                investResult.actualInvestValue,
+                _initial.amount0()
+            ),
             _erc20address,
             _goodConfig
         );
-
-        bytes32 normalproof = S_ProofKey(msg.sender, goodnum, _valuegood)
-            .toId();
         totalSupply += 1;
-        proofseq[normalproof] = totalSupply;
+        proofseq[
+            S_ProofKey(msg.sender, goodnum, _valuegood).toId()
+        ] = totalSupply;
         proofs[totalSupply] = L_Proof.S_ProofState(
             msg.sender,
             goodnum,
             _valuegood,
-            toBalanceUINT256(value, 0),
+            toBalanceUINT256(investResult.actualInvestValue, 0),
             toBalanceUINT256(0, _initial.amount0()),
-            toBalanceUINT256(0, _initial.amount1()),
+            toBalanceUINT256(0, investResult.actualInvestQuantity),
             address(0),
             address(0)
         );
         ownerproofs[msg.sender].addvalue(totalSupply);
+        emit e_initNormalGood(
+            totalSupply,
+            goodnum,
+            _valuegood,
+            _erc20address,
+            _goodConfig,
+            toBalanceUINT256(
+                _initial.amount0(),
+                investResult.actualInvestValue
+            ),
+            toBalanceUINT256(
+                investResult.actualFeeQuantity,
+                investResult.actualInvestQuantity
+            )
+        );
         return (goodnum, totalSupply);
     }
 
@@ -156,8 +188,9 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
-        goods[_goodid1].erc20address.transferFrom(
+        goods[_goodid1].erc20address.safeTransferFrom(
             msg.sender,
+            address(this),
             _swapQuanitity - swapcache.remainQuanitity
         );
 
@@ -230,8 +263,9 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _recipent,
             _swapQuanitity - swapcache.remainQuanitity - swapcache.feeQuanitity
         );
-        goods[_goodid1].erc20address.transferFrom(
+        goods[_goodid1].erc20address.safeTransferFrom(
             msg.sender,
+            address(this),
             goodid1Quanitity_
         );
         emit e_buyGoodForPay(
@@ -247,7 +281,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             toBalanceUINT256(goodid1Quanitity_, goodid1FeeQuanitity_)
         );
     }
-
     /// @inheritdoc I_MarketManage
     function investValueGood(
         uint256 _goodid,
@@ -268,7 +301,11 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 goods[_goodid].currentState.amount0() <= 2 ** 112,
             "M06"
         );
-        goods[_goodid].erc20address.transferFrom(msg.sender, _goodQuanitity);
+        goods[_goodid].erc20address.safeTransferFrom(
+            msg.sender,
+            address(this),
+            _goodQuanitity
+        );
 
         valueInvest_ = goods[_goodid].investGood(
             _goodQuanitity,
@@ -291,7 +328,14 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 valueInvest_.actualInvestQuantity
             )
         );
-        emit e_proof(valueProofno_);
+        emit e_investValueGood(
+            valueProofno_,
+            _goodid,
+            toBalanceUINT256(
+                valueInvest_.actualFeeQuantity,
+                valueInvest_.actualInvestQuantity
+            )
+        );
     }
 
     /// @inheritdoc I_MarketManage
@@ -302,40 +346,17 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     )
         external
         override
-        noReentrant
         returns (
             L_Good.S_GoodDisinvestReturn memory disinvestResult_,
             uint256 valueProofno_
         )
     {
         valueProofno_ = proofseq[S_ProofKey(msg.sender, _goodid, 0).toId()];
-        require(
-            proofs[valueProofno_].owner == msg.sender &&
-                _goodQuanitity <= proofs[valueProofno_].invest.amount1(),
-            "M03"
+        (disinvestResult_, ) = disinvestProof(
+            valueProofno_,
+            _goodQuanitity,
+            _gater
         );
-        uint128 remainquanitity = _goodQuanitity;
-
-        disinvestResult_ = goods[_goodid].disinvestValueGood(
-            proofs[valueProofno_],
-            remainquanitity,
-            marketconfig,
-            S_Ralate(_gater, relations[msg.sender])
-        );
-        uint128 protocalfee = marketconfig.getPlatFee128(
-            disinvestResult_.profit
-        );
-        goods[_goodid].fees[marketcreator] += protocalfee;
-
-        disinvestResult_.actual_fee = disinvestResult_.actual_fee + protocalfee;
-
-        goods[_goodid].erc20address.safeTransfer(
-            msg.sender,
-            _goodQuanitity +
-                disinvestResult_.profit -
-                disinvestResult_.actual_fee
-        );
-        emit e_proof(valueProofno_);
     }
 
     /// @inheritdoc I_MarketManage
@@ -373,8 +394,9 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         valueInvest_.actualInvestQuantity = goods[_valuegood]
             .goodConfig
             .getInvestFulFee(valueInvest_.actualInvestQuantity);
-        goods[_valuegood].erc20address.transferFrom(
+        goods[_valuegood].erc20address.safeTransferFrom(
             msg.sender,
+            address(this),
             valueInvest_.actualInvestQuantity
         );
 
@@ -384,7 +406,11 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             S_Ralate(_gater, relations[msg.sender])
         );
 
-        goods[_togood].erc20address.transferFrom(msg.sender, _quanitity);
+        goods[_togood].erc20address.safeTransferFrom(
+            msg.sender,
+            address(this),
+            _quanitity
+        );
 
         proofno_ = proofseq[S_ProofKey(msg.sender, _togood, _valuegood).toId()];
         if (proofno_ == 0) {
@@ -408,11 +434,21 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 valueInvest_.actualInvestQuantity
             )
         );
-
-        emit e_proof(proofno_);
+        emit e_investNormalGood(
+            proofno_,
+            _togood,
+            _valuegood,
+            toBalanceUINT256(
+                normalInvest_.actualFeeQuantity,
+                normalInvest_.actualInvestQuantity
+            ),
+            toBalanceUINT256(
+                valueInvest_.actualFeeQuantity,
+                valueInvest_.actualInvestQuantity
+            )
+        );
     }
 
-    /// @inheritdoc I_MarketManage
     function disinvestNormalGood(
         uint256 _togood,
         uint256 _valuegood,
@@ -421,7 +457,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     )
         external
         override
-        noReentrant
         returns (
             L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_,
             L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_,
@@ -431,93 +466,19 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         normalproofno_ = proofseq[
             S_ProofKey(msg.sender, _togood, _valuegood).toId()
         ];
-        require(
-            normalproofno_ > 0 &&
-                proofs[normalproofno_].owner == msg.sender &&
-                _goodQuanitity <= proofs[normalproofno_].invest.amount1(),
-            "M04"
-        );
-
-        (disinvestNormalResult1_, disinvestValueResult2_) = goods[_togood]
-            .disinvestNormalGood(
-                goods[_valuegood],
-                proofs[
-                    proofseq[S_ProofKey(msg.sender, _togood, _valuegood).toId()]
-                ],
-                _goodQuanitity,
-                marketconfig,
-                S_Ralate(_gater, relations[msg.sender])
-            );
-
-        T_BalanceUINT256 protocalfee = toBalanceUINT256(
-            marketconfig.getPlatFee128(disinvestNormalResult1_.profit),
-            marketconfig.getPlatFee128(disinvestValueResult2_.profit)
-        );
-
-        disinvestNormalResult1_.actual_fee += protocalfee.amount0();
-        disinvestValueResult2_.actual_fee += protocalfee.amount1();
-        goods[_togood].fees[marketcreator] += protocalfee.amount0();
-        goods[_valuegood].fees[marketcreator] += protocalfee.amount1();
-
-        goods[_togood].erc20address.safeTransfer(
-            msg.sender,
-            _goodQuanitity +
-                disinvestNormalResult1_.profit -
-                disinvestNormalResult1_.actual_fee
-        );
-
-        goods[_valuegood].erc20address.safeTransfer(
-            msg.sender,
-            disinvestValueResult2_.actualDisinvestQuantity +
-                disinvestValueResult2_.profit -
-                disinvestValueResult2_.actual_fee
-        );
-        emit e_proof(normalproofno_);
-    }
-
-    /// @inheritdoc I_MarketManage
-    function disinvestValueProof(
-        uint256 _valueproofid,
-        uint128 _goodQuanitity,
-        address _gater
-    )
-        external
-        override
-        noReentrant
-        returns (L_Good.S_GoodDisinvestReturn memory disinvestResult_)
-    {
-        uint256 goodid1 = proofs[_valueproofid].currentgood;
-        require(
-            proofs[_valueproofid].owner == msg.sender &&
-                proofs[_valueproofid].valuegood == 0,
-            "M05"
-        );
-        disinvestResult_ = goods[goodid1].disinvestValueGood(
-            proofs[_valueproofid],
+        (disinvestNormalResult1_, disinvestValueResult2_) = disinvestProof(
+            normalproofno_,
             _goodQuanitity,
-            marketconfig,
-            S_Ralate(_gater, relations[msg.sender])
-        );
-        uint128 protocalfee = marketconfig.getPlatFee128(
-            disinvestResult_.profit
-        );
-        disinvestResult_.actual_fee += protocalfee;
-        goods[goodid1].fees[marketcreator] += protocalfee;
-        goods[goodid1].erc20address.safeTransfer(
-            msg.sender,
-            _goodQuanitity +
-                disinvestResult_.profit -
-                disinvestResult_.actual_fee
+            _gater
         );
     }
 
-    /// @inheritdoc I_MarketManage
-    function disinvestNormalProof(
-        uint256 _normalProof,
+    function disinvestProof(
+        uint256 _proofid,
         uint128 _goodQuanitity,
         address _gater
     )
-        external
+        public
         override
         noReentrant
         returns (
@@ -525,17 +486,13 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_
         )
     {
-        uint256 valuegood = proofs[_normalProof].valuegood;
-        require(
-            proofs[_normalProof].owner == msg.sender && valuegood != 0,
-            "M09"
-        );
-        uint256 currentgood = proofs[_normalProof].currentgood;
-
-        (disinvestNormalResult1_, disinvestValueResult2_) = goods[currentgood]
-            .disinvestNormalGood(
+        require(proofs[_proofid].owner == msg.sender, "M05");
+        uint256 normalgood = proofs[_proofid].currentgood;
+        uint256 valuegood = proofs[_proofid].valuegood;
+        (disinvestNormalResult1_, disinvestValueResult2_) = goods[normalgood]
+            .disinvestGood(
                 goods[valuegood],
-                proofs[_normalProof],
+                proofs[_proofid],
                 _goodQuanitity,
                 marketconfig,
                 S_Ralate(_gater, relations[msg.sender])
@@ -545,80 +502,81 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             marketconfig.getPlatFee128(disinvestNormalResult1_.profit),
             marketconfig.getPlatFee128(disinvestValueResult2_.profit)
         );
-
         disinvestNormalResult1_.actual_fee += protocalfee.amount0();
-        disinvestValueResult2_.actual_fee += protocalfee.amount1();
-        goods[currentgood].fees[marketcreator] += protocalfee.amount0();
-        goods[valuegood].fees[marketcreator] += protocalfee.amount1();
-
-        goods[currentgood].erc20address.safeTransfer(
+        goods[normalgood].fees[marketcreator] += protocalfee.amount0();
+        goods[normalgood].erc20address.safeTransfer(
             msg.sender,
             _goodQuanitity +
                 disinvestNormalResult1_.profit -
                 disinvestNormalResult1_.actual_fee
         );
-
-        goods[valuegood].erc20address.safeTransfer(
-            msg.sender,
-            disinvestValueResult2_.actualDisinvestQuantity +
-                disinvestValueResult2_.profit -
-                disinvestValueResult2_.actual_fee
+        if (proofs[_proofid].valuegood != 0) {
+            disinvestValueResult2_.actual_fee += protocalfee.amount1();
+            goods[valuegood].fees[marketcreator] += protocalfee.amount1();
+            goods[valuegood].erc20address.safeTransfer(
+                msg.sender,
+                disinvestValueResult2_.actualDisinvestQuantity +
+                    disinvestValueResult2_.profit -
+                    disinvestValueResult2_.actual_fee
+            );
+        }
+        emit e_disinvestProof(
+            _proofid,
+            normalgood,
+            valuegood,
+            toBalanceUINT256(
+                disinvestNormalResult1_.actual_fee,
+                disinvestNormalResult1_.actualDisinvestQuantity
+            ),
+            toBalanceUINT256(
+                disinvestValueResult2_.actual_fee,
+                disinvestValueResult2_.actualDisinvestQuantity
+            ),
+            toBalanceUINT256(
+                disinvestNormalResult1_.profit,
+                disinvestValueResult2_.profit
+            )
         );
     }
 
     /// @inheritdoc I_MarketManage
-    function collectValueProofFee(
-        uint256 _valueProofid
-    ) external override returns (uint128 profit_) {
-        require(
-            (proofs[_valueProofid].owner == msg.sender ||
-                proofs[_valueProofid].beneficiary == msg.sender) &&
-                proofs[_valueProofid].valuegood == 0,
-            "M09"
-        );
-
-        uint256 goodid1 = proofs[_valueProofid].currentgood;
-        profit_ = goods[goodid1].collectValueGoodFee(proofs[_valueProofid]);
-        uint128 protocalfee = marketconfig.getPlatFee128(profit_);
-        profit_ -= protocalfee;
-        goods[goodid1].fees[marketcreator] += protocalfee;
-        goods[goodid1].erc20address.safeTransfer(msg.sender, profit_);
-
-        emit e_proof(_valueProofid);
-    }
-
-    /// @inheritdoc I_MarketManage
-    function collectNormalProofFee(
-        uint256 _normalProofid
+    function collectProofFee(
+        uint256 _proofid
     ) external override returns (T_BalanceUINT256 profit_) {
         require(
-            (proofs[_normalProofid].owner == msg.sender ||
-                proofs[_normalProofid].beneficiary == msg.sender) &&
-                proofs[_normalProofid].valuegood != 0,
+            proofs[_proofid].owner == msg.sender ||
+                proofs[_proofid].beneficiary == msg.sender,
             "M09"
         );
-        uint256 valuegood = proofs[_normalProofid].valuegood;
-        uint256 currentgood = proofs[_normalProofid].currentgood;
-        profit_ = goods[currentgood].collectNormalGoodFee(
+        uint256 valuegood = proofs[_proofid].valuegood;
+        uint256 currentgood = proofs[_proofid].currentgood;
+        profit_ = goods[currentgood].collectGoodFee(
             goods[valuegood],
-            proofs[_normalProofid]
+            proofs[_proofid]
         );
-
         T_BalanceUINT256 protocalfee = toBalanceUINT256(
             marketconfig.getPlatFee128(profit_.amount0()),
             marketconfig.getPlatFee128(profit_.amount1())
         );
         profit_ = profit_ - protocalfee;
         goods[currentgood].fees[marketcreator] += protocalfee.amount0();
-        goods[valuegood].fees[marketcreator] += protocalfee.amount1();
         goods[currentgood].erc20address.safeTransfer(
             msg.sender,
             profit_.amount0()
         );
-        goods[valuegood].erc20address.safeTransfer(
-            msg.sender,
-            profit_.amount1()
+        if (valuegood != 0) {
+            goods[valuegood].fees[marketcreator] += protocalfee.amount1();
+            goods[valuegood].erc20address.safeTransfer(
+                msg.sender,
+                profit_.amount1()
+            );
+        }
+        emit e_collectProofFee(
+            _proofid,
+            currentgood,
+            valuegood,
+            profit_,
+            protocalfee
         );
-        emit e_proof(_normalProofid);
     }
 }

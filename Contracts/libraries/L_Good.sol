@@ -352,102 +352,8 @@ library L_Good {
         if (actutal_fee > 0)
             allocateFee(_self, actutal_fee, _marketConfig, _ralate);
     }
-    function disinvestValueGood(
-        S_GoodState storage _self,
-        L_Proof.S_ProofState storage _investProof,
-        uint128 _goodQuantity,
-        uint256 _marketconfig,
-        S_Ralate memory _ralate
-    ) internal returns (S_GoodDisinvestReturn memory disinvestResult_) {
-        disinvestResult_ = S_GoodDisinvestReturn(
-            //feeamount
-            toBalanceUINT256(
-                _self.feeQunitityState.amount0(),
-                _self.investState.amount1()
-            ).getamount0fromamount1(_goodQuantity),
-            //disvest contruct fee
-            toBalanceUINT256(
-                _investProof.invest.amount0(),
-                _investProof.invest.amount1()
-            ).getamount0fromamount1(_goodQuantity),
-            //disvest value
-            toBalanceUINT256(
-                _investProof.state.amount0(),
-                _investProof.invest.amount1()
-            ).getamount0fromamount1(_goodQuantity),
-            _goodQuantity
-        );
 
-        require(
-            disinvestResult_.actualDisinvestValue <
-                _self.goodConfig.getDisinvestChips(
-                    _self.currentState.amount0()
-                ) &&
-                _goodQuantity <
-                _self.goodConfig.getDisinvestChips(
-                    _self.currentState.amount1()
-                ),
-            "G009"
-        );
-
-        _self.currentState =
-            _self.currentState -
-            toBalanceUINT256(
-                disinvestResult_.actualDisinvestValue,
-                disinvestResult_.actualDisinvestQuantity
-            );
-
-        _self.investState =
-            _self.investState -
-            toBalanceUINT256(
-                disinvestResult_.actualDisinvestValue,
-                disinvestResult_.actualDisinvestQuantity
-            );
-
-        _self.feeQunitityState =
-            _self.feeQunitityState -
-            toBalanceUINT256(
-                disinvestResult_.profit,
-                disinvestResult_.actual_fee
-            );
-
-        _investProof.burnValueProofSome(_goodQuantity);
-        disinvestResult_.actual_fee = _self.goodConfig.getDisinvestFee(
-            disinvestResult_.actualDisinvestQuantity
-        );
-
-        if (disinvestResult_.actual_fee > 0) {
-            _self.feeQunitityState =
-                _self.feeQunitityState +
-                toBalanceUINT256(
-                    _marketconfig.getLiquidFee(disinvestResult_.actual_fee),
-                    0
-                );
-            allocateFee(
-                _self,
-                disinvestResult_.actual_fee,
-                _marketconfig,
-                _ralate
-            );
-        }
-    }
-    function collectValueGoodFee(
-        S_GoodState storage _self,
-        L_Proof.S_ProofState storage _investProof
-    ) internal returns (uint128 profit) {
-        profit =
-            toBalanceUINT256(
-                _self.feeQunitityState.amount0(),
-                _self.investState.amount1()
-            ).getamount0fromamount1(_investProof.invest.amount1()) -
-            _investProof.invest.amount0();
-
-        _self.feeQunitityState =
-            _self.feeQunitityState +
-            toBalanceUINT256(0, profit);
-        _investProof.collectValueProofFee(profit);
-    }
-    function collectNormalGoodFee(
+    function collectGoodFee(
         S_GoodState storage _self,
         S_GoodState storage _valuegood,
         L_Proof.S_ProofState storage _investProof
@@ -458,24 +364,26 @@ library L_Good {
                 _self.investState.amount1()
             ).getamount0fromamount1(_investProof.invest.amount1()) -
                 _investProof.invest.amount0(),
-            toBalanceUINT256(
-                _valuegood.feeQunitityState.amount0(),
-                _valuegood.investState.amount1()
-            ).getamount0fromamount1(_investProof.valueinvest.amount1()) -
-                _investProof.valueinvest.amount0()
+            _investProof.valuegood != 0
+                ? (toBalanceUINT256(
+                    _valuegood.feeQunitityState.amount0(),
+                    _valuegood.investState.amount1()
+                ).getamount0fromamount1(_investProof.valueinvest.amount1()) -
+                    _investProof.valueinvest.amount0())
+                : 0
         );
-
         _self.feeQunitityState =
             _self.feeQunitityState +
             toBalanceUINT256(0, profit.amount0());
-        _valuegood.feeQunitityState =
-            _valuegood.feeQunitityState +
-            toBalanceUINT256(0, profit.amount1());
+        if (_investProof.valuegood != 0) {
+            _valuegood.feeQunitityState =
+                _valuegood.feeQunitityState +
+                toBalanceUINT256(0, profit.amount1());
+        }
 
-        _investProof.collectNormalProofFee(profit);
+        _investProof.collectProofFee(profit);
     }
-
-    function disinvestNormalGood(
+    function disinvestGood(
         S_GoodState storage _self,
         S_GoodState storage _valueGoodState,
         L_Proof.S_ProofState storage _investProof,
@@ -505,6 +413,7 @@ library L_Good {
             value,
             _goodQuantity
         );
+
         require(
             normalGoodResult1_.actualDisinvestValue <
                 _self.goodConfig.getDisinvestChips(
@@ -517,33 +426,13 @@ library L_Good {
             "G011"
         );
 
-        valueGoodResult2_ = S_GoodDisinvestReturn(
+        _self.feeQunitityState =
+            _self.feeQunitityState +
             toBalanceUINT256(
-                _valueGoodState.feeQunitityState.amount0(),
-                _valueGoodState.investState.amount0()
-            ).getamount0fromamount1(value),
-            toBalanceUINT256(
-                _investProof.valueinvest.amount0(),
-                _investProof.state.amount0()
-            ).getamount0fromamount1(value),
-            value,
-            toBalanceUINT256(
-                _investProof.valueinvest.amount1(),
-                _investProof.state.amount0()
-            ).getamount0fromamount1(value)
-        );
+                _marketconfig.getLiquidFee(normalGoodResult1_.actual_fee),
+                0
+            );
 
-        require(
-            valueGoodResult2_.actualDisinvestQuantity <
-                _valueGoodState.goodConfig.getDisinvestChips(
-                    _valueGoodState.currentState.amount1()
-                ) &&
-                value <
-                _valueGoodState.goodConfig.getDisinvestChips(
-                    _valueGoodState.currentState.amount0()
-                ),
-            "G012"
-        );
         _self.currentState =
             _self.currentState -
             toBalanceUINT256(
@@ -565,6 +454,7 @@ library L_Good {
                 normalGoodResult1_.actual_fee
             );
 
+        _investProof.burnNormalProofSome(_goodQuantity);
         normalGoodResult1_.profit =
             normalGoodResult1_.profit -
             normalGoodResult1_.actual_fee;
@@ -573,63 +463,94 @@ library L_Good {
             normalGoodResult1_.actualDisinvestQuantity
         );
 
-        _self.feeQunitityState =
-            _self.feeQunitityState +
-            toBalanceUINT256(
-                _marketconfig.getLiquidFee(normalGoodResult1_.actual_fee),
-                0
-            );
-        if (normalGoodResult1_.actual_fee > 0)
+        if (normalGoodResult1_.actual_fee > 0) {
+            _self.feeQunitityState =
+                _self.feeQunitityState +
+                toBalanceUINT256(
+                    _marketconfig.getLiquidFee(normalGoodResult1_.actual_fee),
+                    0
+                );
             allocateFee(
                 _self,
                 normalGoodResult1_.actual_fee,
                 _marketconfig,
                 _ralate
             );
-
-        _valueGoodState.currentState =
-            _valueGoodState.currentState -
-            toBalanceUINT256(
-                valueGoodResult2_.actualDisinvestValue,
-                valueGoodResult2_.actualDisinvestQuantity
+        }
+        if (_investProof.valuegood != 0) {
+            valueGoodResult2_ = S_GoodDisinvestReturn(
+                toBalanceUINT256(
+                    _valueGoodState.feeQunitityState.amount0(),
+                    _valueGoodState.investState.amount0()
+                ).getamount0fromamount1(value),
+                toBalanceUINT256(
+                    _investProof.valueinvest.amount0(),
+                    _investProof.state.amount0()
+                ).getamount0fromamount1(value),
+                value,
+                toBalanceUINT256(
+                    _investProof.valueinvest.amount1(),
+                    _investProof.state.amount0()
+                ).getamount0fromamount1(value)
             );
 
-        _valueGoodState.investState =
-            _valueGoodState.investState -
-            toBalanceUINT256(
-                valueGoodResult2_.actualDisinvestValue,
-                valueGoodResult2_.actualDisinvestQuantity
+            require(
+                valueGoodResult2_.actualDisinvestQuantity <
+                    _valueGoodState.goodConfig.getDisinvestChips(
+                        _valueGoodState.currentState.amount1()
+                    ) &&
+                    value <
+                    _valueGoodState.goodConfig.getDisinvestChips(
+                        _valueGoodState.currentState.amount0()
+                    ),
+                "G012"
             );
 
-        _valueGoodState.feeQunitityState =
-            _valueGoodState.feeQunitityState -
-            toBalanceUINT256(
-                valueGoodResult2_.profit,
-                valueGoodResult2_.actual_fee
-            );
+            _valueGoodState.currentState =
+                _valueGoodState.currentState -
+                toBalanceUINT256(
+                    valueGoodResult2_.actualDisinvestValue,
+                    valueGoodResult2_.actualDisinvestQuantity
+                );
 
-        valueGoodResult2_.profit =
-            valueGoodResult2_.profit -
-            valueGoodResult2_.actual_fee;
-        valueGoodResult2_.actual_fee = _valueGoodState
-            .goodConfig
-            .getDisinvestFee(valueGoodResult2_.actualDisinvestQuantity);
+            _valueGoodState.investState =
+                _valueGoodState.investState -
+                toBalanceUINT256(
+                    valueGoodResult2_.actualDisinvestValue,
+                    valueGoodResult2_.actualDisinvestQuantity
+                );
 
-        _valueGoodState.feeQunitityState =
-            _valueGoodState.feeQunitityState +
-            toBalanceUINT256(
-                _marketconfig.getLiquidFee(valueGoodResult2_.actual_fee),
-                0
-            );
+            _valueGoodState.feeQunitityState =
+                _valueGoodState.feeQunitityState -
+                toBalanceUINT256(
+                    valueGoodResult2_.profit,
+                    valueGoodResult2_.actual_fee
+                );
 
-        _investProof.burnNormalProofSome(_goodQuantity);
-        if (valueGoodResult2_.actual_fee > 0)
-            allocateFee(
-                _valueGoodState,
-                valueGoodResult2_.actual_fee,
-                _marketconfig,
-                _ralate
-            );
+            valueGoodResult2_.profit =
+                valueGoodResult2_.profit -
+                valueGoodResult2_.actual_fee;
+            valueGoodResult2_.actual_fee = _valueGoodState
+                .goodConfig
+                .getDisinvestFee(valueGoodResult2_.actualDisinvestQuantity);
+
+            if (valueGoodResult2_.actual_fee > 0) {
+                _valueGoodState.feeQunitityState =
+                    _valueGoodState.feeQunitityState +
+                    toBalanceUINT256(
+                        _marketconfig.getLiquidFee(
+                            valueGoodResult2_.actual_fee
+                        ),
+                        0
+                    );
+                allocateFee(
+                    _valueGoodState,
+                    valueGoodResult2_.actual_fee,
+                    _marketconfig,
+                    _ralate
+                );
+            }
+        }
     }
 
     function allocateFee(

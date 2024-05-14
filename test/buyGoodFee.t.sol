@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
+import {MyToken} from "../src/testtoken/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey, S_Ralate} from "../Contracts/libraries/L_Struct.sol";
@@ -33,8 +33,8 @@ contract buyGoodFee is BaseSetup {
 
     function initmetagood() public {
         vm.startPrank(marketcreator);
-        deal(address(btc), marketcreator, 1000000000, false);
-        btc.approve(address(market), 20000000);
+        btc.mint(1000000000);
+        btc.approve(address(market), 1000000000);
 
         uint256 _goodConfig = (2 ** 255) +
             8 *
@@ -46,7 +46,7 @@ contract buyGoodFee is BaseSetup {
             8 *
             2 ** 224;
 
-        console2.log(_goodConfig);
+        console2.log("btc", btc.balanceOf(marketcreator));
         (metagood, ) = market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000000, 20000000),
@@ -73,10 +73,11 @@ contract buyGoodFee is BaseSetup {
 
     function initNormalGood(address token) public returns (uint256 normalgood) {
         vm.startPrank(users[3]);
-        deal(address(btc), users[3], 100000000, false);
-        btc.approve(address(market), 20000000);
-        deal(token, users[3], 100000000, false);
-        MyToken(token).approve(address(market), 20000000);
+        btc.mint(1000000000);
+        btc.approve(address(market), 1000000000);
+
+        MyToken(token).mint(100000000000);
+        MyToken(token).approve(address(market), 100000000000);
         uint256 _goodConfig = 0 *
             2 ** 255 +
             8 *

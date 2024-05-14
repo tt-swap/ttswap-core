@@ -15,7 +15,7 @@ interface I_Proof is IERC721, IERC721Metadata, IERC721Enumerable {
     /// @return proofnum_ The address of the factory manager
     function totalSupply() external view returns (uint256 proofnum_);
 
-    /// @noticeget the invest proof'id ~ 获取投资证明ID
+    /// @notice get the invest proof'id ~ 获取投资证明ID
     /// @param _investproofkey   生成投资证明的参数据
     /// @return proof_ 投资证明的ID
     function getProofId(

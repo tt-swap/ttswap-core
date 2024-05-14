@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
+import {MyToken} from "../src/testtoken/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -158,7 +158,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
             S_ProofKey(users[3], normalgoodusdt, metagood).toId()
         );
         snapStart("disinvest Normal proof without fee first");
-        market.disinvestNormalProof(p_, 10000, address(1));
+        market.disinvestProof(p_, 10000, address(1));
         snapEnd();
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
 
@@ -218,7 +218,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest Normal proof without fee second");
-        market.disinvestNormalProof(p_, 100, address(1));
+        market.disinvestProof(p_, 100, address(1));
         snapEnd();
         vm.stopPrank();
     }
@@ -237,7 +237,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         uint256 p_ = market.proofseq(
             S_ProofKey(users[3], normalgoodusdt, metagood).toId()
         );
-        market.disinvestNormalProof(p_, 5000, address(1));
+        market.disinvestProof(p_, 5000, address(1));
         // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
 
         vm.stopPrank();

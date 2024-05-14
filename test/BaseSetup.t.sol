@@ -3,7 +3,7 @@ pragma solidity 0.8.24;
 
 import "forge-gas-snapshot/GasSnapshot.sol";
 import {Test, DSTest} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
+import {MyToken} from "../src/testtoken/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 
 contract BaseSetup is Test, GasSnapshot {
@@ -25,9 +25,9 @@ contract BaseSetup is Test, GasSnapshot {
         users[6] = payable(address(16));
         users[7] = payable(address(17));
         marketcreator = payable(address(6));
-        btc = new MyToken("BTC", "BTC");
-        usdt = new MyToken("USDT", "USDT");
-        eth = new MyToken("ETH", "ETH");
+        btc = new MyToken("BTC", "BTC",8);
+        usdt = new MyToken("USDT", "USDT",6);
+        eth = new MyToken("ETH", "ETH",18 );
         snapStart("depoly Market Manager");
         market = new MarketManager(marketcreator, m_marketconfig);
         snapEnd();

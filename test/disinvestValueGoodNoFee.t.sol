@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
+import {MyToken} from "../src/testtoken/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -130,7 +130,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
         uint256 p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
 
         snapStart("disinvest Value proof No Fee first");
-        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueProof(
+        (L_Good.S_GoodDisinvestReturn memory result, ) = market.disinvestProof(
             p_,
             quanity,
             address(1)
@@ -179,7 +179,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
             "feeQunitityState's contruct fee is error"
         );
         snapStart("disinvest Value proof No Fee second");
-        result = market.disinvestValueProof(p_, 10, address(1));
+        (result, ) = market.disinvestProof(p_, 10, address(1));
         snapEnd();
         vm.stopPrank();
     }

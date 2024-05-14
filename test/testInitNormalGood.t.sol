@@ -1,7 +1,7 @@
 pragma solidity 0.8.24;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
+import {MyToken} from "../src/testtoken/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";

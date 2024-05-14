@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
+import {MyToken} from "../src/testtoken/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -190,7 +190,7 @@ contract disinvestValueGoodFee is BaseSetup {
         uint128 quanity = uint128(aquanity);
         uint256 p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
         snapStart("disinvest Value Proof with fee first");
-        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueProof(
+        (L_Good.S_GoodDisinvestReturn memory result, ) = market.disinvestProof(
             p_,
             quanity,
             address(1)
@@ -241,7 +241,7 @@ contract disinvestValueGoodFee is BaseSetup {
             "feeQunitityState's contruct fee is error"
         );
         snapStart("disinvest Value Proof with fee second");
-        result = market.disinvestValueProof(p_, 10, address(1));
+        (result, ) = market.disinvestProof(p_, 10, address(1));
         snapEnd();
         vm.stopPrank();
     }
@@ -254,7 +254,7 @@ contract disinvestValueGoodFee is BaseSetup {
         L_Proof.S_ProofState memory _s = market.getProofState(p_);
         console2.log("proof value", _s.state.amount0());
         console2.log("proof invest quanity", _s.invest.amount1());
-        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueProof(
+        (L_Good.S_GoodDisinvestReturn memory result, ) = market.disinvestProof(
             p_,
             quanity,
             address(1)
@@ -311,13 +311,13 @@ contract disinvestValueGoodFee is BaseSetup {
 
         uint128 quanity = 500;
         uint256 p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
-        L_Good.S_GoodDisinvestReturn memory result = market.disinvestValueProof(
+        (L_Good.S_GoodDisinvestReturn memory result, ) = market.disinvestProof(
             p_,
             quanity,
             address(1)
         );
 
-        result = market.disinvestValueProof(p_, quanity, address(1));
+        (result, ) = market.disinvestProof(p_, quanity, address(1));
 
         vm.stopPrank();
     }

@@ -10,6 +10,7 @@ import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256} from "../Co
 
 import {L_ProofIdLibrary, L_Proof} from "../Contracts/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
+import {L_CurrencyLibrary} from "../Contracts/libraries/L_Currency.sol";
 import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
 import {ProofUtil} from "./util/ProofUtil.sol";
 import {GoodUtil} from "./util/GoodUtil.sol";
@@ -19,6 +20,7 @@ contract collectValueProofFee is Test, BaseSetup {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
+    using L_CurrencyLibrary for address;
     using L_BalanceUINT256Library for T_BalanceUINT256;
 
     uint256 metagood;
@@ -116,7 +118,7 @@ contract collectValueProofFee is Test, BaseSetup {
         vm.stopPrank();
     }
 
-    function goodInfo(uint256 _good1) public {
+    function goodInfo(uint256 _good1) public view {
         console2.log(_good1, "************************");
         console2.log(
             "price good1's value",
@@ -147,7 +149,7 @@ contract collectValueProofFee is Test, BaseSetup {
         );
     }
 
-    function proofInfo(uint256 _proofid) public {
+    function proofInfo(uint256 _proofid) public view {
         console2.log(_proofid, "*********proof***************");
         console2.log(
             "getProofState's state amount0",
@@ -288,7 +290,7 @@ contract collectValueProofFee is Test, BaseSetup {
             0,
             "normalgoodbtc's feeQunitityState amount1"
         );
-
+        console2.log(aa);
         vm.stopPrank();
     }
 
@@ -299,6 +301,7 @@ contract collectValueProofFee is Test, BaseSetup {
         deal(address(usdt), alice, 10000000 * 10 ** 6, false);
         usdt.approve(address(market), 1000000 * 10 ** 6);
 
+        console2.log(aa);
         deal(address(btc), xx, 1, false);
         market.buyGoodForPay(
             metagood,
@@ -504,7 +507,7 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         goodInfo(metagood);
         proofInfo(metaproofid);
-        L_Good.S_GoodDisinvestReturn memory aa = market.disinvestValueProof(
+        (L_Good.S_GoodDisinvestReturn memory aa, ) = market.disinvestProof(
             metaproofid,
             10000 * 10 ** 6,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
@@ -564,7 +567,7 @@ contract collectValueProofFee is Test, BaseSetup {
         goodInfo(metagood);
         proofInfo(metaproofid);
         snapStart("collectValueProofFee");
-        market.collectValueProofFee(1);
+        market.collectProofFee(1);
         snapEnd();
         goodInfo(metagood);
         proofInfo(metaproofid);
@@ -714,11 +717,8 @@ contract collectValueProofFee is Test, BaseSetup {
         goodInfo(metagood);
         goodInfo(normalgoodbtc);
         proofInfo(4);
-        (
-            L_Good.S_GoodDisinvestReturn memory aa,
-            L_Good.S_GoodDisinvestReturn memory bb,
-            uint256 kk
-        ) = market.disinvestNormalGood(
+        (L_Good.S_GoodDisinvestReturn memory aa, , uint256 kk) = market
+            .disinvestNormalGood(
                 normalgoodbtc,
                 metagood,
                 10 * 10 ** 8,
@@ -793,14 +793,11 @@ contract collectValueProofFee is Test, BaseSetup {
         goodInfo(metagood);
         goodInfo(normalgoodbtc);
         proofInfo(4);
-        (
-            L_Good.S_GoodDisinvestReturn memory aa,
-            L_Good.S_GoodDisinvestReturn memory bb
-        ) = market.disinvestNormalProof(
-                4,
-                10 * 10 ** 8,
-                0x45A0eA517208a68c68A0f7D894d0D126649a75a9
-            );
+        (L_Good.S_GoodDisinvestReturn memory aa, ) = market.disinvestProof(
+            4,
+            10 * 10 ** 8,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
         console2.log("profit", aa.profit);
         console2.log("actual_fee", aa.actual_fee);
         console2.log("actualDisinvestValue", aa.actualDisinvestValue);
@@ -873,7 +870,7 @@ contract collectValueProofFee is Test, BaseSetup {
         proofInfo(4);
 
         snapStart("collectNormalProofFee");
-        T_BalanceUINT256 profit = market.collectNormalProofFee(4);
+        market.collectProofFee(4);
         snapEnd();
         goodInfo(metagood);
         goodInfo(normalgoodbtc);

@@ -15,22 +15,8 @@ library L_Proof {
         address approval;
         address beneficiary;
     }
-    function updateValueInvest(
-        S_ProofState storage _self,
-        uint256 _currenctgood,
-        T_BalanceUINT256 _state,
-        T_BalanceUINT256 _invest
-    ) internal {
-        if (_self.invest.amount1() == 0) {
-            _self.owner = msg.sender;
-            _self.currentgood = _currenctgood;
-            _self.valuegood = 0;
-        }
-        _self.invest = _self.invest + _invest;
-        _self.state = _self.state + _state;
-    }
 
-    function updateNormalInvest(
+    function updateInvest(
         S_ProofState storage _self,
         uint256 _currenctgood,
         uint256 _valuegood,
@@ -45,51 +31,34 @@ library L_Proof {
         }
         _self.state = _self.state + _state;
         _self.invest = _self.invest + _invest;
-        _self.valueinvest = _self.valueinvest + _valueinvest;
+        if (_valuegood != 0)
+            _self.valueinvest = _self.valueinvest + _valueinvest;
     }
 
-    function burnValueProofSome(
-        S_ProofState storage _self,
-        uint128 _quantity
-    ) internal {
-        T_BalanceUINT256 burnResult_ = toBalanceUINT256(
-            mulDiv(_self.state.amount0(), _quantity, _self.invest.amount1()),
-            _self.invest.getamount0fromamount1(_quantity)
-        );
-
-        _self.invest =
-            _self.invest -
-            toBalanceUINT256(burnResult_.amount1(), _quantity);
-
-        _self.state = _self.state - toBalanceUINT256(burnResult_.amount0(), 0);
-    }
-
-    function burnNormalProofSome(
-        S_ProofState storage _self,
-        uint128 _quantity
-    ) internal {
+    function burnProof(S_ProofState storage _self, uint128 _value) internal {
         T_BalanceUINT256 burnResult1_ = toBalanceUINT256(
-            mulDiv(_self.state.amount0(), _quantity, _self.invest.amount1()),
-            _self.invest.getamount0fromamount1(_quantity)
+            mulDiv(_self.invest.amount0(), _value, _self.state.amount0()),
+            mulDiv(_self.invest.amount1(), _value, _self.state.amount0())
         );
 
-        T_BalanceUINT256 burnResult2_ = toBalanceUINT256(
-            mulDiv(
-                _self.valueinvest.amount0(),
-                _quantity,
-                _self.invest.amount1()
-            ),
-            mulDiv(
-                _self.valueinvest.amount1(),
-                _quantity,
-                _self.invest.amount1()
-            )
-        );
-        _self.invest =
-            _self.invest -
-            toBalanceUINT256(burnResult1_.amount1(), _quantity);
-        _self.valueinvest = _self.valueinvest - burnResult2_;
-        _self.state = _self.state - toBalanceUINT256(burnResult1_.amount0(), 0);
+        _self.invest = _self.invest - burnResult1_;
+
+        if (_self.valuegood != 0) {
+            T_BalanceUINT256 burnResult2_ = toBalanceUINT256(
+                mulDiv(
+                    _self.valueinvest.amount0(),
+                    _value,
+                    _self.state.amount0()
+                ),
+                mulDiv(
+                    _self.valueinvest.amount1(),
+                    _value,
+                    _self.state.amount0()
+                )
+            );
+            _self.valueinvest = _self.valueinvest - burnResult2_;
+            _self.state = _self.state - toBalanceUINT256(_value, 0);
+        }
     }
 
     function mulDiv(
@@ -119,12 +88,6 @@ library L_Proof {
                 _self.valueinvest +
                 toBalanceUINT256(profit.amount1(), 0);
         }
-    }
-}
-
-library L_ProofKeyLibrary {
-    function toId(S_ProofKey memory proofKey) internal pure returns (bytes32) {
-        return keccak256(abi.encode(proofKey));
     }
 }
 

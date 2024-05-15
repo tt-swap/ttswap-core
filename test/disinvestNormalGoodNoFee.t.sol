@@ -54,7 +54,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         MyToken(token).approve(address(market), 20000);
 
         uint256 _goodConfig = 0;
-        (normalgood, ) = market.initNormalGood(
+        (normalgood, ) = market.initGood(
             metagood,
             toBalanceUINT256(20000, 20000),
             token,
@@ -76,9 +76,9 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         MyToken(normal.erc20address).approve(address(market), 20000);
 
         snapStart("disinvest Normal good without fee first");
-        market.disinvestNormalGood(normalgoodusdt, metagood, 10000, address(1));
+        market.disinvestGood(normalgoodusdt, metagood, 10000, address(1));
         snapEnd();
-        // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
+        // market.investGood(normalgoodusdt,metagood, 10000, _ralate);
         uint256 p_ = market.proofseq(
             S_ProofKey(users[3], normalgoodusdt, metagood).toId()
         );
@@ -138,7 +138,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest Normal good without fee second");
-        market.disinvestNormalGood(normalgoodusdt, metagood, 1, address(1));
+        market.disinvestGood(normalgoodusdt, metagood, 1, address(1));
         snapEnd();
         vm.stopPrank();
     }
@@ -160,7 +160,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         snapStart("disinvest Normal proof without fee first");
         market.disinvestProof(p_, 10000, address(1));
         snapEnd();
-        // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
+        // market.investGood(normalgoodusdt,metagood, 10000, _ralate);
 
         L_Good.S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
         L_Proof.S_ProofState memory _s = market.getProofState(p_);
@@ -238,7 +238,7 @@ contract disinvestNormalGoodNoFee is BaseSetup {
             S_ProofKey(users[3], normalgoodusdt, metagood).toId()
         );
         market.disinvestProof(p_, 5000, address(1));
-        // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
+        // market.investGood(normalgoodusdt,metagood, 10000, _ralate);
 
         vm.stopPrank();
     }
@@ -253,9 +253,9 @@ contract disinvestNormalGoodNoFee is BaseSetup {
         deal(normal.erc20address, users[3], 100000, false);
         MyToken(meta.erc20address).approve(address(market), 20000);
         MyToken(normal.erc20address).approve(address(market), 20000);
-        market.disinvestNormalGood(normalgoodusdt, metagood, 5000, address(1));
-        // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
-        market.disinvestNormalGood(normalgoodusdt, metagood, 5000, address(1));
+        market.disinvestGood(normalgoodusdt, metagood, 5000, address(1));
+        // market.disinvestGood(normalgoodusdt,metagood, 10000, _ralate);
+        market.disinvestGood(normalgoodusdt, metagood, 5000, address(1));
         vm.stopPrank();
     }
 }

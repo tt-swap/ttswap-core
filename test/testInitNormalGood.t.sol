@@ -51,7 +51,7 @@ contract testinvestGood is BaseSetup {
         usdt.approve(address(market), 10000);
         console2.log(usdt.balanceOf(users[1]));
         snapStart("init normalgood");
-        market.initNormalGood(
+        market.initGood(
             metagood,
             toBalanceUINT256(1000, 1000),
             address(usdt),

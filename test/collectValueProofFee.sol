@@ -105,7 +105,7 @@ contract collectValueProofFee is Test, BaseSetup {
             8 *
             2 ** 224;
 
-        (normalgood, ) = market.initNormalGood(
+        (normalgood, ) = market.initGood(
             metagood,
             toBalanceUINT256(
                 amount * decimals,
@@ -393,8 +393,9 @@ contract collectValueProofFee is Test, BaseSetup {
         usdt.approve(address(market), 1000000 * 10 ** 6);
 
         goodInfo(metagood);
-        market.investValueGood(
+        market.investGood(
             metagood,
+            0,
             1000000 * 10 ** 6,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
@@ -448,8 +449,9 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         goodInfo(metagood);
         proofInfo(metaproofid);
-        (L_Good.S_GoodDisinvestReturn memory aa, ) = market.disinvestValueGood(
+        (L_Good.S_GoodDisinvestReturn memory aa, , ) = market.disinvestGood(
             metagood,
+            0,
             10000 * 10 ** 6,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
@@ -614,7 +616,7 @@ contract collectValueProofFee is Test, BaseSetup {
         goodInfo(metagood);
         goodInfo(normalgoodbtc);
         console2.log("--------------");
-        market.investNormalGood(
+        market.investGood(
             normalgoodbtc,
             metagood,
             100 * 10 ** 8,
@@ -697,7 +699,7 @@ contract collectValueProofFee is Test, BaseSetup {
         btc.approve(address(market), 10000 * 10 ** 8);
 
         console2.log("--------------");
-        (, , normalproofid) = market.investNormalGood(
+        (, , normalproofid) = market.investGood(
             normalgoodbtc,
             metagood,
             100 * 10 ** 8,
@@ -718,7 +720,7 @@ contract collectValueProofFee is Test, BaseSetup {
         goodInfo(normalgoodbtc);
         proofInfo(4);
         (L_Good.S_GoodDisinvestReturn memory aa, , uint256 kk) = market
-            .disinvestNormalGood(
+            .disinvestGood(
                 normalgoodbtc,
                 metagood,
                 10 * 10 ** 8,
@@ -773,7 +775,7 @@ contract collectValueProofFee is Test, BaseSetup {
         btc.approve(address(market), 10000 * 10 ** 8);
 
         console2.log("--------------");
-        (, , normalproofid) = market.investNormalGood(
+        (, , normalproofid) = market.investGood(
             normalgoodbtc,
             metagood,
             100 * 10 ** 8,
@@ -848,7 +850,7 @@ contract collectValueProofFee is Test, BaseSetup {
         btc.approve(address(market), 10000 * 10 ** 8);
 
         console2.log("--------------");
-        (, , normalproofid) = market.investNormalGood(
+        (, , normalproofid) = market.investGood(
             normalgoodbtc,
             metagood,
             100 * 10 ** 8,

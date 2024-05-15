@@ -57,7 +57,7 @@ contract buyGoodNoFee is BaseSetup {
         console2.log("12121", metagood);
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
         console2.log("12121", aa.goodConfig.isvaluegood());
-        (normalgood, ) = market.initNormalGood(
+        (normalgood, ) = market.initGood(
             metagood,
             toBalanceUINT256(20000, 20000),
             token,

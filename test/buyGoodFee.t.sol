@@ -89,7 +89,7 @@ contract buyGoodFee is BaseSetup {
             8 *
             2 ** 224;
 
-        (normalgood, ) = market.initNormalGood(
+        (normalgood, ) = market.initGood(
             metagood,
             toBalanceUINT256(20000000, 20000000),
             token,

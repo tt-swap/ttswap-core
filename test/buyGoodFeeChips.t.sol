@@ -87,7 +87,7 @@ contract buyGoodFeeChips is BaseSetup {
             2 ** 224;
         _goodConfig += 1 * 2 ** 214;
 
-        (normalgood, ) = market.initNormalGood(
+        (normalgood, ) = market.initGood(
             metagood,
             toBalanceUINT256(20000000, 20000000),
             token,

@@ -23,7 +23,7 @@ abstract contract GoodManage is I_Good, RefererManage {
     /// @inheritdoc I_Good
     uint256 public override marketconfig;
     /// @inheritdoc I_Good
-    uint256 public override goodnum;
+    uint256 public override goodNum;
     /// @inheritdoc I_Good
     address public override marketcreator;
 

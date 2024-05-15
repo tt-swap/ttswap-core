@@ -3,7 +3,7 @@ pragma solidity 0.8.24;
 
 import "./interfaces/I_Proof.sol";
 import {S_ProofKey} from "./libraries/L_Struct.sol";
-import {L_Proof, L_ProofKeyLibrary} from "./libraries/L_Proof.sol";
+import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
 
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
@@ -14,7 +14,7 @@ import {ERC721Utils} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Util
 abstract contract ProofManage is I_Proof, ERC165 {
     using L_Proof for *;
     using Strings for uint256;
-    using L_ProofKeyLibrary for S_ProofKey;
+    using L_ProofIdLibrary for S_ProofKey;
     using L_ArrayStorage for L_ArrayStorage.S_ArrayStorage;
 
     // Token name

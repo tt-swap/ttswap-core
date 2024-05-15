@@ -76,7 +76,7 @@ contract investValueGoodFee is BaseSetup {
         );
 
         snapStart("invest value good with fee first");
-        market.investValueGood(metagood, 20000, address(1));
+        market.investGood(metagood,0, 20000, address(1));
         snapEnd();
         uint256 p_ = market.proofseq(S_ProofKey(users[4], metagood, 0).toId());
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
@@ -134,7 +134,7 @@ contract investValueGoodFee is BaseSetup {
         assertEq(market.getGoodsFee(metagood, address(1)), 5, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("invest value good with fee second");
-        market.investValueGood(metagood, 200, address(1));
+        market.investGood(metagood,0, 200, address(1));
         snapEnd();
         vm.stopPrank();
     }

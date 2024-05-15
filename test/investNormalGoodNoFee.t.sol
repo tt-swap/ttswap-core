@@ -52,7 +52,7 @@ contract investNormalGoodNoFee is BaseSetup {
         deal(token, users[3], 100000, false);
         MyToken(token).approve(address(market), 10000);
         uint256 _goodConfig = 0;
-        (normalgood, ) = market.initNormalGood(
+        (normalgood, ) = market.initGood(
             metagood,
             toBalanceUINT256(10000, 10000),
             token,
@@ -86,7 +86,7 @@ contract investNormalGoodNoFee is BaseSetup {
         );
 
         snapStart("invest normalgood no fee first");
-        market.investNormalGood(normalgoodusdt, metagood, 20000, address(1));
+        market.investGood(normalgoodusdt, metagood, 20000, address(1));
         snapEnd();
         uint256 p_ = market.proofseq(
             S_ProofKey(users[3], normalgoodusdt, metagood).toId()
@@ -147,7 +147,7 @@ contract investNormalGoodNoFee is BaseSetup {
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("invest normalgood no fee second");
-        market.investNormalGood(normalgoodusdt, metagood, 20, address(1));
+        market.investGood(normalgoodusdt, metagood, 20, address(1));
         snapEnd();
         vm.stopPrank();
     }

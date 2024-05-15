@@ -68,7 +68,7 @@ contract disinvestNormalGoodFee is BaseSetup {
 
         uint256 _goodConfig = 8 * 2 ** 245 + 8 * 2 ** 238;
 
-        (normalgood, ) = market.initNormalGood(
+        (normalgood, ) = market.initGood(
             metagood,
             toBalanceUINT256(20000, 20000),
             token,
@@ -82,9 +82,9 @@ contract disinvestNormalGoodFee is BaseSetup {
         vm.startPrank(users[3]);
 
         snapStart("disinvest normal good with fee first");
-        market.disinvestNormalGood(normalgoodusdt, metagood, 10000, address(1));
+        market.disinvestGood(normalgoodusdt, metagood, 10000, address(1));
         snapEnd();
-        // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
+        // market.investGood(normalgoodusdt,metagood, 10000, _ralate);
         uint256 p_ = market.proofseq(
             S_ProofKey(users[3], normalgoodusdt, metagood).toId()
         );
@@ -144,7 +144,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         assertEq(market.getGoodsFee(metagood, address(1)), 3, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("disinvest normal good with fee second");
-        market.disinvestNormalGood(normalgoodusdt, metagood, 10, address(1));
+        market.disinvestGood(normalgoodusdt, metagood, 10, address(1));
         snapEnd();
         vm.stopPrank();
     }
@@ -195,7 +195,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         console2.log(market.getGoodsFee(metagood, address(2)), "refer fee12");
         console2.log("222", market.getGoodsFee(metagood, users[3]));
         snapEnd();
-        // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
+        // market.investGood(normalgoodusdt,metagood, 10000, _ralate);
 
         L_Good.S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
         L_Proof.S_ProofState memory _s = market.getProofState(p_);

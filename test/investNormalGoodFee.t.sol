@@ -68,7 +68,7 @@ contract investNormalGoodFee is BaseSetup {
 
         uint256 _goodConfig = 0 * 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 238;
 
-        (normalgood, normalproof) = market.initNormalGood(
+        (normalgood, normalproof) = market.initGood(
             metagood,
             toBalanceUINT256(10000, 10000),
             token,
@@ -102,9 +102,9 @@ contract investNormalGoodFee is BaseSetup {
         );
 
         snapStart("invest normal good with fee first");
-        market.investNormalGood(normalgoodusdt, metagood, 10000, address(1));
+        market.investGood(normalgoodusdt, metagood, 10000, address(1));
         snapEnd();
-        // market.investNormalGood(normalgoodusdt,metagood, 10000, _ralate);
+        // market.investGood(normalgoodusdt,metagood, 10000, _ralate);
         L_Good.S_GoodTmpState memory aa = market.getGoodState(normalgoodusdt);
         L_Proof.S_ProofState memory _s = market.getProofState(normalproofusdt);
 
@@ -161,7 +161,7 @@ contract investNormalGoodFee is BaseSetup {
         assertEq(market.getGoodsFee(metagood, address(1)), 0, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("invest normal good with fee second");
-        market.investNormalGood(normalgoodusdt, metagood, 10000, address(1));
+        market.investGood(normalgoodusdt, metagood, 10000, address(1));
         snapEnd();
 
         vm.stopPrank();

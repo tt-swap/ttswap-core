@@ -24,8 +24,8 @@ interface I_Good {
     function marketcreator() external view returns (address marketcreator_);
 
     /// @notice Returns the good's total number of the market 返回市场商品总数
-    /// @return goodnum_ the good number of the market~市场商品总数
-    function goodnum() external view returns (uint256 goodnum_);
+    /// @return goodNum_ the good number of the market~市场商品总数
+    function goodNum() external view returns (uint256 goodNum_);
 
     /// @notice Returns the address's status 查询地址是否被禁止提手续费
     /// @param _user 用户地址

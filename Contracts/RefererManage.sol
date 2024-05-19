@@ -17,6 +17,7 @@ abstract contract RefererManage is I_Referer {
         customernum += 1;
         customerno[msg.sender] = customernum;
         relations[msg.sender] = _referer;
+        emit e_addreferer(msg.sender, _referer);
         return true;
     }
 }

@@ -60,6 +60,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         address _user
     ) external override onlyMarketCreator returns (bool) {
         banlist[_user] = 1;
+        emit e_addbanlist(_user);
         return true;
     }
 
@@ -68,6 +69,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         address _user
     ) external override onlyMarketCreator returns (bool) {
         banlist[_user] = 0;
+        emit e_removebanlist(_user);
         return true;
     }
 
@@ -77,6 +79,7 @@ abstract contract GoodManage is I_Good, RefererManage {
     ) external override onlyMarketCreator returns (bool) {
         require(_marketconfig.checkAllocate(), "G03");
         marketconfig = _marketconfig;
+        emit e_setMarketConfig(_marketconfig);
         return true;
     }
 
@@ -117,6 +120,7 @@ abstract contract GoodManage is I_Good, RefererManage {
     ) external override returns (bool) {
         require(msg.sender == goods[_goodid].owner, "G04");
         goods[_goodid].updateGoodConfig(_goodConfig);
+        emit e_updateGoodConfig(_goodid, _goodConfig);
         return true;
     }
 
@@ -125,6 +129,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         uint256 _goodid
     ) external override onlyMarketCreator returns (bool) {
         goods[_goodid].updateToValueGood();
+        emit e_updatetoValueGood(_goodid);
         return true;
     }
 
@@ -133,6 +138,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         uint256 _goodid
     ) external override onlyMarketCreator returns (bool) {
         goods[_goodid].updateToNormalGood();
+        emit e_updatetoNormalGood(_goodid);
         return true;
     }
 

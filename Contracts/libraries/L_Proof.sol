@@ -57,8 +57,8 @@ library L_Proof {
                 )
             );
             _self.valueinvest = _self.valueinvest - burnResult2_;
-            _self.state = _self.state - toBalanceUINT256(_value, 0);
         }
+        _self.state = _self.state - toBalanceUINT256(_value, 0);
     }
 
     function mulDiv(

@@ -112,8 +112,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _proofNo   proof No~投资证明编号
     /// @param _normalGoodNo  value good no~价值商品编号
     /// @param _valueGoodNo  value good no~价值商品编号
-    /// @param _profit   profit~收益
-    /// @param _protocalfee   profit~收益
+    /// @param _profit   profit  amount0:normalprofit  amount1:valueprofit
+    /// @param _protocalfee   protocalfee  amount0:normalprofit  amount1:valueprofit
     event e_collectProofFee(
         uint256 indexed _proofNo,
         uint256 _normalGoodNo,
@@ -138,7 +138,7 @@ interface I_MarketManage is I_Good, I_Proof {
 
     /// @notice initial the normal good~初始化市场中的普通商品
     /// @param _valuegood   valuegood_no:measure the normal good value~价值商品编号:衡量普通商品价值
-    /// @param _initial     initial good.amount0:value,amount1:quantity~初始化的商品的参数,前128位为价值,后128位为数量.
+    /// @param _initial     initial good.amount0:normalgood quantity,amount1:valuegoodquantity~初始化的商品的参数,前128位为普通商品数量,后128位为价值商品数量.
     /// @param _erc20address  good's contract address~商品合约地址
     /// @param _goodConfig   good config (detail config according to the whitepaper)~商品配置(详细配置参见技术白皮书)
     /// @param _gater   gater address~门户地址

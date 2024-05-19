@@ -14,6 +14,29 @@ interface I_Good {
     /// @param _to the new owner,新拥有者
     event e_changeOwner(uint256 indexed _goodid, address _owner, address _to);
 
+    /// @notice Config Market Config~ 进行市场配置
+    /// @param _marketconfig 市场配置
+    event e_setMarketConfig(uint256 _marketconfig);
+
+    /// @notice Config good 商品配置
+    /// @param _goodid Good No,商品编号
+    /// @param _goodConfig Good config 市场配置
+    event e_updateGoodConfig(uint256 _goodid, uint256 _goodConfig);
+
+    /// @notice update good to value good~ 更新商品为价值商品
+    /// @param _goodid good No,商品编号配
+    event e_updatetoValueGood(uint256 _goodid);
+
+    /// @notice update good to normal good~ 更新商品为普通商品
+    /// @param _goodid good No,商品编号配
+    event e_updatetoNormalGood(uint256 _goodid);
+    /// @notice add ban list~添加黑名单
+    /// @param _user  address ~用户地址
+    event e_addbanlist(address _user);
+    /// @notice remove  out address from banlist~ 移出黑名单
+    /// @param _user user address ~用户地址
+    event e_removebanlist(address _user);
+
     /// @notice Returns the config of the market~返回市场的配置
     /// @dev Can be changed by the marketmanager~可以被管理员调整
     /// @return marketconfig_ the config of market(according the white paper)~市场配置(参见白皮书)

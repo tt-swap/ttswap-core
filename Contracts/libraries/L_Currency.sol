@@ -15,7 +15,6 @@ library L_CurrencyLibrary {
     error ERC20TransferFailed();
 
     address public constant NATIVE = address(0);
-    event debugg(address, uint256);
     function safeTransferFrom(
         address token,
         address from,
@@ -23,7 +22,6 @@ library L_CurrencyLibrary {
         uint256 amount
     ) internal {
         bool success;
-        emit debugg(msg.sender, msg.sender.balance);
         if (token.isNative()) {
             assembly {
                 // Transfer the ETH and store if it succeeded or not.

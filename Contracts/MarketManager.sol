@@ -298,7 +298,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         )
     {
         require(goods[_togood].currentState.amount1() <= 2 ** 108, "M02");
-
         normalInvest_ = goods[_togood].investGood(
             _quantity,
             marketconfig,

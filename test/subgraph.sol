@@ -36,11 +36,13 @@ contract subgraph is Test, BaseSetup {
         disInvestValueGood();
         disInvestNormalGood();
         buyGood();
+        buyGoodforpay();
+        collectprooffee1();
         goodInfo(1);
         goodInfo(2);
         proofInfo(1);
         proofInfo(2);
-        buyGoodforpay();
+        collectprooffee2();
         goodInfo(1);
         goodInfo(2);
         proofInfo(1);
@@ -174,6 +176,20 @@ contract subgraph is Test, BaseSetup {
             0x0F18A2428C934db7b9E040F8Fc6e08975cBEf07a,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
+        vm.stopPrank();
+    }
+
+    function collectprooffee1() public {
+        vm.startPrank(marketcreator);
+
+        market.collectProofFee(1);
+        vm.stopPrank();
+    }
+
+    function collectprooffee2() public {
+        vm.startPrank(marketcreator);
+
+        market.collectProofFee(2);
         vm.stopPrank();
     }
 

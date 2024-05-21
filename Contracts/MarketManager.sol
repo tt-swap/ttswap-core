@@ -298,6 +298,16 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         )
     {
         require(goods[_togood].currentState.amount1() <= 2 ** 108, "M02");
+
+        require(
+            (_valuegood == 0 && goods[_togood].goodConfig.isvaluegood()) ||
+                _valuegood != 0,
+            "M02"
+        );
+        require(
+            _valuegood == 0 || goods[_valuegood].goodConfig.isvaluegood(),
+            "M02"
+        );
         normalInvest_ = goods[_togood].investGood(
             _quantity,
             marketconfig,
@@ -308,7 +318,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             address(this),
             _quantity
         );
-        if (goods[_valuegood].goodConfig.isvaluegood()) {
+        if (_valuegood != 0) {
             valueInvest_.actualInvestQuantity = goods[_valuegood]
                 .currentState
                 .getamount1fromamount0(normalInvest_.actualInvestValue);

@@ -27,7 +27,7 @@ contract initMetaGoodtest {
     function initMetaGoodtest1(string memory aa) public {
         marketcreator = address(this);
         market = new MarketManager(marketcreator, 1);
-        btc = new MyToken(aa, aa);
+        btc = new MyToken(aa, aa, 8);
         btc.mint(marketcreator, 20000000);
         btc.approve(address(market), 2000000);
 

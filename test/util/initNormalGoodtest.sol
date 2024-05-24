@@ -24,8 +24,8 @@ contract initNormalGoodtest is initMetaGoodtest, Test {
         address alice = address(this);
         USDT.mint(alice, 100000);
         btc.mint(alice, 100000);
-        USDT.approve(address(market), 100000);
-        btc.approve(address(market), 100000);
+        USDT.approve(address(market), 100000, 6);
+        btc.approve(address(market), 100000, 8);
         market.updatetoValueGood(metagood);
         market.initGood(
             metagood,

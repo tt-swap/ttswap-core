@@ -2,7 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/testtoken/ERC20.sol";
+import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -74,7 +74,7 @@ contract disinvestValueGoodFee is BaseSetup {
             100000
         );
 
-        market.investGood(metagood,0, 20000, address(1));
+        market.investGood(metagood, 0, 20000, address(1));
         p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
         L_Proof.S_ProofState memory _s = market.getProofState(p_);
@@ -128,7 +128,7 @@ contract disinvestValueGoodFee is BaseSetup {
         uint128 quanity = uint128(aquanity);
 
         snapStart("disinvest Value Good With Fee first");
-        (L_Good.S_GoodDisinvestReturn memory result,, ) = market.disinvestGood(
+        (L_Good.S_GoodDisinvestReturn memory result, , ) = market.disinvestGood(
             metagood,
             0,
             quanity,
@@ -182,7 +182,7 @@ contract disinvestValueGoodFee is BaseSetup {
             uint256(aa.feeQunitityState.amount1())
         );
         snapStart("disinvest Value Good With Fee second");
-        (result, ,) = market.disinvestGood(metagood, 0, 10, address(1));
+        (result, , ) = market.disinvestGood(metagood, 0, 10, address(1));
         snapEnd();
         vm.stopPrank();
     }

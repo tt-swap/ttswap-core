@@ -223,7 +223,7 @@ contract MyToken is ERC20 {
         _;
     }
 
-    function mint(uint amount) external {
-        _mint(msg.sender, amount * 10 ** uint(decimals()));
+    function mint(address marketcreator, uint amount) external {
+        _mint(marketcreator, amount * 10 ** uint(decimals()));
     }
 }

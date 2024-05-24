@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
-import {Test, DSTest, console2} from "forge-std/Test.sol";
+import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
@@ -33,7 +33,7 @@ contract buyGoodFee is BaseSetup {
 
     function initmetagood() public {
         vm.startPrank(marketcreator);
-        btc.mint(1000000000);
+        btc.mint(marketcreator, 1000000000);
         btc.approve(address(market), 1000000000);
 
         uint256 _goodConfig = (2 ** 255) +
@@ -73,10 +73,10 @@ contract buyGoodFee is BaseSetup {
 
     function initNormalGood(address token) public returns (uint256 normalgood) {
         vm.startPrank(users[3]);
-        btc.mint(1000000000);
+        btc.mint(users[3], 1000000000);
         btc.approve(address(market), 1000000000);
 
-        MyToken(token).mint(100000000000);
+        MyToken(token).mint(users[3], 100000000000);
         MyToken(token).approve(address(market), 100000000000);
         uint256 _goodConfig = 0 *
             2 ** 255 +

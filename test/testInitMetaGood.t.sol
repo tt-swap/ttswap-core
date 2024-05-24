@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
-import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/testtoken/ERC20.sol";
+import {Test, console2} from "forge-std/Test.sol";
+import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -25,7 +25,7 @@ contract testInitMetaGood is BaseSetup {
     function testinitMetaGood() public {
         vm.startPrank(marketcreator);
         uint256 goodconfig = 2 ** 255;
-        btc.mint(100000);
+        btc.mint(marketcreator, 100000);
         btc.approve(address(market), 30000);
         snapStart("init metagood");
         console2.log("aa:", btc.balanceOf(marketcreator));

@@ -2,8 +2,8 @@
 pragma solidity 0.8.24;
 
 import "forge-gas-snapshot/GasSnapshot.sol";
-import {Test, DSTest} from "forge-std/Test.sol";
-import {MyToken} from "../src/testtoken/ERC20.sol";
+import {Test} from "forge-std/Test.sol";
+import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 
 contract BaseSetup is Test, GasSnapshot {

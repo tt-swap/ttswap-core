@@ -6,10 +6,9 @@ import {S_ProofKey} from "./libraries/L_Struct.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
 
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IERC165, ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import {ERC721Utils} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol";
+//import {ERC721Utils} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol";
 
 abstract contract ProofManage is I_Proof, ERC165 {
     using L_Proof for *;
@@ -158,7 +157,7 @@ abstract contract ProofManage is I_Proof, ERC165 {
         bytes memory data
     ) public {
         transferFrom(from, to, tokenId);
-        ERC721Utils.checkOnERC721Received(msg.sender, from, to, tokenId, data);
+        //ERC721Utils.checkOnERC721Received(msg.sender, from, to, tokenId, data);
     }
 
     /// @inheritdoc I_Proof

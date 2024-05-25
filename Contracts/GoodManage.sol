@@ -147,7 +147,7 @@ abstract contract GoodManage is I_Good, RefererManage {
         uint256 _goodid,
         uint256 _payquanity,
         address _recipent
-    ) external returns (bool) {
+    ) external payable returns (bool) {
         goods[_goodid].erc20address.safeTransfer(_recipent, _payquanity);
         return true;
     }

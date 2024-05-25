@@ -36,11 +36,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     ) external payable override onlyMarketCreator returns (uint256, uint256) {
         require(_goodConfig.isvaluegood(), "M02");
 
-        _erc20address.safeTransferFrom(
-            msg.sender,
-            address(this),
-            _initial.amount1()
-        );
+        _erc20address.transferFrom(msg.sender, _initial.amount1());
 
         goodNum += 1;
         goodseq[S_GoodKey(_erc20address, msg.sender).toId()] = goodNum;
@@ -82,14 +78,9 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         bytes32 togood = S_GoodKey(_erc20address, msg.sender).toId();
         require(goodseq[togood] == 0, "M01");
 
-        _erc20address.safeTransferFrom(
+        _erc20address.transferFrom(msg.sender, _initial.amount0());
+        goods[_valuegood].erc20address.transferFrom(
             msg.sender,
-            address(this),
-            _initial.amount0()
-        );
-        goods[_valuegood].erc20address.safeTransferFrom(
-            msg.sender,
-            address(this),
             _initial.amount1()
         );
 
@@ -190,9 +181,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
-        goods[_goodid1].erc20address.safeTransferFrom(
+        goods[_goodid1].erc20address.transferFrom(
             msg.sender,
-            address(this),
             _swapQuantity - swapcache.remainQuantity
         );
 
@@ -262,11 +252,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _recipent,
             _swapQuantity - swapcache.remainQuantity - swapcache.feeQuantity
         );
-        goods[_goodid1].erc20address.safeTransferFrom(
-            msg.sender,
-            address(this),
-            goodid1Quantity_
-        );
+        goods[_goodid1].erc20address.transferFrom(msg.sender, goodid1Quantity_);
         emit e_buyGoodForPay(
             _goodid1,
             _goodid2,
@@ -313,11 +299,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
-        goods[_togood].erc20address.safeTransferFrom(
-            msg.sender,
-            address(this),
-            _quantity
-        );
+        goods[_togood].erc20address.transferFrom(msg.sender, _quantity);
         if (_valuegood != 0) {
             valueInvest_.actualInvestQuantity = goods[_valuegood]
                 .currentState
@@ -326,9 +308,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             valueInvest_.actualInvestQuantity = goods[_valuegood]
                 .goodConfig
                 .getInvestFulFee(valueInvest_.actualInvestQuantity);
-            goods[_valuegood].erc20address.safeTransferFrom(
+            goods[_valuegood].erc20address.transferFrom(
                 msg.sender,
-                address(this),
                 valueInvest_.actualInvestQuantity
             );
 

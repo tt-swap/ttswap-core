@@ -8,13 +8,17 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 library L_CurrencyLibrary {
     using L_CurrencyLibrary for address;
 
+    using L_CurrencyLibrary for uint256;
     /// @notice Thrown when a native transfer fails
+
     error NativeTransferFailed();
 
+    error ValueToBiggerthanUint128();
     /// @notice Thrown when an ERC20 transfer fails
     error ERC20TransferFailed();
 
     address public constant NATIVE = address(0);
+
     function safeTransferFrom(
         address token,
         address from,
@@ -118,7 +122,40 @@ library L_CurrencyLibrary {
         }
     }
 
+    function transferFrom(
+        address token,
+        address from,
+        uint256 value
+    ) internal returns (uint128 resultvalue) {
+        if (token.isNative()) {
+            if (msg.value != value) revert NativeTransferFailed();
+            value = msg.value;
+        } else {
+            (bool success, bytes memory data) = address(token).call(
+                abi.encodeWithSelector(
+                    IERC20(token).transferFrom.selector,
+                    from,
+                    address(this),
+                    value
+                )
+            );
+            require(
+                success && (data.length == 0 || abi.decode(data, (bool))),
+                "STF"
+            );
+        }
+        resultvalue = value.safe_uint128();
+    }
+
     function isNative(address currency) internal pure returns (bool) {
         return currency == address(0);
+    }
+
+    function safe_uint128(uint256 value) internal pure returns (uint128) {
+        if (value > type(uint128).max) {
+            revert ValueToBiggerthanUint128();
+        } else {
+            return uint128(value);
+        }
     }
 }

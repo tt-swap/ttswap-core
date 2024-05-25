@@ -36,7 +36,7 @@ contract collectNativeETHGood is Test, BaseSetup {
         //goodInfo(normalgoodeth);
     }
 
-    function _testNativeETHInitNormalgood() public {
+    function testNativeETHInitNormalgood() public {
         vm.startPrank(marketcreator);
         uint256 sentBalance = 2 ether;
         address nativeCurrency = address(0);
@@ -74,11 +74,11 @@ contract collectNativeETHGood is Test, BaseSetup {
             2 ** 224;
         console2.log("adabc", _goodConfig.isvaluegood());
 
-        market.initMetaGood(
+        market.initMetaGood{value: 1 ether}(
             nativeCurrency,
             toBalanceUINT256(
-                1 * 10 ** 18,
-                uint128(3000 * 10 ** usdt.decimals())
+                uint128(3000 * 10 ** usdt.decimals()),
+                1 * 10 ** 18
             ),
             _goodConfig
         );

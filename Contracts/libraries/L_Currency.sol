@@ -19,20 +19,16 @@ library L_CurrencyLibrary {
 
     address public constant NATIVE = address(0);
 
-    function safeTransferFrom(
+    function transferFrom(
         address token,
         address from,
-        address to,
         uint256 amount
     ) internal {
         bool success;
+        address to = address(this);
         if (token.isNative()) {
-            assembly {
-                // Transfer the ETH and store if it succeeded or not.
-                success := call(gas(), to, amount, 0, 0, 0, 0)
-            }
-
-            if (!success) revert NativeTransferFailed();
+            if (msg.value != amount) revert NativeTransferFailed();
+            amount = msg.value;
         } else {
             /// @solidity memory-safe-assembly
             assembly {
@@ -68,8 +64,8 @@ library L_CurrencyLibrary {
                     call(gas(), token, 0, freeMemoryPointer, 100, 0, 32)
                 )
             }
+            require(success, "TRANSFER_FROM_FAILED");
         }
-        require(success, "TRANSFER_FROM_FAILED");
     }
 
     function safeTransfer(
@@ -122,40 +118,7 @@ library L_CurrencyLibrary {
         }
     }
 
-    function transferFrom(
-        address token,
-        address from,
-        uint256 value
-    ) internal returns (uint128 resultvalue) {
-        if (token.isNative()) {
-            if (msg.value != value) revert NativeTransferFailed();
-            value = msg.value;
-        } else {
-            (bool success, bytes memory data) = address(token).call(
-                abi.encodeWithSelector(
-                    IERC20(token).transferFrom.selector,
-                    from,
-                    address(this),
-                    value
-                )
-            );
-            require(
-                success && (data.length == 0 || abi.decode(data, (bool))),
-                "STF"
-            );
-        }
-        resultvalue = value.safe_uint128();
-    }
-
     function isNative(address currency) internal pure returns (bool) {
         return currency == address(0);
-    }
-
-    function safe_uint128(uint256 value) internal pure returns (uint128) {
-        if (value > type(uint128).max) {
-            revert ValueToBiggerthanUint128();
-        } else {
-            return uint128(value);
-        }
     }
 }

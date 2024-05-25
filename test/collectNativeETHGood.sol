@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
-import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/testtoken/ERC20.sol";
+import {Test, console2} from "forge-std/Test.sol";
+import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup2.t.sol";
 import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -56,7 +56,7 @@ contract collectNativeETHGood is Test, BaseSetup {
         nativeCurrency.safeTransfer(address(1), sentBalance);
         console2.log("1111", marketcreator.balance);
         console2.log("1111", address(1).balance);
-        usdt.mint(10000000 * 10 ** 6);
+        usdt.mint(marketcreator, 10000000 * 10 ** 6);
         usdt.approve(address(market), 10000000 * 10 ** 6);
         console2.log(
             "users[3] approve market",

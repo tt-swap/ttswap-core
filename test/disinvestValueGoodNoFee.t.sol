@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
-import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/testtoken/ERC20.sol";
+import {Test, console2} from "forge-std/Test.sol";
+import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -59,7 +59,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
             100000
         );
 
-        market.investGood(metagood,0, 20000, address(1));
+        market.investGood(metagood, 0, 20000, address(1));
         p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
         vm.stopPrank();
     }

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.24;
 
-import {Test, DSTest, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/testtoken/ERC20.sol";
+import {Test, console2} from "forge-std/Test.sol";
+import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_Ralate, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -76,7 +76,7 @@ contract investValueGoodFee is BaseSetup {
         );
 
         snapStart("invest value good with fee first");
-        market.investGood(metagood,0, 20000, address(1));
+        market.investGood(metagood, 0, 20000, address(1));
         snapEnd();
         uint256 p_ = market.proofseq(S_ProofKey(users[4], metagood, 0).toId());
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
@@ -134,7 +134,7 @@ contract investValueGoodFee is BaseSetup {
         assertEq(market.getGoodsFee(metagood, address(1)), 5, "gater fee");
         assertEq(market.getGoodsFee(metagood, address(2)), 0, "refer fee");
         snapStart("invest value good with fee second");
-        market.investGood(metagood,0, 200, address(1));
+        market.investGood(metagood, 0, 200, address(1));
         snapEnd();
         vm.stopPrank();
     }

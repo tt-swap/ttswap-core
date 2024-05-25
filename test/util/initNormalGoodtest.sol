@@ -20,7 +20,7 @@ contract initNormalGoodtest is initMetaGoodtest, Test {
     }
 
     function InitNormalGood1(string memory name) public {
-        USDT = new MyToken(name, name);
+        USDT = new MyToken(name, name, 6);
         address alice = address(this);
         USDT.mint(alice, 100000);
         btc.mint(alice, 100000);

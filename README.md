@@ -23,6 +23,9 @@ Fees are distributed based on roles, allowing anyone to become a good investor (
 
 6. Support Native ETH Exchange and Invest
 anyone can you native ETH without wrap to swap, invest easily.
+
+7. Community-Driven Developement and Innovation
+ttswap emphasizes a community-driven approach to development and innovation. Since its code release, there has been active community engagement, with many issues, pull requests, and unique feature ideas contributed by users. The protocol is designed to encourage innovation, allowing the global community to shape the future of AMMs.
 ## Contributing
 
 If you’re interested in contributing please see our [contribution guidelines](./CONTRIBUTING.md)!

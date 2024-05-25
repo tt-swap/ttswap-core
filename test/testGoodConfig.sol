@@ -7,14 +7,14 @@ import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
 contract testGoodConfig is Test {
     using L_GoodConfigLibrary for uint256;
 
-    function test_isvaluegood() public {
+    function test_isvaluegood() public pure {
         uint256 a_min = 1 * 2 ** 255;
         assertEq(a_min.isvaluegood(), true);
         a_min = 0 * 2 ** 255;
         assertEq(a_min.isvaluegood(), false);
     }
 
-    function test_getInvestFee() public {
+    function test_getInvestFee() public pure {
         uint256 a_min = 1 * 2 ** 245;
         uint256 a_mid = 64 * 2 ** 245;
         uint256 a_max = 127 * 2 ** 245;
@@ -26,7 +26,7 @@ contract testGoodConfig is Test {
         assertEq(a_max.getInvestFee(10000), 127);
     }
 
-    function test_getDisinvestFee() public {
+    function test_getDisinvestFee() public pure {
         uint256 a_min = 2 ** 238;
         uint256 a_mid = 64 * 2 ** 238;
         uint256 a_max = 127 * 2 ** 238;
@@ -38,7 +38,7 @@ contract testGoodConfig is Test {
         assertEq(a_max.getDisinvestFee(10000), 127);
     }
 
-    function test_getBuyFee() public {
+    function test_getBuyFee() public pure {
         uint256 a_min = 1 * 2 ** 231;
         uint256 a_mid = 64 * 2 ** 231;
         uint256 a_max = 127 * 2 ** 231;
@@ -50,7 +50,7 @@ contract testGoodConfig is Test {
         assertEq(a_max.getBuyFee(10000), 127);
     }
 
-    function test_getSellFee() public {
+    function test_getSellFee() public pure {
         uint256 a_min = 1 * 2 ** 224;
         uint256 a_mid = 64 * 2 ** 224;
         uint256 a_max = 127 * 2 ** 224;
@@ -62,7 +62,7 @@ contract testGoodConfig is Test {
         assertEq(a_max.getSellFee(10000), 127);
     }
 
-    function test_getSwapChips() public {
+    function test_getSwapChips() public pure {
         uint256 a_min = 1 * 2 ** 214;
         uint256 a_mid = 2 * 2 ** 214;
         uint256 a_max = 1023 * 2 ** 214;
@@ -74,7 +74,7 @@ contract testGoodConfig is Test {
         assertEq(a_max.getSwapChips(10000), 0);
     }
 
-    function test_getDisinvestChips() public {
+    function test_getDisinvestChips() public pure {
         uint256 a_min = 1 * 2 ** 204;
         uint256 a_mid = 2 * 2 ** 204;
         uint256 a_max = 1023 * 2 ** 204;
@@ -86,7 +86,7 @@ contract testGoodConfig is Test {
         assertEq(a_max.getDisinvestChips(10000), 9);
     }
 
-    function test_getGoodType() public {
+    function test_getGoodType() public pure {
         uint256 a_min = 1 * 2 ** 171;
         uint256 a_mid = 2 * 2 ** 171;
         uint256 a_max = 8589934591 * 2 ** 171;
@@ -95,7 +95,7 @@ contract testGoodConfig is Test {
         assertEq(a_max.getGoodType(), 8589934591);
     }
 
-    function test_getTell() public {
+    function test_getTell() public pure {
         uint256 a_min = 1 * 2 ** 123;
         uint256 a_mid = 2 * 2 ** 123;
         uint256 a_max = 281474976710655 * 2 ** 123;
@@ -104,7 +104,7 @@ contract testGoodConfig is Test {
         assertEq(a_max.getTell(), 281474976710655);
     }
 
-    function test_getLongitude() public {
+    function test_getLongitude() public pure {
         uint256 a_min = 1 * 2 ** 75;
         uint256 a_mid = 2 * 2 ** 75;
         uint256 a_max = 281474976710655 * 2 ** 75;
@@ -113,7 +113,7 @@ contract testGoodConfig is Test {
         assertEq(a_max.getLongitude(), 281474976710655);
     }
 
-    function test_getLatitude() public {
+    function test_getLatitude() public pure {
         uint256 a_min = 1 * 2 ** 27;
         uint256 a_mid = 2 * 2 ** 27;
         uint256 a_max = 281474976710655 * 2 ** 27;

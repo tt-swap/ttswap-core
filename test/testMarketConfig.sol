@@ -9,7 +9,7 @@ contract testMarketConfig is Test, GasSnapshot {
     using L_MarketConfigLibrary for uint256;
 
     uint256 marketconfig;
-    function setUp() public {}
+    function setUp() public pure {}
 
     function test_getLiquidFee() public {
         uint256 a_min = 1 * 2 ** 250;
@@ -27,7 +27,7 @@ contract testMarketConfig is Test, GasSnapshot {
         assertEq(a_max.getLiquidFee(100), 63);
     }
 
-    function test_getSellerFee() public {
+    function test_getSellerFee() public pure {
         uint256 a_min = 1 * 2 ** 244;
         uint256 a_mid = 1 * 2 ** 249;
         uint256 a_max = 63 * 2 ** 244;
@@ -39,7 +39,7 @@ contract testMarketConfig is Test, GasSnapshot {
         assertEq(a_max.getSellerFee(100), 63);
     }
 
-    function test_getGaterFee() public {
+    function test_getGaterFee() public pure {
         uint256 a_min = 1 * 2 ** 238;
         uint256 a_mid = 1 * 2 ** 243;
         uint256 a_max = 63 * 2 ** 238;
@@ -51,7 +51,7 @@ contract testMarketConfig is Test, GasSnapshot {
         assertEq(a_max.getGaterFee(100), 63);
     }
 
-    function test_getReferFee() public {
+    function test_getReferFee() public pure {
         uint256 a_min = 1 * 2 ** 232;
         uint256 a_mid = 1 * 2 ** 237;
         uint256 a_max = 63 * 2 ** 232;
@@ -63,7 +63,7 @@ contract testMarketConfig is Test, GasSnapshot {
         assertEq(a_max.getReferFee(100), 63);
     }
 
-    function test_getCustomerFee() public {
+    function test_getCustomerFee() public pure {
         uint256 a_min = 1 * 2 ** 226;
         uint256 a_mid = 1 * 2 ** 231;
         uint256 a_max = 63 * 2 ** 226;
@@ -75,7 +75,7 @@ contract testMarketConfig is Test, GasSnapshot {
         assertEq(a_max.getCustomerFee(100), 63);
     }
 
-    function test_checkAllocate() public {
+    function test_checkAllocate() public pure {
         uint256 a = 50 * 2 ** 250;
         a += 25 * 2 ** 244;
         a += 15 * 2 ** 238;
@@ -91,7 +91,7 @@ contract testMarketConfig is Test, GasSnapshot {
         assertEq(a.checkAllocate(), false);
     }
 
-    function test_getPlatFee() public {
+    function test_getPlatFee() public pure {
         uint256 a_min = 1 * 2 ** 221;
         uint256 a_mid = 1 * 2 ** 225;
         uint256 a_max = 31 * 2 ** 221;

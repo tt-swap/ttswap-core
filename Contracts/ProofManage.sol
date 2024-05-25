@@ -6,11 +6,13 @@ import {S_ProofKey} from "./libraries/L_Struct.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
 
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IERC165, ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-//import {ERC721Utils} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol";
+import {IERC721Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-abstract contract ProofManage is I_Proof, ERC165 {
+abstract contract ProofManage is I_Proof, Context, ERC165 {
     using L_Proof for *;
     using Strings for uint256;
     using L_ProofIdLibrary for S_ProofKey;
@@ -157,7 +159,7 @@ abstract contract ProofManage is I_Proof, ERC165 {
         bytes memory data
     ) public {
         transferFrom(from, to, tokenId);
-        //ERC721Utils.checkOnERC721Received(msg.sender, from, to, tokenId, data);
+        _checkOnERC721Received(from, to, tokenId, data);
     }
 
     /// @inheritdoc I_Proof
@@ -184,5 +186,35 @@ abstract contract ProofManage is I_Proof, ERC165 {
         );
         proofs[_proofid].owner = _to;
         return true;
+    }
+    function _checkOnERC721Received(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) private {
+        if (to.code.length > 0) {
+            try
+                IERC721Receiver(to).onERC721Received(
+                    _msgSender(),
+                    from,
+                    tokenId,
+                    data
+                )
+            returns (bytes4 retval) {
+                if (retval != IERC721Receiver.onERC721Received.selector) {
+                    // revert ERC721InvalidReceiver(to);
+                }
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    //   revert ERC721InvalidReceiver(to);
+                } else {
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        revert(add(32, reason), mload(reason))
+                    }
+                }
+            }
+        }
     }
 }

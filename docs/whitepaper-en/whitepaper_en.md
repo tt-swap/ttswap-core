@@ -4,28 +4,44 @@
 
 [toc]
 # 1 Summary
-TTSWAP (token-token swap) is a decentralized automated market-making protocol built on the Ethereum blockchain. Its underlying principle is based on the transfer of market value triggered by user behavior, and it constructs a platform using value conservation trading strategies.
-The whitepaper explains the design logic of the ttswap project, covering principles and implementations of good trading, investment, and withdrawal of value goods, as well as ordinary good investment and withdrawal, and the generation and distribution of good transaction fees.
+
+TTSWAP (token-token swap) is an automated market-making protocol built on the Ethereum blockchain, which means it doesn't rely on centralized institutions or individuals to facilitate trades. The core principle of TTSWAP is to automatically trigger market value transfers based on user actions, creating a platform based on a constant value trading model.
+
+The project's whitepaper explains the design logic of TTSWAP, covering the following aspects:
+
+1. Commodity Trading: 
+Users can directly swap one commodity for another without the need for intermediary goods.
+1. Value Commodity Investment and Withdrawal: 
+Users can invest in specific value commodities and withdraw their investments when needed.
+1. Ordinary Commodity Investment and Withdrawal: 
+Besides value commodities, users can also invest in ordinary commodities and withdraw their investments at any time.
+1. Generation and Distribution of Transaction Fees: 
+The transaction fees generated during trades are distributed according to certain rules to incentivize more participants to join the market.
+
+In summary, TTSWAP provides ordinary users with a simple, transparent, and efficient cryptocurrency trading platform that uses an innovative AMM logic—the constant value trading model. It aims to create a convenient, secure, and low-GAS fee platform.
 
 ---
 # 2 Features
-Value Conservation Trading Strategy
+1. Value Conservation Trading Strategy
 The value conservation trading strategy accurately reflects the true market value of currencies and facilitates fast good transactions.
 
-1. Direct Trading without Intermediaries
+2. Direct Trading without Intermediaries
 On this platform, any two types of items can be directly traded without the need for intermediate conversions.
 
-2. No Slippage within Trading Threshold
+3. No Slippage within Trading Threshold
 Transactions below the good trading threshold incur no slippage.
 
-3. No Impermanent Loss for Liquidity Providers or good Investors
+4. No Impermanent Loss for Liquidity Providers or good Investors
 Constant market value inherently prevents impermanent loss. When users withdraw their investment, they receive the original invested good plus profits generated from providing liquidity.
 
-4. Low Gas Fees with Simple Computational Logic
+5. Low Gas Fees with Simple Computational Logic
 The logic behind the constant value trading model is simple, resulting in low computational load and gas consumption.
 
-5. Fee Distribution Based on Roles for Everyone
+6. Fee Distribution Based on Roles for Everyone
 Fees are distributed based on roles, allowing anyone to become a good investor (liquidity provider), merchant, portal, referrer, user, or platform role, sharing in the platform's growth earnings.
+
+7. Support Native ETH Exchange and Invest
+anyone can you native ETH without wrap to swap, invest easily.
 ---
 
 # 3 Principle of Value Conservation Trading Mode

@@ -28,7 +28,6 @@ library L_CurrencyLibrary {
         address to = address(this);
         if (token.isNative()) {
             if (msg.value != amount) revert NativeTransferFailed();
-            amount = msg.value;
         } else {
             /// @solidity memory-safe-assembly
             assembly {

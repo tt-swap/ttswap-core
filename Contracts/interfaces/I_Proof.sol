@@ -37,4 +37,13 @@ interface I_Proof is IERC721, IERC721Metadata, IERC721Enumerable {
     function getProofState(
         uint256 _proof
     ) external view returns (L_Proof.S_ProofState memory proof_);
+
+    function safeTransferFromWithPermit(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data,
+        uint256 deadline,
+        bytes memory signature
+    ) external;
 }

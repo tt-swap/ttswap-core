@@ -283,7 +283,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             uint256 proofno_
         )
     {
-        require(goods[_togood].currentState.amount1() <= 2 ** 108, "M02");
+        require(
+            goods[_togood].currentState.amount1() + _quantity <= 2 ** 109,
+            "M02"
+        );
 
         require(
             (_valuegood == 0 && goods[_togood].goodConfig.isvaluegood()) ||

@@ -36,6 +36,10 @@ interface I_Good {
     /// @notice remove  out address from banlist~ 移出黑名单
     /// @param _user user address ~用户地址
     event e_removebanlist(address _user);
+    /// @notice preject or seller deliver welfare to investor
+    /// @param goodid 商品编号
+    /// @param welfare 福利数量
+    event e_goodWelfare(uint256 goodid, uint128 welfare);
 
     /// @notice Returns the config of the market~返回市场的配置
     /// @dev Can be changed by the marketmanager~可以被管理员调整
@@ -134,4 +138,8 @@ interface I_Good {
         uint256 _goodid,
         address _user
     ) external view returns (uint256 fee_);
+    /// @notice 为投资者发福利
+    /// @param goodid   商品编号
+    /// @param welfare   用户地址
+    function goodWelfare(uint256 goodid, uint128 welfare) external;
 }

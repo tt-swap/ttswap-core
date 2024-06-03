@@ -185,4 +185,15 @@ abstract contract GoodManage is I_Good, RefererManage {
     ) external view override returns (bool _isban) {
         return banlist[_user] == 1 ? true : false;
     }
+
+    function goodWelfare(uint256 goodid, uint128 welfare) external override {
+        require(
+            goods[goodid].feeQunitityState.amount0() + welfare <= 2 ** 109,
+            "G06"
+        );
+        goods[goodid].erc20address.transferFrom(msg.sender, welfare);
+        goods[goodid].feeQunitityState =
+            goods[goodid].feeQunitityState +
+            toBalanceUINT256(uint128(welfare), 0);
+    }
 }

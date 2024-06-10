@@ -24,46 +24,36 @@ contract nativeGoodPay is Test, BaseSetup {
     using L_BalanceUINT256Library for T_BalanceUINT256;
 
     uint256 metagood;
+    uint256 nativenormalgood;
     uint256 normalgoodbtc;
     uint256 normalgoodeth;
+    uint256 normalgoodusdt;
 
     uint256 metaproofid;
 
     function setUp() public override {
         BaseSetup.setUp();
+        NativeETHInitMetagood();
         NativeETHInitNormalgood();
+        initnormalgood();
         //goodInfo(metagood);
         //goodInfo(normalgoodbtc);
         //goodInfo(normalgoodeth);
     }
 
-    function NativeETHInitNormalgood() public {
+    function NativeETHInitMetagood() public {
         vm.startPrank(marketcreator);
         uint256 sentBalance = 2 ether;
         address nativeCurrency = address(0);
-        console2.log(
-            "1112",
-            (2 ** 255) +
-                8 *
-                2 ** 245 +
-                8 *
-                2 ** 238 +
-                8 *
-                2 ** 231 +
-                8 *
-                2 ** 224
-        );
+
         vm.deal(marketcreator, 1000 ether);
         nativeCurrency.safeTransfer(address(1), sentBalance);
-        console2.log("1111", marketcreator.balance);
-        console2.log("1111", address(1).balance);
-        usdt.mint(marketcreator, 10000000 * 10 ** 6);
-        usdt.approve(address(market), 10000000 * 10 ** 6);
         console2.log(
-            "users[3] approve market",
-            usdt.allowance(users[3], address(market))
+            "1marketcreator.balance before swap",
+            marketcreator.balance
         );
-
+        console2.log("1address(1).balance before swap", address(1).balance);
+        console2.log("1market.balance before swap", address(market).balance);
         uint256 _goodConfig = (2 ** 255) +
             8 *
             2 ** 245 +
@@ -73,17 +63,150 @@ contract nativeGoodPay is Test, BaseSetup {
             2 ** 231 +
             8 *
             2 ** 224;
-        console2.log("adabc", _goodConfig.isvaluegood());
+        console2.log("good config is valueGood?:", _goodConfig.isvaluegood());
 
         (metagood, ) = market.initMetaGood{value: 1 ether}(
             nativeCurrency,
-            toBalanceUINT256(
-                uint128(3000 * 10 ** usdt.decimals()),
-                1 * 10 ** 18
-            ),
+            toBalanceUINT256(uint128(4000 * 10 ** 6), 1 * 10 ** 18),
             _goodConfig
         );
         vm.stopPrank();
+
+        console2.log(
+            "1marketcreator.balance after swap",
+            marketcreator.balance
+        );
+        console2.log("1address(1).balance after swap", address(1).balance);
+        console2.log("1market.balance after swap", address(market).balance);
+        assertEq(
+            marketcreator.balance,
+            997000000000000000000,
+            "marketCreateor balance"
+        );
+        assertEq(address(1).balance, 2000000000000000000, "address(1).balance");
+        assertEq(
+            address(market).balance,
+            1000000000000000000,
+            "address(market).balance"
+        );
+    }
+
+    function NativeETHInitNormalgood() public {
+        address jeck = address(99);
+        address gater = address(98);
+        vm.deal(jeck, 1 ether);
+        uint256 _goodConfig = 8 *
+            2 ** 245 +
+            8 *
+            2 ** 238 +
+            8 *
+            2 ** 231 +
+            8 *
+            2 ** 224;
+
+        console2.log("2jeck.balance before swap", jeck.balance);
+        console2.log("2market.balance before swap", address(market).balance);
+        console2.log("2good config is valueGood?:", _goodConfig.isvaluegood());
+
+        (nativenormalgood, ) = market.initGood{value: 0.9 ether}(
+            metagood,
+            toBalanceUINT256(9 * 10 ** 17, 9 * 10 ** 17),
+            address(0),
+            _goodConfig,
+            gater
+        );
+        console2.log("2jeck.balance before swap", jeck.balance);
+        console2.log("2market.balance before swap", address(market).balance);
+        console2.log("2good config is valueGood?:", _goodConfig.isvaluegood());
+        assertEq(
+            marketcreator.balance,
+            997000000000000000000,
+            "marketCreateor balance"
+        );
+        assertEq(jeck.balance, 1000000000000000000, "jeck.balance");
+        assertEq(
+            address(market).balance,
+            1900000000000000000,
+            "address(market).balance"
+        );
+    }
+
+    function initnormalgood() public {
+        address edson = address(101);
+        address gater = address(102);
+        deal(address(usdt), edson, 100000 * 10 ** 6, false);
+        vm.deal(edson, 10 ether);
+        vm.startPrank(edson);
+        usdt.approve(address(market), 50000 * 10 ** 6);
+        uint256 _goodConfig = 8 *
+            2 ** 245 +
+            8 *
+            2 ** 238 +
+            8 *
+            2 ** 231 +
+            8 *
+            2 ** 224;
+        (normalgoodusdt, ) = market.initGood{value: 2 ether}(
+            1,
+            toBalanceUINT256(8000 * 10 ** 6, 2 ether),
+            address(usdt),
+            _goodConfig,
+            gater
+        );
+        goodInfo(3);
+        console2.log("usdt good id", normalgoodusdt);
+        vm.stopPrank();
+    }
+
+    function testbuymetagood() public {
+        address york = address(105);
+        address gater = address(106);
+        deal(address(usdt), york, 100000 * 10 ** 6, false);
+        vm.startPrank(york);
+        usdt.approve(address(market), 10000 * 10 ** 6);
+
+        console2.log("3york.balance before swap", york.balance);
+        console2.log("3market.balance before swap", address(market).balance);
+        console2.log("3york.usdt balance before swap", usdt.balanceOf(york));
+        console2.log(
+            "3market.usdt before swap",
+            usdt.balanceOf(address(market))
+        );
+        console2.log(
+            "tbalance.amount0()",
+            T_BalanceUINT256.wrap(10000 * 2 ** 128 + 1).amount0()
+        );
+
+        console2.log(
+            "tbalance.amount0()",
+            T_BalanceUINT256.wrap(10000 * 2 ** 128 + 1).amount1()
+        );
+        goodInfo(1);
+        goodInfo(3);
+        market.buyGood(
+            normalgoodusdt,
+            metagood,
+            4000 * 10 ** 6,
+            5000 * 10 ** 6 * 2 ** 128 + 1,
+            false,
+            gater
+        );
+        goodInfo(1);
+        goodInfo(3);
+        vm.stopPrank();
+        console2.log("3york.balance after swap", york.balance);
+        console2.log("3market.balance after swap", address(market).balance);
+        console2.log("3york.usdt balance after swap", usdt.balanceOf(york));
+        console2.log(
+            "3market.usdt after swap",
+            usdt.balanceOf(address(market))
+        );
+        assertEq(york.balance, 997601919488000000, "3york.balance after swap");
+        assertEq(
+            address(market).balance,
+            2902398080512000000,
+            "market.balance after swap"
+        );
     }
 
     function testNativeGoodPay(uint256 amount) public {

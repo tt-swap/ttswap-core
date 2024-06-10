@@ -113,7 +113,6 @@ library L_Good {
         T_BalanceUINT256 good2currentState;
         uint256 good2config;
     }
-
     function swapCompute1(
         swapCache memory _stepCache,
         T_BalanceUINT256 _limitPrice
@@ -124,6 +123,7 @@ library L_Good {
             _stepCache.remainQuantity
         );
         _stepCache.remainQuantity -= _stepCache.feeQuantity;
+
         while (
             _stepCache.remainQuantity > 0 &&
             lowerprice(
@@ -147,7 +147,6 @@ library L_Good {
             minQuantity = _stepCache.good1currentState.getamount1fromamount0(
                 minValue
             );
-
             if (_stepCache.remainQuantity > minQuantity) {
                 _stepCache.remainQuantity -= minQuantity;
 
@@ -197,14 +196,14 @@ library L_Good {
         }
 
         if (_stepCache.remainQuantity > 0) {
-            _stepCache.feeQuantity -= _stepCache.good1config.getSellerFee(
+            _stepCache.feeQuantity -= _stepCache.good1config.getSellFee(
                 _stepCache.remainQuantity
             );
-            _stepCache.remainQuantity += _stepCache.good1config.getSellerFee(
+
+            _stepCache.remainQuantity += _stepCache.good1config.getSellFee(
                 _stepCache.remainQuantity
             );
         }
-
         return _stepCache;
     }
 
@@ -283,12 +282,16 @@ library L_Good {
                 );
                 _stepCache.remainQuantity = 0;
             }
-            if (_stepCache.remainQuantity > 0) {
-                _stepCache.feeQuantity -= _stepCache.good1config.getSellerFee(
-                    _stepCache.remainQuantity
-                );
-            }
+
             _stepCache.swapvalue += minValue;
+        }
+        if (_stepCache.remainQuantity > 0) {
+            _stepCache.feeQuantity -= _stepCache.good1config.getSellFee(
+                _stepCache.remainQuantity
+            );
+            _stepCache.remainQuantity += _stepCache.good1config.getSellFee(
+                _stepCache.remainQuantity
+            );
         }
         return _stepCache;
     }

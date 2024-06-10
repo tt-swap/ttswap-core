@@ -8,12 +8,10 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 library L_CurrencyLibrary {
     using L_CurrencyLibrary for address;
 
-    using L_CurrencyLibrary for uint256;
     /// @notice Thrown when a native transfer fails
 
     error NativeTransferFailed();
 
-    error ValueToBiggerthanUint128();
     /// @notice Thrown when an ERC20 transfer fails
     error ERC20TransferFailed();
 
@@ -63,7 +61,7 @@ library L_CurrencyLibrary {
                     call(gas(), token, 0, freeMemoryPointer, 100, 0, 32)
                 )
             }
-            require(success, "TRANSFER_FROM_FAILED");
+            if (!success) revert ERC20TransferFailed();
         }
     }
 

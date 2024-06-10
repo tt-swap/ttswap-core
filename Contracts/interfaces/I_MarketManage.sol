@@ -122,6 +122,18 @@ interface I_MarketManage is I_Good, I_Proof {
         T_BalanceUINT256 _protocalfee
     );
 
+    /// @notice emit enpower:赋能
+    /// @param _goodid   proof No~投资证明编号
+    /// @param _valuegood  value good no~价值商品编号
+    /// @param _quantity  enpower value quantity~赋能价值商品数量
+    /// @param _sender msg.sender
+    event e_enpower(
+        uint256 _goodid,
+        uint256 _valuegood,
+        uint256 _quantity,
+        address _sender
+    );
+
     error err_total();
 
     /// @notice initial market's first good~初始化市场中第一个商品
@@ -278,4 +290,14 @@ interface I_MarketManage is I_Good, I_Proof {
     function collectProofFee(
         uint256 _proofid
     ) external returns (T_BalanceUINT256 profit_);
+
+    /// @notice enpower~赋能
+    /// @param _goodid   enpowered good~赋能商品编号
+    /// @param _valuegoodid   valuegoodid~价值商品id
+    /// @param _quantity   valuegood quantity~价值商品数量
+    function enpower(
+        uint256 _goodid,
+        uint256 _valuegoodid,
+        uint128 _quantity
+    ) external;
 }

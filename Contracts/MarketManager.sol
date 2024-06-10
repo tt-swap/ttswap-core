@@ -489,4 +489,23 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             protocalfee
         );
     }
+
+    function enpower(
+        uint256 goodid,
+        uint256 valuegood,
+        uint128 quantity
+    ) external override {
+        require(goods[valuegood].goodConfig.isvaluegood(), "not value good");
+        goods[valuegood].erc20address.transferFrom(msg.sender, quantity);
+        uint128 value = goods[valuegood].currentState.getamount0fromamount1(
+            quantity
+        );
+        goods[valuegood].currentState =
+            goods[valuegood].currentState +
+            toBalanceUINT256(0, quantity);
+        goods[goodid].currentState =
+            goods[valuegood].currentState +
+            toBalanceUINT256(value, 0);
+        emit e_enpower(goodid, valuegood, quantity, msg.sender);
+    }
 }

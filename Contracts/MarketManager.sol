@@ -231,7 +231,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
 
         if (swapcache.remainQuantity > 0) revert err_total();
-        goodid1FeeQuantity_ = goods[_goodid1].goodConfig.getBuyFee(
+        goodid1FeeQuantity_ = goods[_goodid1].goodConfig.getSellFee(
             swapcache.outputQuantity
         );
         goodid1Quantity_ = swapcache.outputQuantity - goodid1FeeQuantity_;

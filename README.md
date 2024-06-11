@@ -100,17 +100,21 @@ To integrate with the contracts, the interfaces are available to use:
 import {I_MarketManager} from 'ttswap-core/contracts/interfaces/I_MarketManager.sol';
 
 contract MyPortal  {
-    IPoolManager poolManager;
+    I_MarketManager marketManager;
     address IamGater
 
-    function excellentThing () {
-        poolManager.buyGood(...,IamGater);
+    function doThing () {
+        marketManager.buyGood(...,IamGater);
+        marketManager.buyGoodForPay(...,IamGater);
+        marketManager.initGood(...,IamGater);
+        marketManager.investGood(...,IamGater);
+        ....
     }
 }
 
 ```
 ## User deploy local instruction
-step 1:instrall forge
-step 2:forge install OpenZeppelin/openzeppelin-contracts@v5.0.2
-step 3:forge install marktoda/forge-gas-snapshot
+step 1:instrall forge  
+step 2:forge install OpenZeppelin/openzeppelin-contracts@v5.0.2  
+step 3:forge install marktoda/forge-gas-snapshot  
 

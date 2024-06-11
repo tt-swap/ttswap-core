@@ -282,16 +282,7 @@ library L_Good {
                 );
                 _stepCache.remainQuantity = 0;
             }
-
             _stepCache.swapvalue += minValue;
-        }
-        if (_stepCache.remainQuantity > 0) {
-            _stepCache.feeQuantity -= _stepCache.good1config.getSellFee(
-                _stepCache.remainQuantity
-            );
-            _stepCache.remainQuantity += _stepCache.good1config.getSellFee(
-                _stepCache.remainQuantity
-            );
         }
         return _stepCache;
     }

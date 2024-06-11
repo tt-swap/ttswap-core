@@ -59,23 +59,15 @@ function lowerprice(
     T_BalanceUINT256 b,
     T_BalanceUINT256 c
 ) pure returns (bool) {
-    if (a.amount1() == 0 || b.amount0() == 0 || c.amount0() == 0) return false;
-    require(
-        uint256(a.amount0()) * uint256(b.amount1()) * uint256(c.amount1()) <=
-            type(uint256).max,
-        "overflow"
-    );
-    require(
-        uint256(a.amount1()) * uint256(b.amount0()) * uint256(c.amount0()) <=
-            type(uint256).max,
-        "overflow"
-    );
     return
         uint256(a.amount0()) * uint256(b.amount1()) * uint256(c.amount1()) <
-            uint256(a.amount1()) * uint256(b.amount0()) * uint256(c.amount0())
+            uint256(a.amount1()) *
+                uint256(b.amount0()) *
+                uint256(c.amount0()) &&
+            uint256(a.amount0()) * uint256(b.amount1()) * uint256(c.amount1()) >
+            0
             ? true
             : false;
-    //return uint256((a.amount0()*b.amount1())/(a.amount1()*b.amount0()));
 }
 
 library L_BalanceUINT256Library {

@@ -234,7 +234,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goodid1FeeQuantity_ = goods[_goodid1].goodConfig.getSellFee(
             swapcache.outputQuantity
         );
-        goodid1Quantity_ = swapcache.outputQuantity - goodid1FeeQuantity_;
+        goodid1Quantity_ = swapcache.outputQuantity + goodid1FeeQuantity_;
 
         goods[_goodid2].swapCommit(
             swapcache.good2currentState,
@@ -250,7 +250,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         goods[_goodid2].erc20address.safeTransfer(
             _recipent,
-            _swapQuantity - swapcache.remainQuantity - swapcache.feeQuantity
+            _swapQuantity - swapcache.feeQuantity
         );
         goods[_goodid1].erc20address.transferFrom(msg.sender, goodid1Quantity_);
         emit e_buyGoodForPay(
@@ -259,10 +259,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             msg.sender,
             _recipent,
             swapcache.swapvalue,
-            toBalanceUINT256(
-                _swapQuantity - swapcache.remainQuantity,
-                swapcache.feeQuantity
-            ),
+            toBalanceUINT256(_swapQuantity, swapcache.feeQuantity),
             toBalanceUINT256(goodid1Quantity_, goodid1FeeQuantity_)
         );
     }

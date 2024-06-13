@@ -306,9 +306,8 @@ library L_Good {
         uint256 _marketConfig,
         S_Ralate memory _ralate
     ) internal returns (S_GoodInvestReturn memory investResult_) {
-        investResult_.actualInvestQuantity =
-            _invest -
-            _self.goodConfig.getInvestFee(_invest);
+        uint128 actutal_fee = _self.goodConfig.getInvestFee(_invest);
+        investResult_.actualInvestQuantity = _invest - actutal_fee;
 
         investResult_.actualInvestValue = _self
             .currentState
@@ -320,7 +319,7 @@ library L_Good {
         ).getamount0fromamount1(investResult_.actualInvestQuantity);
 
         investResult_.actualFeeQuantity = _marketConfig.getLiquidFee(
-            _invest - investResult_.actualInvestQuantity
+            actutal_fee
         );
 
         _self.feeQunitityState =
@@ -342,7 +341,6 @@ library L_Good {
                 investResult_.actualInvestValue,
                 investResult_.actualInvestQuantity
             );
-        uint128 actutal_fee = _invest - investResult_.actualInvestQuantity;
         if (actutal_fee > 0)
             allocateFee(_self, actutal_fee, _marketConfig, _ralate);
     }

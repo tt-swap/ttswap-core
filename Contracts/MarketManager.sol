@@ -284,7 +284,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             goods[_togood].currentState.amount1() + _quantity <= 2 ** 109,
             "M02"
         );
-
         require(
             (_valuegood == 0 && goods[_togood].goodConfig.isvaluegood()) ||
                 _valuegood != 0,
@@ -327,6 +326,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 S_ProofKey(msg.sender, _togood, _valuegood).toId()
             ] = totalSupply;
             proofno_ = totalSupply;
+        } else {
+            require(proofs[proofno_].owner == msg.sender, "is not your proof");
         }
 
         proofs[proofno_].updateInvest(

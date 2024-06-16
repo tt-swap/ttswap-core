@@ -35,16 +35,12 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 _goodConfig
     ) external payable override onlyMarketCreator returns (uint256, uint256) {
         require(_goodConfig.isvaluegood(), "M02");
-
         _erc20address.transferFrom(msg.sender, _initial.amount1());
-
         goodNum += 1;
         goodseq[S_GoodKey(_erc20address, msg.sender).toId()] = goodNum;
-
         goods[goodNum].init(_initial, _erc20address, _goodConfig);
         goods[goodNum].updateToValueGood();
         ownergoods[msg.sender].addvalue(goodNum);
-
         bytes32 normalproof = S_ProofKey(msg.sender, goodNum, 0).toId();
         totalSupply += 1;
         proofseq[normalproof] = totalSupply;
@@ -112,7 +108,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _valuegood,
             toBalanceUINT256(investResult.actualInvestValue, 0),
             toBalanceUINT256(0, _initial.amount0()),
-            toBalanceUINT256(0, investResult.actualInvestQuantity),
+            toBalanceUINT256(
+                investResult.contructFeeQuantity,
+                investResult.actualInvestQuantity
+            ),
             address(0),
             address(0)
         );
@@ -493,7 +492,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 valuegood,
         uint128 quantity
     ) external override {
-        require(goods[valuegood].goodConfig.isvaluegood(), "not value good");
+        require(goods[valuegood].goodConfig.isvaluegood(), "M2");
         goods[valuegood].erc20address.transferFrom(msg.sender, quantity);
         uint128 value = goods[valuegood].currentState.getamount0fromamount1(
             quantity
@@ -502,7 +501,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             goods[valuegood].currentState +
             toBalanceUINT256(0, quantity);
         goods[goodid].currentState =
-            goods[valuegood].currentState +
+            goods[goodid].currentState +
             toBalanceUINT256(value, 0);
         emit e_enpower(goodid, valuegood, quantity, msg.sender);
     }

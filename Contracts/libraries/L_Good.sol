@@ -96,7 +96,7 @@ library L_Good {
         self.currentState = _init;
         self.investState = _init;
         assembly {
-            _goodConfig := shr(1, shl(1, _goodConfig))
+            _goodConfig := shr(4, shl(4, _goodConfig))
         }
         self.goodConfig = _goodConfig;
         self.erc20address = _erc20address;
@@ -113,6 +113,7 @@ library L_Good {
         T_BalanceUINT256 good2currentState;
         uint256 good2config;
     }
+
     function swapCompute1(
         swapCache memory _stepCache,
         T_BalanceUINT256 _limitPrice
@@ -171,7 +172,6 @@ library L_Good {
                 minValue = _stepCache.good1currentState.getamount0fromamount1(
                     _stepCache.remainQuantity
                 );
-
                 _stepCache.outputQuantity += _stepCache
                     .good2currentState
                     .getamount1fromamount0(minValue);
@@ -453,10 +453,7 @@ library L_Good {
                     _investProof.valueinvest.amount0(),
                     _investProof.valueinvest.amount1()
                 ).getamount0fromamount1(var1),
-                toBalanceUINT256(
-                    _investProof.state.amount0(),
-                    _investProof.valueinvest.amount1()
-                ).getamount0fromamount1(var1),
+                normalGoodResult1_.actualDisinvestValue,
                 var1
             );
 

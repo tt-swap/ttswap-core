@@ -68,7 +68,7 @@ interface I_Good {
     /// @param _owner   seller address~卖家地址
     /// @param _seq   seller's good index~第几个商品
     /// @return  goods No~商品编号
-    function getGoodIdByAddress(
+    function getSellerGoodId(
         address _owner,
         uint256 _seq
     ) external view returns (uint256);

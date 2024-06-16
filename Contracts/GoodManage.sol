@@ -84,7 +84,7 @@ abstract contract GoodManage is I_Good, RefererManage {
     }
 
     /// @inheritdoc I_Good
-    function getGoodIdByAddress(
+    function getSellerGoodId(
         address _owner,
         uint256 _key
     ) external view override returns (uint256) {

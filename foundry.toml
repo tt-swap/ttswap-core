@@ -3,6 +3,9 @@ src = "Contracts"
 out = "out"
 libs = ["lib"]
 ffi = true
+optimizer_runs = 800
+solc = "0.8.24"
+evm_version = "cancun"
 fs_permissions = [{ access = "read-write", path = ".forge-snapshots/"}]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

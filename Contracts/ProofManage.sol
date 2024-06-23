@@ -189,10 +189,12 @@ abstract contract ProofManage is
     ) external view override returns (L_Proof.S_ProofState memory proof_) {
         proof_.owner = proofs[_proof].owner;
         proof_.currentgood = proofs[_proof].currentgood;
-        proof_.valuegood = proofs[_proof].valuegood;
         proof_.state = proofs[_proof].state;
         proof_.invest = proofs[_proof].invest;
-        proof_.valueinvest = proofs[_proof].valueinvest;
+        if (proofs[_proof].valuegood > 0) {
+            proof_.valuegood = proofs[_proof].valuegood;
+            proof_.valueinvest = proofs[_proof].valueinvest;
+        }
     }
 
     /// @inheritdoc I_Proof

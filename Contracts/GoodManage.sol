@@ -29,7 +29,7 @@ abstract contract GoodManage is I_Good, RefererManage {
 
     mapping(uint256 => L_Good.S_GoodState) internal goods;
     mapping(address => L_ArrayStorage.S_ArrayStorage) internal ownergoods;
-    mapping(bytes32 => uint256) internal goodseq;
+    mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
     mapping(address => uint256) private banlist;
 

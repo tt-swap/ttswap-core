@@ -9,8 +9,6 @@ import {S_GoodKey, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
 
 import {L_ProofIdLibrary, L_Proof} from "../Contracts/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
-import {ProofUtil} from "./util/ProofUtil.sol";
-import {GoodUtil} from "./util/GoodUtil.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
 
 contract testInitMetaGood is BaseSetup {
@@ -103,6 +101,110 @@ contract testInitMetaGood is BaseSetup {
             1,
             "after initial:owner key id error"
         );
+        uint256 normalproof = market.proofseq(
+            S_ProofKey(marketcreator, metagood, 0).toId()
+        );
+        L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
+        assertEq(
+            _proof1.state.amount0(),
+            50000 * 10 ** 6,
+            "after initial:proof value error"
+        );
+        assertEq(
+            _proof1.invest.amount1(),
+            50000 * 10 ** 6,
+            "after initial:proof quantity error"
+        );
+        assertEq(
+            _proof1.valueinvest.amount1(),
+            0,
+            "after initial:proof quantity error"
+        );
+        assertEq(
+            market.proofseq(S_ProofKey(marketcreator, metagood, 0).toId()),
+            1,
+            "after initial:proof key num error"
+        );
+        vm.stopPrank();
+    }
+
+    function testinitNativeMetaGood() public {
+        vm.startPrank(marketcreator);
+        address nativeCurrency = address(0);
+        uint256 goodconfig = 2 ** 255;
+        vm.deal(marketcreator, 100000 * 10 ** 6);
+        assertEq(
+            marketcreator.balance,
+            100000 * 10 ** 6,
+            "before initial metagood:marketcreator account initial balance error"
+        );
+        assertEq(
+            usdt.balanceOf(address(market)),
+            0,
+            "before initial metagood:market account initial balance error"
+        );
+
+        snapStart("init_metagood");
+        (metagood, ) = market.initMetaGood{value: 50000 * 10 ** 6}(
+            nativeCurrency,
+            toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
+            goodconfig
+        );
+        snapEnd();
+
+        assertEq(
+            marketcreator.balance,
+            100000 * 10 ** 6 - 50000 * 10 ** 6,
+            "after initial metagood:marketcreator account initial balance error"
+        );
+        assertEq(
+            address(market).balance,
+            50000 * 10 ** 6,
+            "after initial metagood:market account initial balance error"
+        );
+
+        L_Good.S_GoodTmpState memory good_ = market.getGoodState(metagood);
+        assertEq(
+            T_BalanceUINT256.unwrap(good_.currentState),
+            T_BalanceUINT256.unwrap(
+                toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6)
+            ),
+            "after initial metagood:metagood currentState error"
+        );
+        assertEq(
+            T_BalanceUINT256.unwrap(good_.investState),
+            T_BalanceUINT256.unwrap(
+                toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6)
+            ),
+            "after initial metagood:metagood investState error"
+        );
+        assertEq(
+            T_BalanceUINT256.unwrap(good_.feeQunitityState),
+            T_BalanceUINT256.unwrap(toBalanceUINT256(0, 0)),
+            "after initial metagood:metagood feequnitity error"
+        );
+
+        assertEq(
+            good_.goodConfig,
+            2 ** 255,
+            "after initial metagood:metagood goodConfig error"
+        );
+
+        assertEq(
+            good_.owner,
+            marketcreator,
+            "after initial metagood:metagood marketcreator error"
+        );
+
+        assertEq(market.goodNum(), 1, "after initial:good num error");
+
+        bytes32 goodkey = S_GoodKey(address(0), marketcreator).toId();
+        assertEq(
+            market.goodseq(goodkey),
+            1,
+            "after initial:good key num error"
+        );
+
         uint256 normalproof = market.proofseq(
             S_ProofKey(marketcreator, metagood, 0).toId()
         );

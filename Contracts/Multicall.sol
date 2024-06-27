@@ -9,6 +9,7 @@ abstract contract Multicall {
         address target;
         bytes callData;
     }
+
     function multicall(
         Call[] calldata data
     ) public payable returns (bytes[] memory results) {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {S_ProofKey} from "./L_Struct.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "./L_BalanceUINT256.sol";

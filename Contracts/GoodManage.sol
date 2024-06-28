@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import "./RefererManage.sol";
 import "./interfaces/I_Good.sol";
@@ -17,7 +17,6 @@ abstract contract GoodManage is I_Good, RefererManage {
     using L_CurrencyLibrary for address;
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
-    using L_ArrayStorage for L_ArrayStorage.S_ArrayStorage;
     using L_Good for L_Good.S_GoodState;
 
     /// @inheritdoc I_Good
@@ -28,7 +27,6 @@ abstract contract GoodManage is I_Good, RefererManage {
     address public override marketcreator;
 
     mapping(uint256 => L_Good.S_GoodState) internal goods;
-    mapping(address => L_ArrayStorage.S_ArrayStorage) internal ownergoods;
     mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
     mapping(address => uint256) private banlist;
@@ -81,17 +79,6 @@ abstract contract GoodManage is I_Good, RefererManage {
         marketconfig = _marketconfig;
         emit e_setMarketConfig(_marketconfig);
         return true;
-    }
-
-    /// @inheritdoc I_Good
-    function getSellerGoodId(
-        address _owner,
-        uint256 _key
-    ) external view override returns (uint256) {
-        return
-            _key <= ownergoods[_owner].key
-                ? ownergoods[_owner].key_value[_key]
-                : 0;
     }
 
     /// @inheritdoc I_Good
@@ -162,7 +149,6 @@ abstract contract GoodManage is I_Good, RefererManage {
             "G05"
         );
         goods[_goodid].owner = _to;
-        ownergoods[_to].addvalue(_goodid);
         return true;
     }
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
@@ -47,12 +47,12 @@ contract buyGoodFee is BaseSetup {
             2 ** 224;
 
         console2.log("btc", btc.balanceOf(marketcreator));
-        (metagood, ) = market.initMetaGood(
+        market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000000, 20000000),
             _goodConfig
         );
-
+        metagood = 1;
         console2.log(1, _goodConfig);
         console2.log(2, (1 * 10 ** 18) * 2 ** 128 + 3100 * 10 ** 6);
         console2.log(3, 10000 * 10 ** 6);
@@ -89,13 +89,14 @@ contract buyGoodFee is BaseSetup {
             8 *
             2 ** 224;
 
-        (normalgood, ) = market.initGood(
+        market.initGood(
             metagood,
             toBalanceUINT256(20000000, 20000000),
             token,
             _goodConfig,
             msg.sender
         );
+        normalgood = 2;
         vm.stopPrank();
     }
 

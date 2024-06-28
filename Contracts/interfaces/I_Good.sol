@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {S_GoodKey, S_Ralate} from "../libraries/L_Struct.sol";
 import {L_Good} from "../libraries/L_Good.sol";
@@ -63,15 +63,6 @@ interface I_Good {
     /// @param _marketconfig   the market config ~市场配置
     /// @return 是否成功
     function setMarketConfig(uint256 _marketconfig) external returns (bool);
-
-    /// @notice get seller's good~获取卖家的商品列表
-    /// @param _owner   seller address~卖家地址
-    /// @param _seq   seller's good index~第几个商品
-    /// @return  goods No~商品编号
-    function getSellerGoodId(
-        address _owner,
-        uint256 _seq
-    ) external view returns (uint256);
 
     /// @notice get good's state 获取商品状态
     /// @param _goodid  good's id  商品的商品编号

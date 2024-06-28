@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
@@ -20,17 +20,16 @@ contract investNormalGoodFee is BaseSetup {
     using L_ProofIdLibrary for S_ProofKey;
 
     uint256 public metagood;
-    uint256 public normalgoodusdt;
-    uint256 public normalgoodeth;
+    uint256 public normalgoodusdt = 2;
+    uint256 public normalgoodeth = 3;
 
-    uint256 public normalproofusdt;
-    uint256 public normalproofeth;
-
+    uint256 public normalproofusdt = 2;
+    uint256 public normalproofeth = 3;
     function setUp() public override {
         BaseSetup.setUp();
         initmetagood();
-        (normalgoodusdt, normalproofusdt) = initNormalGood(address(usdt));
-        (normalgoodeth, normalproofeth) = initNormalGood(address(eth));
+        initNormalGood(address(usdt));
+        initNormalGood(address(eth));
     }
 
     function initmetagood() public {
@@ -39,12 +38,13 @@ contract investNormalGoodFee is BaseSetup {
         btc.approve(address(market), 30000);
 
         uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 238;
-        (metagood, ) = market.initMetaGood(
+        market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
             _goodConfig
         );
 
+        metagood = 1;
         //market.updatetoValueGood(metagood);
         uint256 _marketConfig = (50 << 250) +
             (5 << 244) +
@@ -68,13 +68,15 @@ contract investNormalGoodFee is BaseSetup {
 
         uint256 _goodConfig = 0 * 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 238;
 
-        (normalgood, normalproof) = market.initGood(
+        market.initGood(
             metagood,
             toBalanceUINT256(10000, 10000),
             token,
             _goodConfig,
             msg.sender
         );
+        normalgood = 1;
+        normalproof = 2;
         vm.stopPrank();
     }
 

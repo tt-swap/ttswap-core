@@ -4,7 +4,7 @@ out = "out"
 libs = ["lib"]
 ffi = true
 optimizer_runs = 800
-solc = "0.8.24"
+solc = "0.8.26"
 evm_version = "cancun"
 fs_permissions = [{ access = "read-write", path = ".forge-snapshots/"}]
 

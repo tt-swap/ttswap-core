@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {L_Proof} from "./L_Proof.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";

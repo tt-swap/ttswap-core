@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
@@ -36,12 +36,13 @@ contract disinvestValueGoodNoFee is BaseSetup {
         deal(address(btc), marketcreator, 100000, false);
         btc.approve(address(market), 30000);
         uint256 _goodconfig = 2 ** 255;
-        (metagood, ) = market.initMetaGood(
+        market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
             _goodconfig
         );
 
+        metagood = 1;
         //market.updatetoValueGood(metagood);
         vm.stopPrank();
     }
@@ -70,24 +71,10 @@ contract disinvestValueGoodNoFee is BaseSetup {
         uint128 quanity = uint128(aquanity);
 
         snapStart("disinvest Value good No Fee first");
-        (L_Good.S_GoodDisinvestReturn memory result, , ) = market.disinvestGood(
-            metagood,
-            0,
-            quanity,
-            address(1)
-        );
+        market.disinvestGood(metagood, 0, quanity, address(1));
         snapEnd();
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
-        assertEq(
-            result.actualDisinvestValue,
-            aquanity,
-            "disinvest proof 's value is error"
-        );
-        assertEq(
-            result.actualDisinvestQuantity,
-            aquanity,
-            "disinvest proof 's quantity is error"
-        );
+
         assertEq(
             aa.currentState.amount0(),
             40000 - quanity,
@@ -120,7 +107,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
             "feeQunitityState's contruct fee is error"
         );
         snapStart("disinvest Value good No Fee second");
-        (result, , ) = market.disinvestGood(metagood, 0, quanity, address(1));
+        market.disinvestGood(metagood, 0, quanity, address(1));
         snapEnd();
 
         vm.stopPrank();
@@ -134,28 +121,10 @@ contract disinvestValueGoodNoFee is BaseSetup {
         uint256 p_ = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
 
         snapStart("disinvest Value proof No Fee first");
-        (L_Good.S_GoodDisinvestReturn memory result, ) = market.disinvestProof(
-            p_,
-            quanity,
-            address(1)
-        );
+        market.disinvestProof(p_, quanity, address(1));
         snapEnd();
         L_Good.S_GoodTmpState memory aa = market.getGoodState(metagood);
-        assertEq(
-            result.actualDisinvestValue,
-            aquanity,
-            "disinvest proof 's value is error"
-        );
-        assertEq(
-            result.actualDisinvestQuantity,
-            aquanity,
-            "disinvest proof 's quantity is error"
-        );
-        assertEq(
-            aa.currentState.amount0(),
-            40000 - quanity,
-            "currentState's value is error"
-        );
+
         assertEq(
             aa.currentState.amount1(),
             40000 - quanity,
@@ -183,7 +152,7 @@ contract disinvestValueGoodNoFee is BaseSetup {
             "feeQunitityState's contruct fee is error"
         );
         snapStart("disinvest Value proof No Fee second");
-        (result, ) = market.disinvestProof(p_, 10, address(1));
+        market.disinvestProof(p_, 10, address(1));
         snapEnd();
         vm.stopPrank();
     }

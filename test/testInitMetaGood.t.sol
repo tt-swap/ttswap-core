@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
@@ -38,13 +38,13 @@ contract testInitMetaGood is BaseSetup {
         );
 
         snapStart("init_metagood");
-        (metagood, ) = market.initMetaGood(
+        market.initMetaGood(
             address(usdt),
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             goodconfig
         );
         snapEnd();
-
+        metagood = 1;
         assertEq(
             usdt.balanceOf(marketcreator),
             100000 * 10 ** 6 - 50000 * 10 ** 6,
@@ -96,11 +96,7 @@ contract testInitMetaGood is BaseSetup {
             1,
             "after initial:good key num error"
         );
-        assertEq(
-            market.getSellerGoodId(marketcreator, 1),
-            1,
-            "after initial:owner key id error"
-        );
+
         uint256 normalproof = market.proofseq(
             S_ProofKey(marketcreator, metagood, 0).toId()
         );
@@ -145,11 +141,12 @@ contract testInitMetaGood is BaseSetup {
         );
 
         snapStart("init_metagood");
-        (metagood, ) = market.initMetaGood{value: 50000 * 10 ** 6}(
+        market.initMetaGood{value: 50000 * 10 ** 6}(
             nativeCurrency,
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             goodconfig
         );
+        metagood = 1;
         snapEnd();
 
         assertEq(

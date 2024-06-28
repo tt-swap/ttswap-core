@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
@@ -65,11 +65,12 @@ contract nativeGoodPay is Test, BaseSetup {
             2 ** 224;
         console2.log("good config is valueGood?:", _goodConfig.isvaluegood());
 
-        (metagood, ) = market.initMetaGood{value: 1 ether}(
+        market.initMetaGood{value: 1 ether}(
             nativeCurrency,
             toBalanceUINT256(uint128(4000 * 10 ** 6), 1 * 10 ** 18),
             _goodConfig
         );
+        metagood = 1;
         vm.stopPrank();
 
         console2.log(
@@ -108,13 +109,14 @@ contract nativeGoodPay is Test, BaseSetup {
         console2.log("2market.balance before swap", address(market).balance);
         console2.log("2good config is valueGood?:", _goodConfig.isvaluegood());
 
-        (nativenormalgood, ) = market.initGood{value: 0.9 ether}(
+        market.initGood{value: 0.9 ether}(
             metagood,
             toBalanceUINT256(9 * 10 ** 17, 9 * 10 ** 17),
             address(0),
             _goodConfig,
             gater
         );
+        nativenormalgood = 2;
         console2.log("2jeck.balance before swap", jeck.balance);
         console2.log("2market.balance before swap", address(market).balance);
         console2.log("2good config is valueGood?:", _goodConfig.isvaluegood());
@@ -146,13 +148,14 @@ contract nativeGoodPay is Test, BaseSetup {
             2 ** 231 +
             8 *
             2 ** 224;
-        (normalgoodusdt, ) = market.initGood{value: 2 ether}(
+        market.initGood{value: 2 ether}(
             1,
             toBalanceUINT256(8000 * 10 ** 6, 2 ether),
             address(usdt),
             _goodConfig,
             gater
         );
+        normalgoodusdt = 3;
         goodInfo(3);
         console2.log("usdt good id", normalgoodusdt);
         vm.stopPrank();

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {S_ProofKey} from "../libraries/L_Struct.sol";
 import {L_Proof} from "../libraries/L_Proof.sol";

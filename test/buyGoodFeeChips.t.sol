@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 
@@ -48,13 +48,14 @@ contract buyGoodFeeChips is BaseSetup {
             2 ** 214;
 
         snapStart("init metagood with fee with config");
-        (metagood, ) = market.initMetaGood(
+        market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000000, 20000000),
             _goodConfig
         );
 
         snapEnd();
+        metagood = 1;
         uint256 _marketConfig = (50 << 250) +
             (5 << 244) +
             (10 << 238) +
@@ -87,13 +88,14 @@ contract buyGoodFeeChips is BaseSetup {
             2 ** 224;
         _goodConfig += 1 * 2 ** 214;
 
-        (normalgood, ) = market.initGood(
+        market.initGood(
             metagood,
             toBalanceUINT256(20000000, 20000000),
             token,
             _goodConfig,
             msg.sender
         );
+        normalgood = 2;
         vm.stopPrank();
     }
 

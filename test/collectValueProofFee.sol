@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
@@ -55,12 +55,13 @@ contract collectValueProofFee is Test, BaseSetup {
             2 ** 231 +
             8 *
             2 ** 224;
-        (metagood, metaproofid) = market.initMetaGood(
+        market.initMetaGood(
             address(usdt),
             toBalanceUINT256(20000 * 10 ** 6, 20000 * 10 ** 6),
             _goodConfig
         );
-
+        metagood = 1;
+        metaproofid = 1;
         //market.updatetoValueGood(metagood);
         uint256 _marketConfig = (50 << 250) +
             (5 << 244) +
@@ -105,7 +106,7 @@ contract collectValueProofFee is Test, BaseSetup {
             8 *
             2 ** 224;
 
-        (normalgood, ) = market.initGood(
+        market.initGood(
             metagood,
             toBalanceUINT256(
                 amount * decimals,
@@ -115,6 +116,7 @@ contract collectValueProofFee is Test, BaseSetup {
             _goodConfig,
             msg.sender
         );
+        normalgood = 2;
         vm.stopPrank();
     }
 
@@ -449,16 +451,12 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         goodInfo(metagood);
         proofInfo(metaproofid);
-        (L_Good.S_GoodDisinvestReturn memory aa, , ) = market.disinvestGood(
+        market.disinvestGood(
             metagood,
             0,
             10000 * 10 ** 6,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
-        console2.log("profit", aa.profit);
-        console2.log("actual_fee", aa.actual_fee);
-        console2.log("actualDisinvestValue", aa.actualDisinvestValue);
-        console2.log("actualDisinvestQuantity", aa.actualDisinvestQuantity);
         goodInfo(metagood);
         proofInfo(metaproofid);
         assertEq(
@@ -509,15 +507,11 @@ contract collectValueProofFee is Test, BaseSetup {
         );
         goodInfo(metagood);
         proofInfo(metaproofid);
-        (L_Good.S_GoodDisinvestReturn memory aa, ) = market.disinvestProof(
+        market.disinvestProof(
             metaproofid,
             10000 * 10 ** 6,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
-        console2.log("profit", aa.profit);
-        console2.log("actual_fee", aa.actual_fee);
-        console2.log("actualDisinvestValue", aa.actualDisinvestValue);
-        console2.log("actualDisinvestQuantity", aa.actualDisinvestQuantity);
         goodInfo(metagood);
         proofInfo(metaproofid);
         assertEq(
@@ -699,12 +693,13 @@ contract collectValueProofFee is Test, BaseSetup {
         btc.approve(address(market), 10000 * 10 ** 8);
 
         console2.log("--------------");
-        (, , normalproofid) = market.investGood(
+        market.investGood(
             normalgoodbtc,
             metagood,
             100 * 10 ** 8,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
+        normalproofid = 1;
         deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
         usdt.approve(address(market), 2000000 * 10 ** 6);
 
@@ -719,20 +714,14 @@ contract collectValueProofFee is Test, BaseSetup {
         goodInfo(metagood);
         goodInfo(normalgoodbtc);
         proofInfo(4);
-        (L_Good.S_GoodDisinvestReturn memory aa, , uint256 kk) = market
-            .disinvestGood(
-                normalgoodbtc,
-                metagood,
-                10 * 10 ** 8,
-                0x45A0eA517208a68c68A0f7D894d0D126649a75a9
-            );
-        console2.log("profit", aa.profit);
-        console2.log("actual_fee", aa.actual_fee);
-        console2.log("actualDisinvestValue", aa.actualDisinvestValue);
-        console2.log("actualDisinvestQuantity", aa.actualDisinvestQuantity);
+        market.disinvestGood(
+            normalgoodbtc,
+            metagood,
+            10 * 10 ** 8,
+            0x45A0eA517208a68c68A0f7D894d0D126649a75a9
+        );
         goodInfo(metagood);
         goodInfo(normalgoodbtc);
-        proofInfo(kk);
         assertEq(
             market.getGoodState(metagood).currentState.amount0(),
             12464916096000,
@@ -775,12 +764,13 @@ contract collectValueProofFee is Test, BaseSetup {
         btc.approve(address(market), 10000 * 10 ** 8);
 
         console2.log("--------------");
-        (, , normalproofid) = market.investGood(
+        market.investGood(
             normalgoodbtc,
             metagood,
             100 * 10 ** 8,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
+        normalproofid = 4;
         deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
         usdt.approve(address(market), 2000000 * 10 ** 6);
 
@@ -795,15 +785,11 @@ contract collectValueProofFee is Test, BaseSetup {
         goodInfo(metagood);
         goodInfo(normalgoodbtc);
         proofInfo(4);
-        (L_Good.S_GoodDisinvestReturn memory aa, ) = market.disinvestProof(
+        market.disinvestProof(
             4,
             10 * 10 ** 8,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
-        console2.log("profit", aa.profit);
-        console2.log("actual_fee", aa.actual_fee);
-        console2.log("actualDisinvestValue", aa.actualDisinvestValue);
-        console2.log("actualDisinvestQuantity", aa.actualDisinvestQuantity);
         goodInfo(metagood);
         goodInfo(normalgoodbtc);
         proofInfo(4);
@@ -850,12 +836,13 @@ contract collectValueProofFee is Test, BaseSetup {
         btc.approve(address(market), 10000 * 10 ** 8);
 
         console2.log("--------------");
-        (, , normalproofid) = market.investGood(
+        market.investGood(
             normalgoodbtc,
             metagood,
             100 * 10 ** 8,
             0x45A0eA517208a68c68A0f7D894d0D126649a75a9
         );
+        normalproofid = 4;
         deal(address(usdt), marketcreator, 20000000 * 10 ** 6, false);
         usdt.approve(address(market), 2000000 * 10 ** 6);
 

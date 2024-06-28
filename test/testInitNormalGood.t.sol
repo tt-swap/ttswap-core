@@ -1,4 +1,4 @@
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
@@ -29,11 +29,12 @@ contract testInitNormalGood is BaseSetup {
             2 ** 231 +
             7 *
             2 ** 224;
-        (metagood, ) = market.initMetaGood(
+        market.initMetaGood(
             address(usdt),
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
+        metagood = 1;
         vm.stopPrank();
     }
 
@@ -58,13 +59,15 @@ contract testInitNormalGood is BaseSetup {
             7 *
             2 ** 224;
         snapStart("init normalgood");
-        (uint256 normalgood, uint256 proofid) = market.initGood(
+        market.initGood(
             metagood,
             toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
             normalgoodconfig,
             msg.sender
         );
+        uint256 normalgood = 2;
+        uint256 proofid = 2;
         snapEnd();
         vm.stopPrank();
         assertEq(
@@ -259,9 +262,9 @@ contract testInitNormalGood is BaseSetup {
             7 *
             2 ** 224;
         snapStart("init normal good");
-        (uint256 normalgood, uint256 proofid) = market.initGood{
-            value: 1 * 10 ** 8
-        }(
+        uint256 normalgood = 2;
+        uint256 proofid = 2;
+        market.initGood{value: 1 * 10 ** 8}(
             metagood,
             toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(0),

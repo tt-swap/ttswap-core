@@ -22,7 +22,7 @@ function initMetaGood(address _erc20address, T_BalanceUINT256 _initial, uint256 
     payable
     override
     onlyMarketCreator
-    returns (uint256, uint256);
+    returns (bool);
 ```
 **Parameters**
 
@@ -31,13 +31,6 @@ function initMetaGood(address _erc20address, T_BalanceUINT256 _initial, uint256 
 |`_erc20address`|`address`|good's contract address~商品合约地址|
 |`_initial`|`T_BalanceUINT256`|  initial good.amount0:value,amount1:quantity~初始化的商品的参数,前128位为价值,后128位为数量.|
 |`_goodConfig`|`uint256`||
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|metagood_no_  good_no~商品编号|
-|`<none>`|`uint256`|proof_no_  proof_no~投资证明编号|
 
 
 ### initGood
@@ -52,7 +45,7 @@ function initGood(
     address _erc20address,
     uint256 _goodConfig,
     address _gater
-) external payable override noReentrant returns (uint256, uint256);
+) external payable override noReentrant returns (bool);
 ```
 **Parameters**
 
@@ -63,13 +56,6 @@ function initGood(
 |`_erc20address`|`address`| good's contract address~商品合约地址|
 |`_goodConfig`|`uint256`|  good config (detail config according to the whitepaper)~商品配置(详细配置参见技术白皮书)|
 |`_gater`|`address`|  gater address~门户地址|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|goodNo_ the_normal_good_No ~普通物品的编号|
-|`<none>`|`uint256`|proofNo_ the_proof_of_initial_good~初始化普通物品的投资证明|
 
 
 ### buyGood
@@ -152,11 +138,7 @@ function investGood(uint256 _togood, uint256 _valuegood, uint128 _quantity, addr
     external
     override
     noReentrant
-    returns (
-        L_Good.S_GoodInvestReturn memory normalInvest_,
-        L_Good.S_GoodInvestReturn memory valueInvest_,
-        uint256 proofno_
-    );
+    returns (bool);
 ```
 **Parameters**
 
@@ -166,14 +148,6 @@ function investGood(uint256 _togood, uint256 _valuegood, uint128 _quantity, addr
 |`_valuegood`|`uint256`|value good No~价值商品的编号|
 |`_quantity`|`uint128`|  invest normal good quantity~投资普通商品的数量|
 |`_gater`|`address`|  gater address~门户|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`normalInvest_`|`L_Good.S_GoodInvestReturn`|normalInvest_ normalInvest_.actualFeeQuantity //actutal fee quantity 实际手续费 normalInvest_.contructFeeQuantity //contrunct fee quantity 构建手续费 normalInvest_.actualinvestValue //value of invest 实际投资价值 normalInvest_.actualinvestQuantity //the quantity of invest 实际投资数量|
-|`valueInvest_`|`L_Good.S_GoodInvestReturn`|valueInvest_ valueInvest_.actualFeeQuantity //actutal fee quantity 实际手续费 valueInvest_.contructFeeQuantity //contrunct fee quantity 构建手续费 valueInvest_.actualinvestValue //value of invest 实际投资价值 valueInvest_.actualinvestQuantity //the quantity of invest 实际投资数量|
-|`proofno_`|`uint256`|normalProofno_  证明编号|
 
 
 ### disinvestGood
@@ -185,11 +159,7 @@ disinvest normal good~撤资普通商品
 function disinvestGood(uint256 _togood, uint256 _valuegood, uint128 _goodQuantity, address _gater)
     external
     override
-    returns (
-        L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_,
-        L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_,
-        uint256 proofno_
-    );
+    returns (bool);
 ```
 **Parameters**
 
@@ -199,14 +169,6 @@ function disinvestGood(uint256 _togood, uint256 _valuegood, uint128 _goodQuantit
 |`_valuegood`|`uint256`|  value Good No~价值商品编号|
 |`_goodQuantity`|`uint128`| disinvest quantity~取消普通商品投资数量|
 |`_gater`|`address`|  gater address~门户|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`disinvestNormalResult1_`|`L_Good.S_GoodDisinvestReturn`|disinvestResult1_ 普通商品结果 disinvestResult1_.profit; // profit of stake 投资收入 disinvestResult1_.actual_fee; // actual fee 实际手续费 disinvestResult1_.actualDisinvestValue; // disinvest value  撤资价值 disinvestResult1_.actualDisinvestQuantity; //disinvest quantity 撤资数量|
-|`disinvestValueResult2_`|`L_Good.S_GoodDisinvestReturn`|disinvestResult2_ 价值商品结果 disinvestResult2_.profit; // profit of stake 投资收入 disinvestResult2_.actual_fee; // actual fee 实际手续费 disinvestResult2_.actualDisinvestValue; // disinvest value  撤资价值 disinvestResult2_.actualDisinvestQuantity; //disinvest quantity 撤资数量|
-|`proofno_`|`uint256`| 证明编号|
 
 
 ### disinvestProof
@@ -219,10 +181,7 @@ function disinvestProof(uint256 _proofid, uint128 _goodQuantity, address _gater)
     public
     override
     noReentrant
-    returns (
-        L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_,
-        L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_
-    );
+    returns (bool);
 ```
 **Parameters**
 
@@ -231,13 +190,6 @@ function disinvestProof(uint256 _proofid, uint128 _goodQuantity, address _gater)
 |`_proofid`|`uint256`|  the invest proof No of normal good ~普通投资证明的编号编号|
 |`_goodQuantity`|`uint128`| disinvest quantity~取消普通商品投资数量|
 |`_gater`|`address`|  gater address~门户|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`disinvestNormalResult1_`|`L_Good.S_GoodDisinvestReturn`|disinvestResult1_ 普通商品结果 disinvestResult1_.profit; // profit of stake 投资收入 disinvestResult1_.actual_fee; // actual fee 实际手续费 disinvestResult1_.actualDisinvestValue; // disinvest value  撤资价值 disinvestResult1_.actualDisinvestQuantity; //disinvest quantity 撤资数量|
-|`disinvestValueResult2_`|`L_Good.S_GoodDisinvestReturn`|disinvestResult2_ 价值商品结果 disinvestResult2_.profit; // profit of stake 投资收入 disinvestResult2_.actual_fee; // actual fee 实际手续费 disinvestResult2_.actualDisinvestValue; // disinvest value  撤资价值 disinvestResult2_.actualDisinvestQuantity; //disinvest quantity 撤资数量|
 
 
 ### collectProofFee
@@ -260,4 +212,11 @@ function collectProofFee(uint256 _proofid) external override returns (T_BalanceU
 |----|----|-----------|
 |`profit_`|`T_BalanceUINT256`|  amount0 普通商品的投资收益 amount1价值商品的投资收益|
 
+
+### enpower
+
+
+```solidity
+function enpower(uint256 goodid, uint256 valuegood, uint128 quantity) external override returns (bool);
+```
 

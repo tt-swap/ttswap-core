@@ -92,28 +92,6 @@ function setMarketConfig(uint256 _marketconfig) external returns (bool);
 |`<none>`|`bool`|是否成功|
 
 
-### getGoodIdByAddress
-
-get seller's good~获取卖家的商品列表
-
-
-```solidity
-function getGoodIdByAddress(address _owner, uint256 _seq) external view returns (uint256);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_owner`|`address`|  seller address~卖家地址|
-|`_seq`|`uint256`|  seller's good index~第几个商品|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|goods No~商品编号|
-
-
 ### getGoodState
 
 get good's state 获取商品状态
@@ -329,6 +307,22 @@ function getGoodsFee(uint256 _goodid, address _user) external view returns (uint
 |`fee_`|`uint256`|是否成功|
 
 
+### goodWelfare
+
+为投资者发福利
+
+
+```solidity
+function goodWelfare(uint256 goodid, uint128 welfare) external;
+```
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`goodid`|`uint256`|  商品编号|
+|`welfare`|`uint128`|  用户地址|
+
+
 ## Events
 ### e_changeOwner
 emitted when good's user tranfer the good to another 商品拥有者转移关系给另一人
@@ -430,4 +424,19 @@ event e_removebanlist(address _user);
 |Name|Type|Description|
 |----|----|-----------|
 |`_user`|`address`|user address ~用户地址|
+
+### e_goodWelfare
+preject or seller deliver welfare to investor
+
+
+```solidity
+event e_goodWelfare(uint256 goodid, uint128 welfare);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`goodid`|`uint256`|商品编号|
+|`welfare`|`uint128`|福利数量|
 

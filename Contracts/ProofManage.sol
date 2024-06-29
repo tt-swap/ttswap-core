@@ -17,13 +17,7 @@ import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {IERC165, ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {IERC721Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-abstract contract ProofManage is
-    I_Proof,
-    Context,
-    ERC165,
-    IERC721Permit,
-    EIP712
-{
+abstract contract ProofManage is I_Proof, Context, ERC165, EIP712 {
     using L_Proof for *;
     using Strings for uint256;
     using Counters for Counters.Counter;
@@ -82,7 +76,7 @@ abstract contract ProofManage is
     ) external view onlyOwner(proofId) returns (string memory) {
         return
             string.concat(
-                "http://www.tt-swap.com/nft721?id=",
+                "http://www.tt-swap.com/nft?proofid=",
                 proofId.toString()
             );
     }
@@ -99,10 +93,6 @@ abstract contract ProofManage is
 
     function ownerOf(uint256 proofId) public view returns (address) {
         return proofs[proofId].owner;
-    }
-
-    function tokenByIndex(uint256 _index) external pure returns (uint256) {
-        return _index;
     }
 
     function tokenOfOwnerByIndex(
@@ -197,19 +187,6 @@ abstract contract ProofManage is
         }
     }
 
-    /// @inheritdoc I_Proof
-    function changeProofOwner(
-        uint256 _proofid,
-        address _to
-    ) external override returns (bool) {
-        require(
-            msg.sender == proofs[_proofid].owner ||
-                msg.sender == proofs[_proofid].approval,
-            "P1"
-        );
-        proofs[_proofid].owner = _to;
-        return true;
-    }
     function _checkOnERC721Received(
         address from,
         address to,
@@ -281,7 +258,8 @@ abstract contract ProofManage is
 
         (address signer, , ) = ECDSA.tryRecover(hash, signature);
         bool isValidEOASignature = signer != address(0) &&
-            signer == proofs[tokenId].approval;
+            signer == proofs[tokenId].approval &&
+            signer == proofs[tokenId].owner;
 
         require(
             isValidEOASignature ||

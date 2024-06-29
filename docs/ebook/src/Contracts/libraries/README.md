@@ -1,15 +1,16 @@
 
 
 # Contents
+- [Counters](Counters.sol/library.Counters.md)
 - [L_ArrayStorage](L_ArrayStorage.sol/library.L_ArrayStorage.md)
 - [T_BalanceUINT256](L_BalanceUINT256.sol/type.T_BalanceUINT256.md)
 - [L_BalanceUINT256Library](L_BalanceUINT256.sol/library.L_BalanceUINT256Library.md)
+- [addsub](L_BalanceUINT256.sol/function.addsub.md)
+- [sub](L_BalanceUINT256.sol/function.sub.md)
+- [subadd](L_BalanceUINT256.sol/function.subadd.md)
+- [add](L_BalanceUINT256.sol/function.add.md)
 - [toBalanceUINT256](L_BalanceUINT256.sol/function.toBalanceUINT256.md)
 - [lowerprice](L_BalanceUINT256.sol/function.lowerprice.md)
-- [subadd](L_BalanceUINT256.sol/function.subadd.md)
-- [sub](L_BalanceUINT256.sol/function.sub.md)
-- [addsub](L_BalanceUINT256.sol/function.addsub.md)
-- [add](L_BalanceUINT256.sol/function.add.md)
 - [L_CurrencyLibrary](L_Currency.sol/library.L_CurrencyLibrary.md)
 - [L_Good](L_Good.sol/library.L_Good.md)
 - [L_GoodIdLibrary](L_Good.sol/library.L_GoodIdLibrary.md)

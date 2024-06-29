@@ -246,5 +246,5 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodid,
         uint256 _valuegoodid,
         uint128 _quantity
-    ) external;
+    ) external returns (bool);
 }

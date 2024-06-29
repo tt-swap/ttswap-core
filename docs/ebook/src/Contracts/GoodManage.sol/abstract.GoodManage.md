@@ -40,17 +40,10 @@ mapping(uint256 => L_Good.S_GoodState) internal goods;
 ```
 
 
-### ownergoods
-
-```solidity
-mapping(address => L_ArrayStorage.S_ArrayStorage) internal ownergoods;
-```
-
-
 ### goodseq
 
 ```solidity
-mapping(bytes32 => uint256) internal goodseq;
+mapping(bytes32 => uint256) public goodseq;
 ```
 
 
@@ -158,28 +151,6 @@ function setMarketConfig(uint256 _marketconfig) external override onlyMarketCrea
 |Name|Type|Description|
 |----|----|-----------|
 |`<none>`|`bool`|是否成功|
-
-
-### getGoodIdByAddress
-
-get seller's good~获取卖家的商品列表
-
-
-```solidity
-function getGoodIdByAddress(address _owner, uint256 _key) external view override returns (uint256);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_owner`|`address`|  seller address~卖家地址|
-|`_key`|`uint256`||
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|goods No~商品编号|
 
 
 ### getGoodState
@@ -360,4 +331,11 @@ function check_banlist(address _user) external view override returns (bool _isba
 |----|----|-----------|
 |`_isban`|`bool`|the address status~地址是否被禁|
 
+
+### goodWelfare
+
+
+```solidity
+function goodWelfare(uint256 goodid, uint128 welfare) external override;
+```
 

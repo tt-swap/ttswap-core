@@ -1,6 +1,6 @@
 # I_Proof
 **Inherits:**
-IERC721, IERC721Metadata, IERC721Enumerable
+IERC721, IERC721Metadata, [IERC721Permit](/Contracts/interfaces/IERC721Permit.sol/interface.IERC721Permit.md)
 
 包含商品的一系列接口  contain good's all interfaces
 
@@ -42,28 +42,6 @@ function getProofId(S_ProofKey calldata _investproofkey) external view returns (
 |`proof_`|`uint256`|投资证明的ID|
 
 
-### changeProofOwner
-
-改变投资证明的拥有者
-
-
-```solidity
-function changeProofOwner(uint256 _proofid, address _to) external returns (bool);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_proofid`|`uint256`|  生成投资证明的参数据|
-|`_to`|`address`|  生成投资证明的参数据|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`bool`|proof_ 投资证明的ID|
-
-
 ### getProofState
 
 get the invest proof'id 获取投资证明ID详情
@@ -84,4 +62,18 @@ function getProofState(uint256 _proof) external view returns (L_Proof.S_ProofSta
 |----|----|-----------|
 |`proof_`|`L_Proof.S_ProofState`| 证明信息|
 
+
+### safeTransferFromWithPermit
+
+
+```solidity
+function safeTransferFromWithPermit(
+    address from,
+    address to,
+    uint256 tokenId,
+    bytes memory _data,
+    uint256 deadline,
+    bytes memory signature
+) external;
+```
 

@@ -41,12 +41,6 @@ Thrown when a native transfer fails
 error NativeTransferFailed();
 ```
 
-### ValueToBiggerthanUint128
-
-```solidity
-error ValueToBiggerthanUint128();
-```
-
 ### ERC20TransferFailed
 Thrown when an ERC20 transfer fails
 

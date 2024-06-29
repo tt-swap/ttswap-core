@@ -469,7 +469,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 goodid,
         uint256 valuegood,
         uint128 quantity
-    ) external override {
+    ) external override returns (bool) {
         require(goods[valuegood].goodConfig.isvaluegood(), "M2");
         goods[valuegood].erc20address.transferFrom(msg.sender, quantity);
         uint128 value = goods[valuegood].currentState.getamount0fromamount1(
@@ -482,5 +482,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             goods[goodid].currentState +
             toBalanceUINT256(value, 0);
         emit e_enpower(goodid, valuegood, quantity, msg.sender);
+        return true;
     }
 }

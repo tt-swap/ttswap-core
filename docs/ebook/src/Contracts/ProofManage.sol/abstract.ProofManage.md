@@ -1,20 +1,20 @@
 # ProofManage
 **Inherits:**
-[I_Proof](/Contracts/interfaces/I_Proof.sol/interface.I_Proof.md), Context, ERC165
+[I_Proof](/Contracts/interfaces/I_Proof.sol/interface.I_Proof.md), Context, ERC165, EIP712
 
 
 ## State Variables
-### _name
+### _NFTname
 
 ```solidity
-string private constant _name = "TTSWAP NFT";
+string private constant _NFTname = "TTS NFT";
 ```
 
 
-### _symbol
+### _NFTsymbol
 
 ```solidity
-string private constant _symbol = "TTN";
+string private constant _NFTsymbol = "TTS";
 ```
 
 
@@ -53,6 +53,21 @@ mapping(address owner => mapping(address operator => bool)) private _operatorApp
 ```
 
 
+### _nonces
+
+```solidity
+mapping(uint256 => Counters.Counter) private _nonces;
+```
+
+
+### _PERMIT_TYPEHASH
+
+```solidity
+bytes32 private immutable _PERMIT_TYPEHASH =
+    keccak256("Permit(address spender,uint256 tokenId,uint256 nonce,uint256 deadline)");
+```
+
+
 ## Functions
 ### onlyOwner
 
@@ -72,7 +87,7 @@ modifier onlyApproval(uint256 proofid);
 
 
 ```solidity
-constructor();
+constructor() EIP712(_NFTname, "1");
 ```
 
 ### supportsInterface
@@ -106,14 +121,7 @@ function balanceOf(address owner) external view returns (uint256);
 
 
 ```solidity
-function ownerOf(uint256 proofId) external view returns (address);
-```
-
-### tokenByIndex
-
-
-```solidity
-function tokenByIndex(uint256 _index) external pure returns (uint256);
+function ownerOf(uint256 proofId) public view returns (address);
 ```
 
 ### tokenOfOwnerByIndex
@@ -169,7 +177,7 @@ function approve(address to, uint256 proofId) external onlyApproval(proofId);
 
 
 ```solidity
-function getApproved(uint256 proofId) external view returns (address);
+function getApproved(uint256 proofId) public view returns (address);
 ```
 
 ### setApprovalForAll
@@ -228,32 +236,62 @@ function getProofState(uint256 _proof) external view override returns (L_Proof.S
 |`proof_`|`L_Proof.S_ProofState`| 证明信息|
 
 
-### changeProofOwner
-
-改变投资证明的拥有者
-
-
-```solidity
-function changeProofOwner(uint256 _proofid, address _to) external override returns (bool);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_proofid`|`uint256`|  生成投资证明的参数据|
-|`_to`|`address`|  生成投资证明的参数据|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`bool`|proof_ 投资证明的ID|
-
-
 ### _checkOnERC721Received
 
 
 ```solidity
 function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory data) private;
+```
+
+### nonces
+
+
+```solidity
+function nonces(uint256 tokenId) external view virtual override returns (uint256);
+```
+
+### DOMAIN_SEPARATOR
+
+
+```solidity
+function DOMAIN_SEPARATOR() external view override returns (bytes32);
+```
+
+### permit
+
+
+```solidity
+function permit(address spender, uint256 tokenId, uint256 deadline, bytes memory signature) external override;
+```
+
+### _permit
+
+
+```solidity
+function _permit(address spender, uint256 tokenId, uint256 deadline, bytes memory signature) internal virtual;
+```
+
+### _isValidContractERC1271Signature
+
+
+```solidity
+function _isValidContractERC1271Signature(address signer, bytes32 hash, bytes memory signature)
+    private
+    view
+    returns (bool);
+```
+
+### safeTransferFromWithPermit
+
+
+```solidity
+function safeTransferFromWithPermit(
+    address from,
+    address to,
+    uint256 tokenId,
+    bytes memory _data,
+    uint256 deadline,
+    bytes memory signature
+) external override;
 ```
 

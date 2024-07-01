@@ -22,13 +22,13 @@ contract testInitNormalGood is BaseSetup {
         usdt.approve(address(market), 50000 * 10 ** 6 + 1);
         uint256 _goodconfig = (2 ** 255) +
             1 *
-            2 ** 245 +
+            2 ** 246 +
             3 *
-            2 ** 238 +
+            2 ** 240 +
             5 *
-            2 ** 231 +
+            2 ** 233 +
             7 *
-            2 ** 224;
+            2 ** 226;
         market.initMetaGood(
             address(usdt),
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
@@ -50,14 +50,14 @@ contract testInitNormalGood is BaseSetup {
             50000 * 10 ** 6,
             "befor init erc20 good, balance of market error"
         );
-        uint256 normalgoodconfig = 1 *
-            2 ** 245 +
+        uint256 normalgoodconfig =1 *
+            2 ** 246 +
             3 *
-            2 ** 238 +
+            2 ** 240 +
             5 *
-            2 ** 231 +
+            2 ** 233 +
             7 *
-            2 ** 224;
+            2 ** 226;
         snapStart("init normalgood");
         market.initGood(
             metagood,
@@ -128,14 +128,14 @@ contract testInitNormalGood is BaseSetup {
         assertEq(
             metagoodstate.goodConfig,
             (2 ** 255) +
-                1 *
-                2 ** 245 +
-                3 *
-                2 ** 238 +
-                5 *
-                2 ** 231 +
-                7 *
-                2 ** 224,
+             1 *
+            2 ** 246 +
+            3 *
+            2 ** 240 +
+            5 *
+            2 ** 233 +
+            7 *
+            2 ** 226,
             "after initial normalgood:metagood goodConfig error"
         );
 
@@ -182,7 +182,7 @@ contract testInitNormalGood is BaseSetup {
 
         assertEq(
             normalgoodstate.goodConfig,
-            1 * 2 ** 245 + 3 * 2 ** 238 + 5 * 2 ** 231 + 7 * 2 ** 224,
+            1 * 2 ** 246 + 3 * 2 ** 240 + 5 * 2 ** 233 + 7 * 2 ** 226,
             "after initial normalgood:normalgood goodConfig error"
         );
 
@@ -254,13 +254,13 @@ contract testInitNormalGood is BaseSetup {
             "befor init erc20 good, balance of market error"
         );
         uint256 normalgoodconfig = 1 *
-            2 ** 245 +
+            2 ** 246 +
             3 *
-            2 ** 238 +
+            2 ** 240 +
             5 *
-            2 ** 231 +
+            2 ** 233 +
             7 *
-            2 ** 224;
+            2 ** 226;
         snapStart("init normal good");
         uint256 normalgood = 2;
         uint256 proofid = 2;
@@ -333,13 +333,13 @@ contract testInitNormalGood is BaseSetup {
             metagoodstate.goodConfig,
             (2 ** 255) +
                 1 *
-                2 ** 245 +
-                3 *
-                2 ** 238 +
-                5 *
-                2 ** 231 +
-                7 *
-                2 ** 224,
+            2 ** 246 +
+            3 *
+            2 ** 240 +
+            5 *
+            2 ** 233 +
+            7 *
+            2 ** 226,
             "after initial normalgood:metagood goodConfig error"
         );
 
@@ -381,7 +381,14 @@ contract testInitNormalGood is BaseSetup {
 
         assertEq(
             normalgoodstate.goodConfig,
-            1 * 2 ** 245 + 3 * 2 ** 238 + 5 * 2 ** 231 + 7 * 2 ** 224,
+          1 *
+            2 ** 246 +
+            3 *
+            2 ** 240 +
+            5 *
+            2 ** 233 +
+            7 *
+            2 ** 226,
             "after initial normalgood:normalgood goodConfig error"
         );
 

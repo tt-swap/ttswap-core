@@ -35,14 +35,14 @@ contract investNativeETHNormalGood is BaseSetup {
         deal(address(usdt), marketcreator, 1000000 * 10 ** 6, false);
         usdt.approve(address(market), 50000 * 10 ** 6 + 1);
         uint256 _goodconfig = (2 ** 255) +
-            1 *
-            2 ** 245 +
+         1 *
+            2 ** 246 +
             3 *
-            2 ** 238 +
+            2 ** 240 +
             5 *
-            2 ** 231 +
+            2 ** 233 +
             7 *
-            2 ** 224;
+            2 ** 226;
         market.initMetaGood(
             address(usdt),
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
@@ -63,13 +63,13 @@ contract investNativeETHNormalGood is BaseSetup {
             "befor init erc20 good, balance of market error"
         );
         uint256 normalgoodconfig = 1 *
-            2 ** 245 +
+            2 ** 246 +
             3 *
-            2 ** 238 +
+            2 ** 240 +
             5 *
-            2 ** 231 +
+            2 ** 233 +
             7 *
-            2 ** 224;
+            2 ** 226;
         market.initGood{value: 100000000}(
             metagood,
             toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
@@ -201,13 +201,13 @@ contract investNativeETHNormalGood is BaseSetup {
             good_.goodConfig,
             (2 ** 255) +
                 1 *
-                2 ** 245 +
+                2 ** 246 +
                 3 *
-                2 ** 238 +
+                2 ** 240 +
                 5 *
-                2 ** 231 +
+                2 ** 233 +
                 7 *
-                2 ** 224,
+                2 ** 226,
             "after invest nativeeth_normalgood:metagood goodConfig error"
         );
 
@@ -405,13 +405,13 @@ contract investNativeETHNormalGood is BaseSetup {
             good_.goodConfig,
             (2 ** 255) +
                 1 *
-                2 ** 245 +
+                2 ** 246 +
                 3 *
-                2 ** 238 +
+                2 ** 240 +
                 5 *
-                2 ** 231 +
+                2 ** 233 +
                 7 *
-                2 ** 224,
+                2 ** 226,
             "after invest nativeeth_normalgood:metagood goodConfig error"
         );
 

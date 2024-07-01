@@ -48,7 +48,7 @@ contract investValueGoodFee is BaseSetup {
         market.setMarketConfig(_marketConfig);
 
         // market.updatetoValueGood(metagood);
-        uint256 _goodConfig = 1 * 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 238;
+        uint256 _goodConfig = 1 * 2 ** 255 + 8 * 2 ** 246 + 8 * 2 ** 240;
         console2.log(_marketConfig.checkAllocate());
         console2.log(_marketConfig.getLiquidFee(), "liqiuid");
         console2.log(_marketConfig.getSellerFee(), "seller");

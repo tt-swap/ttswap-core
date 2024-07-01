@@ -313,7 +313,7 @@ function getGoodsFee(uint256 _goodid, address _user) external view returns (uint
 
 
 ```solidity
-function goodWelfare(uint256 goodid, uint128 welfare) external;
+function goodWelfare(uint256 goodid, uint128 welfare) external payable;
 ```
 **Parameters**
 

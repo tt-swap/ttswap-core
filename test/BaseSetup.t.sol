@@ -21,6 +21,7 @@ contract BaseSetup is Test, GasSnapshot {
             (15 << 232) +
             (25 << 226) +
             (20 << 220);
+
         users[0] = payable(address(1));
         users[1] = payable(address(2));
         users[2] = payable(address(3));

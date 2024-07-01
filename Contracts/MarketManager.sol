@@ -142,6 +142,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
+        payable
         override
         noReentrant
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_)
@@ -207,6 +208,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater
     )
         external
+        payable
         override
         noReentrant
         returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_)
@@ -267,7 +269,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 _valuegood,
         uint128 _quantity,
         address _gater
-    ) external override noReentrant returns (bool) {
+    ) external payable override noReentrant returns (bool) {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
         uint256 proofno_;
@@ -469,7 +471,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 goodid,
         uint256 valuegood,
         uint128 quantity
-    ) external override returns (bool) {
+    ) external payable override noReentrant returns (bool) {
         require(goods[valuegood].goodConfig.isvaluegood(), "M2");
         goods[valuegood].erc20address.transferFrom(msg.sender, quantity);
         uint128 value = goods[valuegood].currentState.getamount0fromamount1(

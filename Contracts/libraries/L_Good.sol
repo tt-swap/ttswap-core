@@ -562,8 +562,8 @@ library L_Good {
             _self.fees[_self.owner] += temfee;
 
             _self.fees[_ralate.gater] += (_actualFeeQuantity -
-                _marketconfig.getLiquidFee(_actualFeeQuantity) -
-                temfee);
+                temfee -
+                _marketconfig.getLiquidFee(_actualFeeQuantity));
         } else {
             _self.fees[_self.owner] += _marketconfig.getSellerFee(
                 _actualFeeQuantity

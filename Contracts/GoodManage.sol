@@ -172,7 +172,10 @@ abstract contract GoodManage is I_Good, RefererManage {
         return banlist[_user] == 1 ? true : false;
     }
 
-    function goodWelfare(uint256 goodid, uint128 welfare) external override {
+    function goodWelfare(
+        uint256 goodid,
+        uint128 welfare
+    ) external payable override noReentrant {
         require(
             goods[goodid].feeQunitityState.amount0() + welfare <= 2 ** 109,
             "G06"

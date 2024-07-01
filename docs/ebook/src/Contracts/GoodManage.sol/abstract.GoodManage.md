@@ -336,6 +336,6 @@ function check_banlist(address _user) external view override returns (bool _isba
 
 
 ```solidity
-function goodWelfare(uint256 goodid, uint128 welfare) external override;
+function goodWelfare(uint256 goodid, uint128 welfare) external payable override noReentrant;
 ```
 

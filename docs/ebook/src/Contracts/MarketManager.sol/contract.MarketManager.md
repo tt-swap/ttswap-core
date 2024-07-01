@@ -73,7 +73,7 @@ function buyGood(
     uint256 _limitPrice,
     bool _istotal,
     address _gater
-) external override noReentrant returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
+) external payable override noReentrant returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
 ```
 **Parameters**
 
@@ -107,7 +107,7 @@ function buyGoodForPay(
     uint256 _limitPrice,
     address _recipent,
     address _gater
-) external override noReentrant returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_);
+) external payable override noReentrant returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_);
 ```
 **Parameters**
 
@@ -136,6 +136,7 @@ invest normal good~投资普通商品
 ```solidity
 function investGood(uint256 _togood, uint256 _valuegood, uint128 _quantity, address _gater)
     external
+    payable
     override
     noReentrant
     returns (bool);
@@ -217,6 +218,11 @@ function collectProofFee(uint256 _proofid) external override returns (T_BalanceU
 
 
 ```solidity
-function enpower(uint256 goodid, uint256 valuegood, uint128 quantity) external override returns (bool);
+function enpower(uint256 goodid, uint256 valuegood, uint128 quantity)
+    external
+    payable
+    override
+    noReentrant
+    returns (bool);
 ```
 

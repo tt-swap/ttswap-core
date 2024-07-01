@@ -66,7 +66,7 @@ function buyGood(
     uint256 _limitprice,
     bool _istotal,
     address _gater
-) external returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
+) external payable returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
 ```
 **Parameters**
 
@@ -100,7 +100,7 @@ function buyGoodForPay(
     uint256 _limitprice,
     address _recipent,
     address _gater
-) external returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_);
+) external payable returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_);
 ```
 **Parameters**
 
@@ -127,7 +127,10 @@ invest normal good~投资普通商品
 
 
 ```solidity
-function investGood(uint256 _togood, uint256 _valuegood, uint128 _quantity, address _gater) external returns (bool);
+function investGood(uint256 _togood, uint256 _valuegood, uint128 _quantity, address _gater)
+    external
+    payable
+    returns (bool);
 ```
 **Parameters**
 
@@ -203,7 +206,7 @@ enpower~赋能
 
 
 ```solidity
-function enpower(uint256 _goodid, uint256 _valuegoodid, uint128 _quantity) external returns (bool);
+function enpower(uint256 _goodid, uint256 _valuegoodid, uint128 _quantity) external payable returns (bool);
 ```
 **Parameters**
 

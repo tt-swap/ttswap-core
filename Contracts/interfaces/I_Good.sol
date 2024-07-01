@@ -132,5 +132,5 @@ interface I_Good {
     /// @notice 为投资者发福利
     /// @param goodid   商品编号
     /// @param welfare   用户地址
-    function goodWelfare(uint256 goodid, uint128 welfare) external;
+    function goodWelfare(uint256 goodid, uint128 welfare) external payable;
 }

@@ -177,7 +177,10 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _limitprice,
         bool _istotal,
         address _gater
-    ) external returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
+    )
+        external
+        payable
+        returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
 
     /// @notice buy _swapQuantity units of good to sell good2 and send good1 to recipent~用户购买_swapQuantity个_goodid1去出售 _goodid2并且把商品转给RECIPENT
     /// @param _goodid1 good1's No~商品1的编号
@@ -195,7 +198,10 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _limitprice,
         address _recipent,
         address _gater
-    ) external returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_);
+    )
+        external
+        payable
+        returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_);
 
     /// @notice invest normal good~投资普通商品
     /// @param _togood  normal good No~普通商品的编号
@@ -207,7 +213,7 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _valuegood,
         uint128 _quantity,
         address _gater
-    ) external returns (bool);
+    ) external payable returns (bool);
 
     /// @notice disinvest normal good~撤资普通商品
     /// @param _togood   normal good No~普通商品编号
@@ -246,5 +252,5 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodid,
         uint256 _valuegoodid,
         uint128 _quantity
-    ) external returns (bool);
+    ) external payable returns (bool);
 }

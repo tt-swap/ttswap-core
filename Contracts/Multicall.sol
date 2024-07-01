@@ -5,18 +5,13 @@ pragma abicoder v2;
 /// @title Multicall
 /// @notice Enables calling multiple methods in a single call to the contract
 abstract contract Multicall {
-    struct Call {
-        address target;
-        bytes callData;
-    }
-
     function multicall(
-        Call[] calldata data
+        bytes[] calldata data
     ) public payable returns (bytes[] memory results) {
         results = new bytes[](data.length);
         for (uint256 i = 0; i < data.length; i++) {
-            (bool success, bytes memory result) = data[i].target.delegatecall(
-                data[i].callData
+            (bool success, bytes memory result) = address(this).delegatecall(
+                data[i]
             );
 
             if (!success) {
@@ -27,7 +22,6 @@ abstract contract Multicall {
                 }
                 revert(abi.decode(result, (string)));
             }
-
             results[i] = result;
         }
     }

@@ -56,13 +56,13 @@ contract nativeGoodPay is Test, BaseSetup {
         console2.log("1market.balance before swap", address(market).balance);
         uint256 _goodConfig = (2 ** 255) +
             8 *
-            2 ** 245 +
+            2 ** 246 +
             8 *
-            2 ** 238 +
+            2 ** 240 +
             8 *
-            2 ** 231 +
+            2 ** 233 +
             8 *
-            2 ** 224;
+            2 ** 226;
         console2.log("good config is valueGood?:", _goodConfig.isvaluegood());
 
         market.initMetaGood{value: 1 ether}(
@@ -97,13 +97,13 @@ contract nativeGoodPay is Test, BaseSetup {
         address gater = address(98);
         vm.deal(jeck, 1 ether);
         uint256 _goodConfig = 8 *
-            2 ** 245 +
+            2 ** 246 +
             8 *
-            2 ** 238 +
+            2 ** 240 +
             8 *
-            2 ** 231 +
+            2 ** 233 +
             8 *
-            2 ** 224;
+            2 ** 226;
 
         console2.log("2jeck.balance before swap", jeck.balance);
         console2.log("2market.balance before swap", address(market).balance);
@@ -141,13 +141,13 @@ contract nativeGoodPay is Test, BaseSetup {
         vm.startPrank(edson);
         usdt.approve(address(market), 50000 * 10 ** 6);
         uint256 _goodConfig = 8 *
-            2 ** 245 +
+            2 ** 246 +
             8 *
-            2 ** 238 +
+            2 ** 240 +
             8 *
-            2 ** 231 +
+            2 ** 233 +
             8 *
-            2 ** 224;
+            2 ** 226;
         market.initGood{value: 2 ether}(
             1,
             toBalanceUINT256(8000 * 10 ** 6, 2 ether),

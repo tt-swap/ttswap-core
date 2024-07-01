@@ -44,13 +44,13 @@ contract collectNativeETHGood is Test, BaseSetup {
             "1112",
             (2 ** 255) +
                 8 *
-                2 ** 245 +
+                2 ** 246 +
                 8 *
-                2 ** 238 +
+                2 ** 240 +
                 8 *
-                2 ** 231 +
+                2 ** 233 +
                 8 *
-                2 ** 224
+                2 ** 226
         );
         vm.deal(marketcreator, 1000 ether);
         nativeCurrency.safeTransfer(address(1), sentBalance);
@@ -64,14 +64,14 @@ contract collectNativeETHGood is Test, BaseSetup {
         );
 
         uint256 _goodConfig = (2 ** 255) +
-            8 *
-            2 ** 245 +
-            8 *
-            2 ** 238 +
-            8 *
-            2 ** 231 +
-            8 *
-            2 ** 224;
+           8 *
+                2 ** 246 +
+                8 *
+                2 ** 240 +
+                8 *
+                2 ** 233 +
+                8 *
+                2 ** 226;
         console2.log("adabc", _goodConfig.isvaluegood());
 
         market.initMetaGood{value: 1 ether}(

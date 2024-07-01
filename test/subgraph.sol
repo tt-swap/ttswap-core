@@ -55,13 +55,13 @@ contract subgraph is Test, BaseSetup {
         usdt.approve(address(market), 10000000 * 10 ** 6);
         uint256 _goodConfig = 2 ** 255 +
             8 *
-            2 ** 245 +
+            2 ** 246 +
             8 *
-            2 ** 238 +
+            2 ** 240 +
             8 *
-            2 ** 231 +
+            2 ** 233 +
             8 *
-            2 ** 224;
+            2 ** 226;
         market.initMetaGood(
             address(usdt),
             toBalanceUINT256(1 * 10 ** 6 * 10 ** 6, 1 * 10 ** 6 * 10 ** 6),
@@ -79,13 +79,13 @@ contract subgraph is Test, BaseSetup {
         btc.approve(address(market), 1000 * 10 ** 8);
 
         uint256 _goodConfig = 8 *
-            2 ** 245 +
+            2 ** 246 +
             8 *
-            2 ** 238 +
+            2 ** 240 +
             8 *
-            2 ** 231 +
+            2 ** 233 +
             8 *
-            2 ** 224;
+            2 ** 226;
 
         market.initGood(
             1,

@@ -16,7 +16,7 @@ library L_GoodConfigLibrary {
     //起始位 5 长度 7
     function getInvestFee(uint256 config) internal pure returns (uint16 a) {
         assembly {
-            a := shr(249, shl(4, config))
+            a := shr(250, shl(4, config))
         }
     }
 
@@ -26,7 +26,7 @@ library L_GoodConfigLibrary {
     ) internal pure returns (uint128 a) {
         unchecked {
             assembly {
-                config := shr(249, shl(4, config))
+                config := shr(250, shl(4, config))
                 config := mul(config, amount)
                 a := div(config, 10000)
             }
@@ -39,7 +39,7 @@ library L_GoodConfigLibrary {
     ) internal pure returns (uint128 a) {
         unchecked {
             assembly {
-                config := shr(249, shl(4, config))
+                config := shr(250, shl(4, config))
                 amount := div(amount, sub(10000, config))
                 a := mul(amount, 10000)
             }
@@ -50,7 +50,7 @@ library L_GoodConfigLibrary {
     //起始位 13 长度 7
     function getDisinvestFee(uint256 config) internal pure returns (uint16 a) {
         assembly {
-            a := shr(249, shl(11, config))
+            a := shr(250, shl(10, config))
         }
     }
 
@@ -60,7 +60,7 @@ library L_GoodConfigLibrary {
     ) internal pure returns (uint128 a) {
         unchecked {
             assembly {
-                config := shr(249, shl(11, config))
+                config := shr(250, shl(10, config))
                 config := mul(config, amount)
                 a := div(config, 10000)
             }
@@ -71,7 +71,7 @@ library L_GoodConfigLibrary {
     //起始位 20 长度 7
     function getBuyFee(uint256 config) internal pure returns (uint16 a) {
         assembly {
-            a := shr(249, shl(18, config))
+            a := shr(249, shl(16, config))
         }
     }
 
@@ -81,7 +81,7 @@ library L_GoodConfigLibrary {
     ) internal pure returns (uint128 a) {
         unchecked {
             assembly {
-                config := shr(249, shl(18, config))
+                config := shr(249, shl(16, config))
                 config := mul(config, amount)
                 a := div(config, 10000)
             }
@@ -92,7 +92,7 @@ library L_GoodConfigLibrary {
     //起始位 27 长度 7
     function getSellFee(uint256 config) internal pure returns (uint16 a) {
         assembly {
-            a := shr(249, shl(25, config))
+            a := shr(249, shl(23, config))
         }
     }
 
@@ -102,7 +102,7 @@ library L_GoodConfigLibrary {
     ) internal pure returns (uint128 a) {
         unchecked {
             assembly {
-                config := shr(249, shl(25, config))
+                config := shr(249, shl(23, config))
                 config := mul(config, amount)
                 a := div(config, 10000)
             }
@@ -112,7 +112,7 @@ library L_GoodConfigLibrary {
     // get swap chips
     function getSwapChips(uint256 config) internal pure returns (uint16 a) {
         assembly {
-            a := shr(246, shl(32, config))
+            a := shr(246, shl(30, config))
         }
         return a * 64;
     }
@@ -123,7 +123,7 @@ library L_GoodConfigLibrary {
     ) internal pure returns (uint128) {
         uint128 a;
         assembly {
-            a := shr(246, shl(32, config))
+            a := shr(246, shl(30, config))
         }
         if (a == 0) return amount;
         return (amount / (a * 64));
@@ -134,7 +134,7 @@ library L_GoodConfigLibrary {
         uint256 config
     ) internal pure returns (uint16 a) {
         assembly {
-            a := shr(246, shl(42, config))
+            a := shr(246, shl(40, config))
         }
         return a;
     }
@@ -145,7 +145,7 @@ library L_GoodConfigLibrary {
     ) internal pure returns (uint128) {
         uint128 a;
         assembly {
-            a := shr(246, shl(42, config))
+            a := shr(246, shl(40, config))
         }
         if (a == 0) return amount;
         return (amount / a);
@@ -154,7 +154,7 @@ library L_GoodConfigLibrary {
     //物品类型
     function getGoodType(uint256 config) internal pure returns (uint128 a) {
         assembly {
-            a := shr(223, shl(52, config))
+            a := shr(223, shl(50, config))
         }
 
         return a;
@@ -163,7 +163,7 @@ library L_GoodConfigLibrary {
     //电话号码
     function getTell(uint256 config) internal pure returns (uint128 a) {
         assembly {
-            a := shr(208, shl(85, config))
+            a := shr(208, shl(83, config))
         }
 
         return a;
@@ -172,7 +172,7 @@ library L_GoodConfigLibrary {
     //经度
     function getLongitude(uint256 config) internal pure returns (uint128 a) {
         assembly {
-            a := shr(208, shl(133, config))
+            a := shr(208, shl(131, config))
         }
 
         return a;
@@ -181,7 +181,7 @@ library L_GoodConfigLibrary {
     //纬度
     function getLatitude(uint256 config) internal pure returns (uint128 a) {
         assembly {
-            a := shr(208, shl(181, config))
+            a := shr(208, shl(179, config))
         }
         return a;
     }

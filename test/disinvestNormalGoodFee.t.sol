@@ -35,7 +35,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         deal(address(btc), marketcreator, 100000, false);
         btc.approve(address(market), 30000);
 
-        uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 238;
+        uint256 _goodConfig = 2 ** 255 + 8 * 2 ** 246 + 8 * 2 ** 240;
         market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),
@@ -66,7 +66,7 @@ contract disinvestNormalGoodFee is BaseSetup {
         deal(token, users[3], 100000, false);
         MyToken(token).approve(address(market), 20000);
 
-        uint256 _goodConfig = 8 * 2 ** 245 + 8 * 2 ** 238;
+        uint256 _goodConfig = 8 * 2 ** 246 + 8 * 2 ** 240;
 
         market.initGood(
             metagood,

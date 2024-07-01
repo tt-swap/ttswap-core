@@ -47,14 +47,14 @@ contract collectValueProofFee is Test, BaseSetup {
         deal(address(usdt), marketcreator, 100000 * 10 ** 6, false);
         usdt.approve(address(market), 30000 * 10 ** 6);
         uint256 _goodConfig = 2 ** 255 +
-            8 *
-            2 ** 245 +
-            8 *
-            2 ** 238 +
-            8 *
-            2 ** 231 +
-            8 *
-            2 ** 224;
+          8 *
+                2 ** 246 +
+                8 *
+                2 ** 240 +
+                8 *
+                2 ** 233 +
+                8 *
+                2 ** 226;
         market.initMetaGood(
             address(usdt),
             toBalanceUINT256(20000 * 10 ** 6, 20000 * 10 ** 6),
@@ -97,14 +97,14 @@ contract collectValueProofFee is Test, BaseSetup {
             usdt.allowance(users[3], address(market))
         );
 
-        uint256 _goodConfig = 8 *
-            2 ** 245 +
-            8 *
-            2 ** 238 +
-            8 *
-            2 ** 231 +
-            8 *
-            2 ** 224;
+        uint256 _goodConfig =8 *
+                2 ** 246 +
+                8 *
+                2 ** 240 +
+                8 *
+                2 ** 233 +
+                8 *
+                2 ** 226;
 
         market.initGood(
             metagood,

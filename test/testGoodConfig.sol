@@ -15,33 +15,33 @@ contract testGoodConfig is Test {
     }
 
     function test_getInvestFee() public pure {
-        uint256 a_min = 1 * 2 ** 245;
-        uint256 a_mid = 64 * 2 ** 245;
-        uint256 a_max = 127 * 2 ** 245;
+        uint256 a_min = 1 * 2 ** 246;
+        uint256 a_mid = 32 * 2 ** 246;
+        uint256 a_max = 63 * 2 ** 246;
         assertEq(a_min.getInvestFee(), 1);
-        assertEq(a_mid.getInvestFee(), 64);
-        assertEq(a_max.getInvestFee(), 127);
+        assertEq(a_mid.getInvestFee(), 32);
+        assertEq(a_max.getInvestFee(), 63);
         assertEq(a_min.getInvestFee(10000), 1);
-        assertEq(a_mid.getInvestFee(10000), 64);
-        assertEq(a_max.getInvestFee(10000), 127);
+        assertEq(a_mid.getInvestFee(10000), 32);
+        assertEq(a_max.getInvestFee(10000), 63);
     }
 
     function test_getDisinvestFee() public pure {
-        uint256 a_min = 2 ** 238;
-        uint256 a_mid = 64 * 2 ** 238;
-        uint256 a_max = 127 * 2 ** 238;
+        uint256 a_min = 2 ** 240;
+        uint256 a_mid = 32 * 2 ** 240;
+        uint256 a_max = 63 * 2 ** 240;
         assertEq(a_min.getDisinvestFee(), 1);
-        assertEq(a_mid.getDisinvestFee(), 64);
-        assertEq(a_max.getDisinvestFee(), 127);
+        assertEq(a_mid.getDisinvestFee(), 32);
+        assertEq(a_max.getDisinvestFee(), 63);
         assertEq(a_min.getDisinvestFee(10000), 1);
-        assertEq(a_mid.getDisinvestFee(10000), 64);
-        assertEq(a_max.getDisinvestFee(10000), 127);
+        assertEq(a_mid.getDisinvestFee(10000), 32);
+        assertEq(a_max.getDisinvestFee(10000), 63);
     }
 
     function test_getBuyFee() public pure {
-        uint256 a_min = 1 * 2 ** 231;
-        uint256 a_mid = 64 * 2 ** 231;
-        uint256 a_max = 127 * 2 ** 231;
+        uint256 a_min = 1 * 2 ** 233;
+        uint256 a_mid = 64 * 2 ** 233;
+        uint256 a_max = 127 * 2 ** 233;
         assertEq(a_min.getBuyFee(), 1);
         assertEq(a_mid.getBuyFee(), 64);
         assertEq(a_max.getBuyFee(), 127);
@@ -51,9 +51,9 @@ contract testGoodConfig is Test {
     }
 
     function test_getSellFee() public pure {
-        uint256 a_min = 1 * 2 ** 224;
-        uint256 a_mid = 64 * 2 ** 224;
-        uint256 a_max = 127 * 2 ** 224;
+        uint256 a_min = 1 * 2 ** 226;
+        uint256 a_mid = 64 * 2 ** 226;
+        uint256 a_max = 127 * 2 ** 226;
         assertEq(a_min.getSellFee(), 1);
         assertEq(a_mid.getSellFee(), 64);
         assertEq(a_max.getSellFee(), 127);
@@ -63,9 +63,9 @@ contract testGoodConfig is Test {
     }
 
     function test_getSwapChips() public pure {
-        uint256 a_min = 1 * 2 ** 214;
-        uint256 a_mid = 2 * 2 ** 214;
-        uint256 a_max = 1023 * 2 ** 214;
+        uint256 a_min = 1 * 2 ** 216;
+        uint256 a_mid = 2 * 2 ** 216;
+        uint256 a_max = 1023 * 2 ** 216;
         assertEq(a_min.getSwapChips(), 1 * 2 ** 6);
         assertEq(a_mid.getSwapChips(), 2 * 2 ** 6);
         assertEq(a_max.getSwapChips(), 1023 * 2 ** 6);
@@ -75,9 +75,9 @@ contract testGoodConfig is Test {
     }
 
     function test_getDisinvestChips() public pure {
-        uint256 a_min = 1 * 2 ** 204;
-        uint256 a_mid = 2 * 2 ** 204;
-        uint256 a_max = 1023 * 2 ** 204;
+        uint256 a_min = 1 * 2 ** 206;
+        uint256 a_mid = 2 * 2 ** 206;
+        uint256 a_max = 1023 * 2 ** 206;
         assertEq(a_min.getDisinvestChips(), 1);
         assertEq(a_mid.getDisinvestChips(), 2);
         assertEq(a_max.getDisinvestChips(), 1023);
@@ -87,36 +87,36 @@ contract testGoodConfig is Test {
     }
 
     function test_getGoodType() public pure {
-        uint256 a_min = 1 * 2 ** 171;
-        uint256 a_mid = 2 * 2 ** 171;
-        uint256 a_max = 8589934591 * 2 ** 171;
+        uint256 a_min = 1 * 2 ** 173;
+        uint256 a_mid = 2 * 2 ** 173;
+        uint256 a_max = 8589934591 * 2 ** 173;
         assertEq(a_min.getGoodType(), 1);
         assertEq(a_mid.getGoodType(), 2);
         assertEq(a_max.getGoodType(), 8589934591);
     }
 
     function test_getTell() public pure {
-        uint256 a_min = 1 * 2 ** 123;
-        uint256 a_mid = 2 * 2 ** 123;
-        uint256 a_max = 281474976710655 * 2 ** 123;
+        uint256 a_min = 1 * 2 ** 125;
+        uint256 a_mid = 2 * 2 ** 125;
+        uint256 a_max = 281474976710655 * 2 ** 125;
         assertEq(a_min.getTell(), 1);
         assertEq(a_mid.getTell(), 2);
         assertEq(a_max.getTell(), 281474976710655);
     }
 
     function test_getLongitude() public pure {
-        uint256 a_min = 1 * 2 ** 75;
-        uint256 a_mid = 2 * 2 ** 75;
-        uint256 a_max = 281474976710655 * 2 ** 75;
+        uint256 a_min = 1 * 2 ** 77;
+        uint256 a_mid = 2 * 2 ** 77;
+        uint256 a_max = 281474976710655 * 2 ** 77;
         assertEq(a_min.getLongitude(), 1);
         assertEq(a_mid.getLongitude(), 2);
         assertEq(a_max.getLongitude(), 281474976710655);
     }
 
     function test_getLatitude() public pure {
-        uint256 a_min = 1 * 2 ** 27;
-        uint256 a_mid = 2 * 2 ** 27;
-        uint256 a_max = 281474976710655 * 2 ** 27;
+        uint256 a_min = 1 * 2 ** 29;
+        uint256 a_mid = 2 * 2 ** 29;
+        uint256 a_max = 281474976710655 * 2 ** 29;
         assertEq(a_min.getLatitude(), 1);
         assertEq(a_mid.getLatitude(), 2);
         assertEq(a_max.getLatitude(), 281474976710655);

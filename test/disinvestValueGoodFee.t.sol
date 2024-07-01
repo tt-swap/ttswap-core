@@ -36,7 +36,7 @@ contract disinvestValueGoodFee is BaseSetup {
         vm.startPrank(marketcreator);
         deal(address(btc), marketcreator, 100000, false);
         btc.approve(address(market), 30000);
-        uint256 _goodConfig = 1 * 2 ** 255 + 8 * 2 ** 245 + 8 * 2 ** 235;
+        uint256 _goodConfig =1 * 2 ** 255 + 8 * 2 ** 246 + 8 * 2 ** 237;
         market.initMetaGood(
             address(btc),
             toBalanceUINT256(20000, 20000),

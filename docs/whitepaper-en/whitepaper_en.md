@@ -133,19 +133,19 @@ Quantity: Records the current quantity of goods in the market.
 | ... |
  
 ### 4.3.2 Good seller set
-| id  | config             | size | unit               | max  | min | start | end | note           |
-| --- | ------------------ | ---- | ------------------ | ---- | --- | ----- | --- | -------------- |
-| 1   | invest fee rate    | 7    | One ten-thousandth | 1023 | 0   | 5     | 11  | (1~1023)/10000 |
-| 2   | disinvest fee rate | 7    | One ten-thousandth | 1023 | 0   | 12    | 18  | (1~1023)/10000 |
-| 3   | buy fee rate       | 7    | One ten-thousandth | 1023 | 0   | 19    | 25  | (1~1023)/10000 |
-| 4   | sell fee rate      | 7    | One ten-thousandth | 1023 | 0   | 26    | 32  | (1~1023)/10000 |
-| 5   | trade chips        | 10   | 64                 | 1023 | 0   | 33    | 42  | (1~1023)X64    |
-| 6   | disinvest chips    | 10   | 64                 | 1023 | 0   | 43    | 52  | (1~1023)       |
-| 7   | asset type         | 33   | 1                  | ~    | 0   | 53    | 85  |                |
-| 8   | tellphone          | 48   | 1                  | ~    | 0   | 86    | 133 |                |
-| 9   | longitude          | 48   | 1                  | ~    | 0   | 134   | 181 |                |
-| 10  | latitude           | 48   | 1                  | ~    | 0   | 182   | 230 |                |
-| 11  | reserve            | 26   | 1                  | 1023 | 0   | 231   | 256 | reserve        |
+| id  | config             | size | unit               | max  | min | start | end | note          |
+| --- | ------------------ | ---- | ------------------ | ---- | --- | ----- | --- | ------------- |
+| 1   | invest fee rate    | 7    | One ten-thousandth | 1023 | 0   | 5     | 10  | (0~63)/10000  |
+| 2   | disinvest fee rate | 7    | One ten-thousandth | 1023 | 0   | 11    | 16  | (0~63)/10000  |
+| 3   | buy fee rate       | 7    | One ten-thousandth | 1023 | 0   | 17    | 23  | (0~127)/10000 |
+| 4   | sell fee rate      | 7    | One ten-thousandth | 1023 | 0   | 24    | 30  | (0~127)/10000 |
+| 5   | trade chips        | 10   | 64                 | 1023 | 0   | 31    | 40  | (0~1023)X64   |
+| 6   | disinvest chips    | 10   | 64                 | 1023 | 0   | 41    | 50  | (0~1023)      |
+| 7   | asset type         | 33   | 1                  | ~    | 0   | 51    | 83  |               |
+| 8   | tellphone          | 48   | 1                  | ~    | 0   | 84    | 131 |               |
+| 9   | longitude          | 48   | 1                  | ~    | 0   | 132   | 179 |               |
+| 10  | latitude           | 48   | 1                  | ~    | 0   | 180   | 230 |               |
+| 11  | reserve            | 26   | 1                  |      | 0   | 231   | 256 | reserve       |
 
 
 ---

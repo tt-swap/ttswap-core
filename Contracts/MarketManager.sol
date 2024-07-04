@@ -131,7 +131,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         return true;
     }
-
+    event debuggfee(uint256);
     /// @inheritdoc I_MarketManage
     function buyGood(
         uint256 _goodid1,
@@ -167,12 +167,14 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             swapcache.outputQuantity
         );
         goodid2Quantity_ = swapcache.outputQuantity - goodid2FeeQuantity_;
+        emit debuggfee(swapcache.feeQuantity);
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
             swapcache.feeQuantity,
             marketconfig,
             S_Ralate(_gater, relations[msg.sender])
         );
+        emit debuggfee(goodid2FeeQuantity_);
         goods[_goodid2].swapCommit(
             swapcache.good2currentState,
             goodid2FeeQuantity_,

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.26;
 
-import "./RefererManage.sol";
 import "./interfaces/I_Good.sol";
 
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
@@ -13,7 +12,7 @@ import {S_GoodKey} from "./libraries/L_Struct.sol";
 import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "./libraries/L_BalanceUINT256.sol";
 
-abstract contract GoodManage is I_Good, RefererManage {
+abstract contract GoodManage is I_Good {
     using L_CurrencyLibrary for address;
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
@@ -26,8 +25,8 @@ abstract contract GoodManage is I_Good, RefererManage {
     /// @inheritdoc I_Good
     address public override marketcreator;
 
-    mapping(uint256 => L_Good.S_GoodState) internal goods;
-    mapping(bytes32 => uint256) public goodseq;
+    mapping(bytes32 => L_Good.S_GoodState) public goods;
+    //mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
     mapping(address => uint256) private banlist;
 
@@ -81,28 +80,8 @@ abstract contract GoodManage is I_Good, RefererManage {
         return true;
     }
 
-    /// @inheritdoc I_Good
-    function getGoodState(
-        uint256 _goodid
-    ) external view override returns (L_Good.S_GoodTmpState memory good_) {
-        good_.currentState = goods[_goodid].currentState;
-        good_.investState = goods[_goodid].investState;
-        good_.feeQunitityState = goods[_goodid].feeQunitityState;
-        good_.goodConfig = goods[_goodid].goodConfig;
-        good_.owner = goods[_goodid].owner;
-        good_.erc20address = goods[_goodid].erc20address;
-    }
-
-    /// @inheritdoc I_Good
-    function getGoodsFee(
-        uint256 _goodid,
-        address user
-    ) external view override returns (uint256) {
-        return goods[_goodid].fees[user];
-    }
-
     function updateGoodConfig(
-        uint256 _goodid,
+        bytes32 _goodid,
         uint256 _goodConfig
     ) external override returns (bool) {
         require(msg.sender == goods[_goodid].owner, "G04");
@@ -113,7 +92,7 @@ abstract contract GoodManage is I_Good, RefererManage {
 
     /// @inheritdoc I_Good
     function updatetoValueGood(
-        uint256 _goodid
+        bytes32 _goodid
     ) external override onlyMarketCreator returns (bool) {
         goods[_goodid].updateToValueGood();
         emit e_updatetoValueGood(_goodid);
@@ -122,7 +101,7 @@ abstract contract GoodManage is I_Good, RefererManage {
 
     /// @inheritdoc I_Good
     function updatetoNormalGood(
-        uint256 _goodid
+        bytes32 _goodid
     ) external override onlyMarketCreator returns (bool) {
         goods[_goodid].updateToNormalGood();
         emit e_updatetoNormalGood(_goodid);
@@ -131,7 +110,7 @@ abstract contract GoodManage is I_Good, RefererManage {
 
     /// @inheritdoc I_Good
     function payGood(
-        uint256 _goodid,
+        bytes32 _goodid,
         uint256 _payquanity,
         address _recipent
     ) external payable returns (bool) {
@@ -141,7 +120,7 @@ abstract contract GoodManage is I_Good, RefererManage {
 
     /// @inheritdoc I_Good
     function changeGoodOwner(
-        uint256 _goodid,
+        bytes32 _goodid,
         address _to
     ) external override returns (bool) {
         require(
@@ -153,27 +132,22 @@ abstract contract GoodManage is I_Good, RefererManage {
     }
 
     /// @inheritdoc I_Good
-    function collectProtocolFee(
-        uint256 _goodid
-    ) external override noblacklist returns (uint256) {
-        uint256 fee = goods[_goodid].fees[msg.sender];
-        require(fee > 0, "G06");
-        goods[_goodid].fees[msg.sender] = 0;
-        uint256 protocol = marketconfig.getPlatFee256(fee);
-        goods[_goodid].fees[marketcreator] += protocol;
-        goods[_goodid].erc20address.safeTransfer(msg.sender, fee - protocol);
-        return fee;
-    }
-
-    /// @inheritdoc I_Good
     function check_banlist(
         address _user
     ) external view override returns (bool _isban) {
         return banlist[_user] == 1 ? true : false;
     }
 
+    function collectProtocolFee(
+        bytes32 _goodid
+    ) external override onlyMarketCreator returns (uint256 feeamount) {
+        feeamount = goods[_goodid].remainfee;
+        goods[_goodid].remainfee = 0;
+        goods[_goodid].erc20address.safeTransfer(msg.sender, feeamount);
+    }
+
     function goodWelfare(
-        uint256 goodid,
+        bytes32 goodid,
         uint128 welfare
     ) external payable override noReentrant {
         require(

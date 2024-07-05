@@ -4,7 +4,7 @@ pragma solidity 0.8.26;
 import "./I_Proof.sol";
 import "./I_Good.sol";
 
-import {S_GoodKey, S_ProofKey, S_Ralate} from "../libraries/L_Struct.sol";
+import {S_GoodKey, S_ProofKey} from "../libraries/L_Struct.sol";
 import {L_Good} from "../libraries/L_Good.sol";
 
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "../libraries/L_BalanceUINT256.sol";
@@ -151,13 +151,11 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _initial     initial good.amount0:normalgood quantity,amount1:valuegoodquantity~初始化的商品的参数,前128位为普通商品数量,后128位为价值商品数量.
     /// @param _erc20address  good's contract address~商品合约地址
     /// @param _goodConfig   good config (detail config according to the whitepaper)~商品配置(详细配置参见技术白皮书)
-    /// @param _gater   gater address~门户地址
     function initGood(
         bytes32 _valuegood,
         T_BalanceUINT256 _initial,
         address _erc20address,
-        uint256 _goodConfig,
-        address _gater
+        uint256 _goodConfig
     ) external payable returns (bool);
 
     /// @notice sell _swapQuantity units of good1 to buy good2~用户出售_swapQuantity个_goodid1去购买 _goodid2
@@ -167,7 +165,6 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _swapQuantity good1's quantity~商品1的数量
     /// @param _limitprice trade price's limit~交易价格限制
     /// @param _istotal is need trade all~是否允许全部成交
-    /// @param _gater   gater address~门户地址
     /// @return goodid2Quantity_  实际情况
     /// @return goodid2FeeQuantity_ 实际情况
     function buyGood(
@@ -175,8 +172,7 @@ interface I_MarketManage is I_Good, I_Proof {
         bytes32 _goodid2,
         uint128 _swapQuantity,
         uint256 _limitprice,
-        bool _istotal,
-        address _gater
+        bool _istotal
     )
         external
         payable
@@ -188,7 +184,6 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _swapQuantity buy good2's quantity~购买商品2的数量
     /// @param _limitprice trade price's limit~交易价格限制
     /// @param _recipent recipent~收款人
-    /// @param _gater   gater address~门户地址
     /// @return goodid1Quantity_  good1 actual quantity~商品1实际数量
     /// @return goodid1FeeQuantity_ good1 actual fee~商品1实际手续费
     function buyGoodForPay(
@@ -196,8 +191,7 @@ interface I_MarketManage is I_Good, I_Proof {
         bytes32 _goodid2,
         uint128 _swapQuantity,
         uint256 _limitprice,
-        address _recipent,
-        address _gater
+        address _recipent
     )
         external
         payable
@@ -207,22 +201,22 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _togood  normal good No~普通商品的编号
     /// @param _valuegood value good No~价值商品的编号
     /// @param _quantity   invest normal good quantity~投资普通商品的数量
-    /// @param _gater   gater address~门户
     function investGood(
         bytes32 _togood,
         bytes32 _valuegood,
-        uint128 _quantity,
-        address _gater
+        uint128 _quantity
     ) external payable returns (bool);
 
     /// @notice disinvest normal good~撤资商品
     /// @param _proofid   the invest proof No of normal good ~普通投资证明的编号编号
     /// @param _goodQuantity  disinvest quantity~取消普通商品投资数量
     /// @param _gater   gater address~门户
+    /// @param _referer   referal~推荐人
     function disinvestProof(
         uint256 _proofid,
         uint128 _goodQuantity,
-        address _gater
+        address _gater,
+        address _referer
     ) external returns (bool);
 
     /// @notice collect the profit of normal proof~提取普通投资证明的收益

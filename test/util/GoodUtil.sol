@@ -10,7 +10,7 @@ library GoodUtil {
     using L_GoodConfigLibrary for uint256;
     using L_CurrencyLibrary for address;
 
-    function showGood(L_Good.S_GoodTmpState memory p_) public pure {
+    function showGood(L_Good.S_GoodState memory p_) public pure {
         console2.log("good owner:", p_.owner);
         //showconfig(p_.goodConfig);
         console2.log("good erc20address:", p_.erc20address);

@@ -12,8 +12,3 @@ struct S_ProofKey {
     bytes32 currentgood;
     bytes32 valuegood;
 }
-
-struct S_Ralate {
-    address gater;
-    address refer;
-}

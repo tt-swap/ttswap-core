@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
 
-import {S_GoodKey, S_Ralate} from "../libraries/L_Struct.sol";
+import {S_GoodKey} from "../libraries/L_Struct.sol";
 import {L_Good} from "../libraries/L_Good.sol";
 import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 

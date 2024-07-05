@@ -25,7 +25,7 @@ abstract contract GoodManage is I_Good {
     /// @inheritdoc I_Good
     address public override marketcreator;
 
-    mapping(bytes32 => L_Good.S_GoodState) public goods;
+    mapping(bytes32 => L_Good.S_GoodState) internal goods;
     //mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
     mapping(address => uint256) private banlist;
@@ -50,6 +50,12 @@ abstract contract GoodManage is I_Good {
     modifier noblacklist() {
         require(banlist[msg.sender] == 0);
         _;
+    }
+
+    function getGoodState(
+        bytes32 goodkey
+    ) external view returns (L_Good.S_GoodState memory gooddetail) {
+        return goods[goodkey];
     }
 
     /// @inheritdoc I_Good
@@ -141,8 +147,7 @@ abstract contract GoodManage is I_Good {
     function collectProtocolFee(
         bytes32 _goodid
     ) external override onlyMarketCreator returns (uint256 feeamount) {
-        feeamount = goods[_goodid].remainfee;
-        goods[_goodid].remainfee = 0;
+        // goods[_goodid].remainfee = 0;
         goods[_goodid].erc20address.safeTransfer(msg.sender, feeamount);
     }
 

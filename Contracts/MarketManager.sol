@@ -9,7 +9,7 @@ import {L_Good, L_GoodIdLibrary} from "./libraries/L_Good.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {Multicall} from "./Multicall.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
-import {S_ProofKey, S_GoodKey, S_Ralate} from "./libraries/L_Struct.sol";
+import {S_ProofKey, S_GoodKey} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
@@ -28,6 +28,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 _marketconfig
     ) GoodManage(_marketcreator, _marketconfig) {}
 
+    event debuggmetagood(address, bytes32, uint256, uint256);
     /// @inheritdoc I_MarketManage
     function initMetaGood(
         address _erc20address,
@@ -38,13 +39,17 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         _erc20address.transferFrom(msg.sender, _initial.amount1());
         goodNum += 1;
         bytes32 togood = S_GoodKey(msg.sender, _erc20address).toKey();
+
         goods[togood].init(_initial, _erc20address, _goodConfig);
+
         goods[togood].updateToValueGood();
-        uint256 normalproof = S_ProofKey(msg.sender, togood, 0).toId();
+        uint256 normalproof = S_ProofKey(msg.sender, togood, "").toId();
+
         totalSupply += 1;
-        proofs[totalSupply].updateInvest(
+        _mint(msg.sender, normalproof);
+        proofs[normalproof].updateInvest(
             togood,
-            0,
+            "",
             toBalanceUINT256(_initial.amount0(), 0),
             toBalanceUINT256(0, _initial.amount1()),
             toBalanceUINT256(0, 0)
@@ -64,13 +69,11 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         bytes32 _valuegood,
         T_BalanceUINT256 _initial,
         address _erc20address,
-        uint256 _goodConfig,
-        address _gater
+        uint256 _goodConfig
     ) external payable override noReentrant returns (bool) {
         require(goods[_valuegood].goodConfig.isvaluegood(), "M02");
         bytes32 togood = S_GoodKey(msg.sender, _erc20address).toKey();
-        //  require(goodseq[togood] == 0, "M01");
-
+        require(goods[togood].goodConfig == 0, "exists");
         _erc20address.transferFrom(msg.sender, _initial.amount0());
         goods[_valuegood].erc20address.transferFrom(
             msg.sender,
@@ -78,8 +81,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
 
         L_Good.S_GoodInvestReturn memory investResult = goods[_valuegood]
-            .investGood(_initial.amount1(), marketconfig);
-
+            .investGood(_initial.amount1());
         goodNum += 1;
         goods[togood].init(
             toBalanceUINT256(
@@ -91,8 +93,9 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         totalSupply += 1;
         uint256 proofid = S_ProofKey(msg.sender, togood, _valuegood).toId();
+
+        _mint(msg.sender, proofid);
         proofs[proofid] = L_Proof.S_ProofState(
-            msg.sender,
             togood,
             _valuegood,
             toBalanceUINT256(investResult.actualInvestValue, 0),
@@ -101,7 +104,6 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 investResult.contructFeeQuantity,
                 investResult.actualInvestQuantity
             ),
-            address(0),
             address(0)
         );
         emit e_initGood(
@@ -121,15 +123,13 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         return true;
     }
-    event debuggfee(uint256);
     /// @inheritdoc I_MarketManage
     function buyGood(
         bytes32 _goodid1,
         bytes32 _goodid2,
         uint128 _swapQuantity,
         uint256 _limitPrice,
-        bool _istotal,
-        address _gater
+        bool _istotal
     )
         external
         payable
@@ -157,17 +157,13 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             swapcache.outputQuantity
         );
         goodid2Quantity_ = swapcache.outputQuantity - goodid2FeeQuantity_;
-        emit debuggfee(swapcache.feeQuantity);
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
-            swapcache.feeQuantity,
-            marketconfig
+            swapcache.feeQuantity
         );
-        emit debuggfee(goodid2FeeQuantity_);
         goods[_goodid2].swapCommit(
             swapcache.good2currentState,
-            goodid2FeeQuantity_,
-            marketconfig
+            goodid2FeeQuantity_
         );
         goods[_goodid1].erc20address.transferFrom(
             msg.sender,
@@ -194,8 +190,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         bytes32 _goodid2,
         uint128 _swapQuantity,
         uint256 _limitPrice,
-        address _recipent,
-        address _gater
+        address _recipent
     )
         external
         payable
@@ -227,13 +222,11 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
         goods[_goodid2].swapCommit(
             swapcache.good2currentState,
-            swapcache.feeQuantity,
-            marketconfig
+            swapcache.feeQuantity
         );
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
-            goodid1FeeQuantity_,
-            marketconfig
+            goodid1FeeQuantity_
         );
         goods[_goodid2].erc20address.safeTransfer(
             _recipent,
@@ -255,8 +248,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     function investGood(
         bytes32 _togood,
         bytes32 _valuegood,
-        uint128 _quantity,
-        address _gater
+        uint128 _quantity
     ) external payable override noReentrant returns (bool) {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
@@ -266,17 +258,17 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             "M02"
         );
         require(
-            (_valuegood == 0 && goods[_togood].goodConfig.isvaluegood()) ||
-                _valuegood != 0,
+            (_valuegood == "" && goods[_togood].goodConfig.isvaluegood()) ||
+                _valuegood != "",
             "M02"
         );
         require(
-            _valuegood == 0 || goods[_valuegood].goodConfig.isvaluegood(),
+            _valuegood == "" || goods[_valuegood].goodConfig.isvaluegood(),
             "M02"
         );
-        normalInvest_ = goods[_togood].investGood(_quantity, marketconfig);
+        normalInvest_ = goods[_togood].investGood(_quantity);
         goods[_togood].erc20address.transferFrom(msg.sender, _quantity);
-        if (_valuegood != 0) {
+        if (_valuegood != "") {
             valueInvest_.actualInvestQuantity = goods[_valuegood]
                 .currentState
                 .getamount1fromamount0(normalInvest_.actualInvestValue);
@@ -290,19 +282,16 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             );
 
             valueInvest_ = goods[_valuegood].investGood(
-                valueInvest_.actualInvestQuantity,
-                marketconfig
+                valueInvest_.actualInvestQuantity
             );
         }
+        proofno_ = S_ProofKey(msg.sender, _togood, _valuegood).toId();
 
-        //proofno_ = proofseq[S_ProofKey(msg.sender, _togood, _valuegood).toId()];
-        if (proofno_ == 0) {
-            totalSupply += 1;
-            proofno_ = totalSupply;
+        if (_exists(proofno_)) {
+            require(_ownerOf(proofno_) == msg.sender, "is not your proof");
         } else {
-            require(proofs[proofno_].owner == msg.sender, "is not your proof");
+            totalSupply += 1;
         }
-
         proofs[proofno_].updateInvest(
             _togood,
             _valuegood,
@@ -336,20 +325,16 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     function disinvestProof(
         uint256 _proofid,
         uint128 _goodQuantity,
-        address _gater
+        address _gater,
+        address _referer
     ) public override noReentrant returns (bool) {
-        require(proofs[_proofid].owner == msg.sender, "M05");
+        require(_isApprovedOrOwner(msg.sender, _proofid), "M05");
         L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_;
         L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_;
         bytes32 normalgood = proofs[_proofid].currentgood;
         bytes32 valuegood = proofs[_proofid].valuegood;
         (disinvestNormalResult1_, disinvestValueResult2_) = goods[normalgood]
-            .disinvestGood(
-                goods[valuegood],
-                proofs[_proofid],
-                _goodQuantity,
-                marketconfig
-            );
+            .disinvestGood(goods[valuegood], proofs[_proofid], _goodQuantity);
 
         T_BalanceUINT256 protocalfee = toBalanceUINT256(
             marketconfig.getPlatFee128(disinvestNormalResult1_.profit),
@@ -398,7 +383,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 _proofid
     ) external override returns (T_BalanceUINT256 profit_) {
         require(
-            proofs[_proofid].owner == msg.sender ||
+            _isApprovedOrOwner(msg.sender, _proofid) ||
                 proofs[_proofid].beneficiary == msg.sender,
             "M09"
         );

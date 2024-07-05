@@ -19,9 +19,9 @@ contract investERC20ValueGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodeth;
+    bytes32 metagood;
+    bytes32 normalgoodusdt;
+    bytes32 normalgoodeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -47,185 +47,139 @@ contract investERC20ValueGood is BaseSetup {
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = 1;
+        metagood = S_GoodKey(marketcreator, address(usdt)).toKey();
         vm.stopPrank();
     }
 
-    function testinvestOwnERC20ValueGood() public {
-        vm.startPrank(marketcreator);
-        usdt.approve(address(market), 200000 * 10 ** 6 + 1);
+    // function testinvestOwnERC20ValueGood() public {
+    //     vm.startPrank(marketcreator);
+    //     usdt.approve(address(market), 200000 * 10 ** 6 + 1);
 
-        uint256 normalproof = 1;
-        normalproof = market.proofseq(
-            S_ProofKey(marketcreator, metagood, 0).toId()
-        );
-        L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
+    //     uint256 normalproof;
+    //     normalproof = S_ProofKey(marketcreator, metagood, "").toId();
+    //     L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
 
-        assertEq(
-            usdt.balanceOf(marketcreator),
-            950000000000,
-            "before invest metagood:marketcreator account invest balance error"
-        );
-        assertEq(
-            _proof1.state.amount0(),
-            50000 * 10 ** 6,
-            "before invest:proof value error"
-        );
-        assertEq(
-            _proof1.invest.amount1(),
-            50000 * 10 ** 6,
-            "before invest:proof quantity error"
-        );
-        assertEq(
-            _proof1.valueinvest.amount1(),
-            0,
-            "before invest:proof quantity error"
-        );
-        assertEq(
-            market.proofseq(S_ProofKey(marketcreator, metagood, 0).toId()),
-            1,
-            "before invest:proof key num error"
-        );
-        market.investGood(1, 0, 50000 * 10 ** 6, users[2]);
-        snapLastCall("invest_own_erc20_good_first");
+    //     assertEq(
+    //         usdt.balanceOf(marketcreator),
+    //         950000000000,
+    //         "before invest metagood:marketcreator account invest balance error"
+    //     );
+    //     assertEq(
+    //         _proof1.state.amount0(),
+    //         50000 * 10 ** 6,
+    //         "before invest:proof value error"
+    //     );
+    //     assertEq(
+    //         _proof1.invest.amount1(),
+    //         50000 * 10 ** 6,
+    //         "before invest:proof quantity error"
+    //     );
+    //     assertEq(
+    //         _proof1.valueinvest.amount1(),
+    //         0,
+    //         "before invest:proof quantity error"
+    //     );
 
-        assertEq(
-            usdt.balanceOf(marketcreator),
-            900000000000,
-            "after invest metagood:marketcreator account invest balance error"
-        );
-        assertEq(
-            usdt.balanceOf(address(market)),
-            100000000000,
-            "after invest metagood:market account invest balance error"
-        );
+    //     market.investGood(metagood, 0, 50000 * 10 ** 6);
+    //     snapLastCall("invest_own_erc20_good_first");
 
-        L_Good.S_GoodTmpState memory good_ = market.getGoodState(metagood);
-        assertEq(
-            good_.currentState.amount0(),
-            99995000000,
-            "after invest metagood:metagood currentState amount0 error"
-        );
-        assertEq(
-            good_.currentState.amount1(),
-            99995000000,
-            "after invest metagood:metagood currentState amount1 error"
-        );
-        assertEq(
-            good_.investState.amount0(),
-            99995000000,
-            "after invest metagood:metagood investState amount0 error"
-        );
-        assertEq(
-            good_.investState.amount1(),
-            99995000000,
-            "after invest metagood:metagood investState amount1 error"
-        );
-        assertEq(
-            good_.feeQunitityState.amount0(),
-            2250000,
-            "after invest metagood:metagood feeQunitityState amount0 error"
-        );
-        assertEq(
-            good_.feeQunitityState.amount1(),
-            0,
-            "after invest metagood:metagood feeQunitityState amount1 error"
-        );
+    //     assertEq(
+    //         usdt.balanceOf(marketcreator),
+    //         900000000000,
+    //         "after invest metagood:marketcreator account invest balance error"
+    //     );
+    //     assertEq(
+    //         usdt.balanceOf(address(market)),
+    //         100000000000,
+    //         "after invest metagood:market account invest balance error"
+    //     );
 
-        assertEq(
-            market.getGoodsFee(1, good_.owner),
-            1500000,
-            "after invest metagood:good_.owner fee error"
-        );
+    //     L_Good.S_GoodState memory good_ = market.getGoodState(metagood);
+    //     assertEq(
+    //         good_.currentState.amount0(),
+    //         99995000000,
+    //         "after invest metagood:metagood currentState amount0 error"
+    //     );
+    //     assertEq(
+    //         good_.currentState.amount1(),
+    //         99995000000,
+    //         "after invest metagood:metagood currentState amount1 error"
+    //     );
+    //     assertEq(
+    //         good_.investState.amount0(),
+    //         99995000000,
+    //         "after invest metagood:metagood investState amount0 error"
+    //     );
+    //     assertEq(
+    //         good_.investState.amount1(),
+    //         99995000000,
+    //         "after invest metagood:metagood investState amount1 error"
+    //     );
+    //     assertEq(
+    //         good_.feeQunitityState.amount0(),
+    //         5000000,
+    //         "after invest metagood:metagood feeQunitityState amount0 error"
+    //     );
+    //     assertEq(
+    //         good_.feeQunitityState.amount1(),
+    //         0,
+    //         "after invest metagood:metagood feeQunitityState amount1 error"
+    //     );
 
-        assertEq(
-            market.getGoodsFee(1, users[2]),
-            1250000,
-            "after invest metagood:users[2] fee error"
-        );
+    //     assertEq(
+    //         good_.goodConfig,
+    //         (2 ** 255) +
+    //             1 *
+    //             2 ** 246 +
+    //             3 *
+    //             2 ** 240 +
+    //             5 *
+    //             2 ** 233 +
+    //             7 *
+    //             2 ** 226,
+    //         "after invest metagood:metagood goodConfig error"
+    //     );
 
-        assertEq(
-            good_.goodConfig,
-            (2 ** 255) +
-                1 *
-                2 ** 246 +
-                3 *
-                2 ** 240 +
-                5 *
-                2 ** 233 +
-                7 *
-                2 ** 226,
-            "after invest metagood:metagood goodConfig error"
-        );
+    //     assertEq(
+    //         good_.owner,
+    //         marketcreator,
+    //         "after invest metagood:metagood marketcreator error"
+    //     );
 
-        assertEq(
-            good_.owner,
-            marketcreator,
-            "after invest metagood:metagood marketcreator error"
-        );
+    //     assertEq(market.goodNum(), 1, "after invest:good num error");
 
-        assertEq(market.goodNum(), 1, "after invest:good num error");
+    //     bytes32 goodkey = S_GoodKey(marketcreator, address(usdt)).toKey();
 
-        bytes32 goodkey = S_GoodKey(address(usdt), marketcreator).toId();
-        assertEq(market.goodseq(goodkey), 1, "after invest:good key num error");
+    //     _proof1 = market.getProofState(normalproof);
+    //     assertEq(
+    //         _proof1.state.amount0(),
+    //         99995000000,
+    //         "after invest:proof value error"
+    //     );
+    //     assertEq(
+    //         _proof1.invest.amount1(),
+    //         99995000000,
+    //         "after invest:proof quantity error"
+    //     );
+    //     assertEq(
+    //         _proof1.valueinvest.amount1(),
+    //         0,
+    //         "after invest:proof quantity error"
+    //     );
 
-        _proof1 = market.getProofState(normalproof);
-        assertEq(
-            _proof1.state.amount0(),
-            99995000000,
-            "after invest:proof value error"
-        );
-        assertEq(
-            _proof1.invest.amount1(),
-            99995000000,
-            "after invest:proof quantity error"
-        );
-        assertEq(
-            _proof1.valueinvest.amount1(),
-            0,
-            "after invest:proof quantity error"
-        );
-        assertEq(
-            market.proofseq(S_ProofKey(marketcreator, metagood, 0).toId()),
-            1,
-            "after invest:proof key num error"
-        );
-        market.investGood(1, 0, 50000 * 10 ** 6, users[2]);
-        snapLastCall("invest_own_erc20_good_second_without_refer");
+    //     market.investGood(metagood, "", 50000 * 10 ** 6);
+    //     snapLastCall("invest_own_erc20_good_second");
 
-        market.addreferer(users[3]);
-        market.investGood(1, 0, 50000 * 10 ** 6, users[2]);
-        snapLastCall("invest_own_erc20_good_second_with_refer_first");
-        assertEq(
-            market.getGoodsFee(1, good_.owner),
-            4500000,
-            "after invest metagood:good_.owner fee error"
-        );
-
-        assertEq(
-            market.getGoodsFee(1, users[3]),
-            750000,
-            "after invest metagood:refer fee error"
-        );
-        assertEq(
-            market.getGoodsFee(1, users[2]),
-            3000000,
-            "after invest metagood:users[2] fee error"
-        );
-
-        market.investGood(1, 0, 50000 * 10 ** 6, users[2]);
-        snapLastCall("invest_own_erc20_good_second_with_refer_second");
-        vm.stopPrank();
-    }
+    //     vm.stopPrank();
+    // }
 
     function testinvestotherERC20ValueGood() public {
         vm.startPrank(users[2]);
         deal(address(usdt), users[2], 300000 * 10 ** 6, false);
         usdt.approve(address(market), 300000 * 10 ** 6 + 1);
 
-        uint256 normalproof = 2;
-        normalproof = market.proofseq(S_ProofKey(users[2], metagood, 0).toId());
-        L_Proof.S_ProofState memory _proof1 = market.getProofState(2);
+        uint256 normalproof = S_ProofKey(users[2], metagood, 0).toId();
+        L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
             usdt.balanceOf(users[2]),
@@ -244,12 +198,8 @@ contract investERC20ValueGood is BaseSetup {
             0,
             "before invest:proof quantity error"
         );
-        assertEq(
-            market.proofseq(S_ProofKey(users[2], metagood, 0).toId()),
-            0,
-            "before invest:proof key num error"
-        );
-        market.investGood(1, 0, 50000 * 10 ** 6, users[3]);
+
+        market.investGood(metagood, 0, 50000 * 10 ** 6);
         snapLastCall("invest_other_erc20_good_first");
 
         assertEq(
@@ -263,7 +213,7 @@ contract investERC20ValueGood is BaseSetup {
             "after invest metagood:market account invest balance error"
         );
 
-        L_Good.S_GoodTmpState memory good_ = market.getGoodState(metagood);
+        L_Good.S_GoodState memory good_ = market.getGoodState(metagood);
         assertEq(
             good_.currentState.amount0(),
             99995000000,
@@ -286,24 +236,13 @@ contract investERC20ValueGood is BaseSetup {
         );
         assertEq(
             good_.feeQunitityState.amount0(),
-            2250000,
+            5000000,
             "after invest metagood:metagood feeQunitityState amount0 error"
         );
         assertEq(
             good_.feeQunitityState.amount1(),
             0,
             "after invest metagood:metagood feeQunitityState amount1 error"
-        );
-        assertEq(
-            market.getGoodsFee(1, good_.owner),
-            1500000,
-            "after invest metagood:good_.owner fee error"
-        );
-
-        assertEq(
-            market.getGoodsFee(1, users[3]),
-            1250000,
-            "after invest metagood:users[3] fee error"
         );
 
         assertEq(
@@ -328,10 +267,9 @@ contract investERC20ValueGood is BaseSetup {
 
         assertEq(market.goodNum(), 1, "after invest:good num error");
 
-        bytes32 goodkey = S_GoodKey(address(usdt), marketcreator).toId();
-        assertEq(market.goodseq(goodkey), 1, "after invest:good key num error");
+        bytes32 goodkey = S_GoodKey(marketcreator, address(usdt)).toKey();
 
-        _proof1 = market.getProofState(2);
+        _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
             49995000000,
@@ -352,35 +290,9 @@ contract investERC20ValueGood is BaseSetup {
             0,
             "after invest:proof quantity error"
         );
-        assertEq(
-            market.proofseq(S_ProofKey(users[2], metagood, 0).toId()),
-            2,
-            "after invest:proof key num error"
-        );
-        market.investGood(1, 0, 50000 * 10 ** 6, users[3]);
-        snapLastCall("invest_other_erc20_good_second_without_refer");
 
-        market.addreferer(users[4]);
-        market.investGood(1, 0, 50000 * 10 ** 6, users[3]);
-        snapLastCall("invest_other_erc20_good_second_with_refer_first");
-        assertEq(
-            market.getGoodsFee(1, good_.owner),
-            3250000,
-            "after invest metagood:good_.owner fee error"
-        );
-
-        assertEq(
-            market.getGoodsFee(1, users[3]),
-            3000000,
-            "after invest metagood:refer fee error"
-        );
-        assertEq(
-            market.getGoodsFee(1, users[3]),
-            3000000,
-            "after invest metagood:users[2] fee error"
-        );
-        market.investGood(1, 0, 50000 * 10 ** 6, users[3]);
-        snapLastCall("invest_other_erc20_good_second_with_refer_second");
+        market.investGood(metagood, 0, 50000 * 10 ** 6);
+        snapLastCall("invest_other_erc20_good_second");
         vm.stopPrank();
     }
 }

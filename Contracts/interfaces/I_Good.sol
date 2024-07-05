@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
 
-import {S_GoodKey, S_Ralate} from "../libraries/L_Struct.sol";
+import {S_GoodKey} from "../libraries/L_Struct.sol";
 import {L_Good} from "../libraries/L_Good.sol";
 import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 
@@ -12,7 +12,7 @@ interface I_Good {
     /// @param _goodid good number,商品编号
     /// @param _owner the older owner,原拥有者
     /// @param _to the new owner,新拥有者
-    event e_changeOwner(uint256 indexed _goodid, address _owner, address _to);
+    event e_changeOwner(bytes32 indexed _goodid, address _owner, address _to);
 
     /// @notice Config Market Config~ 进行市场配置
     /// @param _marketconfig 市场配置
@@ -21,15 +21,15 @@ interface I_Good {
     /// @notice Config good 商品配置
     /// @param _goodid Good No,商品编号
     /// @param _goodConfig Good config 市场配置
-    event e_updateGoodConfig(uint256 _goodid, uint256 _goodConfig);
+    event e_updateGoodConfig(bytes32 _goodid, uint256 _goodConfig);
 
     /// @notice update good to value good~ 更新商品为价值商品
     /// @param _goodid good No,商品编号配
-    event e_updatetoValueGood(uint256 _goodid);
+    event e_updatetoValueGood(bytes32 _goodid);
 
     /// @notice update good to normal good~ 更新商品为普通商品
     /// @param _goodid good No,商品编号配
-    event e_updatetoNormalGood(uint256 _goodid);
+    event e_updatetoNormalGood(bytes32 _goodid);
     /// @notice add ban list~添加黑名单
     /// @param _user  address ~用户地址
     event e_addbanlist(address _user);
@@ -39,7 +39,7 @@ interface I_Good {
     /// @notice preject or seller deliver welfare to investor
     /// @param goodid 商品编号
     /// @param welfare 福利数量
-    event e_goodWelfare(uint256 goodid, uint128 welfare);
+    event e_goodWelfare(bytes32 goodid, uint128 welfare);
 
     /// @notice Returns the config of the market~返回市场的配置
     /// @dev Can be changed by the marketmanager~可以被管理员调整
@@ -64,38 +64,31 @@ interface I_Good {
     /// @return 是否成功
     function setMarketConfig(uint256 _marketconfig) external returns (bool);
 
-    /// @notice get good's state 获取商品状态
-    /// @param _goodid  good's id  商品的商品编号
-    /// @return good_ goodinfo 商品的状态信息
-    function getGoodState(
-        uint256 _goodid
-    ) external view returns (L_Good.S_GoodTmpState memory good_);
-
     /// @notice  update good's config 更新商品配置
     /// @param _goodid   good's id 商品的商品ID
     /// @param _goodConfig   商品配置
     /// @return the result  更新结果
     function updateGoodConfig(
-        uint256 _goodid,
+        bytes32 _goodid,
         uint256 _goodConfig
     ) external returns (bool);
 
     /// @notice  update normal good to value good 更新普通商品为价值商品
     /// @param _goodid   good's id 商品的商品ID
     /// @return the result  更新结果
-    function updatetoValueGood(uint256 _goodid) external returns (bool);
+    function updatetoValueGood(bytes32 _goodid) external returns (bool);
 
     /// @notice  update normal good to value good 更新价值商品为普通商品
     /// @param _goodid   good's id 商品的商品ID
     /// @return the result  更新结果
-    function updatetoNormalGood(uint256 _goodid) external returns (bool);
+    function updatetoNormalGood(bytes32 _goodid) external returns (bool);
     /// @notice pay good to  转给
     /// @param _goodid   商品的商品ID
     /// @param _payquanity   数量
     /// @param _recipent   接收者
     /// @return the result
     function payGood(
-        uint256 _goodid,
+        bytes32 _goodid,
         uint256 _payquanity,
         address _recipent
     ) external payable returns (bool);
@@ -105,13 +98,13 @@ interface I_Good {
     /// @param _to  recipent 接收者
     /// @return the result
     function changeGoodOwner(
-        uint256 _goodid,
+        bytes32 _goodid,
         address _to
     ) external returns (bool);
     /// @notice collect protocalFee 收益协议手续费
     /// @param _goodid  good's id 商品的商品ID
     /// @return the result 手续费数量
-    function collectProtocolFee(uint256 _goodid) external returns (uint256);
+    function collectProtocolFee(bytes32 _goodid) external returns (uint256);
     /// @notice add ban list  增加禁止名单
     /// @param _user  address 地址
     /// @return is_success_ 是否成功
@@ -121,16 +114,8 @@ interface I_Good {
     /// @return is_success_ 是否成功
     function removebanlist(address _user) external returns (bool is_success_);
 
-    /// @notice 获取商品的用户协议手续费
-    /// @param _goodid   商品编号
-    /// @param _user   用户地址
-    /// @return fee_ 是否成功
-    function getGoodsFee(
-        uint256 _goodid,
-        address _user
-    ) external view returns (uint256 fee_);
     /// @notice 为投资者发福利
     /// @param goodid   商品编号
     /// @param welfare   用户地址
-    function goodWelfare(uint256 goodid, uint128 welfare) external payable;
+    function goodWelfare(bytes32 goodid, uint128 welfare) external payable;
 }

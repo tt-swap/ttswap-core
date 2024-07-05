@@ -13,7 +13,7 @@ import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
 contract testInitNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
-    uint256 metagood;
+    bytes32 metagoodkey;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -34,7 +34,7 @@ contract testInitNormalGood is BaseSetup {
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = 1;
+        metagoodkey = S_GoodKey(marketcreator, address(usdt)).toKey();
         vm.stopPrank();
     }
 
@@ -50,7 +50,7 @@ contract testInitNormalGood is BaseSetup {
             50000 * 10 ** 6,
             "befor init erc20 good, balance of market error"
         );
-        uint256 normalgoodconfig =1 *
+        uint256 normalgoodconfig = 1 *
             2 ** 246 +
             3 *
             2 ** 240 +
@@ -58,18 +58,17 @@ contract testInitNormalGood is BaseSetup {
             2 ** 233 +
             7 *
             2 ** 226;
-        snapStart("init normalgood");
         market.initGood(
-            metagood,
+            metagoodkey,
             toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
-            normalgoodconfig,
-            msg.sender
+            normalgoodconfig
         );
-        uint256 normalgood = 2;
-        uint256 proofid = 2;
-        snapEnd();
-        vm.stopPrank();
+        snapLastCall("init_erc20_normalgood");
+
+        //normal good
+        bytes32 normalgoodkey = S_GoodKey(users[1], address(btc)).toKey();
+
         assertEq(
             usdt.balanceOf(address(market)),
             50000 * 10 ** 6 + 63000 * 10 ** 6,
@@ -94,67 +93,60 @@ contract testInitNormalGood is BaseSetup {
             "after initial normal good, balance of market error"
         );
 
-        L_Good.S_GoodTmpState memory metagoodstate = market.getGoodState(
-            metagood
+        L_Good.S_GoodState memory metagoodkeystate = market.getGoodState(
+            metagoodkey
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodstate.currentState),
+            T_BalanceUINT256.unwrap(metagoodkeystate.currentState),
             T_BalanceUINT256.unwrap(
                 toBalanceUINT256(
                     50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
                     50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
                 )
             ),
-            "after initial normalgood:metagood currentState error"
+            "after initial normalgood:metagoodkey currentState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodstate.investState),
+            T_BalanceUINT256.unwrap(metagoodkeystate.investState),
             T_BalanceUINT256.unwrap(
                 toBalanceUINT256(
                     50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
                     50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
                 )
             ),
-            "after initial normalgood:metagood investState error"
+            "after initial normalgood:metagoodkey investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodstate.feeQunitityState),
+            T_BalanceUINT256.unwrap(metagoodkeystate.feeQunitityState),
             T_BalanceUINT256.unwrap(
-                toBalanceUINT256(((63000 * 10 ** 6) / 10000 / 100) * 45, 0)
+                toBalanceUINT256(((63000 * 10 ** 6) / 10000), 0)
             ),
-            "after initial normalgood:metagood feequnitity error"
+            "after initial normalgood:metagoodkey feequnitity error"
         );
 
         assertEq(
-            metagoodstate.goodConfig,
+            metagoodkeystate.goodConfig,
             (2 ** 255) +
-             1 *
-            2 ** 246 +
-            3 *
-            2 ** 240 +
-            5 *
-            2 ** 233 +
-            7 *
-            2 ** 226,
-            "after initial normalgood:metagood goodConfig error"
+                1 *
+                2 ** 246 +
+                3 *
+                2 ** 240 +
+                5 *
+                2 ** 233 +
+                7 *
+                2 ** 226,
+            "after initial normalgood:metagoodkey goodConfig error"
         );
 
         assertEq(
-            metagoodstate.owner,
+            metagoodkeystate.owner,
             marketcreator,
-            "after initial normalgood:metagood marketcreator error"
-        );
-
-        bytes32 goodkey = S_GoodKey(address(usdt), marketcreator).toId();
-        assertEq(
-            market.goodseq(goodkey),
-            1,
-            "after initial:good key num error"
+            "after initial normalgood:metagoodkey marketcreator error"
         );
 
         ////////////////////////////////////////
-        L_Good.S_GoodTmpState memory normalgoodstate = market.getGoodState(
-            normalgood
+        L_Good.S_GoodState memory normalgoodstate = market.getGoodState(
+            normalgoodkey
         );
         assertEq(
             normalgoodstate.currentState.amount0(),
@@ -192,23 +184,15 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:normalgood owner error"
         );
 
-        bytes32 normalgoodkey = S_GoodKey(address(btc), users[1]).toId();
         assertEq(
             market.goodNum(),
             2,
             "after initial normal:normalgoodgood num error"
         );
-        assertEq(
-            market.goodseq(normalgoodkey),
-            2,
-            "after initial normal:normalgood good num error"
-        );
-        ///////////////////////////
 
-        uint256 normalproof = market.proofseq(
-            S_ProofKey(users[1], normalgood, metagood).toId()
-        );
-        assertEq(normalproof, proofid, "proof not match");
+        ///////////////////////////
+        uint256 normalproof = S_ProofKey(users[1], normalgoodkey, metagoodkey)
+            .toId();
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
@@ -221,21 +205,17 @@ contract testInitNormalGood is BaseSetup {
             "after initial:proof quantity error"
         );
         assertEq(
-            _proof1.valueinvest.amount1(),
-            63000 * 10 ** 6 - 63000 * 10 ** 2,
-            "after initial:proof quantity error"
-        );
-        assertEq(
-            _proof1.currentgood,
-            2,
-            "after initial:proof current good error"
-        );
-        assertEq(_proof1.valuegood, 1, "after initial:proof value good error");
-        assertEq(
-            market.proofseq(S_ProofKey(marketcreator, metagood, 0).toId()),
+            market.balanceOf(users[1]),
             1,
-            "after initial:proof key num error"
+            "erc721 users[1] balance error"
         );
+
+        assertEq(
+            market.ownerOf(normalproof),
+            users[1],
+            "erc721 proof owner error"
+        );
+        vm.stopPrank();
     }
 
     function testinitNativeETHNormalGood() public {
@@ -261,17 +241,13 @@ contract testInitNormalGood is BaseSetup {
             2 ** 233 +
             7 *
             2 ** 226;
-        snapStart("init normal good");
-        uint256 normalgood = 2;
-        uint256 proofid = 2;
         market.initGood{value: 1 * 10 ** 8}(
-            metagood,
+            metagoodkey,
             toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(0),
-            normalgoodconfig,
-            msg.sender
+            normalgoodconfig
         );
-        snapEnd();
+        snapLastCall("init_nativeETH_normalgood");
         vm.stopPrank();
 
         assertEq(
@@ -298,69 +274,62 @@ contract testInitNormalGood is BaseSetup {
             "after initial normal good, balance of market error"
         );
 
-        L_Good.S_GoodTmpState memory metagoodstate = market.getGoodState(
-            metagood
+        L_Good.S_GoodState memory metagoodkeystate = market.getGoodState(
+            metagoodkey
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodstate.currentState),
+            T_BalanceUINT256.unwrap(metagoodkeystate.currentState),
             T_BalanceUINT256.unwrap(
                 toBalanceUINT256(
                     50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
                     50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
                 )
             ),
-            "after initial normalgood:metagood currentState error"
+            "after initial normalgood:metagoodkey currentState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodstate.investState),
+            T_BalanceUINT256.unwrap(metagoodkeystate.investState),
             T_BalanceUINT256.unwrap(
                 toBalanceUINT256(
                     50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
                     50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
                 )
             ),
-            "after initial normalgood:metagood investState error"
+            "after initial normalgood:metagoodkey investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodstate.feeQunitityState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(((63000 * 10 ** 2) / 100) * 45, 0)
-            ),
-            "after initial normalgood:metagood feequnitity error"
+            T_BalanceUINT256.unwrap(metagoodkeystate.feeQunitityState),
+            T_BalanceUINT256.unwrap(toBalanceUINT256(((63000 * 10 ** 2)), 0)),
+            "after initial normalgood:metagoodkey feequnitity error"
         );
 
         assertEq(
-            metagoodstate.goodConfig,
+            metagoodkeystate.goodConfig,
             (2 ** 255) +
                 1 *
-            2 ** 246 +
-            3 *
-            2 ** 240 +
-            5 *
-            2 ** 233 +
-            7 *
-            2 ** 226,
-            "after initial normalgood:metagood goodConfig error"
+                2 ** 246 +
+                3 *
+                2 ** 240 +
+                5 *
+                2 ** 233 +
+                7 *
+                2 ** 226,
+            "after initial normalgood:metagoodkey goodConfig error"
         );
 
         assertEq(
-            metagoodstate.owner,
+            metagoodkeystate.owner,
             marketcreator,
-            "after initial normalgood:metagood marketcreator error"
+            "after initial normalgood:metagoodkey marketcreator error"
         );
 
         assertEq(market.goodNum(), 2, "after initial:good num error");
 
-        bytes32 goodkey = S_GoodKey(address(usdt), marketcreator).toId();
-        assertEq(
-            market.goodseq(goodkey),
-            1,
-            "after initial:good key num error"
-        );
+        bytes32 normalgoodkey = S_GoodKey(users[1], address(0)).toKey();
 
         ////////////////////////////////////////
-        L_Good.S_GoodTmpState memory normalgoodstate = market.getGoodState(
-            normalgood
+        L_Good.S_GoodState memory normalgoodstate = market.getGoodState(
+            normalgoodkey
         );
         assertEq(
             normalgoodstate.currentState.amount0(),
@@ -381,14 +350,7 @@ contract testInitNormalGood is BaseSetup {
 
         assertEq(
             normalgoodstate.goodConfig,
-          1 *
-            2 ** 246 +
-            3 *
-            2 ** 240 +
-            5 *
-            2 ** 233 +
-            7 *
-            2 ** 226,
+            1 * 2 ** 246 + 3 * 2 ** 240 + 5 * 2 ** 233 + 7 * 2 ** 226,
             "after initial normalgood:normalgood goodConfig error"
         );
 
@@ -398,20 +360,13 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:normalgood owner error"
         );
 
-        bytes32 normalgoodkey = S_GoodKey(address(0), users[1]).toId();
         assertEq(market.goodNum(), 2, "after initial normal:good num error");
-        assertEq(
-            market.goodseq(normalgoodkey),
-            2,
-            "after initial normal:good num error"
-        );
+
         ///////////////////////////
 
-        uint256 normalproof = market.proofseq(
-            S_ProofKey(users[1], normalgood, metagood).toId()
-        );
+        uint256 normalproof = S_ProofKey(users[1], normalgoodkey, metagoodkey)
+            .toId();
 
-        assertEq(normalproof, proofid, "proof not match");
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
@@ -429,15 +384,15 @@ contract testInitNormalGood is BaseSetup {
             "after initial:proof value quantity error"
         );
         assertEq(
-            _proof1.currentgood,
-            2,
-            "after initial:proof current good error"
-        );
-        assertEq(_proof1.valuegood, 1, "after initial:proof value good error");
-        assertEq(
-            market.proofseq(S_ProofKey(marketcreator, metagood, 0).toId()),
+            market.balanceOf(users[1]),
             1,
-            "after initial:proof key num error"
+            "erc721 users[1] balance error"
+        );
+
+        assertEq(
+            market.ownerOf(normalproof),
+            users[1],
+            "erc721 proof owner error"
         );
     }
 }

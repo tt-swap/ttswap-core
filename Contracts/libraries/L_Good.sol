@@ -4,7 +4,7 @@ pragma solidity 0.8.26;
 import {L_Proof} from "./L_Proof.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
-import {S_Ralate, S_GoodKey} from "./L_Struct.sol";
+import {S_GoodKey} from "./L_Struct.sol";
 
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice} from "./L_BalanceUINT256.sol";
 
@@ -21,23 +21,6 @@ library L_Good {
         T_BalanceUINT256 currentState; //前128位表示商品的价值,后128位表示商品数量 amount0:the good's total value ,amount1:the good's quantity
         T_BalanceUINT256 investState; //前128位表示商品的投资总价值,后128位表示商品投资总数量 amount0:the good's total invest value,amount1:the good's total invest quantity
         T_BalanceUINT256 feeQunitityState; //前128位表示商品的手续费总额(包含构建手续费),后128位表示商品的构建手续费总额 amount0:the good's total fee quantity which contain contruct fee,amount1:the good's total contruct fee.
-        mapping(address => uint256) fees;
-    }
-
-    struct S_GoodTmpState {
-        uint256 goodConfig; //商品配置refer to goodConfig
-        address owner; //商品创建者 good's creator
-        address erc20address; //商品的erc20合约地址good's erc20address
-        T_BalanceUINT256 currentState; //前128位表示商品的价值,后128位表示商品数量 amount0:the good's total value ,amount1:the good's quantity
-        T_BalanceUINT256 investState; //前128位表示商品的投资总价值,后128位表示商品投资总数量 amount0:the good's total invest value,amount1:the good's total invest quantity
-        T_BalanceUINT256 feeQunitityState; //前128位表示商品的手续费总额(包含构建手续费),后128位表示商品的构建手续费总额 amount0:the good's total fee quantity which contain contruct fee,amount1:the good's total contruct fee.
-    }
-
-    struct S_GoodInvestReturn {
-        uint128 actualFeeQuantity; //实际手续费
-        uint128 contructFeeQuantity; //构建手续费
-        uint128 actualInvestValue; //实际投资价值
-        uint128 actualInvestQuantity; //实际投资数量
     }
 
     struct S_GoodDisinvestReturn {
@@ -290,24 +273,30 @@ library L_Good {
     function swapCommit(
         S_GoodState storage _self,
         T_BalanceUINT256 _swapstate,
-        uint128 _fee,
-        uint256 _marketconfig,
-        S_Ralate memory _ralate
+        uint128 _fee
     ) internal {
         _self.currentState = _swapstate;
         _self.feeQunitityState =
             _self.feeQunitityState +
-            toBalanceUINT256(_marketconfig.getLiquidFee(_fee), 0);
-        if (_fee > 0) allocateFee(_self, _fee, _marketconfig, _ralate);
+            toBalanceUINT256(_fee, 0);
+    }
+
+    struct S_GoodInvestReturn {
+        uint128 actualFeeQuantity; //实际手续费
+        uint128 contructFeeQuantity; //构建手续费
+        uint128 actualInvestValue; //实际投资价值
+        uint128 actualInvestQuantity; //实际投资数量
     }
     function investGood(
         S_GoodState storage _self,
-        uint128 _invest,
-        uint256 _marketConfig,
-        S_Ralate memory _ralate
+        uint128 _invest
     ) internal returns (S_GoodInvestReturn memory investResult_) {
-        uint128 actutal_fee = _self.goodConfig.getInvestFee(_invest);
-        investResult_.actualInvestQuantity = _invest - actutal_fee;
+        investResult_.actualFeeQuantity = _self.goodConfig.getInvestFee(
+            _invest
+        );
+        investResult_.actualInvestQuantity =
+            _invest -
+            investResult_.actualFeeQuantity;
 
         investResult_.actualInvestValue = _self
             .currentState
@@ -317,10 +306,6 @@ library L_Good {
             _self.feeQunitityState.amount0(),
             _self.investState.amount1()
         ).getamount0fromamount1(investResult_.actualInvestQuantity);
-
-        investResult_.actualFeeQuantity = _marketConfig.getLiquidFee(
-            actutal_fee
-        );
 
         _self.feeQunitityState =
             _self.feeQunitityState +
@@ -341,17 +326,13 @@ library L_Good {
                 investResult_.actualInvestValue,
                 investResult_.actualInvestQuantity
             );
-        if (actutal_fee > 0)
-            allocateFee(_self, actutal_fee, _marketConfig, _ralate);
     }
 
     function disinvestGood(
         S_GoodState storage _self,
         S_GoodState storage _valueGoodState,
         L_Proof.S_ProofState storage _investProof,
-        uint128 _goodQuantity,
-        uint256 _marketconfig,
-        S_Ralate memory _ralate
+        uint128 _goodQuantity
     )
         internal
         returns (
@@ -427,16 +408,7 @@ library L_Good {
         if (normalGoodResult1_.actual_fee > 0) {
             _self.feeQunitityState =
                 _self.feeQunitityState +
-                toBalanceUINT256(
-                    _marketconfig.getLiquidFee(normalGoodResult1_.actual_fee),
-                    0
-                );
-            allocateFee(
-                _self,
-                normalGoodResult1_.actual_fee,
-                _marketconfig,
-                _ralate
-            );
+                toBalanceUINT256(normalGoodResult1_.actual_fee, 0);
         }
 
         if (_investProof.valuegood != 0) {
@@ -501,18 +473,7 @@ library L_Good {
             if (valueGoodResult2_.actual_fee > 0) {
                 _valueGoodState.feeQunitityState =
                     _valueGoodState.feeQunitityState +
-                    toBalanceUINT256(
-                        _marketconfig.getLiquidFee(
-                            valueGoodResult2_.actual_fee
-                        ),
-                        0
-                    );
-                allocateFee(
-                    _valueGoodState,
-                    valueGoodResult2_.actual_fee,
-                    _marketconfig,
-                    _ralate
-                );
+                    toBalanceUINT256(valueGoodResult2_.actual_fee, 0);
             }
         }
     }
@@ -547,42 +508,10 @@ library L_Good {
 
         _investProof.collectProofFee(profit);
     }
-
-    function allocateFee(
-        S_GoodState storage _self,
-        uint128 _actualFeeQuantity,
-        uint256 _marketconfig,
-        S_Ralate memory _ralate
-    ) private {
-        if (_ralate.refer == address(0)) {
-            uint128 temfee;
-            temfee =
-                _marketconfig.getSellerFee(_actualFeeQuantity) +
-                _marketconfig.getCustomerFee(_actualFeeQuantity);
-            _self.fees[_self.owner] += temfee;
-
-            _self.fees[_ralate.gater] += (_actualFeeQuantity -
-                temfee -
-                _marketconfig.getLiquidFee(_actualFeeQuantity));
-        } else {
-            _self.fees[_self.owner] += _marketconfig.getSellerFee(
-                _actualFeeQuantity
-            );
-            _self.fees[_ralate.refer] += _marketconfig.getReferFee(
-                _actualFeeQuantity
-            );
-            _self.fees[msg.sender] += _marketconfig.getCustomerFee(
-                _actualFeeQuantity
-            );
-            _self.fees[_ralate.gater] += _marketconfig.getGaterFee(
-                _actualFeeQuantity
-            );
-        }
-    }
 }
 
 library L_GoodIdLibrary {
-    function toId(S_GoodKey memory goodKey) internal pure returns (bytes32) {
+    function toKey(S_GoodKey memory goodKey) internal pure returns (bytes32) {
         return keccak256(abi.encode(goodKey));
     }
 }

@@ -15,14 +15,10 @@ contract testMarketConfig is Test, GasSnapshot {
         uint256 a_min = 1 * 2 ** 250;
         uint256 a_mid = 1 * 2 ** 255;
         uint256 a_max = 63 * 2 ** 250;
-        snapStart("marketconfig get liquid");
         assertEq(a_min.getLiquidFee(), 1);
-        snapEnd();
         assertEq(a_mid.getLiquidFee(), 32);
         assertEq(a_max.getLiquidFee(), 63);
-        snapStart("marketconfig compute liquid fee");
         assertEq(a_min.getLiquidFee(100), 1);
-        snapEnd();
         assertEq(a_mid.getLiquidFee(100), 32);
         assertEq(a_max.getLiquidFee(100), 63);
     }

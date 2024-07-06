@@ -54,8 +54,13 @@ abstract contract GoodManage is I_Good {
 
     function getGoodState(
         bytes32 goodkey
-    ) external view returns (L_Good.S_GoodState memory gooddetail) {
-        return goods[goodkey];
+    ) external view returns (L_Good.S_GoodTmpState memory gooddetail) {
+        gooddetail.goodConfig = goods[goodkey].goodConfig;
+        gooddetail.owner = goods[goodkey].owner;
+        gooddetail.erc20address = goods[goodkey].erc20address;
+        gooddetail.currentState = goods[goodkey].currentState;
+        gooddetail.investState = goods[goodkey].investState;
+        gooddetail.feeQunitityState = goods[goodkey].feeQunitityState;
     }
 
     /// @inheritdoc I_Good
@@ -146,9 +151,11 @@ abstract contract GoodManage is I_Good {
 
     function collectProtocolFee(
         bytes32 _goodid
-    ) external override onlyMarketCreator returns (uint256 feeamount) {
-        // goods[_goodid].remainfee = 0;
+    ) external override returns (uint256 feeamount) {
+        feeamount = goods[_goodid].fees[msg.sender];
+        goods[_goodid].fees[msg.sender] = 0;
         goods[_goodid].erc20address.safeTransfer(msg.sender, feeamount);
+        emit e_collectProtocolFee(_goodid, feeamount);
     }
 
     function goodWelfare(

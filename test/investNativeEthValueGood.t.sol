@@ -2,7 +2,6 @@
 pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
@@ -13,7 +12,7 @@ import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/libraries/L_Balan
 import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../Contracts/libraries/L_MarketConfig.sol";
 
-contract investERC20ValueGood is BaseSetup {
+contract investNativeETHValueGood is BaseSetup {
     using L_MarketConfigLibrary for uint256;
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
@@ -30,9 +29,8 @@ contract investERC20ValueGood is BaseSetup {
 
     function initmetagood() public {
         BaseSetup.setUp();
+        deal(marketcreator, 1000000 * 10 ** 6);
         vm.startPrank(marketcreator);
-        deal(address(usdt), marketcreator, 1000000 * 10 ** 6, false);
-        usdt.approve(address(market), 50000 * 10 ** 6 + 1);
         uint256 _goodconfig = (2 ** 255) +
             1 *
             2 ** 246 +
@@ -42,18 +40,17 @@ contract investERC20ValueGood is BaseSetup {
             2 ** 233 +
             7 *
             2 ** 226;
-        market.initMetaGood(
-            address(usdt),
+        market.initMetaGood{value: 50000 * 10 ** 6}(
+            address(0),
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toKey();
+        metagood = S_GoodKey(marketcreator, address(0)).toKey();
         vm.stopPrank();
     }
 
-    function testinvestOwnERC20ValueGood() public {
+    function testinvestOwnNativeETHValueGood() public {
         vm.startPrank(marketcreator);
-        usdt.approve(address(market), 200000 * 10 ** 6 + 1);
 
         uint256 normalproof;
         normalproof = market.proofmapping(
@@ -62,7 +59,7 @@ contract investERC20ValueGood is BaseSetup {
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
-            usdt.balanceOf(marketcreator),
+            marketcreator.balance,
             950000000000,
             "before invest metagood:marketcreator account invest balance error"
         );
@@ -82,16 +79,16 @@ contract investERC20ValueGood is BaseSetup {
             "before invest:proof quantity error"
         );
 
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
-        snapLastCall("invest_own_erc20_valuegood_first");
-
+        market.investGood{value: 50000000000}(metagood, 0, 50000 * 10 ** 6);
+        snapLastCall("invest_own_nativeeth_valuegood_first");
+        assertEq(market.goodNum(), 1, "befor invest:good num error");
         assertEq(
-            usdt.balanceOf(marketcreator),
+            marketcreator.balance,
             900000000000,
             "after invest metagood:marketcreator account invest balance error"
         );
         assertEq(
-            usdt.balanceOf(address(market)),
+            address(market).balance,
             100000000000,
             "after invest metagood:market account invest balance error"
         );
@@ -150,8 +147,16 @@ contract investERC20ValueGood is BaseSetup {
 
         assertEq(market.goodNum(), 1, "after invest:good num error");
 
-        bytes32 goodkey = S_GoodKey(marketcreator, address(usdt)).toKey();
+        bytes32 goodkey = S_GoodKey(address(0), marketcreator).toKey();
 
+        assertEq(
+            good_.erc20address,
+            address(0),
+            "after invest metagood:metagood nativeeth error"
+        );
+        normalproof = market.proofmapping(
+            S_ProofKey(marketcreator, metagood, 0).toKey()
+        );
         _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
@@ -169,26 +174,25 @@ contract investERC20ValueGood is BaseSetup {
             "after invest:proof quantity error"
         );
 
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
-        snapLastCall("invest_own_erc20_valuegood_second");
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
-        snapLastCall("invest_own_erc20_valuegood_three");
+        market.investGood{value: 50000000000}(metagood, 0, 50000 * 10 ** 6);
+        snapLastCall("invest_own_nativeeth_valuegood_second");
+        market.investGood{value: 50000000000}(metagood, 0, 50000 * 10 ** 6);
+        snapLastCall("invest_own_nativeeth_valuegood_three");
         vm.stopPrank();
     }
 
-    function testinvestotherERC20ValueGood() public {
+    function testinvestotherNativeETHValueGood() public {
         vm.startPrank(users[2]);
-        deal(address(usdt), users[2], 300000 * 10 ** 6, false);
-        usdt.approve(address(market), 300000 * 10 ** 6 + 1);
+        deal(users[2], 300000 * 10 ** 6);
 
-        uint256 normalproof = market.proofmapping(
+        uint256 normalproof;
+        normalproof = market.proofmapping(
             S_ProofKey(users[2], metagood, 0).toKey()
         );
-        console2.log("1111111", normalproof);
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
-            usdt.balanceOf(users[2]),
+            users[2].balance,
             300000000000,
             "before invest metagood:users[2] account invest balance error"
         );
@@ -205,16 +209,16 @@ contract investERC20ValueGood is BaseSetup {
             "before invest:proof quantity error"
         );
 
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
-        snapLastCall("invest_other_erc20_valuegood_first");
+        market.investGood{value: 50000000000}(metagood, 0, 50000 * 10 ** 6);
+        snapLastCall("invest_other_nativeeth_valuegood_first");
 
         assertEq(
-            usdt.balanceOf(users[2]),
+            users[2].balance,
             250000000000,
             "after invest metagood:users[2] account invest balance error"
         );
         assertEq(
-            usdt.balanceOf(address(market)),
+            address(market).balance,
             100000000000,
             "after invest metagood:market account invest balance error"
         );
@@ -273,6 +277,12 @@ contract investERC20ValueGood is BaseSetup {
 
         assertEq(market.goodNum(), 1, "after invest:good num error");
 
+        bytes32 goodkey = S_GoodKey(marketcreator, address(0)).toKey();
+        assertEq(
+            good_.erc20address,
+            address(0),
+            "after invest metagood:metagood nativeeth error"
+        );
         normalproof = market.proofmapping(
             S_ProofKey(users[2], metagood, 0).toKey()
         );
@@ -298,10 +308,11 @@ contract investERC20ValueGood is BaseSetup {
             "after invest:proof quantity error"
         );
 
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
-        snapLastCall("invest_other_erc20_valuegood_second");
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
-        snapLastCall("invest_other_erc20_valuegood_three");
+        market.investGood{value: 50000000000}(metagood, 0, 50000 * 10 ** 6);
+        snapLastCall("invest_other_nativeeth_valuegood_second");
+        market.investGood{value: 50000000000}(metagood, 0, 50000 * 10 ** 6);
+        snapLastCall("invest_other_nativeeth_valuegood_three");
+
         vm.stopPrank();
     }
 }

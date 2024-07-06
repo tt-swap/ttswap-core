@@ -81,10 +81,23 @@ library L_Proof {
                 toBalanceUINT256(profit.amount1(), 0);
         }
     }
+
+    function conbine(
+        S_ProofState storage _self,
+        S_ProofState storage _get
+    ) internal {
+        _self.state = _self.state + _get.state;
+        _self.invest = _self.invest + _get.invest;
+        _self.valueinvest = _self.valueinvest + _get.valueinvest;
+    }
 }
 
 library L_ProofIdLibrary {
     function toId(S_ProofKey memory proofKey) internal pure returns (uint256) {
         return uint256(keccak256(abi.encode(proofKey)));
+    }
+
+    function toKey(S_ProofKey memory proofKey) internal pure returns (bytes32) {
+        return keccak256(abi.encode(proofKey));
     }
 }

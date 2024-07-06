@@ -93,7 +93,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normal good, balance of market error"
         );
 
-        L_Good.S_GoodState memory metagoodkeystate = market.getGoodState(
+        L_Good.S_GoodTmpState memory metagoodkeystate = market.getGoodState(
             metagoodkey
         );
         assertEq(
@@ -145,7 +145,7 @@ contract testInitNormalGood is BaseSetup {
         );
 
         ////////////////////////////////////////
-        L_Good.S_GoodState memory normalgoodstate = market.getGoodState(
+        L_Good.S_GoodTmpState memory normalgoodstate = market.getGoodState(
             normalgoodkey
         );
         assertEq(
@@ -191,8 +191,9 @@ contract testInitNormalGood is BaseSetup {
         );
 
         ///////////////////////////
-        uint256 normalproof = S_ProofKey(users[1], normalgoodkey, metagoodkey)
-            .toId();
+        uint256 normalproof = market.proofmapping(
+            S_ProofKey(users[1], normalgoodkey, metagoodkey).toKey()
+        );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
@@ -274,7 +275,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normal good, balance of market error"
         );
 
-        L_Good.S_GoodState memory metagoodkeystate = market.getGoodState(
+        L_Good.S_GoodTmpState memory metagoodkeystate = market.getGoodState(
             metagoodkey
         );
         assertEq(
@@ -328,7 +329,7 @@ contract testInitNormalGood is BaseSetup {
         bytes32 normalgoodkey = S_GoodKey(users[1], address(0)).toKey();
 
         ////////////////////////////////////////
-        L_Good.S_GoodState memory normalgoodstate = market.getGoodState(
+        L_Good.S_GoodTmpState memory normalgoodstate = market.getGoodState(
             normalgoodkey
         );
         assertEq(
@@ -364,8 +365,9 @@ contract testInitNormalGood is BaseSetup {
 
         ///////////////////////////
 
-        uint256 normalproof = S_ProofKey(users[1], normalgoodkey, metagoodkey)
-            .toId();
+        uint256 normalproof = market.proofmapping(
+            S_ProofKey(users[1], normalgoodkey, metagoodkey).toKey()
+        );
 
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
         assertEq(

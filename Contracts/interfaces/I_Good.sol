@@ -40,6 +40,10 @@ interface I_Good {
     /// @param goodid 商品编号
     /// @param welfare 福利数量
     event e_goodWelfare(bytes32 goodid, uint128 welfare);
+    /// @notice collect fee
+    /// @param goodid 商品编号
+    /// @param feeamount 福利数量
+    event e_collectProtocolFee(bytes32 goodid, uint256 feeamount);
 
     /// @notice Returns the config of the market~返回市场的配置
     /// @dev Can be changed by the marketmanager~可以被管理员调整

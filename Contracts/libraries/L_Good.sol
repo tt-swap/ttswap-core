@@ -21,13 +21,15 @@ library L_Good {
         T_BalanceUINT256 currentState; //前128位表示商品的价值,后128位表示商品数量 amount0:the good's total value ,amount1:the good's quantity
         T_BalanceUINT256 investState; //前128位表示商品的投资总价值,后128位表示商品投资总数量 amount0:the good's total invest value,amount1:the good's total invest quantity
         T_BalanceUINT256 feeQunitityState; //前128位表示商品的手续费总额(包含构建手续费),后128位表示商品的构建手续费总额 amount0:the good's total fee quantity which contain contruct fee,amount1:the good's total contruct fee.
+        mapping(address => uint128) fees;
     }
-
-    struct S_GoodDisinvestReturn {
-        uint128 profit; //实际手续费
-        uint128 actual_fee; //构建手续费
-        uint128 actualDisinvestValue; //实际投资价值
-        uint128 actualDisinvestQuantity; //实际投资数量
+    struct S_GoodTmpState {
+        uint256 goodConfig; //商品配置refer to goodConfig
+        address owner; //商品创建者 good's creator
+        address erc20address; //商品的erc20合约地址good's erc20address
+        T_BalanceUINT256 currentState; //前128位表示商品的价值,后128位表示商品数量 amount0:the good's total value ,amount1:the good's quantity
+        T_BalanceUINT256 investState; //前128位表示商品的投资总价值,后128位表示商品投资总数量 amount0:the good's total invest value,amount1:the good's total invest quantity
+        T_BalanceUINT256 feeQunitityState; //前128位表示商品的手续费总额(包含构建手续费),后128位表示商品的构建手续费总额 amount0:the good's total fee quantity which contain contruct fee,amount1:the good's total contruct fee.
     }
 
     function getMaxTradeValue(
@@ -328,11 +330,24 @@ library L_Good {
             );
     }
 
+    struct S_GoodDisinvestReturn {
+        uint128 profit; //实际手续费
+        uint128 actual_fee; //构建手续费
+        //   uint128 actualDisinvestValue; //实际投资价值
+        uint128 actualDisinvestQuantity; //实际投资数量
+    }
+
+    struct S_GoodDisinvestParam {
+        uint128 _goodQuantity;
+        address _gater;
+        address _referal;
+        uint256 _marketconfig;
+    }
     function disinvestGood(
         S_GoodState storage _self,
         S_GoodState storage _valueGoodState,
         L_Proof.S_ProofState storage _investProof,
-        uint128 _goodQuantity
+        S_GoodDisinvestParam memory _params
     )
         internal
         returns (
@@ -345,29 +360,28 @@ library L_Good {
                 _valueGoodState.goodConfig.isvaluegood(),
             "G10"
         );
-        uint128 var1 = toBalanceUINT256(
+        uint128 disinvestvalue = toBalanceUINT256(
             _investProof.state.amount0(),
             _investProof.invest.amount1()
-        ).getamount0fromamount1(_goodQuantity);
+        ).getamount0fromamount1(_params._goodQuantity);
         normalGoodResult1_ = S_GoodDisinvestReturn(
             toBalanceUINT256(
                 _self.feeQunitityState.amount0(),
                 _self.investState.amount1()
-            ).getamount0fromamount1(_goodQuantity),
+            ).getamount0fromamount1(_params._goodQuantity),
             toBalanceUINT256(
                 _investProof.invest.amount0(),
                 _investProof.invest.amount1()
-            ).getamount0fromamount1(_goodQuantity),
-            var1,
-            _goodQuantity
+            ).getamount0fromamount1(_params._goodQuantity),
+            _params._goodQuantity
         );
 
         require(
-            normalGoodResult1_.actualDisinvestValue <
+            disinvestvalue <
                 _self.goodConfig.getDisinvestChips(
                     _self.currentState.amount0()
                 ) &&
-                _goodQuantity <
+                _params._goodQuantity <
                 _self.goodConfig.getDisinvestChips(
                     _self.currentState.amount1()
                 ),
@@ -377,14 +391,14 @@ library L_Good {
         _self.currentState =
             _self.currentState -
             toBalanceUINT256(
-                normalGoodResult1_.actualDisinvestValue,
+                disinvestvalue,
                 normalGoodResult1_.actualDisinvestQuantity
             );
 
         _self.investState =
             _self.investState -
             toBalanceUINT256(
-                normalGoodResult1_.actualDisinvestValue,
+                disinvestvalue,
                 normalGoodResult1_.actualDisinvestQuantity
             );
 
@@ -395,7 +409,7 @@ library L_Good {
                 normalGoodResult1_.actual_fee
             );
 
-        _investProof.burnProof(var1);
+        _investProof.burnProof(disinvestvalue);
 
         normalGoodResult1_.profit =
             normalGoodResult1_.profit -
@@ -405,6 +419,14 @@ library L_Good {
             normalGoodResult1_.actualDisinvestQuantity
         );
 
+        allocateFee(
+            _self,
+            normalGoodResult1_.profit,
+            _params._marketconfig,
+            _params._gater,
+            _params._referal
+        );
+
         if (normalGoodResult1_.actual_fee > 0) {
             _self.feeQunitityState =
                 _self.feeQunitityState +
@@ -412,31 +434,29 @@ library L_Good {
         }
 
         if (_investProof.valuegood != 0) {
-            var1 = toBalanceUINT256(
-                _investProof.valueinvest.amount1(),
-                _investProof.invest.amount1()
-            ).getamount0fromamount1(_goodQuantity);
             valueGoodResult2_ = S_GoodDisinvestReturn(
                 toBalanceUINT256(
                     _valueGoodState.feeQunitityState.amount0(),
                     _valueGoodState.investState.amount1()
-                ).getamount0fromamount1(var1),
+                ).getamount0fromamount1(disinvestvalue),
                 toBalanceUINT256(
                     _investProof.valueinvest.amount0(),
                     _investProof.valueinvest.amount1()
-                ).getamount0fromamount1(var1),
-                normalGoodResult1_.actualDisinvestValue,
-                var1
+                ).getamount0fromamount1(disinvestvalue),
+                toBalanceUINT256(
+                    _investProof.state.amount0(),
+                    _investProof.valueinvest.amount1()
+                ).getamount1fromamount0(disinvestvalue)
             );
 
             require(
-                var1 <
-                    _valueGoodState.goodConfig.getDisinvestChips(
-                        _valueGoodState.currentState.amount1()
-                    ) &&
-                    valueGoodResult2_.actualDisinvestValue <
+                disinvestvalue <
                     _valueGoodState.goodConfig.getDisinvestChips(
                         _valueGoodState.currentState.amount0()
+                    ) &&
+                    valueGoodResult2_.actualDisinvestQuantity <
+                    _valueGoodState.goodConfig.getDisinvestChips(
+                        _valueGoodState.currentState.amount1()
                     ),
                 "G012"
             );
@@ -444,14 +464,14 @@ library L_Good {
             _valueGoodState.currentState =
                 _valueGoodState.currentState -
                 toBalanceUINT256(
-                    valueGoodResult2_.actualDisinvestValue,
+                    disinvestvalue,
                     valueGoodResult2_.actualDisinvestQuantity
                 );
 
             _valueGoodState.investState =
                 _valueGoodState.investState -
                 toBalanceUINT256(
-                    valueGoodResult2_.actualDisinvestValue,
+                    disinvestvalue,
                     valueGoodResult2_.actualDisinvestQuantity
                 );
 
@@ -475,6 +495,13 @@ library L_Good {
                     _valueGoodState.feeQunitityState +
                     toBalanceUINT256(valueGoodResult2_.actual_fee, 0);
             }
+            allocateFee(
+                _valueGoodState,
+                valueGoodResult2_.profit,
+                _params._marketconfig,
+                _params._gater,
+                _params._referal
+            );
         }
     }
 
@@ -507,6 +534,36 @@ library L_Good {
         }
 
         _investProof.collectProofFee(profit);
+    }
+
+    function allocateFee(
+        S_GoodState storage _self,
+        uint128 _actualFeeQuantity,
+        uint256 _marketconfig,
+        address _gater,
+        address _referal
+    ) private {
+        if (_referal == address(0)) {
+            uint128 temfee;
+            temfee =
+                _marketconfig.getSellerFee(_actualFeeQuantity) +
+                _marketconfig.getCustomerFee(_actualFeeQuantity);
+            _self.fees[_self.owner] += temfee;
+            _self.fees[_gater] += (_actualFeeQuantity -
+                _marketconfig.getLiquidFee(_actualFeeQuantity) -
+                temfee);
+        } else {
+            _self.fees[_self.owner] += _marketconfig.getSellerFee(
+                _actualFeeQuantity
+            );
+            _self.fees[_referal] += _marketconfig.getReferFee(
+                _actualFeeQuantity
+            );
+            _self.fees[msg.sender] += _marketconfig.getCustomerFee(
+                _actualFeeQuantity
+            );
+            _self.fees[_gater] += _marketconfig.getGaterFee(_actualFeeQuantity);
+        }
     }
 }
 

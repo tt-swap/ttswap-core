@@ -91,7 +91,9 @@ contract testInitMetaGood is BaseSetup {
 
         assertEq(market.goodNum(), 1, "after initial:good num error");
 
-        uint256 metaproof = S_ProofKey(marketcreator, metagood, 0).toId();
+        uint256 metaproof = market.proofmapping(
+            S_ProofKey(marketcreator, metagood, 0).toKey()
+        );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
             _proof1.state.amount0(),
@@ -158,7 +160,7 @@ contract testInitMetaGood is BaseSetup {
             "after initial metagood:market account initial balance error"
         );
 
-        L_Good.S_GoodState memory good_ = market.getGoodState(metagood);
+        L_Good.S_GoodTmpState memory good_ = market.getGoodState(metagood);
         assertEq(
             T_BalanceUINT256.unwrap(good_.currentState),
             T_BalanceUINT256.unwrap(
@@ -193,7 +195,9 @@ contract testInitMetaGood is BaseSetup {
 
         assertEq(market.goodNum(), 1, "after initial:good num error");
 
-        uint256 metaproof = S_ProofKey(marketcreator, metagood, 0).toId();
+        uint256 metaproof = market.proofmapping(
+            S_ProofKey(marketcreator, metagood, 0).toKey()
+        );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
             _proof1.state.amount0(),

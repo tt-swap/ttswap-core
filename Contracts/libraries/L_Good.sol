@@ -343,6 +343,7 @@ library L_Good {
         address _referal;
         uint256 _marketconfig;
     }
+    event debuggvale(bool, bool);
     function disinvestGood(
         S_GoodState storage _self,
         S_GoodState storage _valueGoodState,
@@ -355,11 +356,16 @@ library L_Good {
             S_GoodDisinvestReturn memory valueGoodResult2_
         )
     {
+        emit debuggvale(
+            _self.goodConfig.isvaluegood(),
+            _valueGoodState.goodConfig.isvaluegood()
+        );
         require(
             _self.goodConfig.isvaluegood() ||
                 _valueGoodState.goodConfig.isvaluegood(),
             "G10"
         );
+
         uint128 disinvestvalue = toBalanceUINT256(
             _investProof.state.amount0(),
             _investProof.invest.amount1()

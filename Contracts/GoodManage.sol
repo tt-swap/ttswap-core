@@ -28,7 +28,7 @@ abstract contract GoodManage is I_Good {
     mapping(bytes32 => L_Good.S_GoodState) internal goods;
     //mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
-    mapping(address => uint256) private banlist;
+    mapping(address => uint256) internal banlist;
 
     constructor(address _marketcreator, uint256 _marketconfig) {
         marketcreator = _marketcreator;

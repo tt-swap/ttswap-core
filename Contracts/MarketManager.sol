@@ -335,6 +335,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_;
         bytes32 normalgood = proofs[_proofid].currentgood;
         bytes32 valuegood = proofs[_proofid].valuegood;
+        _gater = banlist[_gater] == 1 ? _gater : marketcreator;
+        _referal = banlist[_referal] == 1 ? _referal : marketcreator;
         (disinvestNormalResult1_, disinvestValueResult2_) = goods[normalgood]
             .disinvestGood(
                 goods[valuegood],

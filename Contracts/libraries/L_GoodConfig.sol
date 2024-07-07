@@ -11,6 +11,13 @@ library L_GoodConfigLibrary {
         }
         return b == 1 ? true : false;
     }
+    function isnormalgood(uint256 config) internal pure returns (bool a) {
+        uint256 b;
+        assembly {
+            b := shr(255, config)
+        }
+        return b == 1 ? false : true;
+    }
 
     //商品投资费率 单位万分之一
     //起始位 5 长度 7

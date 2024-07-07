@@ -113,13 +113,11 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _normalGoodNo  value good no~价值商品编号
     /// @param _valueGoodNo  value good no~价值商品编号
     /// @param _profit   profit  amount0:normalprofit  amount1:valueprofit
-    /// @param _protocalfee   protocalfee  amount0:normalprofit  amount1:valueprofit
     event e_collectProofFee(
         uint256 indexed _proofNo,
         bytes32 _normalGoodNo,
         bytes32 _valueGoodNo,
-        T_BalanceUINT256 _profit,
-        T_BalanceUINT256 _protocalfee
+        T_BalanceUINT256 _profit
     );
 
     /// @notice emit enpower:赋能
@@ -211,19 +209,23 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _proofid   the invest proof No of normal good ~普通投资证明的编号编号
     /// @param _goodQuantity  disinvest quantity~取消普通商品投资数量
     /// @param _gater   gater address~门户
-    /// @param _referer   referal~推荐人
+    /// @param _referal   referal~推荐人
     function disinvestProof(
         uint256 _proofid,
         uint128 _goodQuantity,
         address _gater,
-        address _referer
+        address _referal
     ) external returns (bool);
 
     /// @notice collect the profit of normal proof~提取普通投资证明的收益
     /// @param _proofid   the proof No of invest normal good~普通投资证明编号
     /// @return profit_   amount0 普通商品的投资收益 amount1价值商品的投资收益
+    /// @param _gater   gater address~门户
+    /// @param _referal   referal~推荐人
     function collectProofFee(
-        uint256 _proofid
+        uint256 _proofid,
+        address _gater,
+        address _referal
     ) external returns (T_BalanceUINT256 profit_);
 
     /// @notice enpower~赋能

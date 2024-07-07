@@ -27,7 +27,7 @@ library L_Proof {
 
         _self.state = _self.state + _state;
         _self.invest = _self.invest + _invest;
-        if (_valuegood != "")
+        if (_valuegood != 0)
             _self.valueinvest = _self.valueinvest + _valueinvest;
     }
 
@@ -93,10 +93,6 @@ library L_Proof {
 }
 
 library L_ProofIdLibrary {
-    function toId(S_ProofKey memory proofKey) internal pure returns (uint256) {
-        return uint256(keccak256(abi.encode(proofKey)));
-    }
-
     function toKey(S_ProofKey memory proofKey) internal pure returns (bytes32) {
         return keccak256(abi.encode(proofKey));
     }

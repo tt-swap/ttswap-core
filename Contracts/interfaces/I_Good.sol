@@ -58,11 +58,6 @@ interface I_Good {
     /// @return goodNum_ the good number of the market~市场商品总数
     function goodNum() external view returns (uint256 goodNum_);
 
-    /// @notice Returns the address's status 查询地址是否被禁止提手续费
-    /// @param _user 用户地址
-    /// @return _isban the address status~地址是否被禁
-    function check_banlist(address _user) external view returns (bool _isban);
-
     /// @notice config market config 设置市场中市场配置
     /// @param _marketconfig   the market config ~市场配置
     /// @return 是否成功

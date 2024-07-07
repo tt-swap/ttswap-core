@@ -5,6 +5,7 @@ import {L_Proof} from "./L_Proof.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
 import {S_GoodKey} from "./L_Struct.sol";
+import {L_CurrencyLibrary} from "./L_Currency.sol";
 
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice} from "./L_BalanceUINT256.sol";
 
@@ -13,6 +14,7 @@ library L_Good {
     using L_MarketConfigLibrary for uint256;
     using L_BalanceUINT256Library for uint256;
     using L_Proof for L_Proof.S_ProofState;
+    using L_CurrencyLibrary for address;
 
     struct S_GoodState {
         uint256 goodConfig; //商品配置refer to goodConfig
@@ -23,6 +25,7 @@ library L_Good {
         T_BalanceUINT256 feeQunitityState; //前128位表示商品的手续费总额(包含构建手续费),后128位表示商品的构建手续费总额 amount0:the good's total fee quantity which contain contruct fee,amount1:the good's total contruct fee.
         mapping(address => uint128) fees;
     }
+
     struct S_GoodTmpState {
         uint256 goodConfig; //商品配置refer to goodConfig
         address owner; //商品创建者 good's creator
@@ -333,7 +336,6 @@ library L_Good {
     struct S_GoodDisinvestReturn {
         uint128 profit; //实际手续费
         uint128 actual_fee; //构建手续费
-        //   uint128 actualDisinvestValue; //实际投资价值
         uint128 actualDisinvestQuantity; //实际投资数量
     }
 
@@ -342,8 +344,8 @@ library L_Good {
         address _gater;
         address _referal;
         uint256 _marketconfig;
+        address _marketcreator;
     }
-    event debuggvale(bool, bool);
     function disinvestGood(
         S_GoodState storage _self,
         S_GoodState storage _valueGoodState,
@@ -356,10 +358,6 @@ library L_Good {
             S_GoodDisinvestReturn memory valueGoodResult2_
         )
     {
-        emit debuggvale(
-            _self.goodConfig.isvaluegood(),
-            _valueGoodState.goodConfig.isvaluegood()
-        );
         require(
             _self.goodConfig.isvaluegood() ||
                 _valueGoodState.goodConfig.isvaluegood(),
@@ -430,7 +428,8 @@ library L_Good {
             normalGoodResult1_.profit,
             _params._marketconfig,
             _params._gater,
-            _params._referal
+            _params._referal,
+            _params._marketcreator
         );
 
         if (normalGoodResult1_.actual_fee > 0) {
@@ -506,7 +505,8 @@ library L_Good {
                 valueGoodResult2_.profit,
                 _params._marketconfig,
                 _params._gater,
-                _params._referal
+                _params._referal,
+                _params._marketcreator
             );
         }
     }
@@ -514,61 +514,103 @@ library L_Good {
     function collectGoodFee(
         S_GoodState storage _self,
         S_GoodState storage _valuegood,
-        L_Proof.S_ProofState storage _investProof
+        L_Proof.S_ProofState storage _investProof,
+        address _gater,
+        address _referal,
+        uint256 _marketconfig,
+        address _marketcreator
     ) internal returns (T_BalanceUINT256 profit) {
-        profit = toBalanceUINT256(
-            toBalanceUINT256(
-                _self.feeQunitityState.amount0(),
-                _self.investState.amount1()
-            ).getamount0fromamount1(_investProof.invest.amount1()) -
-                _investProof.invest.amount0(),
-            _investProof.valuegood != 0
-                ? (toBalanceUINT256(
-                    _valuegood.feeQunitityState.amount0(),
-                    _valuegood.investState.amount1()
-                ).getamount0fromamount1(_investProof.valueinvest.amount1()) -
-                    _investProof.valueinvest.amount0())
-                : 0
-        );
+        uint128 profit1 = toBalanceUINT256(
+            _self.feeQunitityState.amount0(),
+            _self.investState.amount1()
+        ).getamount0fromamount1(_investProof.invest.amount1()) -
+            _investProof.invest.amount0();
         _self.feeQunitityState =
             _self.feeQunitityState +
             toBalanceUINT256(0, profit.amount0());
-        if (_investProof.valuegood != 0) {
+        allocateFee(
+            _self,
+            profit1,
+            _marketconfig,
+            _gater,
+            _referal,
+            _marketcreator
+        );
+        uint128 profit2;
+        if (_valuegood.goodConfig >= 0) {
+            profit2 =
+                toBalanceUINT256(
+                    _valuegood.feeQunitityState.amount0(),
+                    _valuegood.investState.amount1()
+                ).getamount0fromamount1(_investProof.valueinvest.amount1()) -
+                _investProof.valueinvest.amount0();
             _valuegood.feeQunitityState =
                 _valuegood.feeQunitityState +
                 toBalanceUINT256(0, profit.amount1());
+            allocateFee(
+                _valuegood,
+                profit2,
+                _marketconfig,
+                _gater,
+                _referal,
+                _marketcreator
+            );
         }
-
+        profit = toBalanceUINT256(profit1, profit2);
         _investProof.collectProofFee(profit);
     }
 
     function allocateFee(
         S_GoodState storage _self,
-        uint128 _actualFeeQuantity,
+        uint128 _profit,
         uint256 _marketconfig,
         address _gater,
-        address _referal
+        address _referal,
+        address _marketcreator
     ) private {
+        uint128 marketfee = _marketconfig.getPlatFee128(_profit);
+        _profit -= marketfee;
+        uint128 temfee1;
+        uint128 temfee2;
         if (_referal == address(0)) {
-            uint128 temfee;
-            temfee =
-                _marketconfig.getSellerFee(_actualFeeQuantity) +
-                _marketconfig.getCustomerFee(_actualFeeQuantity);
-            _self.fees[_self.owner] += temfee;
-            _self.fees[_gater] += (_actualFeeQuantity -
-                _marketconfig.getLiquidFee(_actualFeeQuantity) -
-                temfee);
+            temfee1 = _marketconfig.getLiquidFee(_profit);
+            _self.erc20address.safeTransfer(msg.sender, temfee1);
+            temfee2 =
+                _marketconfig.getSellerFee(_profit) +
+                _marketconfig.getCustomerFee(_profit);
+            if (_gater == _marketcreator) {
+                marketfee += temfee2;
+            } else {
+                _self.fees[_gater] = temfee2;
+            }
+            if (_referal == _marketcreator) {
+                marketfee += (_profit - temfee1 - temfee2);
+            } else {
+                _self.fees[_referal] += (_profit - temfee1 - temfee2);
+            }
+            _self.fees[_marketcreator] = marketfee;
         } else {
-            _self.fees[_self.owner] += _marketconfig.getSellerFee(
-                _actualFeeQuantity
+            if (_self.owner == _marketcreator) {
+                marketfee += _marketconfig.getSellerFee(_profit);
+            } else {
+                _self.fees[_self.owner] += _marketconfig.getSellerFee(_profit);
+            }
+            if (_gater == _marketcreator) {
+                marketfee += _marketconfig.getGaterFee(_profit);
+            } else {
+                _self.fees[_gater] += _marketconfig.getGaterFee(_profit);
+            }
+            if (_referal == _marketcreator) {
+                marketfee += _marketconfig.getReferFee(_profit);
+            } else {
+                _self.fees[_referal] += _marketconfig.getReferFee(_profit);
+            }
+            _self.fees[_marketcreator] += marketfee;
+            _self.erc20address.safeTransfer(
+                msg.sender,
+                _marketconfig.getLiquidFee(_profit) +
+                    _marketconfig.getCustomerFee(_profit)
             );
-            _self.fees[_referal] += _marketconfig.getReferFee(
-                _actualFeeQuantity
-            );
-            _self.fees[msg.sender] += _marketconfig.getCustomerFee(
-                _actualFeeQuantity
-            );
-            _self.fees[_gater] += _marketconfig.getGaterFee(_actualFeeQuantity);
         }
     }
 }

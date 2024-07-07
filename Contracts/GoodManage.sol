@@ -9,7 +9,6 @@ import {L_Good} from "./libraries/L_Good.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {S_GoodKey} from "./libraries/L_Struct.sol";
-import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "./libraries/L_BalanceUINT256.sol";
 
 abstract contract GoodManage is I_Good {
@@ -26,18 +25,13 @@ abstract contract GoodManage is I_Good {
     address public override marketcreator;
 
     mapping(bytes32 => L_Good.S_GoodState) internal goods;
-    //mapping(bytes32 => uint256) public goodseq;
     uint256 internal locked;
-    mapping(address => uint256) internal banlist;
+    mapping(address => uint256) public banlist;
+    mapping(address => address) public referals;
 
     constructor(address _marketcreator, uint256 _marketconfig) {
         marketcreator = _marketcreator;
         marketconfig = _marketconfig;
-    }
-
-    modifier onlyMarketCreator() {
-        require(msg.sender == marketcreator, "G02");
-        _;
     }
 
     modifier noReentrant() {
@@ -45,11 +39,6 @@ abstract contract GoodManage is I_Good {
         locked = 1;
         _;
         locked = 0;
-    }
-
-    modifier noblacklist() {
-        require(banlist[msg.sender] == 0);
-        _;
     }
 
     function getGoodState(
@@ -64,18 +53,16 @@ abstract contract GoodManage is I_Good {
     }
 
     /// @inheritdoc I_Good
-    function addbanlist(
-        address _user
-    ) external override onlyMarketCreator returns (bool) {
+    function addbanlist(address _user) external override returns (bool) {
+        require(msg.sender == marketcreator, "G02");
         banlist[_user] = 1;
         emit e_addbanlist(_user);
         return true;
     }
 
     /// @inheritdoc I_Good
-    function removebanlist(
-        address _user
-    ) external override onlyMarketCreator returns (bool) {
+    function removebanlist(address _user) external override returns (bool) {
+        require(msg.sender == marketcreator, "G02");
         banlist[_user] = 0;
         emit e_removebanlist(_user);
         return true;
@@ -84,8 +71,8 @@ abstract contract GoodManage is I_Good {
     /// @inheritdoc I_Good
     function setMarketConfig(
         uint256 _marketconfig
-    ) external override onlyMarketCreator returns (bool) {
-        require(_marketconfig.checkAllocate(), "G03");
+    ) external override returns (bool) {
+        require(msg.sender == marketcreator, "G02");
         marketconfig = _marketconfig;
         emit e_setMarketConfig(_marketconfig);
         return true;
@@ -104,7 +91,8 @@ abstract contract GoodManage is I_Good {
     /// @inheritdoc I_Good
     function updatetoValueGood(
         bytes32 _goodid
-    ) external override onlyMarketCreator returns (bool) {
+    ) external override returns (bool) {
+        require(msg.sender == marketcreator, "G02");
         goods[_goodid].updateToValueGood();
         emit e_updatetoValueGood(_goodid);
         return true;
@@ -113,7 +101,8 @@ abstract contract GoodManage is I_Good {
     /// @inheritdoc I_Good
     function updatetoNormalGood(
         bytes32 _goodid
-    ) external override onlyMarketCreator returns (bool) {
+    ) external override returns (bool) {
+        require(msg.sender == marketcreator, "G02");
         goods[_goodid].updateToNormalGood();
         emit e_updatetoNormalGood(_goodid);
         return true;
@@ -134,19 +123,9 @@ abstract contract GoodManage is I_Good {
         bytes32 _goodid,
         address _to
     ) external override returns (bool) {
-        require(
-            msg.sender == goods[_goodid].owner || msg.sender == marketcreator,
-            "G05"
-        );
+        require(msg.sender == marketcreator, "G05");
         goods[_goodid].owner = _to;
         return true;
-    }
-
-    /// @inheritdoc I_Good
-    function check_banlist(
-        address _user
-    ) external view override returns (bool _isban) {
-        return banlist[_user] == 1 ? true : false;
     }
 
     function collectProtocolFee(

@@ -5,19 +5,15 @@ import "./interfaces/I_Proof.sol";
 import {S_ProofKey} from "./libraries/L_Struct.sol";
 import {ERC721Permit} from "@erc721permit/ERC721Permit.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
-import {L_ArrayStorage} from "./libraries/L_ArrayStorage.sol";
-import {Counters} from "./libraries/Counters.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 abstract contract ProofManage is I_Proof, ERC721Permit {
     using L_Proof for *;
     using Strings for uint256;
-    using Counters for Counters.Counter;
     using L_ProofIdLibrary for S_ProofKey;
-    using L_ArrayStorage for L_ArrayStorage.S_ArrayStorage;
 
     uint256 public override totalSupply;
-    mapping(uint256 => L_Proof.S_ProofState) public proofs;
+    mapping(uint256 => L_Proof.S_ProofState) internal proofs;
     mapping(bytes32 => uint256) public proofmapping;
 
     // solhint-disable-next-line var-name-mixedcase

@@ -67,20 +67,14 @@ function swapCompute2(swapCache memory _stepCache, T_BalanceUINT256 _limitPrice)
 
 
 ```solidity
-function swapCommit(
-    S_GoodState storage _self,
-    T_BalanceUINT256 _swapstate,
-    uint128 _fee,
-    uint256 _marketconfig,
-    S_Ralate memory _ralate
-) internal;
+function swapCommit(S_GoodState storage _self, T_BalanceUINT256 _swapstate, uint128 _fee) internal;
 ```
 
 ### investGood
 
 
 ```solidity
-function investGood(S_GoodState storage _self, uint128 _invest, uint256 _marketConfig, S_Ralate memory _ralate)
+function investGood(S_GoodState storage _self, uint128 _invest)
     internal
     returns (S_GoodInvestReturn memory investResult_);
 ```
@@ -93,9 +87,7 @@ function disinvestGood(
     S_GoodState storage _self,
     S_GoodState storage _valueGoodState,
     L_Proof.S_ProofState storage _investProof,
-    uint128 _goodQuantity,
-    uint256 _marketconfig,
-    S_Ralate memory _ralate
+    S_GoodDisinvestParam memory _params
 ) internal returns (S_GoodDisinvestReturn memory normalGoodResult1_, S_GoodDisinvestReturn memory valueGoodResult2_);
 ```
 
@@ -106,7 +98,11 @@ function disinvestGood(
 function collectGoodFee(
     S_GoodState storage _self,
     S_GoodState storage _valuegood,
-    L_Proof.S_ProofState storage _investProof
+    L_Proof.S_ProofState storage _investProof,
+    address _gater,
+    address _referal,
+    uint256 _marketconfig,
+    address _marketcreator
 ) internal returns (T_BalanceUINT256 profit);
 ```
 
@@ -116,9 +112,11 @@ function collectGoodFee(
 ```solidity
 function allocateFee(
     S_GoodState storage _self,
-    uint128 _actualFeeQuantity,
+    uint128 _profit,
     uint256 _marketconfig,
-    S_Ralate memory _ralate
+    address _gater,
+    address _referal,
+    address _marketcreator
 ) private;
 ```
 
@@ -133,7 +131,7 @@ struct S_GoodState {
     T_BalanceUINT256 currentState;
     T_BalanceUINT256 investState;
     T_BalanceUINT256 feeQunitityState;
-    mapping(address => uint256) fees;
+    mapping(address => uint128) fees;
 }
 ```
 
@@ -147,6 +145,21 @@ struct S_GoodTmpState {
     T_BalanceUINT256 currentState;
     T_BalanceUINT256 investState;
     T_BalanceUINT256 feeQunitityState;
+}
+```
+
+### swapCache
+
+```solidity
+struct swapCache {
+    uint128 remainQuantity;
+    uint128 outputQuantity;
+    uint128 feeQuantity;
+    uint128 swapvalue;
+    T_BalanceUINT256 good1currentState;
+    uint256 good1config;
+    T_BalanceUINT256 good2currentState;
+    uint256 good2config;
 }
 ```
 
@@ -167,23 +180,19 @@ struct S_GoodInvestReturn {
 struct S_GoodDisinvestReturn {
     uint128 profit;
     uint128 actual_fee;
-    uint128 actualDisinvestValue;
     uint128 actualDisinvestQuantity;
 }
 ```
 
-### swapCache
+### S_GoodDisinvestParam
 
 ```solidity
-struct swapCache {
-    uint128 remainQuantity;
-    uint128 outputQuantity;
-    uint128 feeQuantity;
-    uint128 swapvalue;
-    T_BalanceUINT256 good1currentState;
-    uint256 good1config;
-    T_BalanceUINT256 good2currentState;
-    uint256 good2config;
+struct S_GoodDisinvestParam {
+    uint128 _goodQuantity;
+    address _gater;
+    address _referal;
+    uint256 _marketconfig;
+    address _marketcreator;
 }
 ```
 

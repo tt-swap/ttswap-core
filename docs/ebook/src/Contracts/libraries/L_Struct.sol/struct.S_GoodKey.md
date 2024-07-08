@@ -2,8 +2,8 @@
 
 ```solidity
 struct S_GoodKey {
-    address erc20address;
     address owner;
+    address erc20address;
 }
 ```
 

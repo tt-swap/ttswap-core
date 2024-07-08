@@ -50,27 +50,6 @@ function goodNum() external view returns (uint256 goodNum_);
 |`goodNum_`|`uint256`|the good number of the market~市场商品总数|
 
 
-### check_banlist
-
-Returns the address's status 查询地址是否被禁止提手续费
-
-
-```solidity
-function check_banlist(address _user) external view returns (bool _isban);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_user`|`address`|用户地址|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_isban`|`bool`|the address status~地址是否被禁|
-
-
 ### setMarketConfig
 
 config market config 设置市场中市场配置
@@ -92,40 +71,19 @@ function setMarketConfig(uint256 _marketconfig) external returns (bool);
 |`<none>`|`bool`|是否成功|
 
 
-### getGoodState
-
-get good's state 获取商品状态
-
-
-```solidity
-function getGoodState(uint256 _goodid) external view returns (L_Good.S_GoodTmpState memory good_);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_goodid`|`uint256`| good's id  商品的商品编号|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`good_`|`L_Good.S_GoodTmpState`|goodinfo 商品的状态信息|
-
-
 ### updateGoodConfig
 
 update good's config 更新商品配置
 
 
 ```solidity
-function updateGoodConfig(uint256 _goodid, uint256 _goodConfig) external returns (bool);
+function updateGoodConfig(bytes32 _goodid, uint256 _goodConfig) external returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|  good's id 商品的商品ID|
+|`_goodid`|`bytes32`|  good's id 商品的商品ID|
 |`_goodConfig`|`uint256`|  商品配置|
 
 **Returns**
@@ -141,13 +99,13 @@ update normal good to value good 更新普通商品为价值商品
 
 
 ```solidity
-function updatetoValueGood(uint256 _goodid) external returns (bool);
+function updatetoValueGood(bytes32 _goodid) external returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|  good's id 商品的商品ID|
+|`_goodid`|`bytes32`|  good's id 商品的商品ID|
 
 **Returns**
 
@@ -162,13 +120,13 @@ update normal good to value good 更新价值商品为普通商品
 
 
 ```solidity
-function updatetoNormalGood(uint256 _goodid) external returns (bool);
+function updatetoNormalGood(bytes32 _goodid) external returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|  good's id 商品的商品ID|
+|`_goodid`|`bytes32`|  good's id 商品的商品ID|
 
 **Returns**
 
@@ -183,13 +141,13 @@ pay good to  转给
 
 
 ```solidity
-function payGood(uint256 _goodid, uint256 _payquanity, address _recipent) external payable returns (bool);
+function payGood(bytes32 _goodid, uint256 _payquanity, address _recipent) external payable returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|  商品的商品ID|
+|`_goodid`|`bytes32`|  商品的商品ID|
 |`_payquanity`|`uint256`|  数量|
 |`_recipent`|`address`|  接收者|
 
@@ -206,13 +164,13 @@ set good's Owner 改变商品的拥有者
 
 
 ```solidity
-function changeGoodOwner(uint256 _goodid, address _to) external returns (bool);
+function changeGoodOwner(bytes32 _goodid, address _to) external returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`| good's id 商品的商品ID|
+|`_goodid`|`bytes32`| good's id 商品的商品ID|
 |`_to`|`address`| recipent 接收者|
 
 **Returns**
@@ -228,13 +186,13 @@ collect protocalFee 收益协议手续费
 
 
 ```solidity
-function collectProtocolFee(uint256 _goodid) external returns (uint256);
+function collectProtocolFee(bytes32 _goodid) external returns (uint256);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`| good's id 商品的商品ID|
+|`_goodid`|`bytes32`| good's id 商品的商品ID|
 
 **Returns**
 
@@ -285,41 +243,19 @@ function removebanlist(address _user) external returns (bool is_success_);
 |`is_success_`|`bool`|是否成功|
 
 
-### getGoodsFee
-
-获取商品的用户协议手续费
-
-
-```solidity
-function getGoodsFee(uint256 _goodid, address _user) external view returns (uint256 fee_);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_goodid`|`uint256`|  商品编号|
-|`_user`|`address`|  用户地址|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`fee_`|`uint256`|是否成功|
-
-
 ### goodWelfare
 
 为投资者发福利
 
 
 ```solidity
-function goodWelfare(uint256 goodid, uint128 welfare) external payable;
+function goodWelfare(bytes32 goodid, uint128 welfare) external payable;
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`goodid`|`uint256`|  商品编号|
+|`goodid`|`bytes32`|  商品编号|
 |`welfare`|`uint128`|  用户地址|
 
 
@@ -329,14 +265,14 @@ emitted when good's user tranfer the good to another 商品拥有者转移关系
 
 
 ```solidity
-event e_changeOwner(uint256 indexed _goodid, address _owner, address _to);
+event e_changeOwner(bytes32 indexed _goodid, address _owner, address _to);
 ```
 
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|good number,商品编号|
+|`_goodid`|`bytes32`|good number,商品编号|
 |`_owner`|`address`|the older owner,原拥有者|
 |`_to`|`address`|the new owner,新拥有者|
 
@@ -359,14 +295,14 @@ Config good 商品配置
 
 
 ```solidity
-event e_updateGoodConfig(uint256 _goodid, uint256 _goodConfig);
+event e_updateGoodConfig(bytes32 _goodid, uint256 _goodConfig);
 ```
 
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|Good No,商品编号|
+|`_goodid`|`bytes32`|Good No,商品编号|
 |`_goodConfig`|`uint256`|Good config 市场配置|
 
 ### e_updatetoValueGood
@@ -374,28 +310,28 @@ update good to value good~ 更新商品为价值商品
 
 
 ```solidity
-event e_updatetoValueGood(uint256 _goodid);
+event e_updatetoValueGood(bytes32 _goodid);
 ```
 
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|good No,商品编号配|
+|`_goodid`|`bytes32`|good No,商品编号配|
 
 ### e_updatetoNormalGood
 update good to normal good~ 更新商品为普通商品
 
 
 ```solidity
-event e_updatetoNormalGood(uint256 _goodid);
+event e_updatetoNormalGood(bytes32 _goodid);
 ```
 
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|good No,商品编号配|
+|`_goodid`|`bytes32`|good No,商品编号配|
 
 ### e_addbanlist
 add ban list~添加黑名单
@@ -430,13 +366,34 @@ preject or seller deliver welfare to investor
 
 
 ```solidity
-event e_goodWelfare(uint256 goodid, uint128 welfare);
+event e_goodWelfare(bytes32 goodid, uint128 welfare);
 ```
 
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`goodid`|`uint256`|商品编号|
+|`goodid`|`bytes32`|商品编号|
 |`welfare`|`uint128`|福利数量|
+
+### e_collectProtocolFee
+collect fee
+
+
+```solidity
+event e_collectProtocolFee(bytes32 goodid, uint256 feeamount);
+```
+
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
+|`goodid`|`bytes32`|商品编号|
+|`feeamount`|`uint256`|福利数量|
+
+### e_addreferal
+
+```solidity
+event e_addreferal(address referals);
+```
 

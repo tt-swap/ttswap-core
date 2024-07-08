@@ -1,10 +1,10 @@
 # L_ProofIdLibrary
 
 ## Functions
-### toId
+### toKey
 
 
 ```solidity
-function toId(S_ProofKey memory proofKey) internal pure returns (bytes32);
+function toKey(S_ProofKey memory proofKey) internal pure returns (bytes32);
 ```
 

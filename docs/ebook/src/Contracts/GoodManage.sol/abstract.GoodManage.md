@@ -1,6 +1,6 @@
 # GoodManage
 **Inherits:**
-[I_Good](/Contracts/interfaces/I_Good.sol/interface.I_Good.md), [RefererManage](/Contracts/RefererManage.sol/abstract.RefererManage.md)
+[I_Good](/Contracts/interfaces/I_Good.sol/interface.I_Good.md)
 
 
 ## State Variables
@@ -36,14 +36,7 @@ address public override marketcreator;
 ### goods
 
 ```solidity
-mapping(uint256 => L_Good.S_GoodState) internal goods;
-```
-
-
-### goodseq
-
-```solidity
-mapping(bytes32 => uint256) public goodseq;
+mapping(bytes32 => L_Good.S_GoodState) internal goods;
 ```
 
 
@@ -57,7 +50,14 @@ uint256 internal locked;
 ### banlist
 
 ```solidity
-mapping(address => uint256) private banlist;
+mapping(address => uint256) public banlist;
+```
+
+
+### referals
+
+```solidity
+mapping(address => address) public referals;
 ```
 
 
@@ -69,13 +69,6 @@ mapping(address => uint256) private banlist;
 constructor(address _marketcreator, uint256 _marketconfig);
 ```
 
-### onlyMarketCreator
-
-
-```solidity
-modifier onlyMarketCreator();
-```
-
 ### noReentrant
 
 
@@ -83,11 +76,11 @@ modifier onlyMarketCreator();
 modifier noReentrant();
 ```
 
-### noblacklist
+### getGoodState
 
 
 ```solidity
-modifier noblacklist();
+function getGoodState(bytes32 goodkey) external view returns (L_Good.S_GoodTmpState memory gooddetail);
 ```
 
 ### addbanlist
@@ -96,7 +89,7 @@ add ban list  增加禁止名单
 
 
 ```solidity
-function addbanlist(address _user) external override onlyMarketCreator returns (bool);
+function addbanlist(address _user) external override returns (bool);
 ```
 **Parameters**
 
@@ -117,7 +110,7 @@ rm ban list  移除禁止名单
 
 
 ```solidity
-function removebanlist(address _user) external override onlyMarketCreator returns (bool);
+function removebanlist(address _user) external override returns (bool);
 ```
 **Parameters**
 
@@ -138,7 +131,7 @@ config market config 设置市场中市场配置
 
 
 ```solidity
-function setMarketConfig(uint256 _marketconfig) external override onlyMarketCreator returns (bool);
+function setMarketConfig(uint256 _marketconfig) external override returns (bool);
 ```
 **Parameters**
 
@@ -153,54 +146,11 @@ function setMarketConfig(uint256 _marketconfig) external override onlyMarketCrea
 |`<none>`|`bool`|是否成功|
 
 
-### getGoodState
-
-get good's state 获取商品状态
-
-
-```solidity
-function getGoodState(uint256 _goodid) external view override returns (L_Good.S_GoodTmpState memory good_);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_goodid`|`uint256`| good's id  商品的商品编号|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`good_`|`L_Good.S_GoodTmpState`|goodinfo 商品的状态信息|
-
-
-### getGoodsFee
-
-获取商品的用户协议手续费
-
-
-```solidity
-function getGoodsFee(uint256 _goodid, address user) external view override returns (uint256);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_goodid`|`uint256`|  商品编号|
-|`user`|`address`||
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|fee_ 是否成功|
-
-
 ### updateGoodConfig
 
 
 ```solidity
-function updateGoodConfig(uint256 _goodid, uint256 _goodConfig) external override returns (bool);
+function updateGoodConfig(bytes32 _goodid, uint256 _goodConfig) external override returns (bool);
 ```
 
 ### updatetoValueGood
@@ -209,13 +159,13 @@ update normal good to value good 更新普通商品为价值商品
 
 
 ```solidity
-function updatetoValueGood(uint256 _goodid) external override onlyMarketCreator returns (bool);
+function updatetoValueGood(bytes32 _goodid) external override returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|  good's id 商品的商品ID|
+|`_goodid`|`bytes32`|  good's id 商品的商品ID|
 
 **Returns**
 
@@ -230,13 +180,13 @@ update normal good to value good 更新价值商品为普通商品
 
 
 ```solidity
-function updatetoNormalGood(uint256 _goodid) external override onlyMarketCreator returns (bool);
+function updatetoNormalGood(bytes32 _goodid) external override returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|  good's id 商品的商品ID|
+|`_goodid`|`bytes32`|  good's id 商品的商品ID|
 
 **Returns**
 
@@ -251,13 +201,13 @@ pay good to  转给
 
 
 ```solidity
-function payGood(uint256 _goodid, uint256 _payquanity, address _recipent) external payable returns (bool);
+function payGood(bytes32 _goodid, uint256 _payquanity, address _recipent) external payable returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|  商品的商品ID|
+|`_goodid`|`bytes32`|  商品的商品ID|
 |`_payquanity`|`uint256`|  数量|
 |`_recipent`|`address`|  接收者|
 
@@ -274,13 +224,13 @@ set good's Owner 改变商品的拥有者
 
 
 ```solidity
-function changeGoodOwner(uint256 _goodid, address _to) external override returns (bool);
+function changeGoodOwner(bytes32 _goodid, address _to) external override returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`| good's id 商品的商品ID|
+|`_goodid`|`bytes32`| good's id 商品的商品ID|
 |`_to`|`address`| recipent 接收者|
 
 **Returns**
@@ -292,50 +242,15 @@ function changeGoodOwner(uint256 _goodid, address _to) external override returns
 
 ### collectProtocolFee
 
-collect protocalFee 收益协议手续费
-
 
 ```solidity
-function collectProtocolFee(uint256 _goodid) external override noblacklist returns (uint256);
+function collectProtocolFee(bytes32 _goodid) external override returns (uint256 feeamount);
 ```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_goodid`|`uint256`| good's id 商品的商品ID|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`<none>`|`uint256`|the result 手续费数量|
-
-
-### check_banlist
-
-Returns the address's status 查询地址是否被禁止提手续费
-
-
-```solidity
-function check_banlist(address _user) external view override returns (bool _isban);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_user`|`address`|用户地址|
-
-**Returns**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_isban`|`bool`|the address status~地址是否被禁|
-
 
 ### goodWelfare
 
 
 ```solidity
-function goodWelfare(uint256 goodid, uint128 welfare) external payable override noReentrant;
+function goodWelfare(bytes32 goodid, uint128 welfare) external payable override noReentrant;
 ```
 

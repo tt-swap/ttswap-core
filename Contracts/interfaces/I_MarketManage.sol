@@ -113,7 +113,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _normalGoodNo  value good no~价值商品编号
     /// @param _valueGoodNo  value good no~价值商品编号
     /// @param _profit   profit  amount0:normalprofit  amount1:valueprofit
-    event e_collectProofFee(
+    event e_collectProof(
         uint256 indexed _proofNo,
         uint256 _normalGoodNo,
         uint256 _valueGoodNo,
@@ -222,7 +222,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @return profit_   amount0 普通商品的投资收益 amount1价值商品的投资收益
     /// @param _gater   gater address~门户
     /// @param _referal   referal~推荐人
-    function collectProofFee(
+    function collectProof(
         uint256 _proofid,
         address _gater,
         address _referal

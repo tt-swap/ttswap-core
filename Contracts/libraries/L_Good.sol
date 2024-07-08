@@ -510,7 +510,6 @@ library L_Good {
             );
         }
     }
-
     function collectGoodFee(
         S_GoodState storage _self,
         S_GoodState storage _valuegood,
@@ -525,9 +524,11 @@ library L_Good {
             _self.investState.amount1()
         ).getamount0fromamount1(_investProof.invest.amount1()) -
             _investProof.invest.amount0();
+
         _self.feeQunitityState =
             _self.feeQunitityState +
-            toBalanceUINT256(0, profit.amount0());
+            toBalanceUINT256(0, profit1);
+
         allocateFee(
             _self,
             profit1,
@@ -546,7 +547,7 @@ library L_Good {
                 _investProof.valueinvest.amount0();
             _valuegood.feeQunitityState =
                 _valuegood.feeQunitityState +
-                toBalanceUINT256(0, profit.amount1());
+                toBalanceUINT256(0, profit2);
             allocateFee(
                 _valuegood,
                 profit2,

@@ -373,9 +373,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         return true;
     }
-
     /// @inheritdoc I_MarketManage
-    function collectProofFee(
+    function collectProof(
         uint256 _proofid,
         address _gater,
         address _referal
@@ -387,7 +386,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         uint256 valuegood = proofs[_proofid].valuegood;
         uint256 currentgood = proofs[_proofid].currentgood;
-        _gater = banlist[_gater] == 1 ? _gater : marketcreator;
+        _gater = banlist[_gater] == 1 ? marketcreator : _gater;
         if (referals[msg.sender] == address(0)) {
             referals[msg.sender] = _referal;
         } else {
@@ -404,8 +403,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             marketconfig,
             marketcreator
         );
-
-        emit e_collectProofFee(_proofid, currentgood, valuegood, profit_);
+        emit e_collectProof(_proofid, currentgood, valuegood, profit_);
     }
 
     function enpower(

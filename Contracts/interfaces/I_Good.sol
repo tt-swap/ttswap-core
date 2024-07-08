@@ -45,6 +45,8 @@ interface I_Good {
     /// @param feeamount 福利数量
     event e_collectProtocolFee(bytes32 goodid, uint256 feeamount);
 
+    event e_addreferal(address referals);
+
     /// @notice Returns the config of the market~返回市场的配置
     /// @dev Can be changed by the marketmanager~可以被管理员调整
     /// @return marketconfig_ the config of market(according the white paper)~市场配置(参见白皮书)

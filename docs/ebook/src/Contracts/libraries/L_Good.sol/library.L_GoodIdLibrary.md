@@ -1,10 +1,10 @@
 # L_GoodIdLibrary
 
 ## Functions
-### toId
+### toKey
 
 
 ```solidity
-function toId(S_GoodKey memory goodKey) internal pure returns (bytes32);
+function toKey(S_GoodKey memory goodKey) internal pure returns (bytes32);
 ```
 

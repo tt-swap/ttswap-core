@@ -338,6 +338,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             referals[msg.sender] = _referal;
         } else {
             _referal = referals[msg.sender];
+            emit e_addreferal(_referal);
         }
         _referal = _gater == _referal ? marketcreator : _referal;
         _referal = banlist[_referal] == 1 ? _referal : marketcreator;
@@ -391,6 +392,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             referals[msg.sender] = _referal;
         } else {
             _referal = referals[msg.sender];
+            emit e_addreferal(_referal);
         }
         _referal = _gater == _referal ? marketcreator : _referal;
         _referal = banlist[_referal] == 1 ? _referal : marketcreator;

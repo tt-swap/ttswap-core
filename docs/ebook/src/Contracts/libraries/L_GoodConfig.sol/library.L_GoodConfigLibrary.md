@@ -10,6 +10,13 @@
 function isvaluegood(uint256 config) internal pure returns (bool a);
 ```
 
+### isnormalgood
+
+
+```solidity
+function isnormalgood(uint256 config) internal pure returns (bool a);
+```
+
 ### getInvestFee
 
 

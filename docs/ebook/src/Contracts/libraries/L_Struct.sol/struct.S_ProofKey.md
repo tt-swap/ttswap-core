@@ -3,8 +3,8 @@
 ```solidity
 struct S_ProofKey {
     address owner;
-    uint256 currentgood;
-    uint256 valuegood;
+    bytes32 currentgood;
+    bytes32 valuegood;
 }
 ```
 

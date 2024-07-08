@@ -32,23 +32,19 @@ initial the normal good~初始化市场中的普通商品
 
 
 ```solidity
-function initGood(
-    uint256 _valuegood,
-    T_BalanceUINT256 _initial,
-    address _erc20address,
-    uint256 _goodConfig,
-    address _gater
-) external payable returns (bool);
+function initGood(bytes32 _valuegood, T_BalanceUINT256 _initial, address _erc20address, uint256 _goodConfig)
+    external
+    payable
+    returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_valuegood`|`uint256`|  valuegood_no:measure the normal good value~价值商品编号:衡量普通商品价值|
+|`_valuegood`|`bytes32`|  valuegood_no:measure the normal good value~价值商品编号:衡量普通商品价值|
 |`_initial`|`T_BalanceUINT256`|    initial good.amount0:normalgood quantity,amount1:valuegoodquantity~初始化的商品的参数,前128位为普通商品数量,后128位为价值商品数量.|
 |`_erc20address`|`address`| good's contract address~商品合约地址|
 |`_goodConfig`|`uint256`|  good config (detail config according to the whitepaper)~商品配置(详细配置参见技术白皮书)|
-|`_gater`|`address`|  gater address~门户地址|
 
 
 ### buyGood
@@ -59,25 +55,20 @@ sell _swapQuantity units of good1 to buy good2~用户出售_swapQuantity个_good
 
 
 ```solidity
-function buyGood(
-    uint256 _goodid1,
-    uint256 _goodid2,
-    uint128 _swapQuantity,
-    uint256 _limitprice,
-    bool _istotal,
-    address _gater
-) external payable returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
+function buyGood(bytes32 _goodid1, bytes32 _goodid2, uint128 _swapQuantity, uint256 _limitprice, bool _istotal)
+    external
+    payable
+    returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid1`|`uint256`|good1's No~商品1的编号|
-|`_goodid2`|`uint256`|good2's No~商品2的编号|
+|`_goodid1`|`bytes32`|good1's No~商品1的编号|
+|`_goodid2`|`bytes32`|good2's No~商品2的编号|
 |`_swapQuantity`|`uint128`|good1's quantity~商品1的数量|
 |`_limitprice`|`uint256`|trade price's limit~交易价格限制|
 |`_istotal`|`bool`|is need trade all~是否允许全部成交|
-|`_gater`|`address`|  gater address~门户地址|
 
 **Returns**
 
@@ -94,24 +85,22 @@ buy _swapQuantity units of good to sell good2 and send good1 to recipent~用户�
 
 ```solidity
 function buyGoodForPay(
-    uint256 _goodid1,
-    uint256 _goodid2,
+    bytes32 _goodid1,
+    bytes32 _goodid2,
     uint128 _swapQuantity,
     uint256 _limitprice,
-    address _recipent,
-    address _gater
+    address _recipent
 ) external payable returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid1`|`uint256`|good1's No~商品1的编号|
-|`_goodid2`|`uint256`|good2's No~商品2的编号|
+|`_goodid1`|`bytes32`|good1's No~商品1的编号|
+|`_goodid2`|`bytes32`|good2's No~商品2的编号|
 |`_swapQuantity`|`uint128`|buy good2's quantity~购买商品2的数量|
 |`_limitprice`|`uint256`|trade price's limit~交易价格限制|
 |`_recipent`|`address`|recipent~收款人|
-|`_gater`|`address`|  gater address~门户地址|
 
 **Returns**
 
@@ -127,39 +116,15 @@ invest normal good~投资普通商品
 
 
 ```solidity
-function investGood(uint256 _togood, uint256 _valuegood, uint128 _quantity, address _gater)
-    external
-    payable
-    returns (bool);
+function investGood(bytes32 _togood, bytes32 _valuegood, uint128 _quantity) external payable returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_togood`|`uint256`| normal good No~普通商品的编号|
-|`_valuegood`|`uint256`|value good No~价值商品的编号|
+|`_togood`|`bytes32`| normal good No~普通商品的编号|
+|`_valuegood`|`bytes32`|value good No~价值商品的编号|
 |`_quantity`|`uint128`|  invest normal good quantity~投资普通商品的数量|
-|`_gater`|`address`|  gater address~门户|
-
-
-### disinvestGood
-
-disinvest normal good~撤资普通商品
-
-
-```solidity
-function disinvestGood(uint256 _togood, uint256 _valuegood, uint128 _goodQuantity, address _gater)
-    external
-    returns (bool);
-```
-**Parameters**
-
-|Name|Type|Description|
-|----|----|-----------|
-|`_togood`|`uint256`|  normal good No~普通商品编号|
-|`_valuegood`|`uint256`|  value Good No~价值商品编号|
-|`_goodQuantity`|`uint128`| disinvest quantity~取消普通商品投资数量|
-|`_gater`|`address`|  gater address~门户|
 
 
 ### disinvestProof
@@ -168,7 +133,9 @@ disinvest normal good~撤资商品
 
 
 ```solidity
-function disinvestProof(uint256 _proofid, uint128 _goodQuantity, address _gater) external returns (bool);
+function disinvestProof(uint256 _proofid, uint128 _goodQuantity, address _gater, address _referal)
+    external
+    returns (bool);
 ```
 **Parameters**
 
@@ -177,6 +144,7 @@ function disinvestProof(uint256 _proofid, uint128 _goodQuantity, address _gater)
 |`_proofid`|`uint256`|  the invest proof No of normal good ~普通投资证明的编号编号|
 |`_goodQuantity`|`uint128`| disinvest quantity~取消普通商品投资数量|
 |`_gater`|`address`|  gater address~门户|
+|`_referal`|`address`|  referal~推荐人|
 
 
 ### collectProofFee
@@ -185,13 +153,17 @@ collect the profit of normal proof~提取普通投资证明的收益
 
 
 ```solidity
-function collectProofFee(uint256 _proofid) external returns (T_BalanceUINT256 profit_);
+function collectProofFee(uint256 _proofid, address _gater, address _referal)
+    external
+    returns (T_BalanceUINT256 profit_);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
 |`_proofid`|`uint256`|  the proof No of invest normal good~普通投资证明编号|
+|`_gater`|`address`|  gater address~门户|
+|`_referal`|`address`|  referal~推荐人|
 
 **Returns**
 
@@ -206,14 +178,14 @@ enpower~赋能
 
 
 ```solidity
-function enpower(uint256 _goodid, uint256 _valuegoodid, uint128 _quantity) external payable returns (bool);
+function enpower(bytes32 _goodid, bytes32 _valuegoodid, uint128 _quantity) external payable returns (bool);
 ```
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|  enpowered good~赋能商品编号|
-|`_valuegoodid`|`uint256`|  valuegoodid~价值商品id|
+|`_goodid`|`bytes32`|  enpowered good~赋能商品编号|
+|`_valuegoodid`|`bytes32`|  valuegoodid~价值商品id|
 |`_quantity`|`uint128`|  valuegood quantity~价值商品数量|
 
 
@@ -226,7 +198,7 @@ emit when metaGood create :当用户创建初始化商品时
 
 ```solidity
 event e_initMetaGood(
-    uint256 indexed _proofNo, uint256 _goodNo, address _erc20address, uint256 _goodConfig, T_BalanceUINT256 _initial
+    uint256 indexed _proofNo, bytes32 _goodNo, address _erc20address, uint256 _goodConfig, T_BalanceUINT256 _initial
 );
 ```
 
@@ -235,7 +207,7 @@ event e_initMetaGood(
 |Name|Type|Description|
 |----|----|-----------|
 |`_proofNo`|`uint256`|  value invest proof No~投资证明的编号|
-|`_goodNo`|`uint256`|good's id  商品的商品编号|
+|`_goodNo`|`bytes32`|good's id  商品的商品编号|
 |`_erc20address`|`address`|  metagood contract address 元商品的合约地址|
 |`_goodConfig`|`uint256`|  metagood's config refer white paper~元商品的配置,具体参见白皮书|
 |`_initial`|`T_BalanceUINT256`|  market intial para: amount0 value  amount1:quantity~市场初始化参数:amount0为价值,amount1为数量.|
@@ -247,8 +219,8 @@ emit when  good create :当用户创建初始化商品时
 ```solidity
 event e_initGood(
     uint256 indexed _proofNo,
-    uint256 _normalgoodNo,
-    uint256 _valuegoodNo,
+    bytes32 _normalgoodNo,
+    bytes32 _valuegoodNo,
     address _erc20address,
     uint256 _goodConfig,
     T_BalanceUINT256 _normalinitial,
@@ -261,8 +233,8 @@ event e_initGood(
 |Name|Type|Description|
 |----|----|-----------|
 |`_proofNo`|`uint256`|  value invest proof No~投资证明的编号|
-|`_normalgoodNo`|`uint256`|good's id  商品的商品编号|
-|`_valuegoodNo`|`uint256`|good's id  商品的商品编号|
+|`_normalgoodNo`|`bytes32`|good's id  商品的商品编号|
+|`_valuegoodNo`|`bytes32`|good's id  商品的商品编号|
 |`_erc20address`|`address`|  metagood contract address 元商品的合约地址|
 |`_goodConfig`|`uint256`|  metagood's config refer white paper~元商品的配置,具体参见白皮书|
 |`_normalinitial`|`T_BalanceUINT256`|  amount0 quantity  amount1:value~普通商品:amount0为数量,amount1为价值.|
@@ -274,8 +246,8 @@ emit when customer buy good :当用户购买商品时触发
 
 ```solidity
 event e_buyGood(
-    uint256 indexed sellgood,
-    uint256 indexed forgood,
+    bytes32 indexed sellgood,
+    bytes32 indexed forgood,
     address fromer,
     uint128 swapvalue,
     T_BalanceUINT256 sellgoodstate,
@@ -287,8 +259,8 @@ event e_buyGood(
 
 |Name|Type|Description|
 |----|----|-----------|
-|`sellgood`|`uint256`|good's id  商品的商品ID|
-|`forgood`|`uint256`|  initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.|
+|`sellgood`|`bytes32`|good's id  商品的商品ID|
+|`forgood`|`bytes32`|  initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.|
 |`fromer`|`address`|  seller or buyer address 卖家或买家地址|
 |`swapvalue`|`uint128`|  trade value  交易价值|
 |`sellgoodstate`|`T_BalanceUINT256`|  the sellgood status amount0:fee,amount1:quantity 使用商品的交易结果 amount0:手续费,amount1:数量|
@@ -300,8 +272,8 @@ emit when customer buy good pay to the seller :当用户购买商品支付给卖
 
 ```solidity
 event e_buyGoodForPay(
-    uint256 indexed buygood,
-    uint256 indexed usegood,
+    bytes32 indexed buygood,
+    bytes32 indexed usegood,
     address fromer,
     address receipt,
     uint128 swapvalue,
@@ -314,8 +286,8 @@ event e_buyGoodForPay(
 
 |Name|Type|Description|
 |----|----|-----------|
-|`buygood`|`uint256`|good's id  商品的商品ID|
-|`usegood`|`uint256`|  initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.|
+|`buygood`|`bytes32`|good's id  商品的商品ID|
+|`usegood`|`bytes32`|  initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.|
 |`fromer`|`address`|  seller or buyer address 卖家或买家地址|
 |`receipt`|`address`|  receipt  收款方|
 |`swapvalue`|`uint128`|  trade value  交易价值|
@@ -329,8 +301,8 @@ emit when customer invest normal good :当用户投资普通商品
 ```solidity
 event e_investGood(
     uint256 indexed _proofNo,
-    uint256 _normalGoodNo,
-    uint256 _valueGoodNo,
+    bytes32 _normalGoodNo,
+    bytes32 _valueGoodNo,
     T_BalanceUINT256 _invest,
     T_BalanceUINT256 _valueinvest
 );
@@ -341,8 +313,8 @@ event e_investGood(
 |Name|Type|Description|
 |----|----|-----------|
 |`_proofNo`|`uint256`|  proof No~投资证明编号|
-|`_normalGoodNo`|`uint256`| normal good no~普通商品编号|
-|`_valueGoodNo`|`uint256`| value good no~价值商品编号|
+|`_normalGoodNo`|`bytes32`| normal good no~普通商品编号|
+|`_valueGoodNo`|`bytes32`| value good no~价值商品编号|
 |`_invest`|`T_BalanceUINT256`|    amount0 normal good actual fee ,amount1 normal good actual invest quantity~amount0为投资手续费,amount1为投资数量|
 |`_valueinvest`|`T_BalanceUINT256`|  amount0 value good actual fee ,amount1 value good actual invest quantity~amount0为投资手续费,amount1为投资数量|
 
@@ -353,8 +325,8 @@ emit when customer disinvest normal good :当用户撤资普通商品
 ```solidity
 event e_disinvestProof(
     uint256 indexed _proofNo,
-    uint256 _normalGoodNo,
-    uint256 _valueGoodNo,
+    bytes32 _normalGoodNo,
+    bytes32 _valueGoodNo,
     T_BalanceUINT256 _normalgood,
     T_BalanceUINT256 _valuegood,
     T_BalanceUINT256 _profit
@@ -366,8 +338,8 @@ event e_disinvestProof(
 |Name|Type|Description|
 |----|----|-----------|
 |`_proofNo`|`uint256`|  proof No~投资证明编号|
-|`_normalGoodNo`|`uint256`| value good no~价值商品编号|
-|`_valueGoodNo`|`uint256`| value good no~价值商品编号|
+|`_normalGoodNo`|`bytes32`| value good no~价值商品编号|
+|`_valueGoodNo`|`bytes32`| value good no~价值商品编号|
 |`_normalgood`|`T_BalanceUINT256`|  amount0 actual fee ,amount1 actual invest quantity~amount0为撤资手续费,amount1为撤资数量|
 |`_valuegood`|`T_BalanceUINT256`|  amount0 actual fee ,amount1 actual invest quantity~amount0为撤资手续费,amount1为撤资数量|
 |`_profit`|`T_BalanceUINT256`|  profit~收益|
@@ -378,11 +350,7 @@ emit when customer disinvest normal good :当用户撤资普通商品
 
 ```solidity
 event e_collectProofFee(
-    uint256 indexed _proofNo,
-    uint256 _normalGoodNo,
-    uint256 _valueGoodNo,
-    T_BalanceUINT256 _profit,
-    T_BalanceUINT256 _protocalfee
+    uint256 indexed _proofNo, bytes32 _normalGoodNo, bytes32 _valueGoodNo, T_BalanceUINT256 _profit
 );
 ```
 
@@ -391,25 +359,24 @@ event e_collectProofFee(
 |Name|Type|Description|
 |----|----|-----------|
 |`_proofNo`|`uint256`|  proof No~投资证明编号|
-|`_normalGoodNo`|`uint256`| value good no~价值商品编号|
-|`_valueGoodNo`|`uint256`| value good no~价值商品编号|
+|`_normalGoodNo`|`bytes32`| value good no~价值商品编号|
+|`_valueGoodNo`|`bytes32`| value good no~价值商品编号|
 |`_profit`|`T_BalanceUINT256`|  profit  amount0:normalprofit  amount1:valueprofit|
-|`_protocalfee`|`T_BalanceUINT256`|  protocalfee  amount0:normalprofit  amount1:valueprofit|
 
 ### e_enpower
 emit enpower:赋能
 
 
 ```solidity
-event e_enpower(uint256 _goodid, uint256 _valuegood, uint256 _quantity, address _sender);
+event e_enpower(bytes32 _goodid, bytes32 _valuegood, uint256 _quantity, address _sender);
 ```
 
 **Parameters**
 
 |Name|Type|Description|
 |----|----|-----------|
-|`_goodid`|`uint256`|  proof No~投资证明编号|
-|`_valuegood`|`uint256`| value good no~价值商品编号|
+|`_goodid`|`bytes32`|  proof No~投资证明编号|
+|`_valuegood`|`bytes32`| value good no~价值商品编号|
 |`_quantity`|`uint256`| enpower value quantity~赋能价值商品数量|
 |`_sender`|`address`|msg.sender|
 

@@ -19,9 +19,9 @@ contract disinvestNativeETHOwnValueGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    bytes32 metagood;
-    bytes32 normalgoodusdt;
-    bytes32 normalgoodeth;
+    uint256 metagood;
+    uint256 normalgoodusdt;
+    uint256 normalgoodeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -46,7 +46,7 @@ contract disinvestNativeETHOwnValueGood is BaseSetup {
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(0)).toKey();
+        metagood = S_GoodKey(marketcreator, address(0)).toId();
         vm.stopPrank();
     }
 
@@ -61,7 +61,7 @@ contract disinvestNativeETHOwnValueGood is BaseSetup {
         vm.startPrank(users[2]);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], metagood, 0).toKey()
+            S_ProofKey(users[2], metagood, 0).toId()
         );
         L_Proof.S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(

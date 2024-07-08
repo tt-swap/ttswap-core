@@ -12,7 +12,7 @@ interface I_Good {
     /// @param _goodid good number,商品编号
     /// @param _owner the older owner,原拥有者
     /// @param _to the new owner,新拥有者
-    event e_changeOwner(bytes32 indexed _goodid, address _owner, address _to);
+    event e_changeOwner(uint256 indexed _goodid, address _owner, address _to);
 
     /// @notice Config Market Config~ 进行市场配置
     /// @param _marketconfig 市场配置
@@ -21,15 +21,15 @@ interface I_Good {
     /// @notice Config good 商品配置
     /// @param _goodid Good No,商品编号
     /// @param _goodConfig Good config 市场配置
-    event e_updateGoodConfig(bytes32 _goodid, uint256 _goodConfig);
+    event e_updateGoodConfig(uint256 _goodid, uint256 _goodConfig);
 
     /// @notice update good to value good~ 更新商品为价值商品
     /// @param _goodid good No,商品编号配
-    event e_updatetoValueGood(bytes32 _goodid);
+    event e_updatetoValueGood(uint256 _goodid);
 
     /// @notice update good to normal good~ 更新商品为普通商品
     /// @param _goodid good No,商品编号配
-    event e_updatetoNormalGood(bytes32 _goodid);
+    event e_updatetoNormalGood(uint256 _goodid);
     /// @notice add ban list~添加黑名单
     /// @param _user  address ~用户地址
     event e_addbanlist(address _user);
@@ -39,11 +39,11 @@ interface I_Good {
     /// @notice preject or seller deliver welfare to investor
     /// @param goodid 商品编号
     /// @param welfare 福利数量
-    event e_goodWelfare(bytes32 goodid, uint128 welfare);
+    event e_goodWelfare(uint256 goodid, uint128 welfare);
     /// @notice collect fee
     /// @param goodid 商品编号
     /// @param feeamount 福利数量
-    event e_collectProtocolFee(bytes32 goodid, uint256 feeamount);
+    event e_collectProtocolFee(uint256 goodid, uint256 feeamount);
 
     event e_addreferal(address referals);
 
@@ -70,26 +70,26 @@ interface I_Good {
     /// @param _goodConfig   商品配置
     /// @return the result  更新结果
     function updateGoodConfig(
-        bytes32 _goodid,
+        uint256 _goodid,
         uint256 _goodConfig
     ) external returns (bool);
 
     /// @notice  update normal good to value good 更新普通商品为价值商品
     /// @param _goodid   good's id 商品的商品ID
     /// @return the result  更新结果
-    function updatetoValueGood(bytes32 _goodid) external returns (bool);
+    function updatetoValueGood(uint256 _goodid) external returns (bool);
 
     /// @notice  update normal good to value good 更新价值商品为普通商品
     /// @param _goodid   good's id 商品的商品ID
     /// @return the result  更新结果
-    function updatetoNormalGood(bytes32 _goodid) external returns (bool);
+    function updatetoNormalGood(uint256 _goodid) external returns (bool);
     /// @notice pay good to  转给
     /// @param _goodid   商品的商品ID
     /// @param _payquanity   数量
     /// @param _recipent   接收者
     /// @return the result
     function payGood(
-        bytes32 _goodid,
+        uint256 _goodid,
         uint256 _payquanity,
         address _recipent
     ) external payable returns (bool);
@@ -99,13 +99,13 @@ interface I_Good {
     /// @param _to  recipent 接收者
     /// @return the result
     function changeGoodOwner(
-        bytes32 _goodid,
+        uint256 _goodid,
         address _to
     ) external returns (bool);
     /// @notice collect protocalFee 收益协议手续费
     /// @param _goodid  good's id 商品的商品ID
     /// @return the result 手续费数量
-    function collectProtocolFee(bytes32 _goodid) external returns (uint256);
+    function collectProtocolFee(uint256 _goodid) external returns (uint256);
     /// @notice add ban list  增加禁止名单
     /// @param _user  address 地址
     /// @return is_success_ 是否成功
@@ -118,5 +118,5 @@ interface I_Good {
     /// @notice 为投资者发福利
     /// @param goodid   商品编号
     /// @param welfare   用户地址
-    function goodWelfare(bytes32 goodid, uint128 welfare) external payable;
+    function goodWelfare(uint256 goodid, uint128 welfare) external payable;
 }

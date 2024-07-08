@@ -21,7 +21,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _initial   market intial para: amount0 value  amount1:quantity~市场初始化参数:amount0为价值,amount1为数量.
     event e_initMetaGood(
         uint256 indexed _proofNo,
-        bytes32 _goodNo,
+        uint256 _goodNo,
         address _erc20address,
         uint256 _goodConfig,
         T_BalanceUINT256 _initial
@@ -37,8 +37,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _value   amount0():valuegoodfee, amount1 valuegoodquantity~amount0为价值商品投资费用,amount1为价值商品投资数量.
     event e_initGood(
         uint256 indexed _proofNo,
-        bytes32 _normalgoodNo,
-        bytes32 _valuegoodNo,
+        uint256 _normalgoodNo,
+        uint256 _valuegoodNo,
         address _erc20address,
         uint256 _goodConfig,
         T_BalanceUINT256 _normalinitial,
@@ -53,8 +53,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param sellgoodstate   the sellgood status amount0:fee,amount1:quantity 使用商品的交易结果 amount0:手续费,amount1:数量
     /// @param forgoodstate   the forgood status amount0:fee,amount1:quantity 获得商品的交易结果amount0:手续费,amount1:数量
     event e_buyGood(
-        bytes32 indexed sellgood,
-        bytes32 indexed forgood,
+        uint256 indexed sellgood,
+        uint256 indexed forgood,
         address fromer,
         uint128 swapvalue,
         T_BalanceUINT256 sellgoodstate,
@@ -69,8 +69,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param buygoodstate   the buygood status amount0:fee,amount1:quantity 使用商品的交易结果 amount0:手续费,amount1:数量
     /// @param usegoodstate   the usegood status amount0:fee,amount1:quantity 获得商品的交易结果amount0:手续费,amount1:数量
     event e_buyGoodForPay(
-        bytes32 indexed buygood,
-        bytes32 indexed usegood,
+        uint256 indexed buygood,
+        uint256 indexed usegood,
         address fromer,
         address receipt,
         uint128 swapvalue,
@@ -86,8 +86,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _valueinvest   amount0 value good actual fee ,amount1 value good actual invest quantity~amount0为投资手续费,amount1为投资数量
     event e_investGood(
         uint256 indexed _proofNo,
-        bytes32 _normalGoodNo,
-        bytes32 _valueGoodNo,
+        uint256 _normalGoodNo,
+        uint256 _valueGoodNo,
         T_BalanceUINT256 _invest,
         T_BalanceUINT256 _valueinvest
     );
@@ -101,8 +101,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _profit   profit~收益
     event e_disinvestProof(
         uint256 indexed _proofNo,
-        bytes32 _normalGoodNo,
-        bytes32 _valueGoodNo,
+        uint256 _normalGoodNo,
+        uint256 _valueGoodNo,
         T_BalanceUINT256 _normalgood,
         T_BalanceUINT256 _valuegood,
         T_BalanceUINT256 _profit
@@ -115,8 +115,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _profit   profit  amount0:normalprofit  amount1:valueprofit
     event e_collectProofFee(
         uint256 indexed _proofNo,
-        bytes32 _normalGoodNo,
-        bytes32 _valueGoodNo,
+        uint256 _normalGoodNo,
+        uint256 _valueGoodNo,
         T_BalanceUINT256 _profit
     );
 
@@ -126,8 +126,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _quantity  enpower value quantity~赋能价值商品数量
     /// @param _sender msg.sender
     event e_enpower(
-        bytes32 _goodid,
-        bytes32 _valuegood,
+        uint256 _goodid,
+        uint256 _valuegood,
         uint256 _quantity,
         address _sender
     );
@@ -150,7 +150,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _erc20address  good's contract address~商品合约地址
     /// @param _goodConfig   good config (detail config according to the whitepaper)~商品配置(详细配置参见技术白皮书)
     function initGood(
-        bytes32 _valuegood,
+        uint256 _valuegood,
         T_BalanceUINT256 _initial,
         address _erc20address,
         uint256 _goodConfig
@@ -166,8 +166,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @return goodid2Quantity_  实际情况
     /// @return goodid2FeeQuantity_ 实际情况
     function buyGood(
-        bytes32 _goodid1,
-        bytes32 _goodid2,
+        uint256 _goodid1,
+        uint256 _goodid2,
         uint128 _swapQuantity,
         uint256 _limitprice,
         bool _istotal
@@ -185,8 +185,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @return goodid1Quantity_  good1 actual quantity~商品1实际数量
     /// @return goodid1FeeQuantity_ good1 actual fee~商品1实际手续费
     function buyGoodForPay(
-        bytes32 _goodid1,
-        bytes32 _goodid2,
+        uint256 _goodid1,
+        uint256 _goodid2,
         uint128 _swapQuantity,
         uint256 _limitprice,
         address _recipent
@@ -200,8 +200,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _valuegood value good No~价值商品的编号
     /// @param _quantity   invest normal good quantity~投资普通商品的数量
     function investGood(
-        bytes32 _togood,
-        bytes32 _valuegood,
+        uint256 _togood,
+        uint256 _valuegood,
         uint128 _quantity
     ) external payable returns (bool);
 
@@ -233,8 +233,8 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _valuegoodid   valuegoodid~价值商品id
     /// @param _quantity   valuegood quantity~价值商品数量
     function enpower(
-        bytes32 _goodid,
-        bytes32 _valuegoodid,
+        uint256 _goodid,
+        uint256 _valuegoodid,
         uint128 _quantity
     ) external payable returns (bool);
 }

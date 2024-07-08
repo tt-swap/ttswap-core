@@ -616,7 +616,7 @@ library L_Good {
 }
 
 library L_GoodIdLibrary {
-    function toKey(S_GoodKey memory goodKey) internal pure returns (bytes32) {
-        return keccak256(abi.encode(goodKey));
+    function toId(S_GoodKey memory goodKey) internal pure returns (uint256) {
+        return uint256(keccak256(abi.encode(goodKey)));
     }
 }

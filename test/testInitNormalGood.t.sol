@@ -13,7 +13,7 @@ import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
 contract testInitNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
-    bytes32 metagoodkey;
+    uint256 metagoodkey;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -34,7 +34,7 @@ contract testInitNormalGood is BaseSetup {
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagoodkey = S_GoodKey(marketcreator, address(usdt)).toKey();
+        metagoodkey = S_GoodKey(marketcreator, address(usdt)).toId();
         vm.stopPrank();
     }
 
@@ -67,7 +67,7 @@ contract testInitNormalGood is BaseSetup {
         snapLastCall("init_erc20_normalgood");
 
         //normal good
-        bytes32 normalgoodkey = S_GoodKey(users[1], address(btc)).toKey();
+        uint256 normalgoodkey = S_GoodKey(users[1], address(btc)).toId();
 
         assertEq(
             usdt.balanceOf(address(market)),
@@ -192,7 +192,7 @@ contract testInitNormalGood is BaseSetup {
 
         ///////////////////////////
         uint256 normalproof = market.proofmapping(
-            S_ProofKey(users[1], normalgoodkey, metagoodkey).toKey()
+            S_ProofKey(users[1], normalgoodkey, metagoodkey).toId()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
         assertEq(
@@ -326,7 +326,7 @@ contract testInitNormalGood is BaseSetup {
 
         assertEq(market.goodNum(), 2, "after initial:good num error");
 
-        bytes32 normalgoodkey = S_GoodKey(users[1], address(0)).toKey();
+        uint256 normalgoodkey = S_GoodKey(users[1], address(0)).toId();
 
         ////////////////////////////////////////
         L_Good.S_GoodTmpState memory normalgoodstate = market.getGoodState(
@@ -366,7 +366,7 @@ contract testInitNormalGood is BaseSetup {
         ///////////////////////////
 
         uint256 normalproof = market.proofmapping(
-            S_ProofKey(users[1], normalgoodkey, metagoodkey).toKey()
+            S_ProofKey(users[1], normalgoodkey, metagoodkey).toId()
         );
 
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);

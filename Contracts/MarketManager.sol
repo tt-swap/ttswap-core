@@ -38,11 +38,11 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         );
         _erc20address.transferFrom(msg.sender, _initial.amount1());
         goodNum += 1;
-        bytes32 togood = S_GoodKey(msg.sender, _erc20address).toKey();
+        uint256 togood = S_GoodKey(msg.sender, _erc20address).toId();
         goods[togood].init(_initial, _erc20address, _goodConfig);
         goods[togood].updateToValueGood();
         totalSupply += 1;
-        bytes32 proofKey = S_ProofKey(msg.sender, togood, 0).toKey();
+        uint256 proofKey = S_ProofKey(msg.sender, togood, 0).toId();
         proofmapping[proofKey] = totalSupply;
         _mint(msg.sender, totalSupply);
         proofs[totalSupply].updateInvest(
@@ -64,12 +64,12 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
     /// @inheritdoc I_MarketManage
     function initGood(
-        bytes32 _valuegood,
+        uint256 _valuegood,
         T_BalanceUINT256 _initial,
         address _erc20address,
         uint256 _goodConfig
     ) external payable override noReentrant returns (bool) {
-        bytes32 togood = S_GoodKey(msg.sender, _erc20address).toKey();
+        uint256 togood = S_GoodKey(msg.sender, _erc20address).toId();
         require(
             goods[togood].owner == address(0) &&
                 goods[_valuegood].goodConfig.isvaluegood(),
@@ -93,7 +93,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             _goodConfig
         );
         totalSupply += 1;
-        bytes32 proofKey = S_ProofKey(msg.sender, togood, _valuegood).toKey();
+        uint256 proofKey = S_ProofKey(msg.sender, togood, _valuegood).toId();
 
         proofmapping[proofKey] = totalSupply;
         _mint(msg.sender, totalSupply);
@@ -127,8 +127,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     }
     /// @inheritdoc I_MarketManage
     function buyGood(
-        bytes32 _goodid1,
-        bytes32 _goodid2,
+        uint256 _goodid1,
+        uint256 _goodid2,
         uint128 _swapQuantity,
         uint256 _limitPrice,
         bool _istotal
@@ -188,8 +188,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
     /// @inheritdoc I_MarketManage
     function buyGoodForPay(
-        bytes32 _goodid1,
-        bytes32 _goodid2,
+        uint256 _goodid1,
+        uint256 _goodid2,
         uint128 _swapQuantity,
         uint256 _limitPrice,
         address _recipent
@@ -248,8 +248,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
     /// @inheritdoc I_MarketManage
     function investGood(
-        bytes32 _togood,
-        bytes32 _valuegood,
+        uint256 _togood,
+        uint256 _valuegood,
         uint128 _quantity
     ) external payable override noReentrant returns (bool) {
         L_Good.S_GoodInvestReturn memory normalInvest_;
@@ -282,7 +282,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             );
         }
 
-        bytes32 proofKey = S_ProofKey(msg.sender, _togood, _valuegood).toKey();
+        uint256 proofKey = S_ProofKey(msg.sender, _togood, _valuegood).toId();
         uint256 proofNo = proofmapping[proofKey];
 
         if (proofNo == 0) {
@@ -330,8 +330,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         require(_isApprovedOrOwner(msg.sender, _proofid), "M05");
         L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_;
         L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_;
-        bytes32 normalgood = proofs[_proofid].currentgood;
-        bytes32 valuegood = proofs[_proofid].valuegood;
+        uint256 normalgood = proofs[_proofid].currentgood;
+        uint256 valuegood = proofs[_proofid].valuegood;
 
         _gater = banlist[_gater] == 1 ? _gater : marketcreator;
         if (referals[msg.sender] == address(0)) {
@@ -385,8 +385,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                 proofs[_proofid].beneficiary == msg.sender,
             "M09"
         );
-        bytes32 valuegood = proofs[_proofid].valuegood;
-        bytes32 currentgood = proofs[_proofid].currentgood;
+        uint256 valuegood = proofs[_proofid].valuegood;
+        uint256 currentgood = proofs[_proofid].currentgood;
         _gater = banlist[_gater] == 1 ? _gater : marketcreator;
         if (referals[msg.sender] == address(0)) {
             referals[msg.sender] = _referal;
@@ -409,8 +409,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     }
 
     function enpower(
-        bytes32 goodkey,
-        bytes32 valuegood,
+        uint256 goodkey,
+        uint256 valuegood,
         uint128 quantity
     ) external payable override noReentrant returns (bool) {
         require(goods[valuegood].goodConfig.isvaluegood(), "M2");

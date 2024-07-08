@@ -6,8 +6,8 @@ import {T_BalanceUINT256, toBalanceUINT256} from "./L_BalanceUINT256.sol";
 
 library L_Proof {
     struct S_ProofState {
-        bytes32 currentgood;
-        bytes32 valuegood;
+        uint256 currentgood;
+        uint256 valuegood;
         T_BalanceUINT256 state; //前128位表示投资的价值, amount0:invest value
         T_BalanceUINT256 invest; //前128位表示投资的构建手续费,后128位表示投资数量 amount0:contrunct fee ,amount1:invest quantity
         T_BalanceUINT256 valueinvest; //前128位表示投资的构建手续费,后128位表示投资数量 amount0:contrunct fee ,amount1:invest quantity
@@ -16,8 +16,8 @@ library L_Proof {
 
     function updateInvest(
         S_ProofState storage _self,
-        bytes32 _currenctgood,
-        bytes32 _valuegood,
+        uint256 _currenctgood,
+        uint256 _valuegood,
         T_BalanceUINT256 _state,
         T_BalanceUINT256 _invest,
         T_BalanceUINT256 _valueinvest
@@ -93,7 +93,7 @@ library L_Proof {
 }
 
 library L_ProofIdLibrary {
-    function toKey(S_ProofKey memory proofKey) internal pure returns (bytes32) {
-        return keccak256(abi.encode(proofKey));
+    function toId(S_ProofKey memory proofKey) internal pure returns (uint256) {
+        return uint256(keccak256(abi.encode(proofKey)));
     }
 }

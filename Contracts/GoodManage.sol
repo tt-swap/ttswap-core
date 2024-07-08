@@ -24,7 +24,7 @@ abstract contract GoodManage is I_Good {
     /// @inheritdoc I_Good
     address public override marketcreator;
 
-    mapping(bytes32 => L_Good.S_GoodState) internal goods;
+    mapping(uint256 => L_Good.S_GoodState) internal goods;
     uint256 internal locked;
     mapping(address => uint256) public banlist;
     mapping(address => address) public referals;
@@ -42,7 +42,7 @@ abstract contract GoodManage is I_Good {
     }
 
     function getGoodState(
-        bytes32 goodkey
+        uint256 goodkey
     ) external view returns (L_Good.S_GoodTmpState memory gooddetail) {
         gooddetail.goodConfig = goods[goodkey].goodConfig;
         gooddetail.owner = goods[goodkey].owner;
@@ -79,7 +79,7 @@ abstract contract GoodManage is I_Good {
     }
 
     function updateGoodConfig(
-        bytes32 _goodid,
+        uint256 _goodid,
         uint256 _goodConfig
     ) external override returns (bool) {
         require(msg.sender == goods[_goodid].owner, "G04");
@@ -90,7 +90,7 @@ abstract contract GoodManage is I_Good {
 
     /// @inheritdoc I_Good
     function updatetoValueGood(
-        bytes32 _goodid
+        uint256 _goodid
     ) external override returns (bool) {
         require(msg.sender == marketcreator, "G02");
         goods[_goodid].updateToValueGood();
@@ -100,7 +100,7 @@ abstract contract GoodManage is I_Good {
 
     /// @inheritdoc I_Good
     function updatetoNormalGood(
-        bytes32 _goodid
+        uint256 _goodid
     ) external override returns (bool) {
         require(msg.sender == marketcreator, "G02");
         goods[_goodid].updateToNormalGood();
@@ -110,7 +110,7 @@ abstract contract GoodManage is I_Good {
 
     /// @inheritdoc I_Good
     function payGood(
-        bytes32 _goodid,
+        uint256 _goodid,
         uint256 _payquanity,
         address _recipent
     ) external payable returns (bool) {
@@ -120,7 +120,7 @@ abstract contract GoodManage is I_Good {
 
     /// @inheritdoc I_Good
     function changeGoodOwner(
-        bytes32 _goodid,
+        uint256 _goodid,
         address _to
     ) external override returns (bool) {
         require(msg.sender == marketcreator, "G05");
@@ -129,7 +129,7 @@ abstract contract GoodManage is I_Good {
     }
 
     function collectProtocolFee(
-        bytes32 _goodid
+        uint256 _goodid
     ) external override returns (uint256 feeamount) {
         feeamount = goods[_goodid].fees[msg.sender];
         goods[_goodid].fees[msg.sender] = 0;
@@ -138,7 +138,7 @@ abstract contract GoodManage is I_Good {
     }
 
     function goodWelfare(
-        bytes32 goodid,
+        uint256 goodid,
         uint128 welfare
     ) external payable override noReentrant {
         require(

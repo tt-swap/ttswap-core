@@ -14,7 +14,7 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
 
     uint256 public override totalSupply;
     mapping(uint256 => L_Proof.S_ProofState) internal proofs;
-    mapping(bytes32 => uint256) public proofmapping;
+    mapping(uint256 => uint256) public proofmapping;
 
     // solhint-disable-next-line var-name-mixedcase
 
@@ -41,16 +41,16 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
         );
         _transfer(from, to, proofid);
         proofs[proofid].beneficiary = address(0);
-        bytes32 proofkey1 = S_ProofKey(
+        uint256 proofkey1 = S_ProofKey(
             from,
             proofs[proofid].currentgood,
             proofs[proofid].valuegood
-        ).toKey();
-        bytes32 proofkey2 = S_ProofKey(
+        ).toId();
+        uint256 proofkey2 = S_ProofKey(
             to,
             proofs[proofid].currentgood,
             proofs[proofid].valuegood
-        ).toKey();
+        ).toId();
         if (proofmapping[proofkey2] == 0) {
             proofmapping[proofkey2] = proofmapping[proofkey1];
         } else {
@@ -73,16 +73,16 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
         );
         _safeTransfer(from, to, proofid, data);
         proofs[proofid].beneficiary = address(0);
-        bytes32 proofkey1 = S_ProofKey(
+        uint256 proofkey1 = S_ProofKey(
             from,
             proofs[proofid].currentgood,
             proofs[proofid].valuegood
-        ).toKey();
-        bytes32 proofkey2 = S_ProofKey(
+        ).toId();
+        uint256 proofkey2 = S_ProofKey(
             to,
             proofs[proofid].currentgood,
             proofs[proofid].valuegood
-        ).toKey();
+        ).toId();
         if (proofmapping[proofkey2] == 0) {
             proofmapping[proofkey2] = proofmapping[proofkey1];
         } else {

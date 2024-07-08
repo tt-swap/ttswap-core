@@ -19,9 +19,9 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    bytes32 metagood;
-    bytes32 normalgoodusdt;
-    bytes32 normalgoodnativeETH;
+    uint256 metagood;
+    uint256 normalgoodusdt;
+    uint256 normalgoodnativeETH;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -49,7 +49,7 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toKey();
+        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
         vm.stopPrank();
     }
 
@@ -77,7 +77,7 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
             address(0),
             normalgoodconfig
         );
-        normalgoodnativeETH = S_GoodKey(users[1], address(0)).toKey();
+        normalgoodnativeETH = S_GoodKey(users[1], address(0)).toId();
         vm.stopPrank();
     }
 
@@ -100,7 +100,7 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
         vm.startPrank(users[2]);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodnativeETH, metagood).toKey()
+            S_ProofKey(users[2], normalgoodnativeETH, metagood).toId()
         );
         L_Proof.S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(
@@ -165,7 +165,7 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
             "before disinvest nativeeth good:normalgoodnativeETH feeQunitityState amount1 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodnativeETH, metagood).toKey()
+            S_ProofKey(users[2], normalgoodnativeETH, metagood).toId()
         );
 
         market.disinvestProof(normalproof, 1 * 10 ** 5, address(0), address(0));

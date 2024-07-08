@@ -19,9 +19,9 @@ contract disinvestERC20OtherNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    bytes32 metagood;
-    bytes32 normalgoodusdt;
-    bytes32 normalgoodbtc;
+    uint256 metagood;
+    uint256 normalgoodusdt;
+    uint256 normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -49,7 +49,7 @@ contract disinvestERC20OtherNormalGood is BaseSetup {
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toKey();
+        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
         vm.stopPrank();
     }
 
@@ -78,7 +78,7 @@ contract disinvestERC20OtherNormalGood is BaseSetup {
             address(btc),
             normalgoodconfig
         );
-        normalgoodbtc = S_GoodKey(users[1], address(btc)).toKey();
+        normalgoodbtc = S_GoodKey(users[1], address(btc)).toId();
         vm.stopPrank();
     }
 
@@ -97,7 +97,7 @@ contract disinvestERC20OtherNormalGood is BaseSetup {
         vm.startPrank(users[2]);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodbtc, metagood).toKey()
+            S_ProofKey(users[2], normalgoodbtc, metagood).toId()
         );
         L_Proof.S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(
@@ -160,7 +160,7 @@ contract disinvestERC20OtherNormalGood is BaseSetup {
             "before disinvest erc20 good:normalgoodbtc feeQunitityState amount1 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodbtc, metagood).toKey()
+            S_ProofKey(users[2], normalgoodbtc, metagood).toId()
         );
 
         market.disinvestProof(normalproof, 1 * 10 ** 5, address(0), address(0));

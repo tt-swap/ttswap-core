@@ -15,7 +15,7 @@ contract testInitMetaGood is BaseSetup {
     using L_ProofIdLibrary for S_ProofKey;
     using L_GoodIdLibrary for S_GoodKey;
 
-    bytes32 metagood;
+    uint256 metagood;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -43,7 +43,7 @@ contract testInitMetaGood is BaseSetup {
             goodconfig
         );
         snapLastCall("init_erc20_metagood");
-        metagood = S_GoodKey(marketcreator, address(usdt)).toKey();
+        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
         assertEq(
             usdt.balanceOf(marketcreator),
             100000 * 10 ** 6 - 50000 * 10 ** 6,
@@ -92,7 +92,7 @@ contract testInitMetaGood is BaseSetup {
         assertEq(market.goodNum(), 1, "after initial:good num error");
 
         uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, 0).toKey()
+            S_ProofKey(marketcreator, metagood, 0).toId()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
@@ -148,7 +148,7 @@ contract testInitMetaGood is BaseSetup {
             goodconfig
         );
         snapLastCall("init_nativeerc20_metagood");
-        metagood = S_GoodKey(marketcreator, nativeCurrency).toKey();
+        metagood = S_GoodKey(marketcreator, nativeCurrency).toId();
         assertEq(
             marketcreator.balance,
             100000 * 10 ** 6 - 50000 * 10 ** 6,
@@ -196,7 +196,7 @@ contract testInitMetaGood is BaseSetup {
         assertEq(market.goodNum(), 1, "after initial:good num error");
 
         uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, 0).toKey()
+            S_ProofKey(marketcreator, metagood, 0).toId()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(

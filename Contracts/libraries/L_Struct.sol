@@ -8,6 +8,6 @@ struct S_GoodKey {
 
 struct S_ProofKey {
     address owner;
-    bytes32 currentgood;
-    bytes32 valuegood;
+    uint256 currentgood;
+    uint256 valuegood;
 }

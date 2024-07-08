@@ -19,9 +19,9 @@ contract investERC20NormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    bytes32 metagood;
-    bytes32 normalgoodusdt;
-    bytes32 normalgoodbtc;
+    uint256 metagood;
+    uint256 normalgoodusdt;
+    uint256 normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -48,7 +48,7 @@ contract investERC20NormalGood is BaseSetup {
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toKey();
+        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
         vm.stopPrank();
     }
 
@@ -77,7 +77,7 @@ contract investERC20NormalGood is BaseSetup {
             address(btc),
             normalgoodconfig
         );
-        normalgoodbtc = S_GoodKey(users[1], address(btc)).toKey();
+        normalgoodbtc = S_GoodKey(users[1], address(btc)).toId();
         vm.stopPrank();
     }
 
@@ -88,7 +88,7 @@ contract investERC20NormalGood is BaseSetup {
 
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[1], normalgoodbtc, metagood).toKey()
+            S_ProofKey(users[1], normalgoodbtc, metagood).toId()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
 
@@ -255,7 +255,7 @@ contract investERC20NormalGood is BaseSetup {
         btc.approve(address(market), 10 * 10 ** 8);
 
         uint256 normalproof = market.proofmapping(
-            S_ProofKey(users[4], normalgoodbtc, metagood).toKey()
+            S_ProofKey(users[4], normalgoodbtc, metagood).toId()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
 
@@ -376,7 +376,7 @@ contract investERC20NormalGood is BaseSetup {
             "after invest erc20_normalgood:metagood erc20 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[4], normalgoodbtc, metagood).toKey()
+            S_ProofKey(users[4], normalgoodbtc, metagood).toId()
         );
         console2.log("111111", normalproof);
         _proof1 = market.getProofState(normalproof);

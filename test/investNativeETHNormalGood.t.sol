@@ -19,9 +19,9 @@ contract investNativeETHNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    bytes32 metagood;
-    bytes32 normalgoodusdt;
-    bytes32 nativeeth;
+    uint256 metagood;
+    uint256 normalgoodusdt;
+    uint256 nativeeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -48,7 +48,7 @@ contract investNativeETHNormalGood is BaseSetup {
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toKey();
+        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
         vm.stopPrank();
     }
 
@@ -76,7 +76,7 @@ contract investNativeETHNormalGood is BaseSetup {
             address(0),
             normalgoodconfig
         );
-        nativeeth = S_GoodKey(users[1], address(0)).toKey();
+        nativeeth = S_GoodKey(users[1], address(0)).toId();
         vm.stopPrank();
     }
 
@@ -86,7 +86,7 @@ contract investNativeETHNormalGood is BaseSetup {
 
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[1], nativeeth, metagood).toKey()
+            S_ProofKey(users[1], nativeeth, metagood).toId()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
 
@@ -210,7 +210,7 @@ contract investNativeETHNormalGood is BaseSetup {
             "after invest nativeeth_normalgood:metagood erc20 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[1], nativeeth, metagood).toKey()
+            S_ProofKey(users[1], nativeeth, metagood).toId()
         );
         _proof1 = market.getProofState(normalproof);
         assertEq(
@@ -254,7 +254,7 @@ contract investNativeETHNormalGood is BaseSetup {
         usdt.approve(address(market), 800000 * 10 ** 6);
 
         uint256 normalproof = market.proofmapping(
-            S_ProofKey(users[4], nativeeth, metagood).toKey()
+            S_ProofKey(users[4], nativeeth, metagood).toId()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
 
@@ -375,7 +375,7 @@ contract investNativeETHNormalGood is BaseSetup {
             "after invest nativeeth_normalgood:metagood erc20 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[4], nativeeth, metagood).toKey()
+            S_ProofKey(users[4], nativeeth, metagood).toId()
         );
         _proof1 = market.getProofState(normalproof);
         assertEq(

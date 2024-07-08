@@ -19,9 +19,9 @@ contract buyNativeETHNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
-    bytes32 metagood;
-    bytes32 normalgoodusdt;
-    bytes32 normalgoodbtc;
+    uint256 metagood;
+    uint256 normalgoodusdt;
+    uint256 normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -48,7 +48,7 @@ contract buyNativeETHNormalGood is BaseSetup {
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toKey();
+        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
         vm.stopPrank();
     }
 
@@ -76,7 +76,7 @@ contract buyNativeETHNormalGood is BaseSetup {
             address(0),
             normalgoodconfig
         );
-        normalgoodbtc = S_GoodKey(users[1], address(0)).toKey();
+        normalgoodbtc = S_GoodKey(users[1], address(0)).toId();
         vm.stopPrank();
     }
 

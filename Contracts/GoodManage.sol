@@ -114,8 +114,16 @@ abstract contract GoodManage is I_Good {
         uint256 _payquanity,
         address _recipent
     ) external payable returns (bool) {
-        goods[_goodid].erc20address.safeTransfer(_recipent, _payquanity);
-        return true;
+        if (goods[_goodid].erc20address != address(0)) {
+            goods[_goodid].erc20address.transferFrom(
+                msg.sender,
+                _recipent,
+                _payquanity
+            );
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /// @inheritdoc I_Good

@@ -20,10 +20,10 @@ library L_CurrencyLibrary {
     function transferFrom(
         address token,
         address from,
+        address to,
         uint256 amount
     ) internal {
         bool success;
-        address to = address(this);
         if (token.isNative()) {
             if (msg.value != amount) revert NativeTransferFailed();
         } else {
@@ -63,6 +63,15 @@ library L_CurrencyLibrary {
             }
             if (!success) revert ERC20TransferFailed();
         }
+    }
+
+    function transferFrom(
+        address token,
+        address from,
+        uint256 amount
+    ) internal {
+        address to = address(this);
+        transferFrom(token, from, to, amount);
     }
 
     function safeTransfer(

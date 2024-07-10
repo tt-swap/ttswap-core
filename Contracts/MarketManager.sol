@@ -407,7 +407,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     }
 
     function enpower(
-        uint256 goodkey,
+        uint256 goodid,
         uint256 valuegood,
         uint128 quantity
     ) external payable override noReentrant returns (bool) {
@@ -419,10 +419,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goods[valuegood].currentState =
             goods[valuegood].currentState +
             toBalanceUINT256(0, quantity);
-        goods[goodkey].currentState =
-            goods[goodkey].currentState +
+        goods[goodid].currentState =
+            goods[goodid].currentState +
             toBalanceUINT256(value, 0);
-        emit e_enpower(goodkey, valuegood, quantity, msg.sender);
+        emit e_enpower(goodid, valuegood, quantity, msg.sender);
         return true;
     }
 }

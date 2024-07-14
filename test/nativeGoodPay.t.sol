@@ -155,7 +155,7 @@ contract nativeGoodPay is Test, BaseSetup {
         );
         normalgoodusdt = S_GoodKey(edson, address(usdt)).toId();
         goodInfo(normalgoodusdt);
-        console2.log("usdt good id", normalgoodusdt);
+        console2.log("usdt good id:", normalgoodusdt);
         vm.stopPrank();
     }
 
@@ -182,17 +182,13 @@ contract nativeGoodPay is Test, BaseSetup {
             "tbalance.amount0()",
             T_BalanceUINT256.wrap(10000 * 2 ** 128 + 1).amount1()
         );
-        goodInfo(1);
-        goodInfo(3);
         market.buyGood(
             normalgoodusdt,
             metagood,
             4000 * 10 ** 6,
-            5000 * 10 ** 6 * 2 ** 128 + 1,
+            T_BalanceUINT256.wrap(5000 * 10 ** 6 * 2 ** 128 + 1),
             false
         );
-        goodInfo(1);
-        goodInfo(3);
         vm.stopPrank();
         console2.log("3york.balance after swap", york.balance);
         console2.log("3market.balance after swap", address(market).balance);
@@ -201,10 +197,10 @@ contract nativeGoodPay is Test, BaseSetup {
             "3market.usdt after swap",
             usdt.balanceOf(address(market))
         );
-        assertEq(york.balance, 997601919488000000, "3york.balance after swap");
+        assertEq(usdt.balanceOf(york), 99999997440, "3york.balance after swap");
         assertEq(
-            address(market).balance,
-            2902398080512000000,
+            usdt.balanceOf(address(market)),
+            8000002560,
             "market.balance after swap"
         );
     }

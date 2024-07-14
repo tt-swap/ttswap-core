@@ -40,7 +40,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goodNum += 1;
         uint256 togood = S_GoodKey(msg.sender, _erc20address).toId();
         goods[togood].init(_initial, _erc20address, _goodConfig);
-        goods[togood].updateToValueGood();
+        goods[togood].modifyGoodConfig(8);
         totalSupply += 1;
         uint256 proofKey = S_ProofKey(msg.sender, togood, 0).toId();
         proofmapping[proofKey] = totalSupply;
@@ -130,7 +130,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 _goodid1,
         uint256 _goodid2,
         uint128 _swapQuantity,
-        uint256 _limitPrice,
+        T_BalanceUINT256 _limitPrice,
         bool _istotal
     )
         external
@@ -149,10 +149,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
-        swapcache = L_Good.swapCompute1(
-            swapcache,
-            T_BalanceUINT256.wrap(_limitPrice)
-        );
+        swapcache = L_Good.swapCompute1(swapcache, _limitPrice);
         if (_istotal == true && swapcache.remainQuantity > 0)
             revert err_total();
         goodid2FeeQuantity_ = goods[_goodid2].goodConfig.getBuyFee(
@@ -191,7 +188,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 _goodid1,
         uint256 _goodid2,
         uint128 _swapQuantity,
-        uint256 _limitPrice,
+        T_BalanceUINT256 _limitPrice,
         address _recipent
     )
         external
@@ -211,10 +208,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             good2config: goods[_goodid2].goodConfig
         });
 
-        swapcache = L_Good.swapCompute2(
-            swapcache,
-            T_BalanceUINT256.wrap(_limitPrice)
-        );
+        swapcache = L_Good.swapCompute2(swapcache, _limitPrice);
 
         if (swapcache.remainQuantity > 0) revert err_total();
         goodid1FeeQuantity_ = goods[_goodid1].goodConfig.getSellFee(
@@ -422,7 +416,13 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goods[goodid].currentState =
             goods[goodid].currentState +
             toBalanceUINT256(value, 0);
-        emit e_enpower(goodid, valuegood, quantity, msg.sender);
+        emit e_enpower(goodid, valuegood, quantity);
         return true;
+    }
+    function getState(
+        uint256 goodid,
+        uint256 valuegood
+    ) external view returns (T_BalanceUINT256, T_BalanceUINT256) {
+        return (goods[goodid].currentState, goods[valuegood].currentState);
     }
 }

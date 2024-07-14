@@ -60,12 +60,8 @@ function lowerprice(
     T_BalanceUINT256 c
 ) pure returns (bool) {
     return
-        uint256(a.amount0()) * uint256(b.amount1()) * uint256(c.amount1()) <
-            uint256(a.amount1()) *
-                uint256(b.amount0()) *
-                uint256(c.amount0()) &&
-            uint256(a.amount0()) * uint256(b.amount1()) * uint256(c.amount1()) >
-            0
+        uint256(a.amount0()) * uint256(b.amount1()) * uint256(c.amount1()) >
+            uint256(a.amount1()) * uint256(b.amount0()) * uint256(c.amount0())
             ? true
             : false;
 }

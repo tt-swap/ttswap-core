@@ -47,24 +47,6 @@ library L_Good {
         return self.goodConfig.getSwapChips(self.currentState.amount1());
     }
 
-    function updateToValueGood(S_GoodState storage self) internal {
-        require(!self.goodConfig.isvaluegood(), "G007");
-        uint256 b = self.goodConfig;
-        assembly {
-            b := shr(1, shl(1, b))
-        }
-        self.goodConfig = b + 1 * 2 ** 255;
-    }
-
-    function updateToNormalGood(S_GoodState storage self) internal {
-        require(self.goodConfig.isvaluegood(), "G008");
-        uint256 b = self.goodConfig;
-        assembly {
-            b := shr(1, shl(1, b))
-        }
-        self.goodConfig = b;
-    }
-
     function updateGoodConfig(
         S_GoodState storage _self,
         uint256 _goodConfig
@@ -180,6 +162,7 @@ library L_Good {
                 );
                 _stepCache.remainQuantity = 0;
             }
+
             _stepCache.swapvalue += minValue;
         }
 
@@ -613,6 +596,14 @@ library L_Good {
                     _marketconfig.getCustomerFee(_profit)
             );
         }
+    }
+    function modifyGoodConfig(
+        S_GoodState storage _self,
+        uint256 _goodconfig
+    ) internal {
+        _self.goodConfig =
+            (_self.goodConfig % (2 ** 252)) +
+            (_goodconfig << 252);
     }
 }
 

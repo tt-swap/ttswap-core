@@ -89,22 +89,13 @@ abstract contract GoodManage is I_Good {
     }
 
     /// @inheritdoc I_Good
-    function updatetoValueGood(
-        uint256 _goodid
+    function modifyGoodConfig(
+        uint256 _goodid,
+        uint256 _goodConfig
     ) external override returns (bool) {
         require(msg.sender == marketcreator, "G02");
-        goods[_goodid].updateToValueGood();
-        emit e_updatetoValueGood(_goodid);
-        return true;
-    }
-
-    /// @inheritdoc I_Good
-    function updatetoNormalGood(
-        uint256 _goodid
-    ) external override returns (bool) {
-        require(msg.sender == marketcreator, "G02");
-        goods[_goodid].updateToNormalGood();
-        emit e_updatetoNormalGood(_goodid);
+        goods[_goodid].modifyGoodConfig(_goodConfig);
+        emit e_modifyGoodConfig(_goodid, _goodConfig);
         return true;
     }
 
@@ -157,5 +148,6 @@ abstract contract GoodManage is I_Good {
         goods[goodid].feeQunitityState =
             goods[goodid].feeQunitityState +
             toBalanceUINT256(uint128(welfare), 0);
+        emit e_goodWelfare(goodid, welfare);
     }
 }

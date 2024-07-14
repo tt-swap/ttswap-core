@@ -23,13 +23,10 @@ interface I_Good {
     /// @param _goodConfig Good config 市场配置
     event e_updateGoodConfig(uint256 _goodid, uint256 _goodConfig);
 
-    /// @notice update good to value good~ 更新商品为价值商品
+    /// @notice 市场管理员更新商品的分类
     /// @param _goodid good No,商品编号配
-    event e_updatetoValueGood(uint256 _goodid);
+    event e_modifyGoodConfig(uint256 _goodid, uint256 _goodconfig);
 
-    /// @notice update good to normal good~ 更新商品为普通商品
-    /// @param _goodid good No,商品编号配
-    event e_updatetoNormalGood(uint256 _goodid);
     /// @notice add ban list~添加黑名单
     /// @param _user  address ~用户地址
     event e_addbanlist(address _user);
@@ -74,15 +71,14 @@ interface I_Good {
         uint256 _goodConfig
     ) external returns (bool);
 
-    /// @notice  update normal good to value good 更新普通商品为价值商品
-    /// @param _goodid   good's id 商品的商品ID
-    /// @return the result  更新结果
-    function updatetoValueGood(uint256 _goodid) external returns (bool);
-
-    /// @notice  update normal good to value good 更新价值商品为普通商品
-    /// @param _goodid   good's id 商品的商品ID
-    /// @return the result  更新结果
-    function updatetoNormalGood(uint256 _goodid) external returns (bool);
+    /// @notice 市场管理员修改商品的属性
+    /// @param _goodid   商品的商品ID
+    /// @param _goodConfig   商品配置
+    /// @return the result
+    function modifyGoodConfig(
+        uint256 _goodid,
+        uint256 _goodConfig
+    ) external returns (bool);
     /// @notice pay good to  转给
     /// @param _goodid   商品的商品ID
     /// @param _payquanity   数量

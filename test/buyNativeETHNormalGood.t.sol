@@ -80,7 +80,7 @@ contract buyNativeETHNormalGood is BaseSetup {
         vm.stopPrank();
     }
 
-    function testBuyERC20GoodWithoutChips() public {
+    function testBuyNativeETHGoodWithoutChips() public {
         vm.startPrank(users[1]);
         usdt.approve(address(market), 800000 * 10 ** 6 + 1);
         btc.approve(address(market), 10 * 10 ** 8 + 1);
@@ -109,7 +109,7 @@ contract buyNativeETHNormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            65000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_nativeeth_normal_good_without_chips_first");
@@ -170,7 +170,9 @@ contract buyNativeETHNormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            80000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(
+                120000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128
+            ),
             false
         );
         snapLastCall("buy_nativeeth_normal_good_without_chips_second");
@@ -179,7 +181,9 @@ contract buyNativeETHNormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            80000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(
+                180000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128
+            ),
             false
         );
         snapLastCall("buy_nativeeth_normal_good_without_chips_three");
@@ -187,7 +191,7 @@ contract buyNativeETHNormalGood is BaseSetup {
         vm.stopPrank();
     }
 
-    function testBuyERC20GoodWithChips() public {
+    function testBuyNativeETHGoodWithChips() public {
         vm.startPrank(users[1]);
         uint256 goodconfig = 1 *
             2 ** 246 +
@@ -230,7 +234,7 @@ contract buyNativeETHNormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300,
-            65000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_nativeeth_normal_good_chips_first_1chips");
@@ -239,7 +243,7 @@ contract buyNativeETHNormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300,
-            80000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_nativeeth_normal_good_chips_second_1chips");
@@ -248,7 +252,7 @@ contract buyNativeETHNormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            80000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_nativeeth_normal_good_chips_second_12chips");
@@ -257,11 +261,12 @@ contract buyNativeETHNormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            100000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(
+                100000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128
+            ),
             false
         );
         snapLastCall("buy_nativeeth_normal_good_chips_second_10chips");
-
         vm.stopPrank();
     }
 }

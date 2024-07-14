@@ -124,13 +124,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _goodid   proof No~投资证明编号
     /// @param _valuegood  value good no~价值商品编号
     /// @param _quantity  enpower value quantity~赋能价值商品数量
-    /// @param _sender msg.sender
-    event e_enpower(
-        uint256 _goodid,
-        uint256 _valuegood,
-        uint256 _quantity,
-        address _sender
-    );
+    event e_enpower(uint256 _goodid, uint256 _valuegood, uint256 _quantity);
 
     error err_total();
 
@@ -169,7 +163,7 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodid1,
         uint256 _goodid2,
         uint128 _swapQuantity,
-        uint256 _limitprice,
+        T_BalanceUINT256 _limitprice,
         bool _istotal
     )
         external
@@ -188,7 +182,7 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodid1,
         uint256 _goodid2,
         uint128 _swapQuantity,
-        uint256 _limitprice,
+        T_BalanceUINT256 _limitprice,
         address _recipent
     )
         external

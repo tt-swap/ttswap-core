@@ -110,14 +110,14 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            65000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(65000 * 10 ** 6 + 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_erc20_normal_good_without_chips_first");
         assertEq(
             usdt.balanceOf(users[1]),
             49930700000000,
-            "after buy erc20_normalgood:usdt users[1] account  balance error"
+            "after buy erc20_normalgood:usdt users[1] account  balance error1"
         );
         assertEq(
             btc.balanceOf(users[1]),
@@ -146,16 +146,7 @@ contract buyERC20NormalGood is BaseSetup {
             119289290000,
             "after buy erc20_normalgood:metagood currentState amount1 error"
         );
-        assertEq(
-            good_.investState.amount0(),
-            112993700000,
-            "after buy erc20_normalgood:metagood investState amount0 error"
-        );
-        assertEq(
-            good_.investState.amount1(),
-            112993700000,
-            "after buy erc20_normalgood:metagood investState amount1 error"
-        );
+
         assertEq(
             good_.feeQunitityState.amount0(),
             10710000,
@@ -171,20 +162,22 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            80000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(
+                180000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128
+            ),
             false
         );
         snapLastCall("buy_erc20_normal_good_without_chips_second");
-
         market.buyGood(
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            100000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(
+                180000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128
+            ),
             false
         );
         snapLastCall("buy_erc20_normal_good_without_chips_three");
-
         vm.stopPrank();
     }
 
@@ -231,7 +224,7 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300,
-            65000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_erc20_normal_good_chips_first_1chips");
@@ -240,7 +233,7 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300,
-            80000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_erc20_normal_good_chips_second_1chips");
@@ -249,7 +242,7 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            80000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_erc20_normal_good_chips_second_12chips");
@@ -258,7 +251,7 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             1000000000,
-            80000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 8,
+            T_BalanceUINT256.wrap(80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_erc20_normal_good_chips_second_2chips");

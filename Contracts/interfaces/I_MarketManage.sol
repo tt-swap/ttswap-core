@@ -231,4 +231,12 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _valuegoodid,
         uint128 _quantity
     ) external payable returns (bool);
+
+    /// @notice getState~获取商品状态
+    /// @param goodid   goodid~当前商品状态
+    /// @param valuegood   valuegoodid~价值商品状态
+    function getState(
+        uint256 goodid,
+        uint256 valuegood
+    ) external view returns (T_BalanceUINT256 a, T_BalanceUINT256 b);
 }

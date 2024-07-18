@@ -218,12 +218,8 @@ contract MyToken is ERC20 {
         _mint(msg.sender, 100000000 * 10 ** uint(decimals()));
     }
 
-    modifier Manager() {
-        require(owner == msg.sender, "NOT OWNER!");
-        _;
-    }
-
-    function mint(address marketcreator, uint amount) external {
-        _mint(marketcreator, amount * 10 ** uint(decimals()));
+    function mint(uint amount) external {
+        require(amount <= 10000);
+        _mint(msg.sender, amount * 10 ** uint(decimals()));
     }
 }

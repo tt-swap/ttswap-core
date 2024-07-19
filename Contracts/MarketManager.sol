@@ -302,6 +302,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             proofNo,
             _togood,
             _valuegood,
+            toBalanceUINT256(normalInvest_.actualInvestValue, 0),
             toBalanceUINT256(
                 normalInvest_.actualFeeQuantity,
                 normalInvest_.actualInvestQuantity

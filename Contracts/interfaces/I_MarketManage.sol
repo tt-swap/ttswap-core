@@ -82,12 +82,14 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _proofNo   proof No~投资证明编号
     /// @param _normalGoodNo  normal good no~普通商品编号
     /// @param _valueGoodNo  value good no~价值商品编号
+    /// @param _value     amount0 investvalue,amount1 0~amount0 投次价值
     /// @param _invest     amount0 normal good actual fee ,amount1 normal good actual invest quantity~amount0为投资手续费,amount1为投资数量
     /// @param _valueinvest   amount0 value good actual fee ,amount1 value good actual invest quantity~amount0为投资手续费,amount1为投资数量
     event e_investGood(
         uint256 indexed _proofNo,
         uint256 _normalGoodNo,
         uint256 _valueGoodNo,
+        T_BalanceUINT256 _value,
         T_BalanceUINT256 _invest,
         T_BalanceUINT256 _valueinvest
     );

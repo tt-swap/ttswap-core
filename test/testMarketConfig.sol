@@ -11,7 +11,7 @@ contract testMarketConfig is Test, GasSnapshot {
     uint256 marketconfig;
     function setUp() public pure {}
 
-    function test_getLiquidFee() public {
+    function test_getLiquidFee() public pure {
         uint256 a_min = 1 * 2 ** 250;
         uint256 a_mid = 1 * 2 ** 255;
         uint256 a_max = 63 * 2 ** 250;

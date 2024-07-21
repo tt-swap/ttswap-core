@@ -199,21 +199,25 @@ contract buyERC20NormalGood is BaseSetup {
 
         usdt.approve(address(market), 800000 * 10 ** 6 + 1);
         btc.approve(address(market), 10 * 10 ** 8 + 1);
+
         assertEq(
             btc.balanceOf(users[1]),
             900000000,
             "before buy erc20_normalgood:btc users[1] account  balance error"
         );
+
         assertEq(
             usdt.balanceOf(users[1]),
             49937000000000,
             "before buy erc20_normalgood:usdt users[1] account  balance error"
         );
+
         assertEq(
             usdt.balanceOf(address(market)),
             113000000000,
             "before buy erc20_normalgood:usdt address(market) account  balance error"
         );
+
         assertEq(
             btc.balanceOf(address(market)),
             100000000,
@@ -255,7 +259,6 @@ contract buyERC20NormalGood is BaseSetup {
             false
         );
         snapLastCall("buy_erc20_normal_good_chips_second_2chips");
-
         vm.stopPrank();
     }
 }

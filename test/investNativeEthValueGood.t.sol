@@ -147,8 +147,6 @@ contract investNativeETHValueGood is BaseSetup {
 
         assertEq(market.goodNum(), 1, "after invest:good num error");
 
-        uint256 goodkey = S_GoodKey(address(0), marketcreator).toId();
-
         assertEq(
             good_.erc20address,
             address(0),
@@ -277,7 +275,6 @@ contract investNativeETHValueGood is BaseSetup {
 
         assertEq(market.goodNum(), 1, "after invest:good num error");
 
-        uint256 goodkey = S_GoodKey(marketcreator, address(0)).toId();
         assertEq(
             good_.erc20address,
             address(0),

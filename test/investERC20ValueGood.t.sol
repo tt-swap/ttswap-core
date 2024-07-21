@@ -149,8 +149,6 @@ contract investERC20ValueGood is BaseSetup {
 
         assertEq(market.goodNum(), 1, "after invest:good num error");
 
-        uint256 goodkey = S_GoodKey(marketcreator, address(usdt)).toId();
-
         _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),

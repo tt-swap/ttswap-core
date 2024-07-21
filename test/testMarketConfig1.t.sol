@@ -35,7 +35,7 @@ contract testconfig is Test, GasSnapshot {
     //     console2.log("2", aa.amount1());
     // }
 
-    function testgoodconfig() public {
+    function testgoodconfig() public view {
         console2.log(goodconfig.isvaluegood());
         console2.log("goodconfig2", goodconfig.getInvestFee());
         console2.log("goodconfig3", goodconfig.getDisinvestFee());

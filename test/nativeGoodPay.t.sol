@@ -94,7 +94,6 @@ contract nativeGoodPay is Test, BaseSetup {
 
     function NativeETHInitNormalgood() public {
         address jeck = address(99);
-        address gater = address(98);
         vm.deal(jeck, 1 ether);
         uint256 _goodConfig = 8 *
             2 ** 246 +
@@ -134,7 +133,6 @@ contract nativeGoodPay is Test, BaseSetup {
 
     function initnormalgood() public {
         address edson = address(101);
-        address gater = address(102);
         deal(address(usdt), edson, 100000 * 10 ** 6, false);
         vm.deal(edson, 10 ether);
         vm.startPrank(edson);
@@ -161,7 +159,6 @@ contract nativeGoodPay is Test, BaseSetup {
 
     function testbuymetagood() public {
         address york = address(105);
-        address gater = address(106);
         deal(address(usdt), york, 100000 * 10 ** 6, false);
         vm.startPrank(york);
         usdt.approve(address(market), 10000 * 10 ** 6);

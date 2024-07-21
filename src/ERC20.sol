@@ -218,8 +218,8 @@ contract MyToken is ERC20 {
         _mint(msg.sender, 100000000 * 10 ** uint(decimals()));
     }
 
-    function mint(uint amount) external {
+    function mint(address recipent, uint amount) external {
         require(amount <= 10000000000);
-        _mint(msg.sender, amount * 10 ** uint(decimals()));
+        _mint(recipent, amount * 10 ** uint(decimals()));
     }
 }

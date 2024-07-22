@@ -36,13 +36,13 @@ contract buyERC20NormalGood is BaseSetup {
         usdt.approve(address(market), 50000 * 10 ** 6 + 1);
         uint256 _goodconfig = (2 ** 255) +
             1 *
-            2 ** 246 +
+            2 ** 217 +
             3 *
-            2 ** 240 +
+            2 ** 211 +
             5 *
-            2 ** 233 +
+            2 ** 204 +
             7 *
-            2 ** 226;
+            2 ** 197;
         market.initMetaGood(
             address(usdt),
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
@@ -64,13 +64,13 @@ contract buyERC20NormalGood is BaseSetup {
             "befor init erc20 good, balance of market error"
         );
         uint256 normalgoodconfig = 1 *
-            2 ** 246 +
+            2 ** 217 +
             3 *
-            2 ** 240 +
+            2 ** 211 +
             5 *
-            2 ** 233 +
+            2 ** 204 +
             7 *
-            2 ** 226;
+            2 ** 197;
         market.initGood(
             metagood,
             toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
@@ -184,13 +184,13 @@ contract buyERC20NormalGood is BaseSetup {
     function testBuyERC20GoodWithChips() public {
         vm.startPrank(users[1]);
         uint256 goodconfig = 1 *
-            2 ** 246 +
+            2 ** 217 +
             3 *
-            2 ** 240 +
+            2 ** 211 +
             5 *
-            2 ** 233 +
+            2 ** 204 +
             7 *
-            2 ** 226 +
+            2 ** 197 +
             2 *
             2 ** 216 +
             3 *

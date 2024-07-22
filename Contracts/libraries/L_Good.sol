@@ -52,9 +52,9 @@ library L_Good {
         uint256 _goodConfig
     ) internal {
         assembly {
-            _goodConfig := shr(4, shl(4, _goodConfig))
+            _goodConfig := shr(33, shl(33, _goodConfig))
         }
-        _self.goodConfig = (_self.goodConfig & (15 * 2 ** 252)) + _goodConfig;
+        _self.goodConfig = ((_self.goodConfig >> 233) << 233) + _goodConfig;
     }
 
     function init(
@@ -66,7 +66,7 @@ library L_Good {
         self.currentState = _init;
         self.investState = _init;
         assembly {
-            _goodConfig := shr(4, shl(4, _goodConfig))
+            _goodConfig := shr(33, shl(33, _goodConfig))
         }
         self.goodConfig = _goodConfig;
         self.erc20address = _erc20address;

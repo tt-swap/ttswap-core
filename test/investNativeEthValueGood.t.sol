@@ -33,13 +33,13 @@ contract investNativeETHValueGood is BaseSetup {
         vm.startPrank(marketcreator);
         uint256 _goodconfig = (2 ** 255) +
             1 *
-            2 ** 246 +
+            2 ** 217 +
             3 *
-            2 ** 240 +
+            2 ** 211 +
             5 *
-            2 ** 233 +
+            2 ** 204 +
             7 *
-            2 ** 226;
+            2 ** 197;
         market.initMetaGood{value: 50000 * 10 ** 6}(
             address(0),
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
@@ -129,13 +129,13 @@ contract investNativeETHValueGood is BaseSetup {
             good_.goodConfig,
             (2 ** 255) +
                 1 *
-                2 ** 246 +
+                2 ** 217 +
                 3 *
-                2 ** 240 +
+                2 ** 211 +
                 5 *
-                2 ** 233 +
+                2 ** 204 +
                 7 *
-                2 ** 226,
+                2 ** 197,
             "after invest metagood:metagood goodConfig error"
         );
 
@@ -257,13 +257,13 @@ contract investNativeETHValueGood is BaseSetup {
             good_.goodConfig,
             (2 ** 255) +
                 1 *
-                2 ** 246 +
+                2 ** 217 +
                 3 *
-                2 ** 240 +
+                2 ** 211 +
                 5 *
-                2 ** 233 +
+                2 ** 204 +
                 7 *
-                2 ** 226,
+                2 ** 197,
             "after invest metagood:metagood goodConfig error"
         );
 

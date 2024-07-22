@@ -36,13 +36,13 @@ contract collectERC20OwnValueGood is BaseSetup {
         usdt.approve(address(market), 50000 * 10 ** 6 + 1);
         uint256 _goodconfig = (2 ** 255) +
             1 *
-            2 ** 246 +
+            2 ** 217 +
             3 *
-            2 ** 240 +
+            2 ** 211 +
             5 *
-            2 ** 233 +
+            2 ** 204 +
             7 *
-            2 ** 226;
+            2 ** 197;
         market.initMetaGood(
             address(usdt),
             toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),

@@ -32,7 +32,7 @@ If you’re interested in contributing please see our [contribution guidelines](
 
 ## Whitepaper
 
-A more detailed description of ttswap Core can be found in the draft of the [TTSWAP Core Whitepaper](./docs/whitepaper_en.pdf).
+A more detailed description of ttswap Core can be found in the draft of the [TTSWAP Core Whitepaper-en](./docs/whitepaper_en.pdf) |[TTSWAP Core Whitepaper-cn](./docs/whitepaper_cn.pdf).   
 
 ## Architecture
 
@@ -45,8 +45,6 @@ Part 1: the action relate to good'initial ,goods investing (stake or add liquidi
 Part 2: the action relate goods config , collect fee of goods , good's attribute defined in goodmanage.sol.
 
 Part 3: because proof is ERC721 standard, and it's define in proofmanage.sol
-
-Part 4: about user's refer is defined in referermanager.sol
 
 ## Repository Structure && License
 
@@ -120,3 +118,10 @@ step 1:instrall forge
 step 2:forge install OpenZeppelin/openzeppelin-contracts@v4.9.6  
 step 3:forge install marktoda/forge-gas-snapshot  
 
+
+## Socials / Contract
+Twitter:[ttswap_exchange](https://x.com/ttswap_exchange)
+Telegram:[@ttswap01](https://t.me/ttswap01)
+Email:[ttswap.exchange@gmail.com](mailto:ttswap.exchange@gmail.com)
+Discord:[ttswap](https://discord.gg/5PhXn9DR)
+Website:[tt-swap.com](http://www.tt-swap.com)

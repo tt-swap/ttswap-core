@@ -219,7 +219,7 @@ contract MyToken is ERC20 {
     }
 
     function mint(address recipent, uint amount) external {
-        require(amount <= 10000000000);
+        require(amount <= 100000000);
         _mint(recipent, amount * 10 ** uint(decimals()));
     }
 }

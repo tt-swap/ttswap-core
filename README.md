@@ -1,25 +1,25 @@
 # TTSWAP
 TTSWAP (token-token swap) protocol is a decentralized automated market-making protocol built on the Ethereum blockchain. Its underlying principle is based on the transfer of market value triggered by user behavior, and it constructs a platform using value conservation trading strategies.
-The whitepaper explains the design logic of the ttswap project, covering principles and implementations of good trading, investment, and withdrawal of value goods, as well as ordinary good investment and withdrawal, and the generation and distribution of good transaction fees.
+The whitepaper explains the design logic of the ttswap project, covering principles and implementations of goods trading, investment, and withdrawal of value goods, as well as ordinary goods investment and withdrawal, and the generation and distribution of goods transaction fees.
 
 ## Features
-Value Conservation Trading Strategy
-The value conservation trading strategy accurately reflects the true market value of currencies and facilitates fast good transactions.
+***Value Conservation Trading Strategy***
+The value conservation trading strategy accurately reflects the true market value of currencies and facilitates fast goods transactions.
 
 1. Direct Trading without Intermediaries
 On this platform, any two types of items can be directly traded without the need for intermediate conversions.
 
 2. No Slippage within Trading Threshold
-Transactions below the good trading threshold incur no slippage.
+Transactions below the goods trading threshold incur no slippage.
 
-3. No Impermanent Loss for Liquidity Providers or good Investors
-Constant market value inherently prevents impermanent loss. When users withdraw their investment, they receive the original invested good plus profits generated from providing liquidity.
+3. No Impermanent Loss for Liquidity Providers or goods Investors
+Constant market value inherently prevents impermanent loss. When users withdraw their investment, they receive the original invested goods plus profits generated from providing liquidity.
 
 4. Low Gas Fees with Simple Computational Logic
 The logic behind the constant value trading model is simple, resulting in low computational load and gas consumption.
 
 5. Fee Distribution Based on Roles for Everyone
-Fees are distributed based on roles, allowing anyone to become a good investor (liquidity provider), goods seller, gater, referrer, user, or platform role, sharing in the platform's growth earnings.
+Fees are distributed based on roles, allowing anyone to become a goods investor (liquidity provider), goods seller, gater, referrer, user, or platform role, sharing in the platform's growth earnings.
 
 6. Support Native ETH Exchange and Invest
 anyone can you native ETH without wrap to swap, invest easily.
@@ -40,9 +40,9 @@ A more detailed description of ttswap Core can be found in the draft of the [TTS
 
 the contract devide four part:
 
-Part 1: the action relate to good'initial ,good investing (stake or add liquidity),good disinvestint (unstake or remove liquidity),good swaping , or disinvesting proof ( burn stake proof or liquidity position )  are defined in marketmanager.sol.
+Part 1: the action relate to good'initial ,goods investing (stake or add liquidity),goods disinvestint (unstake or remove liquidity),goods swaping , or disinvesting proof ( burn stake proof or liquidity position )  are defined in marketmanager.sol.
 
-Part 2: the action relate good config , collect fee of good , good's attribute defined in goodmanage.sol.
+Part 2: the action relate goods config , collect fee of goods , good's attribute defined in goodmanage.sol.
 
 Part 3: because proof is ERC721 standard, and it's define in proofmanage.sol
 
@@ -104,10 +104,12 @@ contract MyPortal  {
     address IamGater
 
     function doThing () {
-        marketManager.buyGood(...,IamGater);
-        marketManager.buyGoodForPay(...,IamGater);
-        marketManager.initGood(...,IamGater);
-        marketManager.investGood(...,IamGater);
+        marketManager.buyGood(...);
+        marketManager.buyGoodForPay(...);
+        marketManager.initGood(...);
+        marketManager.investGood(...);
+        marketManager.disinvestProof(....,IamGater,referal);
+        marketManager.collectProof(....,IamGater,referal);
         ....
     }
 }

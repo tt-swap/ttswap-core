@@ -338,7 +338,8 @@ library L_Good {
         internal
         returns (
             S_GoodDisinvestReturn memory normalGoodResult1_,
-            S_GoodDisinvestReturn memory valueGoodResult2_
+            S_GoodDisinvestReturn memory valueGoodResult2_,
+            uint128 disinvestvalue
         )
     {
         require(
@@ -347,7 +348,7 @@ library L_Good {
             "G10"
         );
 
-        uint128 disinvestvalue = toBalanceUINT256(
+        disinvestvalue = toBalanceUINT256(
             _investProof.state.amount0(),
             _investProof.invest.amount1()
         ).getamount0fromamount1(_params._goodQuantity);

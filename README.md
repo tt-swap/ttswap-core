@@ -120,8 +120,8 @@ step 3:forge install marktoda/forge-gas-snapshot
 
 
 ## Socials / Contract
-Twitter:[ttswap_exchange](https://x.com/ttswap_exchange)
-Telegram:[@ttswap01](https://t.me/ttswap01)
-Email:[ttswap.exchange@gmail.com](mailto:ttswap.exchange@gmail.com)
-Discord:[ttswap](https://discord.gg/5PhXn9DR)
-Website:[tt-swap.com](http://www.tt-swap.com)
+Twitter:[ttswap_exchange](https://x.com/ttswap_exchange)  
+Telegram:[@ttswap01](https://t.me/ttswap01)  
+Email:[ttswap.exchange@gmail.com](mailto:ttswap.exchange@gmail.com)  
+Discord:[ttswap](https://discord.gg/5PhXn9DR)  
+Website:[tt-swap.com](http://www.tt-swap.com)  

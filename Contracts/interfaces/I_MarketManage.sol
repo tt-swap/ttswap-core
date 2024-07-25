@@ -105,6 +105,7 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 indexed _proofNo,
         uint256 _normalGoodNo,
         uint256 _valueGoodNo,
+        uint128 _value,
         T_BalanceUINT256 _normalgood,
         T_BalanceUINT256 _valuegood,
         T_BalanceUINT256 _profit

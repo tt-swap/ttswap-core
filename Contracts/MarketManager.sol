@@ -327,7 +327,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_;
         uint256 normalgood = proofs[_proofid].currentgood;
         uint256 valuegood = proofs[_proofid].valuegood;
-
+        uint128 devestvalue;
         _gater = banlist[_gater] == 1 ? _gater : marketcreator;
         if (referals[msg.sender] == address(0)) {
             referals[msg.sender] = _referal;
@@ -337,8 +337,9 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         }
         _referal = _gater == _referal ? marketcreator : _referal;
         _referal = banlist[_referal] == 1 ? _referal : marketcreator;
-        (disinvestNormalResult1_, disinvestValueResult2_) = goods[normalgood]
-            .disinvestGood(
+        (disinvestNormalResult1_, disinvestValueResult2_, devestvalue) = goods[
+            normalgood
+        ].disinvestGood(
                 goods[valuegood],
                 proofs[_proofid],
                 L_Good.S_GoodDisinvestParam(
@@ -349,10 +350,12 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
                     marketcreator
                 )
             );
+        if (valuegood != 0) devestvalue = devestvalue * 2;
         emit e_disinvestProof(
             _proofid,
             normalgood,
             valuegood,
+            devestvalue,
             toBalanceUINT256(
                 disinvestNormalResult1_.actual_fee,
                 disinvestNormalResult1_.actualDisinvestQuantity

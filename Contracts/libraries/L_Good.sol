@@ -319,7 +319,7 @@ library L_Good {
     struct S_GoodDisinvestReturn {
         uint128 profit; //实际手续费
         uint128 actual_fee; //构建手续费
-        uint128 actualDisinvestQuantity; //实际投资数量
+        uint128 actualDisinvestQuantity; //实际撤资数量
     }
 
     struct S_GoodDisinvestParam {
@@ -413,7 +413,9 @@ library L_Good {
             _params._marketconfig,
             _params._gater,
             _params._referal,
-            _params._marketcreator
+            _params._marketcreator,
+            normalGoodResult1_.actualDisinvestQuantity -
+                normalGoodResult1_.actual_fee
         );
 
         if (normalGoodResult1_.actual_fee > 0) {
@@ -490,7 +492,9 @@ library L_Good {
                 _params._marketconfig,
                 _params._gater,
                 _params._referal,
-                _params._marketcreator
+                _params._marketcreator,
+                valueGoodResult2_.actualDisinvestQuantity -
+                    valueGoodResult2_.actual_fee
             );
         }
     }
@@ -519,7 +523,8 @@ library L_Good {
             _marketconfig,
             _gater,
             _referal,
-            _marketcreator
+            _marketcreator,
+            0
         );
         uint128 profit2;
         if (_valuegood.goodConfig >= 0) {
@@ -538,7 +543,8 @@ library L_Good {
                 _marketconfig,
                 _gater,
                 _referal,
-                _marketcreator
+                _marketcreator,
+                0
             );
         }
         profit = toBalanceUINT256(profit1, profit2);
@@ -551,7 +557,8 @@ library L_Good {
         uint256 _marketconfig,
         address _gater,
         address _referal,
-        address _marketcreator
+        address _marketcreator,
+        uint128 _divestquantity
     ) private {
         uint128 marketfee = _marketconfig.getPlatFee128(_profit);
         _profit -= marketfee;
@@ -559,21 +566,18 @@ library L_Good {
         uint128 temfee2;
         if (_referal == address(0)) {
             temfee1 = _marketconfig.getLiquidFee(_profit);
-            _self.erc20address.safeTransfer(msg.sender, temfee1);
+            _self.erc20address.safeTransfer(
+                msg.sender,
+                temfee1 + _divestquantity
+            );
             temfee2 =
                 _marketconfig.getSellerFee(_profit) +
                 _marketconfig.getCustomerFee(_profit);
-            if (_gater == _marketcreator) {
-                marketfee += temfee2;
-            } else {
-                _self.fees[_gater] = temfee2;
-            }
-            if (_referal == _marketcreator) {
-                marketfee += (_profit - temfee1 - temfee2);
-            } else {
-                _self.fees[_referal] += (_profit - temfee1 - temfee2);
-            }
-            _self.fees[_marketcreator] = marketfee;
+            _self.fees[_gater] += temfee2;
+            _self.fees[_marketcreator] += (_profit -
+                temfee1 -
+                temfee2 +
+                marketfee);
         } else {
             if (_self.owner == _marketcreator) {
                 marketfee += _marketconfig.getSellerFee(_profit);
@@ -594,7 +598,8 @@ library L_Good {
             _self.erc20address.safeTransfer(
                 msg.sender,
                 _marketconfig.getLiquidFee(_profit) +
-                    _marketconfig.getCustomerFee(_profit)
+                    _marketconfig.getCustomerFee(_profit) +
+                    _divestquantity
             );
         }
     }

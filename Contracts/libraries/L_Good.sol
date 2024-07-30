@@ -88,6 +88,13 @@ library L_Good {
         swapCache memory _stepCache,
         T_BalanceUINT256 _limitPrice
     ) internal pure returns (swapCache memory) {
+        if (
+            lowerprice(
+                _stepCache.good1currentState,
+                _stepCache.good2currentState,
+                _limitPrice
+            )
+        ) return _stepCache;
         uint128 minValue;
         uint128 minQuantity;
         _stepCache.feeQuantity = _stepCache.good1config.getSellFee(
@@ -182,6 +189,13 @@ library L_Good {
         swapCache memory _stepCache,
         T_BalanceUINT256 _limitPrice
     ) internal pure returns (swapCache memory) {
+        if (
+            lowerprice(
+                _stepCache.good1currentState,
+                _stepCache.good2currentState,
+                _limitPrice
+            )
+        ) return _stepCache;
         uint128 minValue;
         uint128 minQuantity;
         _stepCache.feeQuantity = _stepCache.good2config.getBuyFee(

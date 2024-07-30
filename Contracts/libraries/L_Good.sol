@@ -89,7 +89,7 @@ library L_Good {
         T_BalanceUINT256 _limitPrice
     ) internal pure returns (swapCache memory) {
         if (
-            lowerprice(
+            !lowerprice(
                 _stepCache.good1currentState,
                 _stepCache.good2currentState,
                 _limitPrice

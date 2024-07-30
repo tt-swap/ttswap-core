@@ -183,7 +183,9 @@ contract nativeGoodPay is Test, BaseSetup {
             normalgoodusdt,
             metagood,
             4000 * 10 ** 6,
-            T_BalanceUINT256.wrap(5000 * 10 ** 6 * 2 ** 128 + 1),
+            T_BalanceUINT256.wrap(
+                90000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 18
+            ),
             false
         );
         vm.stopPrank();
@@ -194,10 +196,10 @@ contract nativeGoodPay is Test, BaseSetup {
             "3market.usdt after swap",
             usdt.balanceOf(address(market))
         );
-        assertEq(usdt.balanceOf(york), 99999997440, "3york.balance after swap");
+        assertEq(usdt.balanceOf(york), 96000000000, "3york.balance after swap");
         assertEq(
             usdt.balanceOf(address(market)),
-            8000002560,
+            12000000000,
             "market.balance after swap"
         );
     }

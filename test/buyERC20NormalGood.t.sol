@@ -255,7 +255,7 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             1000000000,
-            T_BalanceUINT256.wrap(80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
+            T_BalanceUINT256.wrap(90000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
             false
         );
         snapLastCall("buy_erc20_normal_good_chips_second_2chips");

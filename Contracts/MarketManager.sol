@@ -150,8 +150,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             good2config: goods[_goodid2].goodConfig
         });
         swapcache = L_Good.swapCompute1(swapcache, _limitPrice);
-        if (_istotal == true && swapcache.remainQuantity > 0)
-            revert err_total();
+        if (
+            swapcache.remainQuantity == _swapQuantity ||
+            (_istotal == true && swapcache.remainQuantity > 0)
+        ) revert err_buy();
         goodid2FeeQuantity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuantity
         );
@@ -210,7 +212,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
         swapcache = L_Good.swapCompute2(swapcache, _limitPrice);
 
-        if (swapcache.remainQuantity > 0) revert err_total();
+        if (
+            swapcache.remainQuantity > 0 ||
+            swapcache.remainQuantity == _swapQuantity
+        ) revert err_buy();
         goodid1FeeQuantity_ = goods[_goodid1].goodConfig.getSellFee(
             swapcache.outputQuantity
         );

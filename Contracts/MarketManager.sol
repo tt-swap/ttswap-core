@@ -152,7 +152,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         swapcache = L_Good.swapCompute1(swapcache, _limitPrice);
         if (
             swapcache.remainQuantity == _swapQuantity ||
-            (_istotal == true && swapcache.remainQuantity > 0)
+            (_istotal == true && swapcache.remainQuantity > 0) ||
+            _goodid1 == _goodid2
         ) revert err_buy();
         goodid2FeeQuantity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuantity
@@ -213,8 +214,9 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         swapcache = L_Good.swapCompute2(swapcache, _limitPrice);
 
         if (
+            swapcache.remainQuantity == _swapQuantity ||
             swapcache.remainQuantity > 0 ||
-            swapcache.remainQuantity == _swapQuantity
+            _goodid1 == _goodid2
         ) revert err_buy();
         goodid1FeeQuantity_ = goods[_goodid1].goodConfig.getSellFee(
             swapcache.outputQuantity
@@ -254,7 +256,8 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
         require(
-            goods[_togood].currentState.amount1() + _quantity <= 2 ** 109,
+            goods[_togood].currentState.amount1() + _quantity <= 2 ** 109 ||
+                _togood == _valuegood,
             "M02"
         );
         require(
@@ -414,7 +417,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 valuegood,
         uint128 quantity
     ) external payable override noReentrant returns (bool) {
-        require(goods[valuegood].goodConfig.isvaluegood(), "M2");
+        require(
+            goods[valuegood].goodConfig.isvaluegood() || goodid == valuegood,
+            "M2"
+        );
         goods[valuegood].erc20address.transferFrom(msg.sender, quantity);
         uint128 value = goods[valuegood].currentState.getamount0fromamount1(
             quantity

@@ -101,14 +101,15 @@ library L_Good {
             _stepCache.remainQuantity
         );
         _stepCache.remainQuantity -= _stepCache.feeQuantity;
-
+        uint256 times;
         while (
             _stepCache.remainQuantity > 0 &&
             lowerprice(
                 _stepCache.good1currentState,
                 _stepCache.good2currentState,
                 _limitPrice
-            )
+            ) &&
+            times <= 20
         ) {
             minValue = _stepCache.good1config.getSwapChips(
                 _stepCache.good1currentState.amount0()
@@ -366,6 +367,7 @@ library L_Good {
             _investProof.state.amount0(),
             _investProof.invest.amount1()
         ).getamount0fromamount1(_params._goodQuantity);
+
         normalGoodResult1_ = S_GoodDisinvestReturn(
             toBalanceUINT256(
                 _self.feeQunitityState.amount0(),

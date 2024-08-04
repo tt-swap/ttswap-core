@@ -1,5 +1,5 @@
 # TTSWAP
-TTSWAP (token-token swap) protocol is a decentralized automated market-making protocol built on the Ethereum blockchain. Its underlying principle is based on the transfer of market value triggered by user behavior, and it constructs a platform using value conservation trading strategies.
+TTSWAP (token-token swap) protocol is a decentralized automated market-making protocol built on the EVM blockchain. Its underlying principle is based on the transfer of market value triggered by user behavior, and it constructs a platform using value conservation trading strategies.
 The whitepaper explains the design logic of the ttswap project, covering principles and implementations of goods trading, investment, and withdrawal of value goods, as well as ordinary goods investment and withdrawal, and the generation and distribution of goods transaction fees.
 
 ## Features

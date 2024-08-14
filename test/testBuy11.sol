@@ -46,19 +46,19 @@ contract testBuy11 is Test {
         wbtc = new MyToken("BTC", "BTC", 8);
         eth = new MyToken("ETH", "ETH", 18);
         ethstate.init(
-            toBalanceUINT256(1016162500469, 301099450000000000000),
+            toBalanceUINT256(3991740104749, 830576621067531951132),
             address(eth),
             574294852927029179450682055812555939397509459020590716783642472657759240192
         );
 
         btcstate.init(
-            toBalanceUINT256(3199780087341, 4999843598),
+            toBalanceUINT256(2549265184202, 6171481752),
             address(wbtc),
             574294852927029179450682055812555939397509459020590716783642472657759240192
         );
         vm.stopPrank();
     }
-    function testBuyfromethtobtc() public view {
+    function testBuyfromethtobtc() public {
         uint128 swap = 10 * 10 ** 18;
 
         L_Good.swapCache memory swapcache = L_Good.swapCache({
@@ -71,11 +71,10 @@ contract testBuy11 is Test {
             good2currentState: btcstate.currentState,
             good2config: btcstate.goodConfig
         });
-        T_BalanceUINT256 _limitPrice = toBalanceUINT256(
-            1016162500469 * 4999843598,
-            301099450000000000 * 3199780087341 * 1005
+        T_BalanceUINT256 _limitPrice = toBalanceUINT256(1, 1); //301099450000000000000
+        _limitPrice = T_BalanceUINT256.wrap(
+            3402823669209384634633746074317682114560000000009
         ); //301099450000000000000
-        _limitPrice = toBalanceUINT256(1, 190579670651); //301099450000000000000
 
         swapcache = L_Good.swapCompute1(swapcache, _limitPrice);
         console2.log("1", swapcache.remainQuantity);

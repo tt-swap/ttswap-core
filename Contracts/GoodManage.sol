@@ -93,7 +93,10 @@ abstract contract GoodManage is I_Good {
         uint256 _goodid,
         uint256 _goodConfig
     ) external override returns (bool) {
-        require(msg.sender == marketcreator, "G02");
+        require(
+            msg.sender == marketcreator && goods[_goodid].goodConfig > 0,
+            "G02"
+        );
         goods[_goodid].modifyGoodConfig(_goodConfig);
         emit e_modifyGoodConfig(_goodid, _goodConfig);
         return true;
@@ -127,13 +130,19 @@ abstract contract GoodManage is I_Good {
         return true;
     }
 
-    function collectProtocolFee(
+    function collectCommission(
         uint256 _goodid
     ) external override returns (uint256 feeamount) {
         feeamount = goods[_goodid].fees[msg.sender];
         goods[_goodid].fees[msg.sender] = 0;
         goods[_goodid].erc20address.safeTransfer(msg.sender, feeamount);
         emit e_collectProtocolFee(_goodid, feeamount);
+    }
+    function queryCommission(
+        uint256 _goodid,
+        address _recipent
+    ) external view override returns (uint256 feeamount) {
+        return goods[_goodid].fees[_recipent];
     }
 
     function goodWelfare(

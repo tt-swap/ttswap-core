@@ -54,7 +54,7 @@ library L_Good {
         assembly {
             _goodConfig := shr(33, shl(33, _goodConfig))
         }
-        _self.goodConfig = ((_self.goodConfig >> 233) << 233) + _goodConfig;
+        _self.goodConfig = ((_self.goodConfig >> 223) << 223) + _goodConfig;
     }
 
     function init(
@@ -95,6 +95,7 @@ library L_Good {
                 _limitPrice
             )
         ) return _stepCache;
+
         uint128 minValue;
         uint128 minQuantity;
         _stepCache.feeQuantity = _stepCache.good1config.getSellFee(
@@ -111,6 +112,7 @@ library L_Good {
             ) &&
             times <= 20
         ) {
+            times += 1;
             minValue = _stepCache.good1config.getSwapChips(
                 _stepCache.good1currentState.amount0()
             ) >=
@@ -624,8 +626,8 @@ library L_Good {
         uint256 _goodconfig
     ) internal {
         _self.goodConfig =
-            (_self.goodConfig % (2 ** 252)) +
-            (_goodconfig << 252);
+            (_self.goodConfig % (2 ** 223)) +
+            (_goodconfig << 223);
     }
 }
 

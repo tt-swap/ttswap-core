@@ -40,7 +40,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         goodNum += 1;
         uint256 togood = S_GoodKey(msg.sender, _erc20address).toId();
         goods[togood].init(_initial, _erc20address, _goodConfig);
-        goods[togood].modifyGoodConfig(8);
+        goods[togood].modifyGoodConfig(4294967296); //2**32
         totalSupply += 1;
         uint256 proofKey = S_ProofKey(msg.sender, togood, 0).toId();
         proofmapping[proofKey] = totalSupply;

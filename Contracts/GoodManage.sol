@@ -35,10 +35,15 @@ abstract contract GoodManage is I_Good {
     }
 
     modifier noReentrant() {
-        require(locked == 0, "G01");
+        require(locked == 0);
         locked = 1;
         _;
         locked = 0;
+    }
+
+    modifier onlyMarketor() {
+        require(msg.sender == marketcreator);
+        _;
     }
 
     function getGoodState(
@@ -53,16 +58,18 @@ abstract contract GoodManage is I_Good {
     }
 
     /// @inheritdoc I_Good
-    function addbanlist(address _user) external override returns (bool) {
-        require(msg.sender == marketcreator, "G02");
+    function addbanlist(
+        address _user
+    ) external override onlyMarketor returns (bool) {
         banlist[_user] = 1;
         emit e_addbanlist(_user);
         return true;
     }
 
     /// @inheritdoc I_Good
-    function removebanlist(address _user) external override returns (bool) {
-        require(msg.sender == marketcreator, "G02");
+    function removebanlist(
+        address _user
+    ) external override onlyMarketor returns (bool) {
         banlist[_user] = 0;
         emit e_removebanlist(_user);
         return true;
@@ -71,8 +78,7 @@ abstract contract GoodManage is I_Good {
     /// @inheritdoc I_Good
     function setMarketConfig(
         uint256 _marketconfig
-    ) external override returns (bool) {
-        require(msg.sender == marketcreator, "G02");
+    ) external override onlyMarketor returns (bool) {
         marketconfig = _marketconfig;
         emit e_setMarketConfig(_marketconfig);
         return true;
@@ -82,7 +88,7 @@ abstract contract GoodManage is I_Good {
         uint256 _goodid,
         uint256 _goodConfig
     ) external override returns (bool) {
-        require(msg.sender == goods[_goodid].owner, "G04");
+        require(msg.sender == goods[_goodid].owner);
         goods[_goodid].updateGoodConfig(_goodConfig);
         emit e_updateGoodConfig(_goodid, _goodConfig);
         return true;
@@ -92,11 +98,7 @@ abstract contract GoodManage is I_Good {
     function modifyGoodConfig(
         uint256 _goodid,
         uint256 _goodConfig
-    ) external override returns (bool) {
-        require(
-            msg.sender == marketcreator && goods[_goodid].goodConfig > 0,
-            "G02"
-        );
+    ) external override onlyMarketor returns (bool) {
         goods[_goodid].modifyGoodConfig(_goodConfig);
         emit e_modifyGoodConfig(_goodid, _goodConfig);
         return true;
@@ -124,8 +126,7 @@ abstract contract GoodManage is I_Good {
     function changeGoodOwner(
         uint256 _goodid,
         address _to
-    ) external override returns (bool) {
-        require(msg.sender == marketcreator, "G05");
+    ) external override onlyMarketor returns (bool) {
         goods[_goodid].owner = _to;
         return true;
     }
@@ -149,10 +150,7 @@ abstract contract GoodManage is I_Good {
         uint256 goodid,
         uint128 welfare
     ) external payable override noReentrant {
-        require(
-            goods[goodid].feeQunitityState.amount0() + welfare <= 2 ** 109,
-            "G06"
-        );
+        require(goods[goodid].feeQunitityState.amount0() + welfare <= 2 ** 109);
         goods[goodid].erc20address.transferFrom(msg.sender, welfare);
         goods[goodid].feeQunitityState =
             goods[goodid].feeQunitityState +

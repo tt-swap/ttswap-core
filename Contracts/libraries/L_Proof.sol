@@ -24,7 +24,6 @@ library L_Proof {
     ) internal {
         if (_self.invest.amount1() == 0) _self.currentgood = _currenctgood;
         if (_valuegood != 0) _self.valuegood = _valuegood;
-
         _self.state = _self.state + _state;
         _self.invest = _self.invest + _invest;
         if (_valuegood != 0)

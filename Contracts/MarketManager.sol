@@ -32,10 +32,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         T_BalanceUINT256 _initial,
         uint256 _goodConfig
     ) external payable override returns (bool) {
-        require(
-            msg.sender == marketcreator && _goodConfig.isvaluegood(),
-            "G02"
-        );
+        require(goodNum == 0 && _goodConfig.isvaluegood());
         _erc20address.transferFrom(msg.sender, _initial.amount1());
         goodNum += 1;
         uint256 togood = S_GoodKey(msg.sender, _erc20address).toId();
@@ -72,8 +69,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint256 togood = S_GoodKey(msg.sender, _erc20address).toId();
         require(
             goods[togood].owner == address(0) &&
-                goods[_valuegood].goodConfig.isvaluegood(),
-            "M02"
+                goods[_valuegood].goodConfig.isvaluegood()
         );
         _erc20address.transferFrom(msg.sender, _initial.amount0());
         goods[_valuegood].erc20address.transferFrom(
@@ -150,11 +146,13 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
             good2config: goods[_goodid2].goodConfig
         });
         swapcache = L_Good.swapCompute1(swapcache, _limitPrice);
-        if (
-            swapcache.remainQuantity == _swapQuantity ||
-            (_istotal == true && swapcache.remainQuantity > 0) ||
-            _goodid1 == _goodid2
-        ) revert err_buy();
+
+        require(
+            _swapQuantity > 0 &&
+                swapcache.remainQuantity != _swapQuantity &&
+                _goodid1 != _goodid2 &&
+                !(_istotal == true && swapcache.remainQuantity > 0)
+        );
         goodid2FeeQuantity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuantity
         );
@@ -213,13 +211,11 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
 
         swapcache = L_Good.swapCompute2(swapcache, _limitPrice);
 
-        if (
-            swapcache.remainQuantity == _swapQuantity ||
-            swapcache.remainQuantity > 0 ||
-            _goodid1 == _goodid2
-        ) {
-            revert err_buy();
-        }
+        require(
+            _swapQuantity >= 0 &&
+                _goodid1 != _goodid2 &&
+                swapcache.remainQuantity == 0
+        );
 
         goodid1FeeQuantity_ = goods[_goodid1].goodConfig.getSellFee(
             swapcache.outputQuantity
@@ -259,14 +255,10 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
         require(
-            goods[_togood].currentState.amount1() + _quantity <= 2 ** 109 ||
-                _togood == _valuegood,
-            "M02"
-        );
-        require(
-            goods[_togood].goodConfig.isvaluegood() ||
-                goods[_valuegood].goodConfig.isvaluegood(),
-            "M02"
+            goods[_togood].currentState.amount1() + _quantity <= 2 ** 109 &&
+                _togood != _valuegood &&
+                (goods[_togood].goodConfig.isvaluegood() ||
+                    goods[_valuegood].goodConfig.isvaluegood())
         );
         normalInvest_ = goods[_togood].investGood(_quantity);
         goods[_togood].erc20address.transferFrom(msg.sender, _quantity);
@@ -333,7 +325,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         address _gater,
         address _referal
     ) public override noReentrant returns (bool) {
-        require(_isApprovedOrOwner(msg.sender, _proofid), "M05");
+        require(_isApprovedOrOwner(msg.sender, _proofid));
         L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_;
         L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_;
         uint256 normalgood = proofs[_proofid].currentgood;
@@ -390,8 +382,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
     ) external override noReentrant returns (T_BalanceUINT256 profit_) {
         require(
             _isApprovedOrOwner(msg.sender, _proofid) ||
-                proofs[_proofid].beneficiary == msg.sender,
-            "M09"
+                proofs[_proofid].beneficiary == msg.sender
         );
         uint256 valuegood = proofs[_proofid].valuegood;
         uint256 currentgood = proofs[_proofid].currentgood;
@@ -421,8 +412,7 @@ contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
         uint128 quantity
     ) external payable override noReentrant returns (bool) {
         require(
-            goods[valuegood].goodConfig.isvaluegood() || goodid == valuegood,
-            "M2"
+            goods[valuegood].goodConfig.isvaluegood() && goodid != valuegood
         );
         goods[valuegood].erc20address.transferFrom(msg.sender, quantity);
         uint128 value = goods[valuegood].currentState.getamount0fromamount1(

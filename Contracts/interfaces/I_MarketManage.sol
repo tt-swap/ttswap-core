@@ -129,7 +129,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _quantity  enpower value quantity~赋能价值商品数量
     event e_enpower(uint256 _goodid, uint256 _valuegood, uint256 _quantity);
 
-    error err_buy();
+    //  error err_buy();
 
     /// @notice initial market's first good~初始化市场中第一个商品
     /// @param _erc20address good's contract address~商品合约地址

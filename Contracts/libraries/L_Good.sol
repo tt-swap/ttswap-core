@@ -359,12 +359,6 @@ library L_Good {
             uint128 disinvestvalue
         )
     {
-        require(
-            _self.goodConfig.isvaluegood() ||
-                _valueGoodState.goodConfig.isvaluegood(),
-            "G10"
-        );
-
         disinvestvalue = toBalanceUINT256(
             _investProof.state.amount0(),
             _investProof.invest.amount1()
@@ -383,7 +377,9 @@ library L_Good {
         );
 
         require(
-            disinvestvalue <
+            (_self.goodConfig.isvaluegood() ||
+                _valueGoodState.goodConfig.isvaluegood()) &&
+                disinvestvalue <
                 _self.goodConfig.getDisinvestChips(
                     _self.currentState.amount0()
                 ) &&

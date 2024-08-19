@@ -102,17 +102,14 @@ library L_Good {
             _stepCache.remainQuantity
         );
         _stepCache.remainQuantity -= _stepCache.feeQuantity;
-        uint256 times;
         while (
             _stepCache.remainQuantity > 0 &&
             lowerprice(
                 _stepCache.good1currentState,
                 _stepCache.good2currentState,
                 _limitPrice
-            ) &&
-            times <= 20
+            )
         ) {
-            times += 1;
             minValue = _stepCache.good1config.getSwapChips(
                 _stepCache.good1currentState.amount0()
             ) >=

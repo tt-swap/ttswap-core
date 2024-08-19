@@ -58,7 +58,7 @@ contract testBuy11 is Test {
         );
         vm.stopPrank();
     }
-    function testBuyfromethtobtc() public {
+    function testBuyfromethtobtc() public view {
         uint128 swap = 10 * 10 ** 18;
 
         L_Good.swapCache memory swapcache = L_Good.swapCache({

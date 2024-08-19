@@ -217,9 +217,11 @@ contract MyToken is ERC20 {
         owner = msg.sender;
         _mint(msg.sender, 100000000 * 10 ** uint(decimals()));
     }
+    event debugcall(address);
 
     function mint(address recipent, uint amount) external {
         require(amount <= 100000000);
         _mint(recipent, amount * 10 ** uint(decimals()));
+        emit debugcall(msg.sender);
     }
 }

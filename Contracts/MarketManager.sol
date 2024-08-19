@@ -7,13 +7,12 @@ import "./ProofManage.sol";
 import "./interfaces/I_MarketManage.sol";
 import {L_Good, L_GoodIdLibrary} from "./libraries/L_Good.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
-import {Multicall} from "./Multicall.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
 import {S_ProofKey, S_GoodKey} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 
-contract MarketManager is Multicall, GoodManage, ProofManage, I_MarketManage {
+contract MarketManager is GoodManage, ProofManage, I_MarketManage {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;

@@ -101,16 +101,18 @@ interface I_Good {
     /// @notice collect Commission 归集佣金
     /// @param _goodid  good's id 商品的商品ID
     /// @return the result 手续费数量
-    function collectCommission(uint256 _goodid) external returns (uint256);
+    function collectCommission(
+        uint256[] memory _goodid
+    ) external returns (uint256[] memory);
 
     /// @notice query commission 查询佣金
     /// @param _goodid  good's id 商品的商品ID
     /// @param _recipent   customer 用户
     /// @return the result 手续费数量
     function queryCommission(
-        uint256 _goodid,
+        uint256[] memory _goodid,
         address _recipent
-    ) external returns (uint256);
+    ) external returns (uint256[] memory);
     /// @notice add ban list  增加禁止名单
     /// @param _user  address 地址
     /// @return is_success_ 是否成功

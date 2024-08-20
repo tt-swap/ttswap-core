@@ -132,18 +132,26 @@ abstract contract GoodManage is I_Good {
     }
 
     function collectCommission(
-        uint256 _goodid
-    ) external override returns (uint256 feeamount) {
-        feeamount = goods[_goodid].fees[msg.sender];
-        goods[_goodid].fees[msg.sender] = 0;
-        goods[_goodid].erc20address.safeTransfer(msg.sender, feeamount);
-        emit e_collectProtocolFee(_goodid, feeamount);
+        uint256[] memory _goodid
+    ) external override returns (uint256[] memory feeamount) {
+        require(_goodid.length < 100);
+        for (uint i = 0; i < _goodid.length; i++) {
+            feeamount[i] = goods[_goodid[i]].fees[msg.sender];
+            goods[_goodid[i]].fees[msg.sender] = 0;
+            goods[_goodid[i]].erc20address.safeTransfer(
+                msg.sender,
+                feeamount[i]
+            );
+        }
     }
     function queryCommission(
-        uint256 _goodid,
+        uint256[] memory _goodid,
         address _recipent
-    ) external view override returns (uint256 feeamount) {
-        return goods[_goodid].fees[_recipent];
+    ) external view override returns (uint256[] memory feeamount) {
+        require(_goodid.length < 100);
+        for (uint i = 0; i < _goodid.length; i++) {
+            feeamount[i] = goods[_goodid[i]].fees[_recipent];
+        }
     }
 
     function goodWelfare(

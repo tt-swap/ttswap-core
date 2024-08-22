@@ -131,27 +131,36 @@ abstract contract GoodManage is I_Good {
         return true;
     }
 
-    function collectCommission(
-        uint256[] memory _goodid
-    ) external override returns (uint256[] memory feeamount) {
+    function collectCommission(uint256[] memory _goodid) external override {
         require(_goodid.length < 100);
+        uint256[] memory commisionamount = new uint256[](_goodid.length);
         for (uint i = 0; i < _goodid.length; i++) {
-            feeamount[i] = goods[_goodid[i]].fees[msg.sender];
-            goods[_goodid[i]].fees[msg.sender] = 0;
-            goods[_goodid[i]].erc20address.safeTransfer(
-                msg.sender,
-                feeamount[i]
-            );
+            commisionamount[i] = goods[_goodid[i]].commision[msg.sender];
+            if (commisionamount[i] < 2) {
+                commisionamount[i] = 0;
+                continue;
+            } else {
+                commisionamount[i] = commisionamount[i] - 1;
+                goods[_goodid[i]].commision[msg.sender] = 1;
+                goods[_goodid[i]].erc20address.safeTransfer(
+                    msg.sender,
+                    commisionamount[i]
+                );
+            }
         }
+        emit e_collectcommission(_goodid, commisionamount);
     }
+
     function queryCommission(
         uint256[] memory _goodid,
         address _recipent
-    ) external view override returns (uint256[] memory feeamount) {
+    ) external view override returns (uint256[] memory) {
         require(_goodid.length < 100);
+        uint256[] memory feeamount = new uint256[](_goodid.length);
         for (uint i = 0; i < _goodid.length; i++) {
-            feeamount[i] = goods[_goodid[i]].fees[_recipent];
+            feeamount[i] = goods[_goodid[i]].commision[_recipent];
         }
+        return feeamount;
     }
 
     function goodWelfare(

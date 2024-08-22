@@ -50,4 +50,27 @@ contract testBuy11 is Test {
         //     "modified godoconfig error"
         // );
     }
+
+    function testInitGoodConfig() public {
+        uint256 _goodConfig = 50 *
+            2 ** 217 +
+            50 *
+            2 ** 211 +
+            5 *
+            2 ** 204 +
+            7 *
+            2 ** 197;
+        good1.init(toBalanceUINT256(0, 0), address(0), _goodConfig);
+        console2.log(good1.goodConfig);
+        console2.log(_goodConfig);
+        console2.log("invest fee", good1.goodConfig.getInvestFee());
+        console2.log("devest fee", good1.goodConfig.getDisinvestFee());
+        console2.log("buy fee", good1.goodConfig.getBuyFee());
+        console2.log("sell fee", good1.goodConfig.getSellFee());
+        // assertEq(
+        //     _goodConfig1 * 2 ** 223 + _goodConfig,
+        //     good1.goodConfig,
+        //     "modified godoconfig error"
+        // );
+    }
 }

@@ -27,6 +27,11 @@ interface I_Good {
     /// @param _goodid good No,商品编号配
     event e_modifyGoodConfig(uint256 _goodid, uint256 _goodconfig);
 
+    /// @notice 提取市场佣金
+    /// @param _gooid good No,商品编号配
+    /// @param _commisionamount amount commision amount,
+    event e_collectcommission(uint256[] _gooid, uint256[] _commisionamount);
+
     /// @notice add ban list~添加黑名单
     /// @param _user  address ~用户地址
     event e_addbanlist(address _user);
@@ -100,10 +105,7 @@ interface I_Good {
     ) external returns (bool);
     /// @notice collect Commission 归集佣金
     /// @param _goodid  good's id 商品的商品ID
-    /// @return the result 手续费数量
-    function collectCommission(
-        uint256[] memory _goodid
-    ) external returns (uint256[] memory);
+    function collectCommission(uint256[] memory _goodid) external;
 
     /// @notice query commission 查询佣金
     /// @param _goodid  good's id 商品的商品ID

@@ -225,16 +225,6 @@ interface I_MarketManage is I_Good, I_Proof {
         address _referal
     ) external returns (T_BalanceUINT256 profit_);
 
-    /// @notice enpower~赋能
-    /// @param _goodid   enpowered good~赋能商品编号
-    /// @param _valuegoodid   valuegoodid~价值商品id
-    /// @param _quantity   valuegood quantity~价值商品数量
-    function enpower(
-        uint256 _goodid,
-        uint256 _valuegoodid,
-        uint128 _quantity
-    ) external payable returns (bool);
-
     /// @notice getState~获取商品状态
     /// @param goodid   goodid~当前商品状态
     /// @param valuegood   valuegoodid~价值商品状态

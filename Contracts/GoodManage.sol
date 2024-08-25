@@ -126,9 +126,9 @@ abstract contract GoodManage is I_Good {
     function changeGoodOwner(
         uint256 _goodid,
         address _to
-    ) external override onlyMarketor returns (bool) {
+    ) external override onlyMarketor {
         goods[_goodid].owner = _to;
-        return true;
+        emit e_changegoodowner(_goodid, _to);
     }
 
     function collectCommission(uint256[] memory _goodid) external override {

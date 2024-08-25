@@ -27,6 +27,11 @@ interface I_Good {
     /// @param _goodid good No,商品编号配
     event e_modifyGoodConfig(uint256 _goodid, uint256 _goodconfig);
 
+    /// @notice 修改商品拥有者
+    /// @param goodid goodid
+    /// @param to  address
+    event e_changegoodowner(uint256 goodid, address to);
+
     /// @notice 提取市场佣金
     /// @param _gooid good No,商品编号配
     /// @param _commisionamount amount commision amount,
@@ -98,11 +103,7 @@ interface I_Good {
     /// @notice set good's Owner 改变商品的拥有者
     /// @param _goodid  good's id 商品的商品ID
     /// @param _to  recipent 接收者
-    /// @return the result
-    function changeGoodOwner(
-        uint256 _goodid,
-        address _to
-    ) external returns (bool);
+    function changeGoodOwner(uint256 _goodid, address _to) external;
     /// @notice collect Commission 归集佣金
     /// @param _goodid  good's id 商品的商品ID
     function collectCommission(uint256[] memory _goodid) external;

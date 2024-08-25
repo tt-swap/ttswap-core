@@ -405,27 +405,6 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
         emit e_collectProof(_proofid, currentgood, valuegood, profit_);
     }
 
-    function enpower(
-        uint256 goodid,
-        uint256 valuegood,
-        uint128 quantity
-    ) external payable override noReentrant returns (bool) {
-        require(
-            goods[valuegood].goodConfig.isvaluegood() && goodid != valuegood
-        );
-        goods[valuegood].erc20address.transferFrom(msg.sender, quantity);
-        uint128 value = goods[valuegood].currentState.getamount0fromamount1(
-            quantity
-        );
-        goods[valuegood].currentState =
-            goods[valuegood].currentState +
-            toBalanceUINT256(0, quantity);
-        goods[goodid].currentState =
-            goods[goodid].currentState +
-            toBalanceUINT256(value, 0);
-        emit e_enpower(goodid, valuegood, quantity);
-        return true;
-    }
     function getState(
         uint256 goodid,
         uint256 valuegood

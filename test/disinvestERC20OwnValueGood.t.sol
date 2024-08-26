@@ -115,12 +115,7 @@ contract disinvestERC20OwnValueGood is BaseSetup {
             "before disinvest erc20 good:metagood feeQunitityState amount1 error"
         );
 
-        market.disinvestProof(
-            normalproof,
-            10000 * 10 ** 6,
-            address(0),
-            address(0)
-        );
+        market.disinvestProof(normalproof, 10000 * 10 ** 6, address(0));
         snapLastCall("disinvest_own_erc20_valuegood_first");
         good_ = market.getGoodState(metagood);
         assertEq(
@@ -170,20 +165,10 @@ contract disinvestERC20OwnValueGood is BaseSetup {
             0,
             "after disinvest:proof contruct error"
         );
-        market.disinvestProof(
-            normalproof,
-            10000 * 10 ** 6,
-            address(0),
-            address(0)
-        );
+        market.disinvestProof(normalproof, 10000 * 10 ** 6, address(0));
         snapLastCall("disinvest_own_erc20_valuegood_second");
 
-        market.disinvestProof(
-            normalproof,
-            10000 * 10 ** 6,
-            address(0),
-            address(0)
-        );
+        market.disinvestProof(normalproof, 10000 * 10 ** 6, address(0));
         snapLastCall("disinvest_own_erc20_valuegood_three");
         vm.stopPrank();
     }

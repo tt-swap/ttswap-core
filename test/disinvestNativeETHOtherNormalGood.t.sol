@@ -168,7 +168,7 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
             S_ProofKey(users[2], normalgoodnativeETH, metagood).toId()
         );
 
-        market.disinvestProof(normalproof, 1 * 10 ** 5, address(0), address(0));
+        market.disinvestProof(normalproof, 1 * 10 ** 5, address(0));
         snapLastCall("disinvest_other_nativeeth_normalgood_first");
         good_ = market.getGoodState(normalgoodnativeETH);
         assertEq(
@@ -218,10 +218,10 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
             0,
             "after disinvest:proof contruct error"
         );
-        market.disinvestProof(normalproof, 1 * 10 ** 6, address(0), address(0));
+        market.disinvestProof(normalproof, 1 * 10 ** 6, address(0));
         snapLastCall("disinvest_other_nativeeth_normalgood_second");
 
-        market.disinvestProof(normalproof, 1 * 10 ** 6, address(0), address(0));
+        market.disinvestProof(normalproof, 1 * 10 ** 6, address(0));
         snapLastCall("disinvest_other_nativeeth_normalgood_three");
         vm.stopPrank();
     }

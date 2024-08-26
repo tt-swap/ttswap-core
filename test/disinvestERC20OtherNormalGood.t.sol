@@ -163,7 +163,7 @@ contract disinvestERC20OtherNormalGood is BaseSetup {
             S_ProofKey(users[2], normalgoodbtc, metagood).toId()
         );
 
-        market.disinvestProof(normalproof, 1 * 10 ** 5, address(0), address(0));
+        market.disinvestProof(normalproof, 1 * 10 ** 5, address(0));
         snapLastCall("disinvest_other_erc20_normalgood_first");
         good_ = market.getGoodState(normalgoodbtc);
         assertEq(
@@ -213,10 +213,10 @@ contract disinvestERC20OtherNormalGood is BaseSetup {
             0,
             "after disinvest:proof contruct error"
         );
-        market.disinvestProof(normalproof, 1 * 10 ** 5, address(0), address(0));
+        market.disinvestProof(normalproof, 1 * 10 ** 5, address(0));
         snapLastCall("disinvest_other_erc20_normalgood_second");
 
-        market.disinvestProof(normalproof, 1 * 10 ** 5, address(0), address(0));
+        market.disinvestProof(normalproof, 1 * 10 ** 5, address(0));
         snapLastCall("disinvest_other_erc20_normalgood_three");
         vm.stopPrank();
     }

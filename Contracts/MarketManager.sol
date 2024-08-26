@@ -126,7 +126,8 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
         uint256 _goodid2,
         uint128 _swapQuantity,
         T_BalanceUINT256 _limitPrice,
-        bool _istotal
+        bool _istotal,
+        address _referal
     )
         external
         payable
@@ -134,6 +135,10 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
         noReentrant
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_)
     {
+        if (_referal != address(0) && referals[msg.sender] == address(0)) {
+            referals[msg.sender] = _referal;
+            emit e_addreferal(_referal);
+        }
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
             outputQuantity: 0,
@@ -321,8 +326,7 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
     function disinvestProof(
         uint256 _proofid,
         uint128 _goodQuantity,
-        address _gater,
-        address _referal
+        address _gater
     ) public override noReentrant returns (bool) {
         require(_isApprovedOrOwner(msg.sender, _proofid));
         L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_;
@@ -331,12 +335,8 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
         uint256 valuegood = proofs[_proofid].valuegood;
         uint128 devestvalue;
         _gater = banlist[_gater] == 1 ? _gater : marketcreator;
-        if (referals[msg.sender] == address(0)) {
-            referals[msg.sender] = _referal;
-        } else {
-            _referal = referals[msg.sender];
-            emit e_addreferal(_referal);
-        }
+
+        address _referal = referals[msg.sender];
         _referal = _gater == _referal ? marketcreator : _referal;
         _referal = banlist[_referal] == 1 ? _referal : marketcreator;
         (disinvestNormalResult1_, disinvestValueResult2_, devestvalue) = goods[
@@ -376,8 +376,7 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
     /// @inheritdoc I_MarketManage
     function collectProof(
         uint256 _proofid,
-        address _gater,
-        address _referal
+        address _gater
     ) external override noReentrant returns (T_BalanceUINT256 profit_) {
         require(
             _isApprovedOrOwner(msg.sender, _proofid) ||
@@ -386,12 +385,7 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
         uint256 valuegood = proofs[_proofid].valuegood;
         uint256 currentgood = proofs[_proofid].currentgood;
         _gater = banlist[_gater] == 1 ? marketcreator : _gater;
-        if (referals[msg.sender] == address(0)) {
-            referals[msg.sender] = _referal;
-        } else {
-            _referal = referals[msg.sender];
-            emit e_addreferal(_referal);
-        }
+        address _referal = referals[msg.sender];
         _referal = _gater == _referal ? marketcreator : _referal;
         _referal = banlist[_referal] == 1 ? _referal : marketcreator;
         profit_ = goods[currentgood].collectGoodFee(

@@ -163,7 +163,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
             S_ProofKey(users[2], normalgoodbtc, metagood).toId()
         );
 
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_erc20_normalgood_first");
         good_ = market.getGoodState(normalgoodbtc);
         assertEq(
@@ -224,11 +224,11 @@ contract collectERC20OtherNormalGood is BaseSetup {
             "after collect:proof contruct error"
         );
         market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_erc20_normalgood_second");
 
         market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_erc20_normalgood_three");
         vm.stopPrank();
     }

@@ -160,6 +160,7 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _swapQuantity good1's quantity~商品1的数量
     /// @param _limitprice trade price's limit~交易价格限制
     /// @param _istotal is need trade all~是否允许全部成交
+    /// @param _referal is need trade all~是否允许全部成交
     /// @return goodid2Quantity_  实际情况
     /// @return goodid2FeeQuantity_ 实际情况
     function buyGood(
@@ -167,7 +168,8 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodid2,
         uint128 _swapQuantity,
         T_BalanceUINT256 _limitprice,
-        bool _istotal
+        bool _istotal,
+        address _referal
     )
         external
         payable
@@ -206,23 +208,19 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _proofid   the invest proof No of normal good ~普通投资证明的编号编号
     /// @param _goodQuantity  disinvest quantity~取消普通商品投资数量
     /// @param _gater   gater address~门户
-    /// @param _referal   referal~推荐人
     function disinvestProof(
         uint256 _proofid,
         uint128 _goodQuantity,
-        address _gater,
-        address _referal
+        address _gater
     ) external returns (bool);
 
     /// @notice collect the profit of normal proof~提取普通投资证明的收益
     /// @param _proofid   the proof No of invest normal good~普通投资证明编号
     /// @return profit_   amount0 普通商品的投资收益 amount1价值商品的投资收益
     /// @param _gater   gater address~门户
-    /// @param _referal   referal~推荐人
     function collectProof(
         uint256 _proofid,
-        address _gater,
-        address _referal
+        address _gater
     ) external returns (T_BalanceUINT256 profit_);
 
     /// @notice getState~获取商品状态

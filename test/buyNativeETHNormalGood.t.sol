@@ -110,7 +110,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             normalgoodbtc,
             6300 * 10 ** 6,
             T_BalanceUINT256.wrap(65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
-            false
+            false,
+            address(0)
         );
         snapLastCall("buy_nativeeth_normal_good_without_chips_first");
         assertEq(
@@ -173,7 +174,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             T_BalanceUINT256.wrap(
                 120000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128
             ),
-            false
+            false,
+            address(0)
         );
         snapLastCall("buy_nativeeth_normal_good_without_chips_second");
 
@@ -184,7 +186,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             T_BalanceUINT256.wrap(
                 180000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128
             ),
-            false
+            false,
+            address(0)
         );
         snapLastCall("buy_nativeeth_normal_good_without_chips_three");
 
@@ -235,7 +238,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             normalgoodbtc,
             6300,
             T_BalanceUINT256.wrap(65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
-            false
+            false,
+            address(0)
         );
         snapLastCall("buy_nativeeth_normal_good_chips_first_1chips");
 
@@ -244,7 +248,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             normalgoodbtc,
             6300,
             T_BalanceUINT256.wrap(80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
-            false
+            false,
+            address(0)
         );
         snapLastCall("buy_nativeeth_normal_good_chips_second_1chips");
 
@@ -253,7 +258,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             normalgoodbtc,
             6300 * 10 ** 6,
             T_BalanceUINT256.wrap(80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128),
-            false
+            false,
+            address(0)
         );
         snapLastCall("buy_nativeeth_normal_good_chips_second_12chips");
 
@@ -264,7 +270,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             T_BalanceUINT256.wrap(
                 100000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128
             ),
-            false
+            false,
+            address(0)
         );
         snapLastCall("buy_nativeeth_normal_good_chips_second_10chips");
         vm.stopPrank();

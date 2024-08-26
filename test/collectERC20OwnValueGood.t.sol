@@ -115,7 +115,7 @@ contract collectERC20OwnValueGood is BaseSetup {
             "before collect erc20 good:metagood feeQunitityState amount1 error"
         );
 
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collectProof_own_erc20_valuegood_first");
         good_ = market.getGoodState(metagood);
         assertEq(
@@ -167,12 +167,12 @@ contract collectERC20OwnValueGood is BaseSetup {
         );
         usdt.approve(address(market), 200000 * 10 ** 6 + 1);
         market.investGood(metagood, 0, 50000 * 10 ** 6);
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collectProof_own_erc20_valuegood_second");
 
         usdt.approve(address(market), 200000 * 10 ** 6 + 1);
         market.investGood(metagood, 0, 50000 * 10 ** 6);
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collectProof_own_erc20_valuegood_three");
         vm.stopPrank();
     }

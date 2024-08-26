@@ -112,7 +112,7 @@ contract collectNativeETHOwnValueGood is BaseSetup {
             "before collect nativeeth good:metagood feeQunitityState amount1 error"
         );
 
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("colloct_own_nativeeth_valuegood_first");
         good_ = market.getGoodState(metagood);
         assertEq(
@@ -163,10 +163,10 @@ contract collectNativeETHOwnValueGood is BaseSetup {
             "after collect:proof contruct error"
         );
         market.investGood{value: 50000000000}(metagood, 0, 50000 * 10 ** 6);
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("colloct_own_nativeeth_valuegood_second");
         market.investGood{value: 50000000000}(metagood, 0, 50000 * 10 ** 6);
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("colloct_own_nativeeth_valuegood_three");
         vm.stopPrank();
     }

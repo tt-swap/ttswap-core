@@ -166,7 +166,7 @@ contract collectNativeETHOwnNormalGood is BaseSetup {
             S_ProofKey(users[1], normalgoodnativeeth, metagood).toId()
         );
 
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collect_own_nativeeth_normalgood_first");
         good_ = market.getGoodState(normalgoodnativeeth);
         assertEq(
@@ -226,10 +226,10 @@ contract collectNativeETHOwnNormalGood is BaseSetup {
             11533700,
             "after collect:proof contruct error"
         );
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collect_own_nativeeth_normalgood_second");
 
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collect_own_nativeeth_normalgood_three");
         vm.stopPrank();
     }

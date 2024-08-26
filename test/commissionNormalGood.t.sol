@@ -161,7 +161,7 @@ contract commissionNormalGood is BaseSetup {
             S_ProofKey(users[1], normalgoodbtc, metagood).toId()
         );
 
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collect_own_erc20_normalgood_first");
         good_ = market.getGoodState(normalgoodbtc);
         assertEq(
@@ -223,11 +223,11 @@ contract commissionNormalGood is BaseSetup {
         );
 
         market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collect_own_erc20_normalgood_second");
 
         market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
-        market.collectProof(normalproof, address(0), address(0));
+        market.collectProof(normalproof, address(0));
         snapLastCall("collect_own_erc20_normalgood_three");
         vm.stopPrank();
     }

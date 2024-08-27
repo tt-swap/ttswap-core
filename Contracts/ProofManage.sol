@@ -30,6 +30,15 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
         return proofs[proofid];
     }
 
+    function getProofValue(
+        uint256 proofid
+    ) public view override returns (uint256) {
+        return
+            proofs[proofid].valuegood == 0
+                ? proofs[proofid].state.amount0()
+                : proofs[proofid].state.amount0() * 2;
+    }
+
     function transferFrom(
         address from,
         address to,

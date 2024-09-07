@@ -21,6 +21,4 @@ interface I_Proof {
         uint256 deadline,
         bytes memory signature
     ) external;
-
-    function getProofValue(uint256 proofid) external view returns (uint256);
 }

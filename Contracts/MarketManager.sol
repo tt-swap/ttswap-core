@@ -10,7 +10,6 @@ import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
 import {S_ProofKey, S_GoodKey} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
-
 import {I_TTS} from "./interfaces/I_TTS.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice} from "./libraries/L_BalanceUINT256.sol";
 contract MarketManager is I_MarketManage, GoodManage {
@@ -49,7 +48,7 @@ contract MarketManager is I_MarketManage, GoodManage {
             toBalanceUINT256(0, _initial.amount1()),
             toBalanceUINT256(0, 0)
         );
-        proofs[totalSupply].stake(officicalContract);
+        L_Proof.stake(officicalContract, msg.sender, _initial.amount0());
         emit e_initMetaGood(
             totalSupply,
             togood,
@@ -105,7 +104,11 @@ contract MarketManager is I_MarketManage, GoodManage {
             ),
             0
         );
-        proofs[totalSupply].stake(officicalContract);
+        L_Proof.stake(
+            officicalContract,
+            msg.sender,
+            investResult.actualInvestValue * 2
+        );
         emit e_initGood(
             totalSupply,
             togood,
@@ -306,7 +309,10 @@ contract MarketManager is I_MarketManage, GoodManage {
                 valueInvest_.actualInvestQuantity
             )
         );
-        // proofs[proofNo].stake(officicalContract);
+        uint128 investvalue = _valuegood == 0
+            ? normalInvest_.actualInvestValue
+            : normalInvest_.actualInvestValue * 2;
+        L_Proof.stake(officicalContract, msg.sender, investvalue);
         emit e_investGood(
             proofNo,
             _togood,
@@ -362,7 +368,7 @@ contract MarketManager is I_MarketManage, GoodManage {
             valuegood,
             toBalanceUINT256(
                 devestvalue,
-                L_Proof.unstake(officicalContract, devestvalue)
+                L_Proof.unstake(officicalContract, msg.sender, devestvalue)
             ),
             toBalanceUINT256(
                 disinvestNormalResult1_.actual_fee,

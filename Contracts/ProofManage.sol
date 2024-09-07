@@ -6,10 +6,12 @@ import {I_TTS} from "./interfaces/I_TTS.sol";
 import {S_ProofKey} from "./libraries/L_Struct.sol";
 import {ERC721Permit} from "@erc721permit/ERC721Permit.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
+import {T_BalanceUINT256, L_BalanceUINT256Library} from "./libraries/L_BalanceUINT256.sol";
 
 abstract contract ProofManage is I_Proof, ERC721Permit {
     using L_Proof for *;
     using L_ProofIdLibrary for S_ProofKey;
+    using L_BalanceUINT256Library for T_BalanceUINT256;
 
     uint256 public override totalSupply;
     mapping(uint256 => L_Proof.S_ProofState) internal proofs;
@@ -46,7 +48,11 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
             "ERC721: caller is not token owner or approved"
         );
 
-        proofs[tokenId].unstake(officicalContract, from);
+        L_Proof.unstake(
+            officicalContract,
+            from,
+            proofs[tokenId].state.amount0()
+        );
         _transfer(from, to, tokenId);
         delproofdata(tokenId, from, to);
     }
@@ -60,7 +66,11 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: caller is not token owner or approved"
         );
-        proofs[tokenId].unstake(officicalContract, from);
+        L_Proof.unstake(
+            officicalContract,
+            from,
+            proofs[tokenId].state.amount0()
+        );
         _safeTransfer(from, to, tokenId, data);
         delproofdata(tokenId, from, to);
     }
@@ -76,6 +86,8 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
             proofs[proofid].currentgood,
             proofs[proofid].valuegood
         ).toId();
+
+        L_Proof.stake(officicalContract, to, proofs[proofid].state.amount0());
         if (proofmapping[proofkey2] == 0) {
             proofmapping[proofkey2] = proofmapping[proofkey1];
         } else {
@@ -84,7 +96,6 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
             _burn(proofid);
         }
         delete proofmapping[proofkey1];
-        proofs[proofmapping[proofkey2]].stake(officicalContract, to);
     }
 
     function safeTransferFromWithPermit(

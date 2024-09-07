@@ -90,44 +90,19 @@ library L_Proof {
     }
 
     function stake(
-        S_ProofState storage _self,
-        address contractaddress
-    ) internal {
-        stake(_self, contractaddress, msg.sender);
-    }
-
-    function stake(
-        S_ProofState storage _self,
         address contractaddress,
-        address to
+        address to,
+        uint128 proofvalue
     ) internal {
-        I_TTS(contractaddress).stake(
-            to,
-            _self.valuegood == 0
-                ? _self.state.amount0()
-                : _self.state.amount0() * 2
-        );
+        I_TTS(contractaddress).stake(to, proofvalue);
     }
 
     function unstake(
         address contractaddress,
-        uint128 dinvestvalue
+        address from,
+        uint128 devestvalue
     ) internal returns (uint128) {
-        return I_TTS(contractaddress).unstake(msg.sender, dinvestvalue);
-    }
-
-    function unstake(
-        S_ProofState storage _self,
-        address contractaddress,
-        address from
-    ) internal returns (uint128) {
-        return
-            I_TTS(contractaddress).unstake(
-                from,
-                _self.valuegood == 0
-                    ? _self.state.amount0()
-                    : _self.state.amount0() * 2
-            );
+        return I_TTS(contractaddress).unstake(from, devestvalue);
     }
 }
 

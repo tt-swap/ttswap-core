@@ -11,6 +11,8 @@ import {S_ProofKey, S_GoodKey} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 
+import {I_TTS} from "./interfaces/I_TTS.sol";
+import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice} from "./libraries/L_BalanceUINT256.sol";
 contract MarketManager is I_MarketManage, GoodManage {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;

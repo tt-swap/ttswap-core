@@ -5,6 +5,7 @@ import "forge-gas-snapshot/GasSnapshot.sol";
 import {Test} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
+import {TTS} from "../Contracts/TTS_Layer1.sol";
 
 contract BaseSetup is Test, GasSnapshot {
     address payable[8] internal users;
@@ -13,6 +14,7 @@ contract BaseSetup is Test, GasSnapshot {
     MyToken eth;
     address marketcreator;
     MarketManager market;
+    TTS tts_token;
 
     function setUp() public virtual {
         uint256 m_marketconfig = (45 << 250) +
@@ -34,8 +36,12 @@ contract BaseSetup is Test, GasSnapshot {
         btc = new MyToken("BTC", "BTC", 8);
         usdt = new MyToken("USDT", "USDT", 6);
         eth = new MyToken("ETH", "ETH", 18);
+        vm.startPrank(marketcreator);
+        tts_token = new TTS(address(usdt), marketcreator);
         snapStart("depoly Market Manager");
-        market = new MarketManager(marketcreator, m_marketconfig);
+        market = new MarketManager(m_marketconfig, address(tts_token));
         snapEnd();
+        tts_token.addauths(address(market), 1);
+        vm.stopPrank();
     }
 }

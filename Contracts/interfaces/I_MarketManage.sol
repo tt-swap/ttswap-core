@@ -105,7 +105,7 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 indexed _proofNo,
         uint256 _normalGoodNo,
         uint256 _valueGoodNo,
-        uint128 _value,
+        T_BalanceUINT256 _value,
         T_BalanceUINT256 _normalgood,
         T_BalanceUINT256 _valuegood,
         T_BalanceUINT256 _profit
@@ -223,11 +223,9 @@ interface I_MarketManage is I_Good, I_Proof {
         address _gater
     ) external returns (T_BalanceUINT256 profit_);
 
-    /// @notice getState~获取商品状态
-    /// @param goodid   goodid~当前商品状态
-    /// @param valuegood   valuegoodid~价值商品状态
-    function getState(
+    function ishigher(
         uint256 goodid,
-        uint256 valuegood
-    ) external view returns (T_BalanceUINT256 a, T_BalanceUINT256 b);
+        uint256 valuegood,
+        uint256 compareprice
+    ) external view returns (bool);
 }

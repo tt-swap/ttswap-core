@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.26;
 
-import "./interfaces/I_Good.sol";
+import {I_Good} from "./interfaces/I_Good.sol";
+import {ProofManage} from "./ProofManage.sol";
 
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
 import {L_Good} from "./libraries/L_Good.sol";
-
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {S_GoodKey} from "./libraries/L_Struct.sol";
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "./libraries/L_BalanceUINT256.sol";
+import {L_Lock} from "./libraries/L_Lock.sol";
+import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice} from "./libraries/L_BalanceUINT256.sol";
 
-abstract contract GoodManage is I_Good {
+abstract contract GoodManage is I_Good, ProofManage {
     using L_CurrencyLibrary for address;
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
@@ -21,40 +22,36 @@ abstract contract GoodManage is I_Good {
     uint256 public override marketconfig;
     /// @inheritdoc I_Good
     uint256 public override goodNum;
-    /// @inheritdoc I_Good
-    address public override marketcreator;
 
     mapping(uint256 => L_Good.S_GoodState) internal goods;
-    uint256 internal locked;
     mapping(address => uint256) public banlist;
-    mapping(address => address) public referals;
 
-    constructor(address _marketcreator, uint256 _marketconfig) {
-        marketcreator = _marketcreator;
+    constructor(
+        uint256 _marketconfig,
+        address _officialcontract
+    ) ProofManage(_officialcontract) {
         marketconfig = _marketconfig;
     }
 
     modifier noReentrant() {
-        require(locked == 0);
-        locked = 1;
+        require(L_Lock.get() == address(0));
+        L_Lock.set(msg.sender);
         _;
-        locked = 0;
-    }
-
-    modifier onlyMarketor() {
-        require(msg.sender == marketcreator);
-        _;
+        L_Lock.set(address(0));
     }
 
     function getGoodState(
         uint256 goodkey
-    ) external view returns (L_Good.S_GoodTmpState memory gooddetail) {
-        gooddetail.goodConfig = goods[goodkey].goodConfig;
-        gooddetail.owner = goods[goodkey].owner;
-        gooddetail.erc20address = goods[goodkey].erc20address;
-        gooddetail.currentState = goods[goodkey].currentState;
-        gooddetail.investState = goods[goodkey].investState;
-        gooddetail.feeQunitityState = goods[goodkey].feeQunitityState;
+    ) external view returns (L_Good.S_GoodTmpState memory) {
+        return
+            L_Good.S_GoodTmpState(
+                goods[goodkey].goodConfig,
+                goods[goodkey].owner,
+                goods[goodkey].erc20address,
+                goods[goodkey].currentState,
+                goods[goodkey].investState,
+                goods[goodkey].feeQunitityState
+            );
     }
 
     /// @inheritdoc I_Good

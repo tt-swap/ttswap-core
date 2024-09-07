@@ -59,10 +59,6 @@ interface I_Good {
     /// @return marketconfig_ the config of market(according the white paper)~市场配置(参见白皮书)
     function marketconfig() external view returns (uint256 marketconfig_);
 
-    /// @notice Returns the manger of market 返回市场管理者 返回市场商品总数
-    /// @return marketcreator_ The address of the factory manager
-    function marketcreator() external view returns (address marketcreator_);
-
     /// @notice Returns the good's total number of the market 返回市场商品总数
     /// @return goodNum_ the good number of the market~市场商品总数
     function goodNum() external view returns (uint256 goodNum_);

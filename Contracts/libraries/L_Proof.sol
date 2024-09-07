@@ -3,6 +3,7 @@ pragma solidity 0.8.26;
 
 import {S_ProofKey} from "./L_Struct.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "./L_BalanceUINT256.sol";
+import {I_TTS} from "../interfaces/I_TTS.sol";
 
 library L_Proof {
     struct S_ProofState {
@@ -11,7 +12,7 @@ library L_Proof {
         T_BalanceUINT256 state; //前128位表示投资的价值, amount0:invest value
         T_BalanceUINT256 invest; //前128位表示投资的构建手续费,后128位表示投资数量 amount0:contrunct fee ,amount1:invest quantity
         T_BalanceUINT256 valueinvest; //前128位表示投资的构建手续费,后128位表示投资数量 amount0:contrunct fee ,amount1:invest quantity
-        address beneficiary;
+        uint256 proofconfig; //后160位受益人,第一位为是否冻结
     }
 
     function updateInvest(
@@ -35,7 +36,6 @@ library L_Proof {
             mulDiv(_self.invest.amount0(), _value, _self.state.amount0()),
             mulDiv(_self.invest.amount1(), _value, _self.state.amount0())
         );
-
         _self.invest = _self.invest - burnResult1_;
 
         if (_self.valuegood != 0) {
@@ -80,7 +80,6 @@ library L_Proof {
                 toBalanceUINT256(profit.amount1(), 0);
         }
     }
-
     function conbine(
         S_ProofState storage _self,
         S_ProofState storage _get
@@ -88,6 +87,47 @@ library L_Proof {
         _self.state = _self.state + _get.state;
         _self.invest = _self.invest + _get.invest;
         _self.valueinvest = _self.valueinvest + _get.valueinvest;
+    }
+
+    function stake(
+        S_ProofState storage _self,
+        address contractaddress
+    ) internal {
+        stake(_self, contractaddress, msg.sender);
+    }
+
+    function stake(
+        S_ProofState storage _self,
+        address contractaddress,
+        address to
+    ) internal {
+        I_TTS(contractaddress).stake(
+            to,
+            _self.valuegood == 0
+                ? _self.state.amount0()
+                : _self.state.amount0() * 2
+        );
+    }
+
+    function unstake(
+        address contractaddress,
+        uint128 dinvestvalue
+    ) internal returns (uint128) {
+        return I_TTS(contractaddress).unstake(msg.sender, dinvestvalue);
+    }
+
+    function unstake(
+        S_ProofState storage _self,
+        address contractaddress,
+        address from
+    ) internal returns (uint128) {
+        return
+            I_TTS(contractaddress).unstake(
+                from,
+                _self.valuegood == 0
+                    ? _self.state.amount0()
+                    : _self.state.amount0() * 2
+            );
     }
 }
 

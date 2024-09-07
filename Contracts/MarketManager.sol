@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.26;
 
-import "./GoodManage.sol";
-import "./ProofManage.sol";
+import {GoodManage} from "./GoodManage.sol";
 
-import "./interfaces/I_MarketManage.sol";
+import {I_MarketManage} from "./interfaces/I_MarketManage.sol";
 import {L_Good, L_GoodIdLibrary} from "./libraries/L_Good.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
@@ -12,7 +11,7 @@ import {S_ProofKey, S_GoodKey} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 
-contract MarketManager is GoodManage, ProofManage, I_MarketManage {
+contract MarketManager is I_MarketManage, GoodManage {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
@@ -21,9 +20,9 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
     using L_CurrencyLibrary for address;
     using L_MarketConfigLibrary for uint256;
     constructor(
-        address _marketcreator,
-        uint256 _marketconfig
-    ) GoodManage(_marketcreator, _marketconfig) {}
+        uint256 _marketconfig,
+        address _officialcontract
+    ) GoodManage(_marketconfig, _officialcontract) {}
 
     /// @inheritdoc I_MarketManage
     function initMetaGood(
@@ -48,6 +47,7 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
             toBalanceUINT256(0, _initial.amount1()),
             toBalanceUINT256(0, 0)
         );
+        proofs[totalSupply].stake(officicalContract);
         emit e_initMetaGood(
             totalSupply,
             togood,
@@ -101,8 +101,9 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
                 investResult.contructFeeQuantity,
                 investResult.actualInvestQuantity
             ),
-            address(0)
+            0
         );
+        proofs[totalSupply].stake(officicalContract);
         emit e_initGood(
             totalSupply,
             togood,
@@ -135,10 +136,8 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
         noReentrant
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_)
     {
-        if (_referal != address(0) && referals[msg.sender] == address(0)) {
-            referals[msg.sender] = _referal;
-            emit e_addreferal(_referal);
-        }
+        if (_referal != address(0))
+            I_TTS(officicalContract).addreferal(msg.sender, _referal);
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
             outputQuantity: 0,
@@ -305,6 +304,7 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
                 valueInvest_.actualInvestQuantity
             )
         );
+        // proofs[proofNo].stake(officicalContract);
         emit e_investGood(
             proofNo,
             _togood,
@@ -334,11 +334,11 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
         uint256 normalgood = proofs[_proofid].currentgood;
         uint256 valuegood = proofs[_proofid].valuegood;
         uint128 devestvalue;
-        _gater = banlist[_gater] == 1 ? _gater : marketcreator;
-
-        address _referal = referals[msg.sender];
-        _referal = _gater == _referal ? marketcreator : _referal;
-        _referal = banlist[_referal] == 1 ? _referal : marketcreator;
+        (address dao_admin, address referal) = I_TTS(officicalContract)
+            .getreferalanddaoamdin(msg.sender);
+        _gater = banlist[_gater] == 1 ? _gater : dao_admin;
+        referal = _gater == referal ? dao_admin : referal;
+        referal = banlist[referal] == 1 ? referal : dao_admin;
         (disinvestNormalResult1_, disinvestValueResult2_, devestvalue) = goods[
             normalgood
         ].disinvestGood(
@@ -347,17 +347,21 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
                 L_Good.S_GoodDisinvestParam(
                     _goodQuantity,
                     _gater,
-                    _referal,
+                    referal,
                     marketconfig,
-                    marketcreator
+                    dao_admin
                 )
             );
+
         if (valuegood != 0) devestvalue = devestvalue * 2;
         emit e_disinvestProof(
             _proofid,
             normalgood,
             valuegood,
-            devestvalue,
+            toBalanceUINT256(
+                devestvalue,
+                L_Proof.unstake(officicalContract, devestvalue)
+            ),
             toBalanceUINT256(
                 disinvestNormalResult1_.actual_fee,
                 disinvestNormalResult1_.actualDisinvestQuantity
@@ -378,31 +382,35 @@ contract MarketManager is GoodManage, ProofManage, I_MarketManage {
         uint256 _proofid,
         address _gater
     ) external override noReentrant returns (T_BalanceUINT256 profit_) {
-        require(
-            _isApprovedOrOwner(msg.sender, _proofid) ||
-                proofs[_proofid].beneficiary == msg.sender
-        );
+        require(_isApprovedOrOwner(msg.sender, _proofid));
         uint256 valuegood = proofs[_proofid].valuegood;
         uint256 currentgood = proofs[_proofid].currentgood;
-        _gater = banlist[_gater] == 1 ? marketcreator : _gater;
-        address _referal = referals[msg.sender];
-        _referal = _gater == _referal ? marketcreator : _referal;
-        _referal = banlist[_referal] == 1 ? _referal : marketcreator;
+        (address dao_admin, address referal) = I_TTS(officicalContract)
+            .getreferalanddaoamdin(msg.sender);
+        _gater = banlist[_gater] == 1 ? dao_admin : _gater;
+        referal = _gater == referal ? dao_admin : referal;
+        referal = banlist[referal] == 1 ? referal : dao_admin;
         profit_ = goods[currentgood].collectGoodFee(
             goods[valuegood],
             proofs[_proofid],
             _gater,
-            _referal,
+            referal,
             marketconfig,
-            marketcreator
+            dao_admin
         );
         emit e_collectProof(_proofid, currentgood, valuegood, profit_);
     }
 
-    function getState(
+    function ishigher(
         uint256 goodid,
-        uint256 valuegood
-    ) external view returns (T_BalanceUINT256, T_BalanceUINT256) {
-        return (goods[goodid].currentState, goods[valuegood].currentState);
+        uint256 valuegood,
+        uint256 compareprice
+    ) external view override returns (bool) {
+        return
+            lowerprice(
+                goods[goodid].currentState,
+                goods[valuegood].currentState,
+                T_BalanceUINT256.wrap(compareprice)
+            );
     }
 }

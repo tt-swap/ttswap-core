@@ -188,8 +188,6 @@ contract TTS is ERC20Permit, I_TTS {
         IERC20(usdt).transfer(recipent, amount);
     }
 
-    //
-
     // function synchainstake(
     //     uint256 chain,
     //     uint256 chainvalue

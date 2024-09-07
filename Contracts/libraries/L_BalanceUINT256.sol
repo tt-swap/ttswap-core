@@ -92,7 +92,7 @@ library L_BalanceUINT256Library {
         if (balanceDelta.amount1() == 0) return 0;
         uint256 result = (uint256(balanceDelta.amount0()) *
             uint256(amount1delta)) / uint256(balanceDelta.amount1());
-        return uint128(result <= type(uint128).max ? result : 0);
+        return result <= type(uint128).max ? uint128(result) : 0;
     }
 
     function getamount1fromamount0(
@@ -102,6 +102,6 @@ library L_BalanceUINT256Library {
         if (balanceDelta.amount0() == 0) return 0;
         uint256 result = (uint256(balanceDelta.amount1()) *
             uint256(amount0delta)) / uint256(balanceDelta.amount0());
-        return uint128(result <= type(uint128).max ? result : 0);
+        return result <= type(uint128).max ? uint128(result) : 0;
     }
 }

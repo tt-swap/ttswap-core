@@ -44,7 +44,7 @@ contract testBuy1 is Test {
         usdt = new MyToken("USDT", "USDT", 6);
         wbtc = new MyToken("BTC", "BTC", 8);
         eth = new MyToken("ETH", "ETH", 18);
-        tts_token = new TTS(address(usdt), marketcreator);
+        tts_token = new TTS(address(usdt), marketcreator, 2 ** 255);
         market = new MarketManager(
             81562183917421901855786361352751156561780156203962646020495653018153967943680,
             address(tts_token)

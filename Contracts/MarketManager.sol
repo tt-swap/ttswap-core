@@ -90,7 +90,6 @@ contract MarketManager is I_MarketManage, GoodManage {
         );
         totalSupply += 1;
         uint256 proofKey = S_ProofKey(msg.sender, togood, _valuegood).toId();
-
         proofmapping[proofKey] = totalSupply;
         _mint(msg.sender, totalSupply);
         proofs[totalSupply] = L_Proof.S_ProofState(
@@ -101,8 +100,7 @@ contract MarketManager is I_MarketManage, GoodManage {
             toBalanceUINT256(
                 investResult.contructFeeQuantity,
                 investResult.actualInvestQuantity
-            ),
-            0
+            )
         );
         L_Proof.stake(
             officicalContract,
@@ -126,6 +124,7 @@ contract MarketManager is I_MarketManage, GoodManage {
         );
         return true;
     }
+    event debugg123(uint256);
     /// @inheritdoc I_MarketManage
     function buyGood(
         uint256 _goodid1,
@@ -141,8 +140,10 @@ contract MarketManager is I_MarketManage, GoodManage {
         noReentrant
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_)
     {
+        emit debugg123(1);
         if (_referal != address(0))
             I_TTS(officicalContract).addreferal(msg.sender, _referal);
+        emit debugg123(1);
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
             outputQuantity: 0,

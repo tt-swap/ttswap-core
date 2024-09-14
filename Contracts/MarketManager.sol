@@ -11,7 +11,7 @@ import {S_ProofKey, S_GoodKey} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {I_TTS} from "./interfaces/I_TTS.sol";
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice} from "./libraries/L_BalanceUINT256.sol";
+import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice, toInt128} from "./libraries/L_BalanceUINT256.sol";
 contract MarketManager is I_MarketManage, GoodManage {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
@@ -48,10 +48,14 @@ contract MarketManager is I_MarketManage, GoodManage {
             toBalanceUINT256(0, _initial.amount1()),
             toBalanceUINT256(0, 0)
         );
-        L_Proof.stake(officicalContract, msg.sender, _initial.amount0());
+        uint128 contruct = L_Proof.stake(
+            officicalContract,
+            msg.sender,
+            _initial.amount0()
+        );
         emit e_initMetaGood(
             totalSupply,
-            togood,
+            toBalanceUINT256(toInt128(togood), contruct),
             _erc20address,
             _goodConfig,
             _initial
@@ -90,7 +94,6 @@ contract MarketManager is I_MarketManage, GoodManage {
         );
         totalSupply += 1;
         uint256 proofKey = S_ProofKey(msg.sender, togood, _valuegood).toId();
-
         proofmapping[proofKey] = totalSupply;
         _mint(msg.sender, totalSupply);
         proofs[totalSupply] = L_Proof.S_ProofState(
@@ -101,17 +104,17 @@ contract MarketManager is I_MarketManage, GoodManage {
             toBalanceUINT256(
                 investResult.contructFeeQuantity,
                 investResult.actualInvestQuantity
-            ),
-            0
+            )
         );
-        L_Proof.stake(
+
+        uint128 contruct = L_Proof.stake(
             officicalContract,
             msg.sender,
             investResult.actualInvestValue * 2
         );
         emit e_initGood(
             totalSupply,
-            togood,
+            toBalanceUINT256(toInt128(togood), contruct),
             _valuegood,
             _erc20address,
             _goodConfig,
@@ -312,10 +315,14 @@ contract MarketManager is I_MarketManage, GoodManage {
         uint128 investvalue = _valuegood == 0
             ? normalInvest_.actualInvestValue
             : normalInvest_.actualInvestValue * 2;
-        L_Proof.stake(officicalContract, msg.sender, investvalue);
+        uint128 contruct = L_Proof.stake(
+            officicalContract,
+            msg.sender,
+            investvalue
+        );
         emit e_investGood(
             proofNo,
-            _togood,
+            toBalanceUINT256(toInt128(_togood), contruct),
             _valuegood,
             toBalanceUINT256(normalInvest_.actualInvestValue, 0),
             toBalanceUINT256(
@@ -362,14 +369,12 @@ contract MarketManager is I_MarketManage, GoodManage {
             );
 
         if (valuegood != 0) devestvalue = devestvalue * 2;
+        L_Proof.unstake(officicalContract, msg.sender, devestvalue);
         emit e_disinvestProof(
             _proofid,
             normalgood,
             valuegood,
-            toBalanceUINT256(
-                devestvalue,
-                L_Proof.unstake(officicalContract, msg.sender, devestvalue)
-            ),
+            toBalanceUINT256(devestvalue, 0),
             toBalanceUINT256(
                 disinvestNormalResult1_.actual_fee,
                 disinvestNormalResult1_.actualDisinvestQuantity

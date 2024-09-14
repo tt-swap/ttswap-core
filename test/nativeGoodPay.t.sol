@@ -157,7 +157,7 @@ contract nativeGoodPay is Test, BaseSetup {
         vm.stopPrank();
     }
 
-    function testbuymetagood() public {
+    function testbuymetagood1() public {
         address york = address(105);
         deal(address(usdt), york, 100000 * 10 ** 6, false);
         vm.startPrank(york);

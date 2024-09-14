@@ -37,7 +37,7 @@ contract BaseSetup is Test, GasSnapshot {
         usdt = new MyToken("USDT", "USDT", 6);
         eth = new MyToken("ETH", "ETH", 18);
         vm.startPrank(marketcreator);
-        tts_token = new TTS(address(usdt), marketcreator);
+        tts_token = new TTS(address(usdt), marketcreator, 2 ** 255);
         snapStart("depoly Market Manager");
         market = new MarketManager(m_marketconfig, address(tts_token));
         snapEnd();

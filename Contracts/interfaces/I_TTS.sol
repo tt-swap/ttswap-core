@@ -48,15 +48,20 @@ interface I_TTS {
         uint256 stakecontruct
     );
 
-    event e_unstake(uint256 stakeid, uint256 originid, uint256 profit);
+    event e_unstake(
+        address recipent,
+        uint128 proofvalue,
+        T_BalanceUINT256 unstakestate,
+        T_BalanceUINT256 stakestate
+    );
     event e_updatepool(uint256 poolstate, uint256 stakestate);
     function getreferal(address _customer) external view returns (address);
     function addreferal(address user, address referal) external;
-    function stake(address staker, uint128 proofvalue) external;
-    function unstake(
+    function stake(
         address staker,
         uint128 proofvalue
-    ) external returns (uint128 profit);
+    ) external returns (uint128 contruct);
+    function unstake(address staker, uint128 proofvalue) external;
     function isauths(address recipent) external view returns (uint256);
     function getreferalanddaoamdin(
         address _customer

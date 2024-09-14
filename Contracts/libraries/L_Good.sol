@@ -35,6 +35,12 @@ library L_Good {
         T_BalanceUINT256 feeQunitityState; //前128位表示商品的手续费总额(包含构建手续费),后128位表示商品的构建手续费总额 amount0:the good's total fee quantity which contain contruct fee,amount1:the good's total contruct fee.
     }
 
+    /**
+     * @notice Get the maximum tradable value for the good
+     * @dev Calculates the maximum value that can be traded based on the current state and configuration
+     * @param self The storage pointer to the S_GoodState struct
+     * @return The maximum tradable value as a uint128
+     */
     function getMaxTradeValue(
         S_GoodState storage self
     ) internal view returns (uint128) {
@@ -57,6 +63,14 @@ library L_Good {
         _self.goodConfig = ((_self.goodConfig >> 223) << 223) + _goodConfig;
     }
 
+    /**
+     * @notice Initialize the good state
+     * @dev Sets up the initial state, configuration, and owner of the good
+     * @param self Storage pointer to the good state
+     * @param _init Initial balance state
+     * @param _erc20address Address of the ERC20 token associated with the good
+     * @param _goodConfig Configuration of the good
+     */
     function init(
         S_GoodState storage self,
         T_BalanceUINT256 _init,
@@ -65,9 +79,7 @@ library L_Good {
     ) internal {
         self.currentState = _init;
         self.investState = _init;
-        assembly {
-            _goodConfig := shr(33, shl(33, _goodConfig))
-        }
+        self.goodConfig = (_goodConfig >> 33) << 33;
         self.goodConfig = _goodConfig;
         self.erc20address = _erc20address;
         self.owner = msg.sender;
@@ -289,6 +301,7 @@ library L_Good {
         uint128 actualInvestValue; //实际投资价值
         uint128 actualInvestQuantity; //实际投资数量
     }
+
     function investGood(
         S_GoodState storage _self,
         uint128 _invest
@@ -573,46 +586,48 @@ library L_Good {
     ) private {
         uint128 marketfee = _marketconfig.getPlatFee128(_profit);
         _profit -= marketfee;
-        uint128 temfee1;
-        uint128 temfee2;
+
+        // 预先计算常用的费用
+        uint128 liquidFee = _marketconfig.getLiquidFee(_profit);
+        uint128 sellerFee = _marketconfig.getSellerFee(_profit);
+        uint128 gaterFee = _marketconfig.getGaterFee(_profit);
+        uint128 referFee = _marketconfig.getReferFee(_profit);
+        uint128 customerFee = _marketconfig.getCustomerFee(_profit);
+
         if (_referal == address(0)) {
-            temfee1 = _marketconfig.getLiquidFee(_profit);
             _self.erc20address.safeTransfer(
                 msg.sender,
-                temfee1 + _divestquantity
+                liquidFee + _divestquantity
             );
-            temfee2 =
-                _marketconfig.getSellerFee(_profit) +
-                _marketconfig.getCustomerFee(_profit);
-            _self.commision[_gater] += temfee2;
+            _self.commision[_gater] += sellerFee + customerFee;
             _self.commision[_marketcreator] += (_profit -
-                temfee1 -
-                temfee2 +
+                liquidFee -
+                sellerFee -
+                customerFee +
                 marketfee);
         } else {
-            if (_self.owner == _marketcreator) {
-                marketfee += _marketconfig.getSellerFee(_profit);
+            if (_self.owner != _marketcreator) {
+                _self.commision[_self.owner] += sellerFee;
             } else {
-                _self.commision[_self.owner] += _marketconfig.getSellerFee(
-                    _profit
-                );
+                marketfee += sellerFee;
             }
-            if (_gater == _marketcreator) {
-                marketfee += _marketconfig.getGaterFee(_profit);
+
+            if (_gater != _marketcreator) {
+                _self.commision[_gater] += gaterFee;
             } else {
-                _self.commision[_gater] += _marketconfig.getGaterFee(_profit);
+                marketfee += gaterFee;
             }
-            if (_referal == _marketcreator) {
-                marketfee += _marketconfig.getReferFee(_profit);
+
+            if (_referal != _marketcreator) {
+                _self.commision[_referal] += referFee;
             } else {
-                _self.commision[_referal] += _marketconfig.getReferFee(_profit);
+                marketfee += referFee;
             }
+
             _self.commision[_marketcreator] += marketfee;
             _self.erc20address.safeTransfer(
                 msg.sender,
-                _marketconfig.getLiquidFee(_profit) +
-                    _marketconfig.getCustomerFee(_profit) +
-                    _divestquantity
+                liquidFee + customerFee + _divestquantity
             );
         }
     }

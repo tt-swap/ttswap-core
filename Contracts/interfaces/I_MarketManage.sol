@@ -15,13 +15,13 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @notice emit when metaGood create :当用户创建初始化商品时
     /// @dev _initial.amount0()'s decimal default 6 ~默认价值的精度为6
     /// @param _proofNo   value invest proof No~投资证明的编号
-    /// @param _goodNo good's id  商品的商品编号
+    /// @param _extendinfo  128 good's id,128 stake contruct  前128位商品的商品编号,后128位构建手续费
     /// @param _erc20address   metagood contract address 元商品的合约地址
     /// @param _goodConfig   metagood's config refer white paper~元商品的配置,具体参见白皮书
     /// @param _initial   market intial para: amount0 value  amount1:quantity~市场初始化参数:amount0为价值,amount1为数量.
     event e_initMetaGood(
-        uint256 indexed _proofNo,
-        uint256 _goodNo,
+        uint256 _proofNo,
+        T_BalanceUINT256 _extendinfo,
         address _erc20address,
         uint256 _goodConfig,
         T_BalanceUINT256 _initial
@@ -29,15 +29,15 @@ interface I_MarketManage is I_Good, I_Proof {
 
     /// @notice emit when  good create :当用户创建初始化商品时
     /// @param _proofNo   value invest proof No~投资证明的编号
-    /// @param _normalgoodNo good's id  商品的商品编号
+    /// @param _extendinfo  128 good's id,128 stake contruct  前128位商品的商品编号,后128位构建手续费
     /// @param _valuegoodNo good's id  商品的商品编号
     /// @param _erc20address   metagood contract address 元商品的合约地址
     /// @param _goodConfig   metagood's config refer white paper~元商品的配置,具体参见白皮书
     /// @param _normalinitial   amount0 quantity  amount1:value~普通商品:amount0为数量,amount1为价值.
     /// @param _value   amount0():valuegoodfee, amount1 valuegoodquantity~amount0为价值商品投资费用,amount1为价值商品投资数量.
     event e_initGood(
-        uint256 indexed _proofNo,
-        uint256 _normalgoodNo,
+        uint256 _proofNo,
+        T_BalanceUINT256 _extendinfo,
         uint256 _valuegoodNo,
         address _erc20address,
         uint256 _goodConfig,
@@ -80,14 +80,14 @@ interface I_MarketManage is I_Good, I_Proof {
 
     /// @notice emit when customer invest normal good :当用户投资普通商品
     /// @param _proofNo   proof No~投资证明编号
-    /// @param _normalGoodNo  normal good no~普通商品编号
+    /// @param _extendinfo  128 good's id,128 stake contruct  前128位商品的商品编号,后128位构建手续费
     /// @param _valueGoodNo  value good no~价值商品编号
     /// @param _value     amount0 investvalue,amount1 0~amount0 投次价值
     /// @param _invest     amount0 normal good actual fee ,amount1 normal good actual invest quantity~amount0为投资手续费,amount1为投资数量
     /// @param _valueinvest   amount0 value good actual fee ,amount1 value good actual invest quantity~amount0为投资手续费,amount1为投资数量
     event e_investGood(
         uint256 indexed _proofNo,
-        uint256 _normalGoodNo,
+        T_BalanceUINT256 _extendinfo,
         uint256 _valueGoodNo,
         T_BalanceUINT256 _value,
         T_BalanceUINT256 _invest,

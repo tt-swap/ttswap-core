@@ -2,7 +2,7 @@
 pragma solidity 0.8.26;
 
 import {S_ProofKey} from "./L_Struct.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "./L_BalanceUINT256.sol";
+import {T_BalanceUINT256, toBalanceUINT256, mulDiv} from "./L_BalanceUINT256.sol";
 import {I_TTS} from "../interfaces/I_TTS.sol";
 
 library L_Proof {
@@ -12,7 +12,6 @@ library L_Proof {
         T_BalanceUINT256 state; //前128位表示投资的价值, amount0:invest value
         T_BalanceUINT256 invest; //前128位表示投资的构建手续费,后128位表示投资数量 amount0:contrunct fee ,amount1:invest quantity
         T_BalanceUINT256 valueinvest; //前128位表示投资的构建手续费,后128位表示投资数量 amount0:contrunct fee ,amount1:invest quantity
-        uint256 proofconfig; //后160位受益人,第一位为是否冻结
     }
 
     function updateInvest(
@@ -36,7 +35,6 @@ library L_Proof {
             mulDiv(_self.invest.amount0(), _value, _self.state.amount0()),
             mulDiv(_self.invest.amount1(), _value, _self.state.amount0())
         );
-        _self.invest = _self.invest - burnResult1_;
 
         if (_self.valuegood != 0) {
             T_BalanceUINT256 burnResult2_ = toBalanceUINT256(
@@ -53,20 +51,8 @@ library L_Proof {
             );
             _self.valueinvest = _self.valueinvest - burnResult2_;
         }
+        _self.invest = _self.invest - burnResult1_;
         _self.state = _self.state - toBalanceUINT256(_value, 0);
-    }
-
-    function mulDiv(
-        uint256 config,
-        uint256 amount,
-        uint256 domitor
-    ) internal pure returns (uint128 a) {
-        unchecked {
-            assembly {
-                config := mul(config, amount)
-                a := div(config, domitor)
-            }
-        }
     }
 
     function collectProofFee(
@@ -93,16 +79,16 @@ library L_Proof {
         address contractaddress,
         address to,
         uint128 proofvalue
-    ) internal {
-        I_TTS(contractaddress).stake(to, proofvalue);
+    ) internal returns (uint128) {
+        return I_TTS(contractaddress).stake(to, proofvalue);
     }
 
     function unstake(
         address contractaddress,
         address from,
         uint128 devestvalue
-    ) internal returns (uint128) {
-        return I_TTS(contractaddress).unstake(from, devestvalue);
+    ) internal {
+        I_TTS(contractaddress).unstake(from, devestvalue);
     }
 }
 

@@ -76,26 +76,27 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
     }
 
     function delproofdata(uint256 proofid, address from, address to) private {
-        uint256 proofkey1 = S_ProofKey(
+        L_Proof.S_ProofState memory proofState = proofs[proofid];
+        uint256 proofKey1 = S_ProofKey(
             from,
-            proofs[proofid].currentgood,
-            proofs[proofid].valuegood
+            proofState.currentgood,
+            proofState.valuegood
         ).toId();
-        uint256 proofkey2 = S_ProofKey(
+        uint256 proofKey2 = S_ProofKey(
             to,
-            proofs[proofid].currentgood,
-            proofs[proofid].valuegood
+            proofState.currentgood,
+            proofState.valuegood
         ).toId();
-
-        L_Proof.stake(officicalContract, to, proofs[proofid].state.amount0());
-        if (proofmapping[proofkey2] == 0) {
-            proofmapping[proofkey2] = proofmapping[proofkey1];
+        L_Proof.stake(officicalContract, to, proofState.state.amount0());
+        uint256 existingProofId = proofmapping[proofKey2];
+        if (existingProofId == 0) {
+            proofmapping[proofKey2] = proofmapping[proofKey1];
         } else {
-            proofs[proofmapping[proofkey2]].conbine(proofs[proofid]);
+            proofs[existingProofId].conbine(proofs[proofid]);
             delete proofs[proofid];
             _burn(proofid);
         }
-        delete proofmapping[proofkey1];
+        delete proofmapping[proofKey1];
     }
 
     function safeTransferFromWithPermit(

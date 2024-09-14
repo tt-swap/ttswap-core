@@ -22,7 +22,6 @@ contract TTS is ERC20Permit, I_TTS {
         uint8 chips;
     }
     mapping(uint8 => s_share) shares;
-    uint8 shares_index;
 
     T_BalanceUINT256 stakestate; // 128 lasttime 128 poolvalue
     T_BalanceUINT256 poolstate; //128 actual asset 128 contrunct fee
@@ -45,6 +44,7 @@ contract TTS is ERC20Permit, I_TTS {
     uint256 internal valuegoodid;
     address internal dao_admin;
     address internal marketcontract;
+    uint8 shares_index;
 
     mapping(address => address) referals;
 
@@ -260,9 +260,13 @@ contract TTS is ERC20Permit, I_TTS {
                 chaincontruct
             );
             chains[chainid].asset = toBalanceUINT256(poolasset, poolasset);
-            transfer(chains[chainid].recipent, poolasset);
+            _mint(chains[chainid].recipent, poolasset);
         }
         emit e_synchainstake(chainid, chainvalue, chaincontruct, poolasset);
+    }
+    function syncpoolasset(uint128 amount) external onlysub {
+        require(auths[msg.sender] == 5);
+        poolstate = poolstate + toBalanceUINT256(amount, amount);
     }
 
     function chain_withdraw(uint256 chainid, uint128 asset) external onlymain {
@@ -274,6 +278,7 @@ contract TTS is ERC20Permit, I_TTS {
         chains[chainid].asset =
             chains[chainid].asset +
             toBalanceUINT256(asset, 0);
+        require(balanceOf(msg.sender) >= chains[chainid].asset.amount0());
     }
 
     function chain_deposit(uint256 chainid, uint128 asset) external onlymain {
@@ -319,19 +324,16 @@ contract TTS is ERC20Permit, I_TTS {
         _mint(recipent, asset);
     }
 
-    function syncpoolasset(uint128 amount) external onlysub {
-        require(auths[msg.sender] == 5);
-        poolstate = poolstate + toBalanceUINT256(amount, amount);
-    }
-
-    function stake(address _staker, uint128 proofvalue) external {
+    function stake(
+        address _staker,
+        uint128 proofvalue
+    ) external returns (uint128 netcontruct) {
         require(auths[msg.sender] == 1);
         _stakefee();
         uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
-        uint128 netcontruct = poolstate.amount1() == 0
+        netcontruct = poolstate.amount1() == 0
             ? 0
-            : toBalanceUINT256(poolstate.amount1(), stakestate.amount1())
-                .getamount0fromamount1(proofvalue);
+            : mulDiv(poolstate.amount1(), proofvalue, stakestate.amount1());
         poolstate = poolstate + toBalanceUINT256(netcontruct, netcontruct);
         stakestate = stakestate + toBalanceUINT256(0, proofvalue);
         stakeproof[restakeid].fromcontract = msg.sender;
@@ -340,14 +342,12 @@ contract TTS is ERC20Permit, I_TTS {
             toBalanceUINT256(proofvalue, netcontruct);
     }
 
-    function unstake(
-        address _staker,
-        uint128 proofvalue
-    ) external returns (uint128 profit) {
+    function unstake(address _staker, uint128 proofvalue) external {
         require(auths[msg.sender] == 1);
         _stakefee();
-        uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
+        uint128 profit;
         uint128 contruct;
+        uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
         if (proofvalue >= stakeproof[restakeid].proofstate.amount0()) {
             proofvalue = stakeproof[restakeid].proofstate.amount0();
             contruct = stakeproof[restakeid].proofstate.amount1();
@@ -366,6 +366,12 @@ contract TTS is ERC20Permit, I_TTS {
         poolstate = poolstate - toBalanceUINT256(profit, contruct);
         profit = profit - contruct;
         if (profit > 0) _mint(_staker, profit);
+        emit e_unstake(
+            _staker,
+            proofvalue,
+            toBalanceUINT256(contruct, profit),
+            stakeproof[restakeid].proofstate
+        );
     }
 
     function _stakefee() internal {

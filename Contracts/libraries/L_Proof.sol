@@ -79,16 +79,16 @@ library L_Proof {
         address contractaddress,
         address to,
         uint128 proofvalue
-    ) internal {
-        I_TTS(contractaddress).stake(to, proofvalue);
+    ) internal returns (uint128) {
+        return I_TTS(contractaddress).stake(to, proofvalue);
     }
 
     function unstake(
         address contractaddress,
         address from,
         uint128 devestvalue
-    ) internal returns (uint128) {
-        return I_TTS(contractaddress).unstake(from, devestvalue);
+    ) internal {
+        I_TTS(contractaddress).unstake(from, devestvalue);
     }
 }
 

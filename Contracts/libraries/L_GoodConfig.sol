@@ -5,18 +5,10 @@ pragma solidity 0.8.26;
 library L_GoodConfigLibrary {
     //商品配置
     function isvaluegood(uint256 config) internal pure returns (bool a) {
-        uint256 b;
-        assembly {
-            b := shr(255, config)
-        }
-        return b == 1 ? true : false;
+        return (config & (1 << 255)) != 0;
     }
     function isnormalgood(uint256 config) internal pure returns (bool a) {
-        uint256 b;
-        assembly {
-            b := shr(255, config)
-        }
-        return b == 1 ? false : true;
+        return (config & (1 << 255)) == 0;
     }
 
     //商品投资费率 单位万分之一

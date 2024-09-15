@@ -12,6 +12,11 @@ import {S_GoodKey} from "./libraries/L_Struct.sol";
 import {L_Lock} from "./libraries/L_Lock.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice} from "./libraries/L_BalanceUINT256.sol";
 
+/**
+ * @title GoodManage
+ * @dev Abstract contract for managing goods-related operations
+ * @notice Implements functionality for goods configuration, commission collection, and blacklist management
+ */
 abstract contract GoodManage is I_Good, ProofManage {
     using L_CurrencyLibrary for address;
     using L_GoodConfigLibrary for uint256;
@@ -26,6 +31,11 @@ abstract contract GoodManage is I_Good, ProofManage {
     mapping(uint256 => L_Good.S_GoodState) internal goods;
     mapping(address => uint256) public banlist;
 
+    /**
+     * @dev Constructor
+     * @param _marketconfig Market configuration
+     * @param _officialcontract Official contract address
+     */
     constructor(
         uint256 _marketconfig,
         address _officialcontract
@@ -33,6 +43,9 @@ abstract contract GoodManage is I_Good, ProofManage {
         marketconfig = _marketconfig;
     }
 
+    /**
+     * @dev Modifier to prevent reentrancy
+     */
     modifier noReentrant() {
         require(L_Lock.get() == address(0));
         L_Lock.set(msg.sender);
@@ -40,6 +53,11 @@ abstract contract GoodManage is I_Good, ProofManage {
         L_Lock.set(address(0));
     }
 
+    /**
+     * @dev Get the state of a good
+     * @param goodkey The ID of the good
+     * @return Temporary state structure of the good
+     */
     function getGoodState(
         uint256 goodkey
     ) external view returns (L_Good.S_GoodTmpState memory) {
@@ -81,6 +99,12 @@ abstract contract GoodManage is I_Good, ProofManage {
         return true;
     }
 
+    /**
+     * @dev Update the configuration of a good
+     * @param _goodid The ID of the good
+     * @param _goodConfig The new configuration for the good
+     * @return Boolean indicating if the operation was successful
+     */
     function updateGoodConfig(
         uint256 _goodid,
         uint256 _goodConfig
@@ -128,6 +152,10 @@ abstract contract GoodManage is I_Good, ProofManage {
         emit e_changegoodowner(_goodid, _to);
     }
 
+    /**
+     * @dev Collect commission for multiple goods
+     * @param _goodid Array of good IDs
+     */
     function collectCommission(uint256[] memory _goodid) external override {
         require(_goodid.length < 100);
         uint256[] memory commisionamount = new uint256[](_goodid.length);
@@ -148,6 +176,12 @@ abstract contract GoodManage is I_Good, ProofManage {
         emit e_collectcommission(_goodid, commisionamount);
     }
 
+    /**
+     * @dev Query commission for multiple goods
+     * @param _goodid Array of good IDs
+     * @param _recipent Address of the recipient
+     * @return Array of commission amounts
+     */
     function queryCommission(
         uint256[] memory _goodid,
         address _recipent
@@ -160,6 +194,11 @@ abstract contract GoodManage is I_Good, ProofManage {
         return feeamount;
     }
 
+    /**
+     * @dev Add welfare to a good
+     * @param goodid The ID of the good
+     * @param welfare The amount of welfare to add
+     */
     function goodWelfare(
         uint256 goodid,
         uint128 welfare

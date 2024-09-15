@@ -5,124 +5,134 @@ import {S_GoodKey} from "../libraries/L_Struct.sol";
 import {L_Good} from "../libraries/L_Good.sol";
 import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 
-/// @title 商品接口good's interface
-/// @notice 包含商品的一系列接口  contain good's all interfaces
+/// @title Good's interface
+/// @notice Contains all interfaces related to goods
 interface I_Good {
-    /// @notice emitted when good's user tranfer the good to another 商品拥有者转移关系给另一人
-    /// @param _goodid good number,商品编号
-    /// @param _owner the older owner,原拥有者
-    /// @param _to the new owner,新拥有者
+    /// @notice Emitted when a good's ownership is transferred
+    /// @param _goodid The ID of the good
+    /// @param _owner The previous owner
+    /// @param _to The new owner
     event e_changeOwner(uint256 indexed _goodid, address _owner, address _to);
 
-    /// @notice Config Market Config~ 进行市场配置
-    /// @param _marketconfig 市场配置
+    /// @notice Emitted when market configuration is set
+    /// @param _marketconfig The market configuration
     event e_setMarketConfig(uint256 _marketconfig);
 
-    /// @notice Config good 商品配置
-    /// @param _goodid Good No,商品编号
-    /// @param _goodConfig Good config 市场配置
+    /// @notice Emitted when a good's configuration is updated
+    /// @param _goodid The ID of the good
+    /// @param _goodConfig The new configuration
     event e_updateGoodConfig(uint256 _goodid, uint256 _goodConfig);
 
-    /// @notice 市场管理员更新商品的分类
-    /// @param _goodid good No,商品编号配
+    /// @notice Emitted when a good's configuration is modified by market admin
+    /// @param _goodid The ID of the good
+    /// @param _goodconfig The new configuration
     event e_modifyGoodConfig(uint256 _goodid, uint256 _goodconfig);
 
-    /// @notice 修改商品拥有者
-    /// @param goodid goodid
-    /// @param to  address
+    /// @notice Emitted when a good's owner is changed
+    /// @param goodid The ID of the good
+    /// @param to The new owner's address
     event e_changegoodowner(uint256 goodid, address to);
 
-    /// @notice 提取市场佣金
-    /// @param _gooid good No,商品编号配
-    /// @param _commisionamount amount commision amount,
+    /// @notice Emitted when market commission is collected
+    /// @param _gooid Array of good IDs
+    /// @param _commisionamount Array of commission amounts
     event e_collectcommission(uint256[] _gooid, uint256[] _commisionamount);
 
-    /// @notice add ban list~添加黑名单
-    /// @param _user  address ~用户地址
+    /// @notice Emitted when an address is added to the ban list
+    /// @param _user The banned user's address
     event e_addbanlist(address _user);
-    /// @notice remove  out address from banlist~ 移出黑名单
-    /// @param _user user address ~用户地址
+
+    /// @notice Emitted when an address is removed from the ban list
+    /// @param _user The unbanned user's address
     event e_removebanlist(address _user);
-    /// @notice preject or seller deliver welfare to investor
-    /// @param goodid 商品编号
-    /// @param welfare 福利数量
+
+    /// @notice Emitted when welfare is delivered to investors
+    /// @param goodid The ID of the good
+    /// @param welfare The amount of welfare
     event e_goodWelfare(uint256 goodid, uint128 welfare);
-    /// @notice collect fee
-    /// @param goodid 商品编号
-    /// @param feeamount 福利数量
+
+    /// @notice Emitted when protocol fee is collected
+    /// @param goodid The ID of the good
+    /// @param feeamount The amount of fee collected
     event e_collectProtocolFee(uint256 goodid, uint256 feeamount);
 
+    /// @notice Emitted when a referral is added
+    /// @param referals The address of the referral
     event e_addreferal(address referals);
 
-    /// @notice Returns the config of the market~返回市场的配置
-    /// @dev Can be changed by the marketmanager~可以被管理员调整
-    /// @return marketconfig_ the config of market(according the white paper)~市场配置(参见白皮书)
+    /// @notice Returns the market configuration
+    /// @dev Can be changed by the market manager
+    /// @return marketconfig_ The market configuration
     function marketconfig() external view returns (uint256 marketconfig_);
 
-    /// @notice Returns the good's total number of the market 返回市场商品总数
-    /// @return goodNum_ the good number of the market~市场商品总数
+    /// @notice Returns the total number of goods in the market
+    /// @return goodNum_ The total number of goods
     function goodNum() external view returns (uint256 goodNum_);
 
-    /// @notice config market config 设置市场中市场配置
-    /// @param _marketconfig   the market config ~市场配置
-    /// @return 是否成功
+    /// @notice Sets the market configuration
+    /// @param _marketconfig The new market configuration
+    /// @return Success status
     function setMarketConfig(uint256 _marketconfig) external returns (bool);
 
-    /// @notice  update good's config 更新商品配置
-    /// @param _goodid   good's id 商品的商品ID
-    /// @param _goodConfig   商品配置
-    /// @return the result  更新结果
+    /// @notice Updates a good's configuration
+    /// @param _goodid The ID of the good
+    /// @param _goodConfig The new configuration
+    /// @return Success status
     function updateGoodConfig(
         uint256 _goodid,
         uint256 _goodConfig
     ) external returns (bool);
 
-    /// @notice 市场管理员修改商品的属性
-    /// @param _goodid   商品的商品ID
-    /// @param _goodConfig   商品配置
-    /// @return the result
+    /// @notice Allows market admin to modify a good's attributes
+    /// @param _goodid The ID of the good
+    /// @param _goodConfig The new configuration
+    /// @return Success status
     function modifyGoodConfig(
         uint256 _goodid,
         uint256 _goodConfig
     ) external returns (bool);
-    /// @notice pay good to  转给
-    /// @param _goodid   商品的商品ID
-    /// @param _payquanity   数量
-    /// @param _recipent   接收者
-    /// @return the result
+
+    /// @notice Transfers a good to another address
+    /// @param _goodid The ID of the good
+    /// @param _payquanity The quantity to transfer
+    /// @param _recipent The recipient's address
+    /// @return Success status
     function payGood(
         uint256 _goodid,
         uint256 _payquanity,
         address _recipent
     ) external payable returns (bool);
 
-    /// @notice set good's Owner 改变商品的拥有者
-    /// @param _goodid  good's id 商品的商品ID
-    /// @param _to  recipent 接收者
+    /// @notice Changes the owner of a good
+    /// @param _goodid The ID of the good
+    /// @param _to The new owner's address
     function changeGoodOwner(uint256 _goodid, address _to) external;
-    /// @notice collect Commission 归集佣金
-    /// @param _goodid  good's id 商品的商品ID
+
+    /// @notice Collects commission for specified goods
+    /// @param _goodid Array of good IDs
     function collectCommission(uint256[] memory _goodid) external;
 
-    /// @notice query commission 查询佣金
-    /// @param _goodid  good's id 商品的商品ID
-    /// @param _recipent   customer 用户
-    /// @return the result 手续费数量
+    /// @notice Queries commission for specified goods and recipient
+    /// @param _goodid Array of good IDs
+    /// @param _recipent The recipient's address
+    /// @return Array of commission amounts
     function queryCommission(
         uint256[] memory _goodid,
         address _recipent
     ) external returns (uint256[] memory);
-    /// @notice add ban list  增加禁止名单
-    /// @param _user  address 地址
-    /// @return is_success_ 是否成功
+
+    /// @notice Adds an address to the ban list
+    /// @param _user The address to ban
+    /// @return is_success_ Success status
     function addbanlist(address _user) external returns (bool is_success_);
-    /// @notice  rm ban list  移除禁止名单
-    /// @param _user  address 地址
-    /// @return is_success_ 是否成功
+
+    /// @notice Removes an address from the ban list
+    /// @param _user The address to unban
+    /// @return is_success_ Success status
     function removebanlist(address _user) external returns (bool is_success_);
 
-    /// @notice 为投资者发福利
-    /// @param goodid   商品编号
-    /// @param welfare   用户地址
+    /// @notice Delivers welfare to investors
+    /// @param goodid The ID of the good
+    /// @param welfare The amount of welfare
     function goodWelfare(uint256 goodid, uint128 welfare) external payable;
 }

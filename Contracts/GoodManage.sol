@@ -68,7 +68,7 @@ abstract contract GoodManage is I_Good, ProofManage {
                 goods[goodkey].erc20address,
                 goods[goodkey].currentState,
                 goods[goodkey].investState,
-                goods[goodkey].feeQunitityState
+                goods[goodkey].feeQuantityState
             );
     }
 
@@ -158,22 +158,22 @@ abstract contract GoodManage is I_Good, ProofManage {
      */
     function collectCommission(uint256[] memory _goodid) external override {
         require(_goodid.length < 100);
-        uint256[] memory commisionamount = new uint256[](_goodid.length);
+        uint256[] memory commissionamount = new uint256[](_goodid.length);
         for (uint i = 0; i < _goodid.length; i++) {
-            commisionamount[i] = goods[_goodid[i]].commision[msg.sender];
-            if (commisionamount[i] < 2) {
-                commisionamount[i] = 0;
+            commissionamount[i] = goods[_goodid[i]].commission[msg.sender];
+            if (commissionamount[i] < 2) {
+                commissionamount[i] = 0;
                 continue;
             } else {
-                commisionamount[i] = commisionamount[i] - 1;
-                goods[_goodid[i]].commision[msg.sender] = 1;
+                commissionamount[i] = commissionamount[i] - 1;
+                goods[_goodid[i]].commission[msg.sender] = 1;
                 goods[_goodid[i]].erc20address.safeTransfer(
                     msg.sender,
-                    commisionamount[i]
+                    commissionamount[i]
                 );
             }
         }
-        emit e_collectcommission(_goodid, commisionamount);
+        emit e_collectcommission(_goodid, commissionamount);
     }
 
     /**
@@ -189,7 +189,7 @@ abstract contract GoodManage is I_Good, ProofManage {
         require(_goodid.length < 100);
         uint256[] memory feeamount = new uint256[](_goodid.length);
         for (uint i = 0; i < _goodid.length; i++) {
-            feeamount[i] = goods[_goodid[i]].commision[_recipent];
+            feeamount[i] = goods[_goodid[i]].commission[_recipent];
         }
         return feeamount;
     }
@@ -203,10 +203,10 @@ abstract contract GoodManage is I_Good, ProofManage {
         uint256 goodid,
         uint128 welfare
     ) external payable override noReentrant {
-        require(goods[goodid].feeQunitityState.amount0() + welfare <= 2 ** 109);
+        require(goods[goodid].feeQuantityState.amount0() + welfare <= 2 ** 109);
         goods[goodid].erc20address.transferFrom(msg.sender, welfare);
-        goods[goodid].feeQunitityState =
-            goods[goodid].feeQunitityState +
+        goods[goodid].feeQuantityState =
+            goods[goodid].feeQuantityState +
             toBalanceUINT256(uint128(welfare), 0);
         emit e_goodWelfare(goodid, welfare);
     }

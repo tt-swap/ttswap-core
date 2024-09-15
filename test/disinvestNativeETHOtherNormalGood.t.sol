@@ -155,14 +155,14 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
             "before disinvest nativeeth good:normalgoodnativeETH investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             10000,
-            "before disinvest nativeeth good:normalgoodnativeETH feeQunitityState amount0 error"
+            "before disinvest nativeeth good:normalgoodnativeETH feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "before disinvest nativeeth good:normalgoodnativeETH feeQunitityState amount1 error"
+            "before disinvest nativeeth good:normalgoodnativeETH feeQuantityState amount1 error"
         );
         normalproof = market.proofmapping(
             S_ProofKey(users[2], normalgoodnativeETH, metagood).toId()
@@ -192,14 +192,14 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
             "after disinvest nativeeth good:normalgoodnativeETH investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             10025,
-            "after disinvest nativeeth good:normalgoodnativeETH feeQunitityState amount0 error"
+            "after disinvest nativeeth good:normalgoodnativeETH feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "after disinvest nativeeth good:normalgoodnativeETH feeQunitityState amount1 error"
+            "after disinvest nativeeth good:normalgoodnativeETH feeQuantityState amount1 error"
         );
 
         _proof = market.getProofState(normalproof);

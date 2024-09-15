@@ -149,14 +149,14 @@ contract buyERC20NormalGood is BaseSetup {
         );
 
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             10710000,
-            "after buy erc20_normalgood:metagood feeQunitityState amount0 error"
+            "after buy erc20_normalgood:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "after buy erc20_normalgood:metagood feeQunitityState amount1 error"
+            "after buy erc20_normalgood:metagood feeQuantityState amount1 error"
         );
 
         market.buyGood(

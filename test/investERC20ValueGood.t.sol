@@ -117,14 +117,14 @@ contract investERC20ValueGood is BaseSetup {
             "after invest metagood:metagood investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             5000000,
-            "after invest metagood:metagood feeQunitityState amount0 error"
+            "after invest metagood:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "after invest metagood:metagood feeQunitityState amount1 error"
+            "after invest metagood:metagood feeQuantityState amount1 error"
         );
 
         assertEq(
@@ -238,14 +238,14 @@ contract investERC20ValueGood is BaseSetup {
             "after invest metagood:metagood investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             5000000,
-            "after invest metagood:metagood feeQunitityState amount0 error"
+            "after invest metagood:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "after invest metagood:metagood feeQunitityState amount1 error"
+            "after invest metagood:metagood feeQuantityState amount1 error"
         );
 
         assertEq(

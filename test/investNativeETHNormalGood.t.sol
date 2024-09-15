@@ -172,14 +172,14 @@ contract investNativeETHNormalGood is BaseSetup {
             "after invest nativeeth_normalgood:metagood investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             16111252,
-            "after invest nativeeth_normalgood:metagood feeQunitityState amount0 error"
+            "after invest nativeeth_normalgood:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             3511882,
-            "after invest nativeeth_normalgood:metagood feeQunitityState amount1 error"
+            "after invest nativeeth_normalgood:metagood feeQuantityState amount1 error"
         );
 
         assertEq(
@@ -337,14 +337,14 @@ contract investNativeETHNormalGood is BaseSetup {
             "after invest nativeeth_normalgood:metagood investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             16111252,
-            "after invest nativeeth_normalgood:metagood feeQunitityState amount0 error"
+            "after invest nativeeth_normalgood:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             3511882,
-            "after invest nativeeth_normalgood:metagood feeQunitityState amount1 error"
+            "after invest nativeeth_normalgood:metagood feeQuantityState amount1 error"
         );
 
         assertEq(

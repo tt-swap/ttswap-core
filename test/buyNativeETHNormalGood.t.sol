@@ -157,14 +157,14 @@ contract buyNativeETHNormalGood is BaseSetup {
             "after buy nativeeth_normalgood:metagood investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             10710000,
-            "after buy nativeeth_normalgood:metagood feeQunitityState amount0 error"
+            "after buy nativeeth_normalgood:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "after buy nativeeth_normalgood:metagood feeQunitityState amount1 error"
+            "after buy nativeeth_normalgood:metagood feeQuantityState amount1 error"
         );
 
         market.buyGood(

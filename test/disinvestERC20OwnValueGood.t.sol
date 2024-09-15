@@ -105,14 +105,14 @@ contract disinvestERC20OwnValueGood is BaseSetup {
             "before disinvest erc20 good:metagood investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             5000000,
-            "before disinvest erc20 good:metagood feeQunitityState amount0 error"
+            "before disinvest erc20 good:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "before disinvest erc20 good:metagood feeQunitityState amount1 error"
+            "before disinvest erc20 good:metagood feeQuantityState amount1 error"
         );
 
         market.disinvestProof(normalproof, 10000 * 10 ** 6, address(0));
@@ -139,14 +139,14 @@ contract disinvestERC20OwnValueGood is BaseSetup {
             "after disinvest erc20 good:metagood investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             7499975,
-            "after disinvest erc20 good:metagood feeQunitityState amount0 error"
+            "after disinvest erc20 good:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "after disinvest erc20 good:metagood feeQunitityState amount1 error"
+            "after disinvest erc20 good:metagood feeQuantityState amount1 error"
         );
 
         _proof = market.getProofState(normalproof);

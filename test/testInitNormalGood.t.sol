@@ -117,7 +117,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:metagoodkey investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodkeystate.feeQunitityState),
+            T_BalanceUINT256.unwrap(metagoodkeystate.feeQuantityState),
             T_BalanceUINT256.unwrap(
                 toBalanceUINT256(((63000 * 10 ** 6) / 10000), 0)
             ),
@@ -167,7 +167,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:normalgood investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(normalgoodstate.feeQunitityState),
+            T_BalanceUINT256.unwrap(normalgoodstate.feeQuantityState),
             T_BalanceUINT256.unwrap(toBalanceUINT256(0, 0)),
             "after initial normalgood:normalgood feequnitity error"
         );
@@ -299,7 +299,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:metagoodkey investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodkeystate.feeQunitityState),
+            T_BalanceUINT256.unwrap(metagoodkeystate.feeQuantityState),
             T_BalanceUINT256.unwrap(toBalanceUINT256(((63000 * 10 ** 2)), 0)),
             "after initial normalgood:metagoodkey feequnitity error"
         );
@@ -344,7 +344,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:normalgood currentState amount1()"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(normalgoodstate.feeQunitityState),
+            T_BalanceUINT256.unwrap(normalgoodstate.feeQuantityState),
             T_BalanceUINT256.unwrap(toBalanceUINT256(0, 0)),
             "after initial normalgood:normalgood feequnitity error"
         );

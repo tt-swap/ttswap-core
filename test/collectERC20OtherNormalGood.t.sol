@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.26;
 
+// Import necessary contracts and libraries
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../Contracts/MarketManager.sol";
@@ -9,20 +10,28 @@ import {S_GoodKey, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
 import {L_ProofIdLibrary, L_Proof} from "../Contracts/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
 import {T_BalanceUINT256, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
-
 import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../Contracts/libraries/L_MarketConfig.sol";
 
+/**
+ * @title collectERC20OtherNormalGood
+ * @dev Test contract for collecting ERC20 tokens from normal goods
+ */
 contract collectERC20OtherNormalGood is BaseSetup {
+    // Use libraries
     using L_MarketConfigLibrary for uint256;
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
 
+    // State variables
     uint256 metagood;
     uint256 normalgoodusdt;
     uint256 normalgoodbtc;
 
+    /**
+     * @dev Setup function to initialize the test environment
+     */
     function setUp() public override {
         BaseSetup.setUp();
         initmetagood();
@@ -30,6 +39,9 @@ contract collectERC20OtherNormalGood is BaseSetup {
         investOwnERC20NormalGood();
     }
 
+    /**
+     * @dev Initialize the meta good
+     */
     function initmetagood() public {
         BaseSetup.setUp();
         vm.startPrank(marketcreator);
@@ -53,6 +65,9 @@ contract collectERC20OtherNormalGood is BaseSetup {
         vm.stopPrank();
     }
 
+    /**
+     * @dev Initialize the BTC good
+     */
     function initbtcgood() public {
         vm.startPrank(users[1]);
         deal(address(btc), users[1], 10 * 10 ** 8, false);
@@ -62,7 +77,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
         assertEq(
             usdt.balanceOf(address(market)),
             50000 * 10 ** 6,
-            "befor init erc20 good, balance of market error"
+            "before init erc20 good, balance of market error"
         );
         uint256 normalgoodconfig = 1 *
             2 ** 217 +
@@ -82,9 +97,11 @@ contract collectERC20OtherNormalGood is BaseSetup {
         vm.stopPrank();
     }
 
+    /**
+     * @dev Invest in own ERC20 normal good
+     */
     function investOwnERC20NormalGood() public {
         vm.startPrank(users[2]);
-
         deal(address(btc), users[2], 10 * 10 ** 8, false);
         deal(address(usdt), users[2], 50000000 * 10 ** 6, false);
         usdt.approve(address(market), 800000 * 10 ** 6 + 1);
@@ -93,12 +110,17 @@ contract collectERC20OtherNormalGood is BaseSetup {
         vm.stopPrank();
     }
 
+    /**
+     * @dev Test disinvesting proof
+     */
     function testDistinvestProof() public {
         vm.startPrank(users[2]);
         uint256 normalproof;
         normalproof = market.proofmapping(
             S_ProofKey(users[2], normalgoodbtc, metagood).toId()
         );
+
+        // Check initial proof state
         L_Proof.S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(
             _proof.state.amount0(),
@@ -128,6 +150,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
             "before collect:proof  valueinvest contruct error"
         );
 
+        // Check initial good state
         L_Good.S_GoodTmpState memory good_ = market.getGoodState(normalgoodbtc);
         assertEq(
             good_.currentState.amount0(),
@@ -150,19 +173,20 @@ contract collectERC20OtherNormalGood is BaseSetup {
             "before collect erc20 good:normalgoodbtc investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             10000,
-            "before collect erc20 good:normalgoodbtc feeQunitityState amount0 error"
+            "before collect erc20 good:normalgoodbtc feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "before collect erc20 good:normalgoodbtc feeQunitityState amount1 error"
+            "before collect erc20 good:normalgoodbtc feeQuantityState amount1 error"
         );
         normalproof = market.proofmapping(
             S_ProofKey(users[2], normalgoodbtc, metagood).toId()
         );
 
+        // Collect proof first time
         market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_erc20_normalgood_first");
         good_ = market.getGoodState(normalgoodbtc);
@@ -187,16 +211,17 @@ contract collectERC20OtherNormalGood is BaseSetup {
             "after collect erc20 good:normalgoodbtc investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             10000,
-            "after collect erc20 good:normalgoodbtc feeQunitityState amount0 error"
+            "after collect erc20 good:normalgoodbtc feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             4999,
-            "after collect erc20 good:normalgoodbtc feeQunitityState amount1 error"
+            "after collect erc20 good:normalgoodbtc feeQuantityState amount1 error"
         );
 
+        // Check proof state after first collection
         _proof = market.getProofState(normalproof);
         assertEq(
             _proof.state.amount0(),
@@ -223,10 +248,13 @@ contract collectERC20OtherNormalGood is BaseSetup {
             5766561,
             "after collect:proof contruct error"
         );
+
+        // Invest and collect proof second time
         market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
         market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_erc20_normalgood_second");
 
+        // Invest and collect proof third time
         market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
         market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_erc20_normalgood_three");

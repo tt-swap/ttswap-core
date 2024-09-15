@@ -20,7 +20,7 @@ contract TTS is ERC20Permit, I_TTS {
     using L_TTSTokenConfigLibrary for uint256;
     uint256 public ttstokenconfig;
     struct s_share {
-        address recipent;
+        address recipient;
         uint256 leftamount;
         uint8 metric;
         uint8 chips;
@@ -28,7 +28,7 @@ contract TTS is ERC20Permit, I_TTS {
     mapping(uint8 => s_share) shares;
 
     T_BalanceUINT256 stakestate; // 128 lasttime 128 poolvalue
-    T_BalanceUINT256 poolstate; //128 actual asset 128 contrunct fee
+    T_BalanceUINT256 poolstate; //128 actual asset 128 construct  fee
 
     struct s_proof {
         address fromcontract;
@@ -39,7 +39,7 @@ contract TTS is ERC20Permit, I_TTS {
     struct s_chain {
         T_BalanceUINT256 asset; //128 allasset 128 poolasset
         T_BalanceUINT256 proofstate; //128 value 128 constructasset
-        address recipent;
+        address recipient;
     }
     mapping(uint256 => s_chain) chains;
     uint256 chainindex;
@@ -50,13 +50,13 @@ contract TTS is ERC20Permit, I_TTS {
     address internal marketcontract;
     uint8 shares_index;
 
-    mapping(address => address) referals;
+    mapping(address => address) referrals;
 
-    // uint256 1:add referal priv 2: market priv
+    // uint256 1:add referral priv 2: market priv
     mapping(address => uint256) auths;
 
     address public immutable usdt;
-    // lsttime is for stake
+    // lasttime is for stake
     uint256 public publicsell;
     uint256 public left_share = 5 * 10 ** 8 * 10 ** 6;
 
@@ -113,12 +113,12 @@ contract TTS is ERC20Permit, I_TTS {
 
     /**
      * @dev Changes the DAO admin address
-     * @param _recipent The address of the new DAO admin
+     * @param _recipient The address of the new DAO admin
      * @notice Only the current DAO admin can call this function
      */
-    function changedaoadmin(address _recipent) external {
+    function changeDAOAdmin(address _recipient) external {
         require(_msgSender() == dao_admin);
-        dao_admin = _recipent;
+        dao_admin = _recipient;
         emit e_setdaoadmin(dao_admin);
     }
 
@@ -146,11 +146,11 @@ contract TTS is ERC20Permit, I_TTS {
 
     /**
      * @dev Checks the authorization level of an address
-     * @param recipent The address to check
+     * @param recipient The address to check
      * @return The authorization level of the address
      */
-    function isauths(address recipent) external view returns (uint256) {
-        return auths[recipent];
+    function isauths(address recipient) external view returns (uint256) {
+        return auths[recipient];
     }
 
     /**
@@ -169,7 +169,7 @@ contract TTS is ERC20Permit, I_TTS {
         shares_index += 1;
         shares[shares_index] = _share;
         emit e_addmint(
-            _share.recipent,
+            _share.recipient,
             _share.leftamount,
             _share.metric,
             _share.chips,
@@ -207,7 +207,7 @@ contract TTS is ERC20Permit, I_TTS {
                 2 ** shares[index].metric * 2 ** 128 + 1
             ) ==
                 false &&
-                _msgSender() == shares[index].recipent
+                _msgSender() == shares[index].recipient
         );
         uint256 mintamount = shares[index].leftamount / shares[index].chips;
         shares[index].leftamount -= mintamount;
@@ -219,14 +219,14 @@ contract TTS is ERC20Permit, I_TTS {
     /**
      * @dev Adds a referral relationship between a user and a referrer
      * @param user The address of the user being referred
-     * @param referal The address of the referrer
+     * @param referral The address of the referrer
      * @notice Only callable by authorized addresses (auths[msg.sender] == 1)
      * @notice Will only set the referral if the user doesn't already have one
      */
-    function addreferal(address user, address referal) external override {
-        if (auths[msg.sender] == 1 && referals[user] == address(0)) {
-            referals[user] = referal;
-            emit e_addreferal(user, referal);
+    function addreferral(address user, address referral) external override {
+        if (auths[msg.sender] == 1 && referrals[user] == address(0)) {
+            referrals[user] = referral;
+            emit e_addreferral(user, referral);
         }
     }
 
@@ -243,10 +243,10 @@ contract TTS is ERC20Permit, I_TTS {
      * @param _customer The address of the customer
      * @return The address of the customer's referrer
      */
-    function getreferal(
+    function getreferral(
         address _customer
     ) external view override returns (address) {
-        return referals[_customer];
+        return referrals[_customer];
     }
 
     /**
@@ -254,10 +254,10 @@ contract TTS is ERC20Permit, I_TTS {
      * @param _customer The address of the customer
      * @return A tuple containing the DAO admin address and the customer's referrer address
      */
-    function getreferalanddaoamdin(
+    function getreferralanddaoadmin(
         address _customer
     ) external view override returns (address, address) {
-        return (dao_admin, referals[_customer]);
+        return (dao_admin, referrals[_customer]);
     }
 
     /**
@@ -286,16 +286,16 @@ contract TTS is ERC20Permit, I_TTS {
     /**
      * @dev Withdraws funds from public token sale
      * @param amount The amount of USDT to withdraw
-     * @param recipent The address to receive the withdrawn funds
+     * @param recipient The address to receive the withdrawn funds
      * @notice Only callable on the main chain by the DAO admin
      * @notice Transfers the specified amount of USDT to the recipient
      */
-    function withdrawpublicsell(
+    function withdrawPublicSell(
         uint256 amount,
-        address recipent
+        address recipient
     ) external onlymain {
         require(_msgSender() == dao_admin);
-        IERC20(usdt).transfer(recipent, amount);
+        IERC20(usdt).transfer(recipient, amount);
     }
 
     /**
@@ -304,14 +304,14 @@ contract TTS is ERC20Permit, I_TTS {
      * @param chainvalue Value to synchronize
      * @return poolasset Amount of pool asset
      */
-    function synchainstake(
+    function syncChainStake(
         uint256 chainid,
         uint128 chainvalue
     ) external onlymain returns (uint128 poolasset) {
         require(
             auths[msg.sender] == 100005 &&
-                (chains[chainid].recipent == msg.sender ||
-                    chains[chainid].recipent == address(0))
+                (chains[chainid].recipient == msg.sender ||
+                    chains[chainid].recipient == address(0))
         );
         uint128 chaincontruct;
         if (chainid == 0) {
@@ -330,7 +330,7 @@ contract TTS is ERC20Permit, I_TTS {
                 chainvalue,
                 chaincontruct
             );
-            chains[chainid].recipent = msg.sender;
+            chains[chainid].recipient = msg.sender;
         } else {
             poolasset = mulDiv(
                 poolstate.amount0(),
@@ -363,9 +363,9 @@ contract TTS is ERC20Permit, I_TTS {
                 chaincontruct
             );
             chains[chainid].asset = toBalanceUINT256(poolasset, poolasset);
-            _mint(chains[chainid].recipent, poolasset);
+            _mint(chains[chainid].recipient, poolasset);
         }
-        emit e_synchainstake(chainid, chainvalue, chaincontruct, poolasset);
+        emit e_syncChainStake(chainid, chainvalue, chaincontruct, poolasset);
     }
 
     /**
@@ -373,7 +373,7 @@ contract TTS is ERC20Permit, I_TTS {
      * @param amount The amount to add to the pool state
      * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 5)
      */
-    function syncpoolasset(uint128 amount) external onlysub {
+    function syncPoolAsset(uint128 amount) external onlysub {
         require(auths[msg.sender] == 5);
         poolstate = poolstate + toBalanceUINT256(amount, amount);
     }
@@ -389,8 +389,8 @@ contract TTS is ERC20Permit, I_TTS {
     function chain_withdraw(uint256 chainid, uint128 asset) external onlymain {
         require(
             auths[msg.sender] == 100005 &&
-                (chains[chainid].recipent == msg.sender ||
-                    chains[chainid].recipent == address(0))
+                (chains[chainid].recipient == msg.sender ||
+                    chains[chainid].recipient == address(0))
         );
         chains[chainid].asset =
             chains[chainid].asset +
@@ -409,8 +409,8 @@ contract TTS is ERC20Permit, I_TTS {
     function chain_deposit(uint256 chainid, uint128 asset) external onlymain {
         require(
             auths[msg.sender] == 100005 &&
-                (chains[chainid].recipent == msg.sender ||
-                    chains[chainid].recipent == address(0))
+                (chains[chainid].recipient == msg.sender ||
+                    chains[chainid].recipient == address(0))
         );
         chains[chainid].asset =
             chains[chainid].asset -
@@ -421,50 +421,50 @@ contract TTS is ERC20Permit, I_TTS {
      * @dev Withdraws assets on a sub-chain
      * @param chainid The ID of the chain to withdraw from
      * @param asset The amount of assets to withdraw
-     * @param recipent The address to receive the withdrawn assets
+     * @param recipient The address to receive the withdrawn assets
      * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 100005)
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance and burns the withdrawn amount from the recipient
      */
-    function subchain_withdraw(
+    function subchainWithdraw(
         uint256 chainid,
         uint128 asset,
-        address recipent
+        address recipient
     ) external onlysub {
         require(
             auths[msg.sender] == 100005 &&
-                (chains[chainid].recipent == msg.sender ||
-                    chains[chainid].recipent == address(0))
+                (chains[chainid].recipient == msg.sender ||
+                    chains[chainid].recipient == address(0))
         );
         chains[chainid].asset =
             chains[chainid].asset -
             toBalanceUINT256(asset, 0);
-        _burn(recipent, asset);
+        _burn(recipient, asset);
     }
 
     /**
      * @dev Deposits assets on a sub-chain
      * @param chainid The ID of the chain to deposit to
      * @param asset The amount of assets to deposit
-     * @param recipent The address to receive the deposited assets
+     * @param recipient The address to receive the deposited assets
      * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 100005)
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance and mints the deposited amount to the recipient
      */
-    function subchain_deposit(
+    function subchainDeposit(
         uint256 chainid,
         uint128 asset,
-        address recipent
+        address recipient
     ) external onlysub {
         require(
             auths[msg.sender] == 100005 &&
-                (chains[chainid].recipent == msg.sender ||
-                    chains[chainid].recipent == address(0))
+                (chains[chainid].recipient == msg.sender ||
+                    chains[chainid].recipient == address(0))
         );
         chains[chainid].asset =
             chains[chainid].asset +
             toBalanceUINT256(asset, 0);
-        _mint(recipent, asset);
+        _mint(recipient, asset);
     }
 
     /**
@@ -478,7 +478,7 @@ contract TTS is ERC20Permit, I_TTS {
         uint128 proofvalue
     ) external returns (uint128 netcontruct) {
         require(auths[msg.sender] == 1);
-        _stakefee();
+        _stakeFee();
         uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
         netcontruct = poolstate.amount1() == 0
             ? 0
@@ -498,7 +498,7 @@ contract TTS is ERC20Permit, I_TTS {
      */
     function unstake(address _staker, uint128 proofvalue) external {
         require(auths[msg.sender] == 1);
-        _stakefee();
+        _stakeFee();
         uint128 profit;
         uint128 contruct;
         uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
@@ -531,7 +531,7 @@ contract TTS is ERC20Permit, I_TTS {
     /**
      * @dev Internal function to handle staking fees
      */
-    function _stakefee() internal {
+    function _stakeFee() internal {
         if (stakestate.amount0() + 86400 < block.timestamp) {
             stakestate = stakestate + toBalanceUINT256(86400, 0);
             uint256 mintamount = totalSupply() > 5000000 * decimals()

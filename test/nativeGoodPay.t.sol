@@ -266,12 +266,12 @@ contract nativeGoodPay is Test, BaseSetup {
 
         console2.log(
             "price good1's fee",
-            market.getGoodState(_good1).feeQunitityState.amount0()
+            market.getGoodState(_good1).feeQuantityState.amount0()
         );
 
         console2.log(
             "price good1's contrunct fee",
-            market.getGoodState(_good1).feeQunitityState.amount1()
+            market.getGoodState(_good1).feeQuantityState.amount1()
         );
     }
 
@@ -313,30 +313,6 @@ contract nativeGoodPay is Test, BaseSetup {
         console2.log(
             "getProofState's valuegood",
             market.getProofState(_proofid).valuegood
-        );
-    }
-
-    function showconfig(uint256 _goodConfig) public pure {
-        console2.log("good goodConfig:isvaluegood:", _goodConfig.isvaluegood());
-        console2.log(
-            "good goodConfig:getInvestFee:",
-            uint256(_goodConfig.getInvestFee())
-        );
-        console2.log(
-            "good goodConfig:getDisinvestFee:",
-            uint256(_goodConfig.getDisinvestFee())
-        );
-        console2.log(
-            "good goodConfig:getBuyFee:",
-            uint256(_goodConfig.getBuyFee())
-        );
-        console2.log(
-            "good goodConfig:getSellFee:",
-            uint256(_goodConfig.getSellFee())
-        );
-        console2.log(
-            "good goodConfig:getSwapChips:",
-            uint256(_goodConfig.getSwapChips())
         );
     }
 

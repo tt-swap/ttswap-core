@@ -71,7 +71,7 @@ contract testInitMetaGood is BaseSetup {
         );
         assertEq(
             T_BalanceUINT256.unwrap(
-                market.getGoodState(metagood).feeQunitityState
+                market.getGoodState(metagood).feeQuantityState
             ),
             T_BalanceUINT256.unwrap(toBalanceUINT256(0, 0)),
             "after initial metagood:metagood feequnitity error"
@@ -176,7 +176,7 @@ contract testInitMetaGood is BaseSetup {
             "after initial metagood:metagood investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(good_.feeQunitityState),
+            T_BalanceUINT256.unwrap(good_.feeQuantityState),
             T_BalanceUINT256.unwrap(toBalanceUINT256(0, 0)),
             "after initial metagood:metagood feequnitity error"
         );

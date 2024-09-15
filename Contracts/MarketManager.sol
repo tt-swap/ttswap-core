@@ -67,14 +67,14 @@ contract MarketManager is I_MarketManage, GoodManage {
             toBalanceUINT256(0, _initial.amount1()),
             toBalanceUINT256(0, 0)
         );
-        uint128 contruct = L_Proof.stake(
-            officicalContract,
+        uint128 construct = L_Proof.stake(
+            officialContract,
             msg.sender,
             _initial.amount0()
         );
         emit e_initMetaGood(
             totalSupply,
-            toBalanceUINT256(toInt128(togood), contruct),
+            toBalanceUINT256(toInt128(togood), construct),
             _erc20address,
             _goodConfig,
             _initial
@@ -129,19 +129,19 @@ contract MarketManager is I_MarketManage, GoodManage {
             toBalanceUINT256(investResult.actualInvestValue, 0),
             toBalanceUINT256(0, _initial.amount0()),
             toBalanceUINT256(
-                investResult.contructFeeQuantity,
+                investResult.constructFeeQuantity,
                 investResult.actualInvestQuantity
             )
         );
 
-        uint128 contruct = L_Proof.stake(
-            officicalContract,
+        uint128 construct = L_Proof.stake(
+            officialContract,
             msg.sender,
             investResult.actualInvestValue * 2
         );
         emit e_initGood(
             totalSupply,
-            toBalanceUINT256(toInt128(togood), contruct),
+            toBalanceUINT256(toInt128(togood), construct),
             _valuegood,
             _erc20address,
             _goodConfig,
@@ -184,7 +184,7 @@ contract MarketManager is I_MarketManage, GoodManage {
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_)
     {
         if (_referal != address(0))
-            I_TTS(officicalContract).addreferal(msg.sender, _referal);
+            I_TTS(officialContract).addreferral(msg.sender, _referal);
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
             outputQuantity: 0,
@@ -240,7 +240,7 @@ contract MarketManager is I_MarketManage, GoodManage {
      * @param _goodid2 The ID of the second good
      * @param _swapQuantity The quantity to swap
      * @param _limitPrice The limit price
-     * @param _recipent The recipient address
+     * @param _recipient The recipient address
      * @return goodid1Quantity_ The quantity of the first good received
      * @return goodid1FeeQuantity_ The fee quantity for the first good
      */
@@ -250,7 +250,7 @@ contract MarketManager is I_MarketManage, GoodManage {
         uint256 _goodid2,
         uint128 _swapQuantity,
         T_BalanceUINT256 _limitPrice,
-        address _recipent
+        address _recipient
     )
         external
         payable
@@ -291,7 +291,7 @@ contract MarketManager is I_MarketManage, GoodManage {
             goodid1FeeQuantity_
         );
         goods[_goodid2].erc20address.safeTransfer(
-            _recipent,
+            _recipient,
             _swapQuantity - swapcache.feeQuantity
         );
         goods[_goodid1].erc20address.transferFrom(msg.sender, goodid1Quantity_);
@@ -299,7 +299,7 @@ contract MarketManager is I_MarketManage, GoodManage {
             _goodid1,
             _goodid2,
             msg.sender,
-            _recipent,
+            _recipient,
             swapcache.swapvalue,
             toBalanceUINT256(_swapQuantity, swapcache.feeQuantity),
             toBalanceUINT256(goodid1Quantity_, goodid1FeeQuantity_)
@@ -336,7 +336,7 @@ contract MarketManager is I_MarketManage, GoodManage {
 
             valueInvest_.actualInvestQuantity = goods[_valuegood]
                 .goodConfig
-                .getInvestFulFee(valueInvest_.actualInvestQuantity);
+                .getInvestFullFee(valueInvest_.actualInvestQuantity);
             goods[_valuegood].erc20address.transferFrom(
                 msg.sender,
                 valueInvest_.actualInvestQuantity
@@ -360,25 +360,25 @@ contract MarketManager is I_MarketManage, GoodManage {
             _valuegood,
             toBalanceUINT256(normalInvest_.actualInvestValue, 0),
             toBalanceUINT256(
-                normalInvest_.contructFeeQuantity,
+                normalInvest_.constructFeeQuantity,
                 normalInvest_.actualInvestQuantity
             ),
             toBalanceUINT256(
-                valueInvest_.contructFeeQuantity,
+                valueInvest_.constructFeeQuantity,
                 valueInvest_.actualInvestQuantity
             )
         );
         uint128 investvalue = _valuegood == 0
             ? normalInvest_.actualInvestValue
             : normalInvest_.actualInvestValue * 2;
-        uint128 contruct = L_Proof.stake(
-            officicalContract,
+        uint128 construct = L_Proof.stake(
+            officialContract,
             msg.sender,
             investvalue
         );
         emit e_investGood(
             proofNo,
-            toBalanceUINT256(toInt128(_togood), contruct),
+            toBalanceUINT256(toInt128(_togood), construct),
             _valuegood,
             toBalanceUINT256(normalInvest_.actualInvestValue, 0),
             toBalanceUINT256(
@@ -411,13 +411,13 @@ contract MarketManager is I_MarketManage, GoodManage {
         L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_;
         uint256 normalgood = proofs[_proofid].currentgood;
         uint256 valuegood = proofs[_proofid].valuegood;
-        uint128 devestvalue;
-        (address dao_admin, address referal) = I_TTS(officicalContract)
-            .getreferalanddaoamdin(msg.sender);
+        uint128 divestvalue;
+        (address dao_admin, address referal) = I_TTS(officialContract)
+            .getreferralanddaoadmin(msg.sender);
         _gater = banlist[_gater] == 1 ? _gater : dao_admin;
         referal = _gater == referal ? dao_admin : referal;
         referal = banlist[referal] == 1 ? referal : dao_admin;
-        (disinvestNormalResult1_, disinvestValueResult2_, devestvalue) = goods[
+        (disinvestNormalResult1_, disinvestValueResult2_, divestvalue) = goods[
             normalgood
         ].disinvestGood(
                 goods[valuegood],
@@ -431,13 +431,13 @@ contract MarketManager is I_MarketManage, GoodManage {
                 )
             );
 
-        if (valuegood != 0) devestvalue = devestvalue * 2;
-        L_Proof.unstake(officicalContract, msg.sender, devestvalue);
+        if (valuegood != 0) divestvalue = divestvalue * 2;
+        L_Proof.unstake(officialContract, msg.sender, divestvalue);
         emit e_disinvestProof(
             _proofid,
             normalgood,
             valuegood,
-            toBalanceUINT256(devestvalue, 0),
+            toBalanceUINT256(divestvalue, 0),
             toBalanceUINT256(
                 disinvestNormalResult1_.actual_fee,
                 disinvestNormalResult1_.actualDisinvestQuantity
@@ -468,8 +468,8 @@ contract MarketManager is I_MarketManage, GoodManage {
         require(_isApprovedOrOwner(msg.sender, _proofid));
         uint256 valuegood = proofs[_proofid].valuegood;
         uint256 currentgood = proofs[_proofid].currentgood;
-        (address dao_admin, address referal) = I_TTS(officicalContract)
-            .getreferalanddaoamdin(msg.sender);
+        (address dao_admin, address referal) = I_TTS(officialContract)
+            .getreferralanddaoadmin(msg.sender);
         _gater = banlist[_gater] == 1 ? dao_admin : _gater;
         referal = _gater == referal ? dao_admin : referal;
         referal = banlist[referal] == 1 ? referal : dao_admin;

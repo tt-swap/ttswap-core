@@ -105,14 +105,14 @@ contract collectERC20OwnValueGood is BaseSetup {
             "before collect erc20 good:metagood investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             5000000,
-            "before collect erc20 good:metagood feeQunitityState amount0 error"
+            "before collect erc20 good:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "before collect erc20 good:metagood feeQunitityState amount1 error"
+            "before collect erc20 good:metagood feeQuantityState amount1 error"
         );
 
         market.collectProof(normalproof, address(0));
@@ -139,14 +139,14 @@ contract collectERC20OwnValueGood is BaseSetup {
             "after collect erc20 good:metagood investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             5000000,
-            "after collect erc20 good:metagood feeQunitityState amount0 error"
+            "after collect erc20 good:metagood feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             5000000,
-            "after collect erc20 good:metagood feeQunitityState amount1 error"
+            "after collect erc20 good:metagood feeQuantityState amount1 error"
         );
 
         _proof = market.getProofState(normalproof);

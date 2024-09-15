@@ -11,8 +11,8 @@ import {IERC721Permit} from "./IERC721Permit.sol";
 interface I_TTS {
     /// @notice Emitted when a referral is added
     /// @param users The address of the user
-    /// @param referal The address of the referrer
-    event e_addreferal(address users, address referal);
+    /// @param referral The address of the referrer
+    event e_addreferral(address users, address referral);
 
     /// @notice Emitted when environment variables are set
     /// @param normalgoodid The ID of the normal good
@@ -25,8 +25,8 @@ interface I_TTS {
     );
 
     /// @notice Emitted when a DAO admin is set
-    /// @param recipent The address of the new DAO admin
-    event e_setdaoadmin(address recipent);
+    /// @param recipient The address of the new DAO admin
+    event e_setdaoadmin(address recipient);
 
     /// @notice Emitted when authorizations are added
     /// @param auths The address being authorized
@@ -38,13 +38,13 @@ interface I_TTS {
     event e_rmauths(address auths);
 
     /// @notice Emitted when minting is added
-    /// @param recipent The address receiving the minted tokens
+    /// @param recipient The address receiving the minted tokens
     /// @param leftamount The remaining amount to be minted
     /// @param metric The metric used for minting
     /// @param chips The number of chips
     /// @param index The index of the minting operation
     event e_addmint(
-        address recipent,
+        address recipient,
         uint256 leftamount,
         uint8 metric,
         uint8 chips,
@@ -68,12 +68,12 @@ interface I_TTS {
     /// @notice Emitted when chain stake is synchronized
     /// @param chain The chain ID
     /// @param poolvalue The value of the pool
-    /// @param proolcontruct The pool construct value
+    /// @param poolconstruct The pool construct value
     /// @param poolasset The pool asset value
-    event e_synchainstake(
+    event e_syncChainStake(
         uint256 chain,
         uint256 poolvalue,
-        uint256 proolcontruct,
+        uint256 poolconstruct,
         uint256 poolasset
     );
 
@@ -82,22 +82,22 @@ interface I_TTS {
     /// @param marketcontract The address of the market contract
     /// @param proofid The ID of the proof
     /// @param stakevalue The value being staked
-    /// @param stakecontruct The stake construct value
+    /// @param stakeconstruct The stake construct value
     event e_stake(
         uint256 stakeid,
         address marketcontract,
         uint256 proofid,
         uint256 stakevalue,
-        uint256 stakecontruct
+        uint256 stakeconstruct
     );
 
     /// @notice Emitted when unstaking occurs
-    /// @param recipent The address receiving the unstaked tokens
+    /// @param recipient The address receiving the unstaked tokens
     /// @param proofvalue The proof value
     /// @param unstakestate The state after unstaking
     /// @param stakestate The state of the stake
     event e_unstake(
-        address recipent,
+        address recipient,
         uint128 proofvalue,
         T_BalanceUINT256 unstakestate,
         T_BalanceUINT256 stakestate
@@ -110,21 +110,21 @@ interface I_TTS {
     /// @notice Get the referral address for a customer
     /// @param _customer The address of the customer
     /// @return The address of the referrer
-    function getreferal(address _customer) external view returns (address);
+    function getreferral(address _customer) external view returns (address);
 
     /// @notice Add a referral relationship
     /// @param user The address of the user being referred
-    /// @param referal The address of the referrer
-    function addreferal(address user, address referal) external;
+    /// @param referral The address of the referrer
+    function addreferral(address user, address referral) external;
 
     /// @notice Stake tokens
     /// @param staker The address of the staker
     /// @param proofvalue The proof value for the stake
-    /// @return contruct The construct value after staking
+    /// @return construct The construct value after staking
     function stake(
         address staker,
         uint128 proofvalue
-    ) external returns (uint128 contruct);
+    ) external returns (uint128 construct);
 
     /// @notice Unstake tokens
     /// @param staker The address of the staker
@@ -132,15 +132,15 @@ interface I_TTS {
     function unstake(address staker, uint128 proofvalue) external;
 
     /// @notice Check if an address is authorized
-    /// @param recipent The address to check
+    /// @param recipient The address to check
     /// @return The authorization level (0 if not authorized)
-    function isauths(address recipent) external view returns (uint256);
+    function isauths(address recipient) external view returns (uint256);
 
     /// @notice Get the DAO admin and referral for a customer
     /// @param _customer The address of the customer
     /// @return dba_admin The address of the DAO admin
-    /// @return referal The address of the referrer
-    function getreferalanddaoamdin(
+    /// @return referral The address of the referrer
+    function getreferralanddaoadmin(
         address _customer
-    ) external view returns (address dba_admin, address referal);
+    ) external view returns (address dba_admin, address referral);
 }

@@ -147,14 +147,14 @@ contract disinvestERC20OwnNormalGood is BaseSetup {
             "before disinvest erc20 good:normalgoodbtc investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             10000,
-            "before disinvest erc20 good:normalgoodbtc feeQunitityState amount0 error"
+            "before disinvest erc20 good:normalgoodbtc feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "before disinvest erc20 good:normalgoodbtc feeQunitityState amount1 error"
+            "before disinvest erc20 good:normalgoodbtc feeQuantityState amount1 error"
         );
         normalproof = market.proofmapping(
             S_ProofKey(users[1], normalgoodbtc, metagood).toId()
@@ -184,14 +184,14 @@ contract disinvestERC20OwnNormalGood is BaseSetup {
             "after disinvest erc20 good:normalgoodbtc investState amount1 error"
         );
         assertEq(
-            good_.feeQunitityState.amount0(),
+            good_.feeQuantityState.amount0(),
             35000,
-            "after disinvest erc20 good:normalgoodbtc feeQunitityState amount0 error"
+            "after disinvest erc20 good:normalgoodbtc feeQuantityState amount0 error"
         );
         assertEq(
-            good_.feeQunitityState.amount1(),
+            good_.feeQuantityState.amount1(),
             0,
-            "after disinvest erc20 good:normalgoodbtc feeQunitityState amount1 error"
+            "after disinvest erc20 good:normalgoodbtc feeQuantityState amount1 error"
         );
 
         _proof = market.getProofState(normalproof);

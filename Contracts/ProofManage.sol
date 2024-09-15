@@ -22,21 +22,21 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
     mapping(uint256 => L_Proof.S_ProofState) internal proofs;
     mapping(uint256 => uint256) public proofmapping;
 
-    address internal immutable officicalContract;
+    address internal immutable officialContract;
 
     /**
      * @dev Constructor to initialize the ProofManage contract.
      * @param _officialcontract Address of the official contract.
      */
     constructor(address _officialcontract) ERC721Permit("TTS NFT", "TTS") {
-        officicalContract = _officialcontract;
+        officialContract = _officialcontract;
     }
 
     /**
      * @dev Modifier to restrict access to only marketors.
      */
     modifier onlyMarketor() {
-        require(I_TTS(officicalContract).isauths(msg.sender) == 2);
+        require(I_TTS(officialContract).isauths(msg.sender) == 2);
         _;
     }
 
@@ -76,7 +76,7 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
         );
 
         L_Proof.unstake(
-            officicalContract,
+            officialContract,
             from,
             proofs[tokenId].state.amount0()
         );
@@ -102,7 +102,7 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
             "ERC721: caller is not token owner or approved"
         );
         L_Proof.unstake(
-            officicalContract,
+            officialContract,
             from,
             proofs[tokenId].state.amount0()
         );
@@ -128,7 +128,7 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
             proofState.currentgood,
             proofState.valuegood
         ).toId();
-        L_Proof.stake(officicalContract, to, proofState.state.amount0());
+        L_Proof.stake(officialContract, to, proofState.state.amount0());
         uint256 existingProofId = proofmapping[proofKey2];
         if (existingProofId == 0) {
             proofmapping[proofKey2] = proofmapping[proofKey1];

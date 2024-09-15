@@ -12,6 +12,12 @@ import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {I_TTS} from "./interfaces/I_TTS.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice, toInt128} from "./libraries/L_BalanceUINT256.sol";
+
+/**
+ * @title MarketManager
+ * @dev Manages the market operations for goods and proofs.
+ * @notice This contract handles initialization, buying, selling, investing, and disinvesting of goods and proofs.
+ */
 contract MarketManager is I_MarketManage, GoodManage {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
@@ -20,11 +26,24 @@ contract MarketManager is I_MarketManage, GoodManage {
     using L_Proof for L_Proof.S_ProofState;
     using L_CurrencyLibrary for address;
     using L_MarketConfigLibrary for uint256;
+
+    /**
+     * @dev Constructor for MarketManager
+     * @param _marketconfig The market configuration
+     * @param _officialcontract The address of the official contract
+     */
     constructor(
         uint256 _marketconfig,
         address _officialcontract
     ) GoodManage(_marketconfig, _officialcontract) {}
 
+    /**
+     * @dev Initializes a meta good
+     * @param _erc20address The address of the ERC20 token
+     * @param _initial The initial balance
+     * @param _goodConfig The good configuration
+     * @return bool Returns true if successful
+     */
     /// @inheritdoc I_MarketManage
     function initMetaGood(
         address _erc20address,
@@ -63,6 +82,14 @@ contract MarketManager is I_MarketManage, GoodManage {
         return true;
     }
 
+    /**
+     * @dev Initializes a good
+     * @param _valuegood The value good ID
+     * @param _initial The initial balance
+     * @param _erc20address The address of the ERC20 token
+     * @param _goodConfig The good configuration
+     * @return bool Returns true if successful
+     */
     /// @inheritdoc I_MarketManage
     function initGood(
         uint256 _valuegood,
@@ -129,6 +156,18 @@ contract MarketManager is I_MarketManage, GoodManage {
         );
         return true;
     }
+
+    /**
+     * @dev Buys a good
+     * @param _goodid1 The ID of the first good
+     * @param _goodid2 The ID of the second good
+     * @param _swapQuantity The quantity to swap
+     * @param _limitPrice The limit price
+     * @param _istotal Whether it's a total swap
+     * @param _referal The referral address
+     * @return goodid2Quantity_ The quantity of the second good received
+     * @return goodid2FeeQuantity_ The fee quantity for the second good
+     */
     /// @inheritdoc I_MarketManage
     function buyGood(
         uint256 _goodid1,
@@ -195,6 +234,16 @@ contract MarketManager is I_MarketManage, GoodManage {
         );
     }
 
+    /**
+     * @dev Buys a good for pay
+     * @param _goodid1 The ID of the first good
+     * @param _goodid2 The ID of the second good
+     * @param _swapQuantity The quantity to swap
+     * @param _limitPrice The limit price
+     * @param _recipent The recipient address
+     * @return goodid1Quantity_ The quantity of the first good received
+     * @return goodid1FeeQuantity_ The fee quantity for the first good
+     */
     /// @inheritdoc I_MarketManage
     function buyGoodForPay(
         uint256 _goodid1,
@@ -257,6 +306,13 @@ contract MarketManager is I_MarketManage, GoodManage {
         );
     }
 
+    /**
+     * @dev Invests in a good
+     * @param _togood The ID of the good to invest in
+     * @param _valuegood The ID of the value good
+     * @param _quantity The quantity to invest
+     * @return bool Returns true if successful
+     */
     /// @inheritdoc I_MarketManage
     function investGood(
         uint256 _togood,
@@ -337,6 +393,13 @@ contract MarketManager is I_MarketManage, GoodManage {
         return true;
     }
 
+    /**
+     * @dev Disinvests a proof
+     * @param _proofid The ID of the proof
+     * @param _goodQuantity The quantity of the good to disinvest
+     * @param _gater The gater address
+     * @return bool Returns true if successful
+     */
     /// @inheritdoc I_MarketManage
     function disinvestProof(
         uint256 _proofid,
@@ -390,6 +453,13 @@ contract MarketManager is I_MarketManage, GoodManage {
         );
         return true;
     }
+
+    /**
+     * @dev Collects the fee of a proof
+     * @param _proofid The ID of the proof
+     * @param _gater The gater address
+     * @return profit_ The collected profit
+     */
     /// @inheritdoc I_MarketManage
     function collectProof(
         uint256 _proofid,
@@ -414,6 +484,14 @@ contract MarketManager is I_MarketManage, GoodManage {
         emit e_collectProof(_proofid, currentgood, valuegood, profit_);
     }
 
+    /**
+     * @dev Checks if the price of a good is higher than a comparison price
+     * @param goodid The ID of the good to check
+     * @param valuegood The ID of the value good
+     * @param compareprice The price to compare against
+     * @return bool Returns true if the good's price is higher
+     */
+    /// @inheritdoc I_MarketManage
     function ishigher(
         uint256 goodid,
         uint256 valuegood,

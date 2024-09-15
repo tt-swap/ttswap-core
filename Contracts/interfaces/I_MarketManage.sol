@@ -9,16 +9,16 @@ import {L_Good} from "../libraries/L_Good.sol";
 
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "../libraries/L_BalanceUINT256.sol";
 
-/// @title 市场管理接口 market manage interface
-/// @notice 市场管理接口 market manage interface
+/// @title Market Management Interface
+/// @notice Defines the interface for managing market operations
 interface I_MarketManage is I_Good, I_Proof {
-    /// @notice emit when metaGood create :当用户创建初始化商品时
-    /// @dev _initial.amount0()'s decimal default 6 ~默认价值的精度为6
-    /// @param _proofNo   value invest proof No~投资证明的编号
-    /// @param _extendinfo  128 good's id,128 stake contruct  前128位商品的商品编号,后128位构建手续费
-    /// @param _erc20address   metagood contract address 元商品的合约地址
-    /// @param _goodConfig   metagood's config refer white paper~元商品的配置,具体参见白皮书
-    /// @param _initial   market intial para: amount0 value  amount1:quantity~市场初始化参数:amount0为价值,amount1为数量.
+    /// @notice Emitted when a meta good is created and initialized
+    /// @dev The decimal precision of _initial.amount0() defaults to 6
+    /// @param _proofNo The ID of the investment proof
+    /// @param _extendinfo A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
+    /// @param _erc20address The contract address of the meta good
+    /// @param _goodConfig The configuration of the meta good (refer to the whitepaper for details)
+    /// @param _initial Market initialization parameters: amount0 is the value, amount1 is the quantity
     event e_initMetaGood(
         uint256 _proofNo,
         T_BalanceUINT256 _extendinfo,
@@ -27,14 +27,14 @@ interface I_MarketManage is I_Good, I_Proof {
         T_BalanceUINT256 _initial
     );
 
-    /// @notice emit when  good create :当用户创建初始化商品时
-    /// @param _proofNo   value invest proof No~投资证明的编号
-    /// @param _extendinfo  128 good's id,128 stake contruct  前128位商品的商品编号,后128位构建手续费
-    /// @param _valuegoodNo good's id  商品的商品编号
-    /// @param _erc20address   metagood contract address 元商品的合约地址
-    /// @param _goodConfig   metagood's config refer white paper~元商品的配置,具体参见白皮书
-    /// @param _normalinitial   amount0 quantity  amount1:value~普通商品:amount0为数量,amount1为价值.
-    /// @param _value   amount0():valuegoodfee, amount1 valuegoodquantity~amount0为价值商品投资费用,amount1为价值商品投资数量.
+    /// @notice Emitted when a good is created and initialized
+    /// @param _proofNo The ID of the investment proof
+    /// @param _extendinfo A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
+    /// @param _valuegoodNo The ID of the good
+    /// @param _erc20address The contract address of the meta good
+    /// @param _goodConfig The configuration of the meta good (refer to the whitepaper for details)
+    /// @param _normalinitial Normal good initialization parameters: amount0 is the quantity, amount1 is the value
+    /// @param _value Value good initialization parameters: amount0 is the investment fee, amount1 is the investment quantity
     event e_initGood(
         uint256 _proofNo,
         T_BalanceUINT256 _extendinfo,
@@ -45,13 +45,13 @@ interface I_MarketManage is I_Good, I_Proof {
         T_BalanceUINT256 _value
     );
 
-    /// @notice emit when customer buy good :当用户购买商品时触发
-    /// @param sellgood good's id  商品的商品ID
-    /// @param forgood   initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.
-    /// @param fromer   seller or buyer address 卖家或买家地址
-    /// @param swapvalue   trade value  交易价值
-    /// @param sellgoodstate   the sellgood status amount0:fee,amount1:quantity 使用商品的交易结果 amount0:手续费,amount1:数量
-    /// @param forgoodstate   the forgood status amount0:fee,amount1:quantity 获得商品的交易结果amount0:手续费,amount1:数量
+    /// @notice Emitted when a user buys a good
+    /// @param sellgood The ID of the good being sold
+    /// @param forgood The ID of the good being bought
+    /// @param fromer The address of the buyer
+    /// @param swapvalue The trade value
+    /// @param sellgoodstate The status of the sold good (amount0: fee, amount1: quantity)
+    /// @param forgoodstate The status of the bought good (amount0: fee, amount1: quantity)
     event e_buyGood(
         uint256 indexed sellgood,
         uint256 indexed forgood,
@@ -60,14 +60,15 @@ interface I_MarketManage is I_Good, I_Proof {
         T_BalanceUINT256 sellgoodstate,
         T_BalanceUINT256 forgoodstate
     );
-    /// @notice emit when customer buy good pay to the seller :当用户购买商品支付给卖家时触发
-    /// @param buygood good's id  商品的商品ID
-    /// @param usegood   initial good,amount0:value,amount1:quantity 初始化的商品的参数,前128位为价值,后128位为数量.
-    /// @param fromer   seller or buyer address 卖家或买家地址
-    /// @param receipt   receipt  收款方
-    /// @param swapvalue   trade value  交易价值
-    /// @param buygoodstate   the buygood status amount0:fee,amount1:quantity 使用商品的交易结果 amount0:手续费,amount1:数量
-    /// @param usegoodstate   the usegood status amount0:fee,amount1:quantity 获得商品的交易结果amount0:手续费,amount1:数量
+
+    /// @notice Emitted when a user buys a good and pays the seller
+    /// @param buygood The ID of the good being bought
+    /// @param usegood The ID of the good being used for payment
+    /// @param fromer The address of the buyer
+    /// @param receipt The address of the recipient (seller)
+    /// @param swapvalue The trade value
+    /// @param buygoodstate The status of the bought good (amount0: fee, amount1: quantity)
+    /// @param usegoodstate The status of the used good (amount0: fee, amount1: quantity)
     event e_buyGoodForPay(
         uint256 indexed buygood,
         uint256 indexed usegood,
@@ -78,13 +79,13 @@ interface I_MarketManage is I_Good, I_Proof {
         T_BalanceUINT256 usegoodstate
     );
 
-    /// @notice emit when customer invest normal good :当用户投资普通商品
-    /// @param _proofNo   proof No~投资证明编号
-    /// @param _extendinfo  128 good's id,128 stake contruct  前128位商品的商品编号,后128位构建手续费
-    /// @param _valueGoodNo  value good no~价值商品编号
-    /// @param _value     amount0 investvalue,amount1 0~amount0 投次价值
-    /// @param _invest     amount0 normal good actual fee ,amount1 normal good actual invest quantity~amount0为投资手续费,amount1为投资数量
-    /// @param _valueinvest   amount0 value good actual fee ,amount1 value good actual invest quantity~amount0为投资手续费,amount1为投资数量
+    /// @notice Emitted when a user invests in a normal good
+    /// @param _proofNo The ID of the investment proof
+    /// @param _extendinfo Packed data: first 128 bits for good's ID, last 128 bits for stake construct
+    /// @param _valueGoodNo The ID of the value good
+    /// @param _value Investment value (amount0: invest value, amount1: 0)
+    /// @param _invest Normal good investment details (amount0: actual fee, amount1: actual invest quantity)
+    /// @param _valueinvest Value good investment details (amount0: actual fee, amount1: actual invest quantity)
     event e_investGood(
         uint256 indexed _proofNo,
         T_BalanceUINT256 _extendinfo,
@@ -94,13 +95,13 @@ interface I_MarketManage is I_Good, I_Proof {
         T_BalanceUINT256 _valueinvest
     );
 
-    /// @notice emit when customer disinvest normal good :当用户撤资普通商品
-    /// @param _proofNo   proof No~投资证明编号
-    /// @param _normalGoodNo  value good no~价值商品编号
-    /// @param _valueGoodNo  value good no~价值商品编号
-    /// @param _normalgood   amount0 actual fee ,amount1 actual invest quantity~amount0为撤资手续费,amount1为撤资数量
-    /// @param _valuegood   amount0 actual fee ,amount1 actual invest quantity~amount0为撤资手续费,amount1为撤资数量
-    /// @param _profit   profit~收益
+    /// @notice Emitted when a user disinvests from a normal good
+    /// @param _proofNo The ID of the investment proof
+    /// @param _normalGoodNo The ID of the normal good
+    /// @param _valueGoodNo The ID of the value good
+    /// @param _normalgood The disinvestment details of the normal good (amount0: actual fee, amount1: actual disinvest quantity)
+    /// @param _valuegood The disinvestment details of the value good (amount0: actual fee, amount1: actual disinvest quantity)
+    /// @param _profit The profit (amount0: normal good profit, amount1: value good profit)
     event e_disinvestProof(
         uint256 indexed _proofNo,
         uint256 _normalGoodNo,
@@ -111,11 +112,11 @@ interface I_MarketManage is I_Good, I_Proof {
         T_BalanceUINT256 _profit
     );
 
-    /// @notice emit when customer disinvest normal good :当用户撤资普通商品
-    /// @param _proofNo   proof No~投资证明编号
-    /// @param _normalGoodNo  value good no~价值商品编号
-    /// @param _valueGoodNo  value good no~价值商品编号
-    /// @param _profit   profit  amount0:normalprofit  amount1:valueprofit
+    /// @notice Emitted when a user collects profit from an investment proof
+    /// @param _proofNo The ID of the investment proof
+    /// @param _normalGoodNo The ID of the normal good
+    /// @param _valueGoodNo The ID of the value good
+    /// @param _profit The collected profit (amount0: normal good profit, amount1: value good profit)
     event e_collectProof(
         uint256 indexed _proofNo,
         uint256 _normalGoodNo,
@@ -123,29 +124,31 @@ interface I_MarketManage is I_Good, I_Proof {
         T_BalanceUINT256 _profit
     );
 
-    /// @notice emit enpower:赋能
-    /// @param _goodid   proof No~投资证明编号
-    /// @param _valuegood  value good no~价值商品编号
-    /// @param _quantity  enpower value quantity~赋能价值商品数量
+    /// @notice Emitted when a good is empowered
+    /// @param _goodid The ID of the good
+    /// @param _valuegood The ID of the value good
+    /// @param _quantity The quantity of the value good to empower
     event e_enpower(uint256 _goodid, uint256 _valuegood, uint256 _quantity);
 
-    //  error err_buy();
+    // Function declarations
 
-    /// @notice initial market's first good~初始化市场中第一个商品
-    /// @param _erc20address good's contract address~商品合约地址
-    /// @param _initial   initial good.amount0:value,amount1:quantity~初始化的商品的参数,前128位为价值,后128位为数量.
-    /// @param _goodconfig   good config (detail config according to the whitepaper)~商品配置(详细配置参见技术白皮书)
+    /// @notice Initialize the first good in the market
+    /// @param _erc20address The contract address of the good
+    /// @param _initial Initial parameters for the good (amount0: value, amount1: quantity)
+    /// @param _goodconfig Configuration of the good
+    /// @return Success status
     function initMetaGood(
         address _erc20address,
         T_BalanceUINT256 _initial,
         uint256 _goodconfig
     ) external payable returns (bool);
 
-    /// @notice initial the normal good~初始化市场中的普通商品
-    /// @param _valuegood   valuegood_no:measure the normal good value~价值商品编号:衡量普通商品价值
-    /// @param _initial     initial good.amount0:normalgood quantity,amount1:valuegoodquantity~初始化的商品的参数,前128位为普通商品数量,后128位为价值商品数量.
-    /// @param _erc20address  good's contract address~商品合约地址
-    /// @param _goodConfig   good config (detail config according to the whitepaper)~商品配置(详细配置参见技术白皮书)
+    /// @notice Initialize a normal good in the market
+    /// @param _valuegood The ID of the value good used to measure the normal good's value
+    /// @param _initial Initial parameters (amount0: normal good quantity, amount1: value good quantity)
+    /// @param _erc20address The contract address of the good
+    /// @param _goodConfig Configuration of the good
+    /// @return Success status
     function initGood(
         uint256 _valuegood,
         T_BalanceUINT256 _initial,
@@ -153,16 +156,15 @@ interface I_MarketManage is I_Good, I_Proof {
         uint256 _goodConfig
     ) external payable returns (bool);
 
-    /// @notice sell _swapQuantity units of good1 to buy good2~用户出售_swapQuantity个_goodid1去购买 _goodid2
-    /// @dev 如果购买商品1而出售商品2,开发者需求折算成使用商品2购买商品1
-    /// @param _goodid1 good1's No~商品1的编号
-    /// @param _goodid2 good2's No~商品2的编号
-    /// @param _swapQuantity good1's quantity~商品1的数量
-    /// @param _limitprice trade price's limit~交易价格限制
-    /// @param _istotal is need trade all~是否允许全部成交
-    /// @param _referal is need trade all~是否允许全部成交
-    /// @return goodid2Quantity_  实际情况
-    /// @return goodid2FeeQuantity_ 实际情况
+    /// @notice Sell one good to buy another
+    /// @param _goodid1 ID of the good to sell
+    /// @param _goodid2 ID of the good to buy
+    /// @param _swapQuantity Quantity of _goodid1 to sell
+    /// @param _limitprice Price limit for the trade
+    /// @param _istotal Whether to trade all or partial amount
+    /// @param _referal Referral address
+    /// @return goodid2Quantity_ Actual quantity of good2 received
+    /// @return goodid2FeeQuantity_ Fee quantity for good2
     function buyGood(
         uint256 _goodid1,
         uint256 _goodid2,
@@ -175,14 +177,14 @@ interface I_MarketManage is I_Good, I_Proof {
         payable
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
 
-    /// @notice buy _swapQuantity units of good to sell good2 and send good1 to recipent~用户购买_swapQuantity个_goodid1去出售 _goodid2并且把商品转给RECIPENT
-    /// @param _goodid1 good1's No~商品1的编号
-    /// @param _goodid2 good2's No~商品2的编号
-    /// @param _swapQuantity buy good2's quantity~购买商品2的数量
-    /// @param _limitprice trade price's limit~交易价格限制
-    /// @param _recipent recipent~收款人
-    /// @return goodid1Quantity_  good1 actual quantity~商品1实际数量
-    /// @return goodid1FeeQuantity_ good1 actual fee~商品1实际手续费
+    /// @notice Buy a good, sell another, and send to a recipient
+    /// @param _goodid1 ID of the good to buy
+    /// @param _goodid2 ID of the good to sell
+    /// @param _swapQuantity Quantity of _goodid2 to buy
+    /// @param _limitprice Price limit for the trade
+    /// @param _recipent Address of the recipient
+    /// @return goodid1Quantity_ Actual quantity of good1 received
+    /// @return goodid1FeeQuantity_ Fee quantity for good1
     function buyGoodForPay(
         uint256 _goodid1,
         uint256 _goodid2,
@@ -194,35 +196,42 @@ interface I_MarketManage is I_Good, I_Proof {
         payable
         returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_);
 
-    /// @notice invest normal good~投资普通商品
-    /// @param _togood  normal good No~普通商品的编号
-    /// @param _valuegood value good No~价值商品的编号
-    /// @param _quantity   invest normal good quantity~投资普通商品的数量
+    /// @notice Invest in a normal good
+    /// @param _togood ID of the normal good to invest in
+    /// @param _valuegood ID of the value good
+    /// @param _quantity Quantity of normal good to invest
+    /// @return Success status
     function investGood(
         uint256 _togood,
         uint256 _valuegood,
         uint128 _quantity
     ) external payable returns (bool);
 
-    /// @notice disinvest normal good~撤资商品
-    /// @param _proofid   the invest proof No of normal good ~普通投资证明的编号编号
-    /// @param _goodQuantity  disinvest quantity~取消普通商品投资数量
-    /// @param _gater   gater address~门户
+    /// @notice Disinvest from a normal good
+    /// @param _proofid ID of the investment proof
+    /// @param _goodQuantity Quantity to disinvest
+    /// @param _gater Address of the gater
+    /// @return Success status
     function disinvestProof(
         uint256 _proofid,
         uint128 _goodQuantity,
         address _gater
     ) external returns (bool);
 
-    /// @notice collect the profit of normal proof~提取普通投资证明的收益
-    /// @param _proofid   the proof No of invest normal good~普通投资证明编号
-    /// @return profit_   amount0 普通商品的投资收益 amount1价值商品的投资收益
-    /// @param _gater   gater address~门户
+    /// @notice Collect profit from an investment proof
+    /// @param _proofid ID of the investment proof
+    /// @param _gater Address of the gater
+    /// @return profit_ Collected profit (amount0: normal good profit, amount1: value good profit)
     function collectProof(
         uint256 _proofid,
         address _gater
     ) external returns (T_BalanceUINT256 profit_);
 
+    /// @notice Check if the price of a good is higher than a comparison price
+    /// @param goodid ID of the good to check
+    /// @param valuegood ID of the value good
+    /// @param compareprice Price to compare against
+    /// @return Whether the good's price is higher
     function ishigher(
         uint256 goodid,
         uint256 valuegood,

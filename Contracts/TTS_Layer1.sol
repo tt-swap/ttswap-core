@@ -19,25 +19,26 @@ contract TTS is ERC20Permit, I_TTS {
     using L_BalanceUINT256Library for T_BalanceUINT256;
     using L_TTSTokenConfigLibrary for uint256;
     uint256 public ttstokenconfig;
-    struct s_share {
-        address recipient;
-        uint256 leftamount;
-        uint8 metric;
-        uint8 chips;
-    }
-    mapping(uint8 => s_share) shares;
 
-    T_BalanceUINT256 stakestate; // 128 lasttime 128 poolvalue
-    T_BalanceUINT256 poolstate; //128 actual asset 128 construct  fee
+    struct s_share {
+        address recipient; //owner
+        uint256 leftamount; // unlock amount
+        uint8 metric; //last unlock's metric
+        uint8 chips; // define the share's chips, and every time unlock one chips
+    }
+    mapping(uint8 => s_share) shares; // all share's mapping
+
+    T_BalanceUINT256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
+    T_BalanceUINT256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
 
     struct s_proof {
-        address fromcontract;
-        T_BalanceUINT256 proofstate;
+        address fromcontract; // from which contract
+        T_BalanceUINT256 proofstate; // stake's state
     }
     mapping(uint256 => s_proof) stakeproof;
 
     struct s_chain {
-        T_BalanceUINT256 asset; //128 allasset 128 poolasset
+        T_BalanceUINT256 asset; //128 shareasset&poolasset 128 poolasset
         T_BalanceUINT256 proofstate; //128 value 128 constructasset
         address recipient;
     }
@@ -159,16 +160,16 @@ contract TTS is ERC20Permit, I_TTS {
      * @notice Only callable on the main chain by the DAO admin
      * @notice Reduces the left_share by the amount in _share
      * @notice Increments the shares_index and adds the new share to the shares mapping
-     * @notice Emits an e_addmint event with the share details
+     * @notice Emits an e_addShare event with the share details
      */
-    function addMint(s_share calldata _share) public onlymain {
+    function addShare(s_share calldata _share) public onlymain {
         require(
             left_share - _share.leftamount >= 0 && _msgSender() == dao_admin
         );
         left_share -= _share.leftamount;
         shares_index += 1;
         shares[shares_index] = _share;
-        emit e_addmint(
+        emit e_addShare(
             _share.recipient,
             _share.leftamount,
             _share.metric,
@@ -182,12 +183,12 @@ contract TTS is ERC20Permit, I_TTS {
      * @param index The index of the share to burn
      * @notice Only callable on the main chain by the DAO admin
      * @notice Adds the leftamount of the burned share back to left_share
-     * @notice Emits an e_burnmint event and deletes the share from the shares mapping
+     * @notice Emits an e_burnShare event and deletes the share from the shares mapping
      */
-    function burnMint(uint8 index) public onlymain {
+    function burnShare(uint8 index) public onlymain {
         require(_msgSender() == dao_admin);
         left_share += shares[index].leftamount;
-        emit e_burnmint(index);
+        emit e_burnShare(index);
         delete shares[index];
     }
 
@@ -199,7 +200,7 @@ contract TTS is ERC20Permit, I_TTS {
      * @notice Mints tokens to the share recipient, reduces leftamount, and increments metric
      * @notice Emits an e_daomint event with the minted amount and index
      */
-    function daoMint(uint8 index) public onlymain {
+    function shareMint(uint8 index) public onlymain {
         require(
             I_MarketManage(marketcontract).ishigher(
                 normalgoodid,
@@ -213,7 +214,7 @@ contract TTS is ERC20Permit, I_TTS {
         shares[index].leftamount -= mintamount;
         shares[index].metric += 1;
         _mint(_msgSender(), mintamount);
-        emit e_daomint(mintamount, index);
+        emit e_shareMint(mintamount, index);
     }
 
     /**
@@ -313,22 +314,22 @@ contract TTS is ERC20Permit, I_TTS {
                 (chains[chainid].recipient == msg.sender ||
                     chains[chainid].recipient == address(0))
         );
-        uint128 chaincontruct;
+        uint128 chainconstruct;
         if (chainid == 0) {
             chainindex += 1;
             chainid = chainindex;
-            chaincontruct = mulDiv(
-                poolstate.amount1(),
+            chainconstruct = mulDiv(
+                poolstate.amount0(),
                 chainvalue,
-                poolstate.amount1()
+                stakestate.amount1()
             );
             poolstate =
                 poolstate +
-                toBalanceUINT256(chaincontruct, chaincontruct);
-            //
+                toBalanceUINT256(chainconstruct, chainconstruct);
+            stakestate = stakestate + toBalanceUINT256(0, chainvalue);
             chains[chainid].proofstate = toBalanceUINT256(
                 chainvalue,
-                chaincontruct
+                chainconstruct
             );
             chains[chainid].recipient = msg.sender;
         } else {
@@ -347,25 +348,27 @@ contract TTS is ERC20Permit, I_TTS {
             stakestate =
                 stakestate -
                 toBalanceUINT256(0, chains[chainid].proofstate.amount0());
-
-            chaincontruct = mulDiv(
-                poolstate.amount1(),
+            poolasset = poolasset - chains[chainid].proofstate.amount0();
+            chainconstruct = mulDiv(
+                poolstate.amount0(),
                 chainvalue,
                 stakestate.amount1()
             );
             poolstate =
                 poolstate +
-                toBalanceUINT256(chaincontruct, chaincontruct);
+                toBalanceUINT256(chainconstruct, chainconstruct);
             stakestate = stakestate + toBalanceUINT256(0, chainvalue);
 
             chains[chainid].proofstate = toBalanceUINT256(
                 chainvalue,
-                chaincontruct
+                chainconstruct
             );
-            chains[chainid].asset = toBalanceUINT256(poolasset, poolasset);
+            chains[chainid].asset =
+                chains[chainid].asset +
+                toBalanceUINT256(poolasset, poolasset);
             _mint(chains[chainid].recipient, poolasset);
         }
-        emit e_syncChainStake(chainid, chainvalue, chaincontruct, poolasset);
+        emit e_syncChainStake(chainid, chainvalue, chainconstruct, poolasset);
     }
 
     /**
@@ -375,7 +378,7 @@ contract TTS is ERC20Permit, I_TTS {
      */
     function syncPoolAsset(uint128 amount) external onlysub {
         require(auths[msg.sender] == 5);
-        poolstate = poolstate + toBalanceUINT256(amount, amount);
+        poolstate = poolstate + toBalanceUINT256(amount, 0);
     }
 
     /**
@@ -419,7 +422,6 @@ contract TTS is ERC20Permit, I_TTS {
 
     /**
      * @dev Withdraws assets on a sub-chain
-     * @param chainid The ID of the chain to withdraw from
      * @param asset The amount of assets to withdraw
      * @param recipient The address to receive the withdrawn assets
      * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 100005)
@@ -427,24 +429,15 @@ contract TTS is ERC20Permit, I_TTS {
      * @notice Updates the chain's asset balance and burns the withdrawn amount from the recipient
      */
     function subchainWithdraw(
-        uint256 chainid,
         uint128 asset,
         address recipient
     ) external onlysub {
-        require(
-            auths[msg.sender] == 100005 &&
-                (chains[chainid].recipient == msg.sender ||
-                    chains[chainid].recipient == address(0))
-        );
-        chains[chainid].asset =
-            chains[chainid].asset -
-            toBalanceUINT256(asset, 0);
+        require(auths[msg.sender] == 100005);
         _burn(recipient, asset);
     }
 
     /**
      * @dev Deposits assets on a sub-chain
-     * @param chainid The ID of the chain to deposit to
      * @param asset The amount of assets to deposit
      * @param recipient The address to receive the deposited assets
      * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 100005)
@@ -452,18 +445,10 @@ contract TTS is ERC20Permit, I_TTS {
      * @notice Updates the chain's asset balance and mints the deposited amount to the recipient
      */
     function subchainDeposit(
-        uint256 chainid,
         uint128 asset,
         address recipient
     ) external onlysub {
-        require(
-            auths[msg.sender] == 100005 &&
-                (chains[chainid].recipient == msg.sender ||
-                    chains[chainid].recipient == address(0))
-        );
-        chains[chainid].asset =
-            chains[chainid].asset +
-            toBalanceUINT256(asset, 0);
+        require(auths[msg.sender] == 100005);
         _mint(recipient, asset);
     }
 
@@ -471,24 +456,24 @@ contract TTS is ERC20Permit, I_TTS {
      * @dev Stake tokens
      * @param _staker Address of the staker
      * @param proofvalue Amount to stake
-     * @return netcontruct Net construct value
+     * @return netconstruct Net construct value
      */
     function stake(
         address _staker,
         uint128 proofvalue
-    ) external returns (uint128 netcontruct) {
+    ) external returns (uint128 netconstruct) {
         require(auths[msg.sender] == 1);
         _stakeFee();
         uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
-        netcontruct = poolstate.amount1() == 0
+        netconstruct = poolstate.amount1() == 0
             ? 0
             : mulDiv(poolstate.amount1(), proofvalue, stakestate.amount1());
-        poolstate = poolstate + toBalanceUINT256(netcontruct, netcontruct);
+        poolstate = poolstate + toBalanceUINT256(netconstruct, netconstruct);
         stakestate = stakestate + toBalanceUINT256(0, proofvalue);
         stakeproof[restakeid].fromcontract = msg.sender;
         stakeproof[restakeid].proofstate =
             stakeproof[restakeid].proofstate +
-            toBalanceUINT256(proofvalue, netcontruct);
+            toBalanceUINT256(proofvalue, netconstruct);
     }
 
     /**
@@ -500,30 +485,30 @@ contract TTS is ERC20Permit, I_TTS {
         require(auths[msg.sender] == 1);
         _stakeFee();
         uint128 profit;
-        uint128 contruct;
+        uint128 construct;
         uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
         if (proofvalue >= stakeproof[restakeid].proofstate.amount0()) {
             proofvalue = stakeproof[restakeid].proofstate.amount0();
-            contruct = stakeproof[restakeid].proofstate.amount1();
+            construct = stakeproof[restakeid].proofstate.amount1();
             delete stakeproof[restakeid];
         } else {
-            contruct = stakeproof[restakeid].proofstate.getamount1fromamount0(
+            construct = stakeproof[restakeid].proofstate.getamount1fromamount0(
                 proofvalue
             );
             stakeproof[restakeid].proofstate =
                 stakeproof[restakeid].proofstate -
-                toBalanceUINT256(proofvalue, contruct);
+                toBalanceUINT256(proofvalue, construct);
         }
         profit = toBalanceUINT256(poolstate.amount0(), stakestate.amount1())
             .getamount0fromamount1(proofvalue);
         stakestate = stakestate - toBalanceUINT256(0, proofvalue);
-        poolstate = poolstate - toBalanceUINT256(profit, contruct);
-        profit = profit - contruct;
+        poolstate = poolstate - toBalanceUINT256(profit, construct);
+        profit = profit - construct;
         if (profit > 0) _mint(_staker, profit);
         emit e_unstake(
             _staker,
             proofvalue,
-            toBalanceUINT256(contruct, profit),
+            toBalanceUINT256(construct, profit),
             stakeproof[restakeid].proofstate
         );
     }

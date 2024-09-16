@@ -43,7 +43,7 @@ interface I_TTS {
     /// @param metric The metric used for minting
     /// @param chips The number of chips
     /// @param index The index of the minting operation
-    event e_addmint(
+    event e_addShare(
         address recipient,
         uint256 leftamount,
         uint8 metric,
@@ -53,12 +53,12 @@ interface I_TTS {
 
     /// @notice Emitted when minting is burned
     /// @param index The index of the minting operation being burned
-    event e_burnmint(uint8 index);
+    event e_burnShare(uint8 index);
 
     /// @notice Emitted when DAO minting occurs
     /// @param mintamount The amount being minted
     /// @param index The index of the minting operation
-    event e_daomint(uint256 mintamount, uint8 index);
+    event e_shareMint(uint256 mintamount, uint8 index);
 
     /// @notice Emitted during a public sale
     /// @param usdtamount The amount of USDT involved

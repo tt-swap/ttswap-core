@@ -45,7 +45,7 @@ abstract contract ProofManage is I_Proof, ERC721Permit {
      * @return string The base URI string.
      */
     function _baseURI() internal pure override returns (string memory) {
-        return "http://www.tt-swap.com/nft?proofid=";
+        return "http://www.ttswap.io/nft?proofid=";
     }
 
     /**

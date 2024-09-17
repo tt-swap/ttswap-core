@@ -46,7 +46,7 @@ interface I_TTS {
     event e_addShare(
         address recipient,
         uint256 leftamount,
-        uint8 metric,
+        uint120 metric,
         uint8 chips,
         uint32 index
     );

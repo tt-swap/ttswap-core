@@ -23,7 +23,7 @@ contract TTS is ERC20Permit, I_TTS {
     struct s_share {
         address recipient; //owner
         uint128 leftamount; // unlock amount
-        uint8 metric; //last unlock's metric
+        uint120 metric; //last unlock's metric
         uint8 chips; // define the share's chips, and every time unlock one chips
     }
     mapping(uint32 => s_share) shares; // all share's mapping

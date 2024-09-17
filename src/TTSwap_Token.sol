@@ -22,11 +22,11 @@ contract TTS is ERC20Permit, I_TTS {
 
     struct s_share {
         address recipient; //owner
-        uint256 leftamount; // unlock amount
+        uint128 leftamount; // unlock amount
         uint8 metric; //last unlock's metric
         uint8 chips; // define the share's chips, and every time unlock one chips
     }
-    mapping(uint8 => s_share) shares; // all share's mapping
+    mapping(uint32 => s_share) shares; // all share's mapping
 
     T_BalanceUINT256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
     T_BalanceUINT256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
@@ -42,14 +42,16 @@ contract TTS is ERC20Permit, I_TTS {
         T_BalanceUINT256 proofstate; //128 value 128 constructasset
         address recipient;
     }
-    mapping(uint256 => s_chain) chains;
-    uint256 chainindex;
+    mapping(uint32 => s_chain) chains;
 
     uint256 internal normalgoodid;
     uint256 internal valuegoodid;
     address internal dao_admin;
     address internal marketcontract;
-    uint8 shares_index;
+    uint32 shares_index;
+    uint32 chainindex;
+    uint128 public left_share = 5 * 10 ** 8 * 10 ** 6;
+    uint128 public publicsell;
 
     mapping(address => address) referrals;
 
@@ -58,8 +60,6 @@ contract TTS is ERC20Permit, I_TTS {
 
     address public immutable usdt;
     // lasttime is for stake
-    uint256 public publicsell;
-    uint256 public left_share = 5 * 10 ** 8 * 10 ** 6;
 
     /**
      * @dev Constructor to initialize the TTS token
@@ -71,7 +71,7 @@ contract TTS is ERC20Permit, I_TTS {
         address _usdt,
         address _dao_admin,
         uint256 _ttsconfig
-    ) ERC20Permit("TTSawp Token") ERC20("TTSawp Token", "TTS") {
+    ) ERC20Permit("TTSwap Token") ERC20("TTSwap Token", "TTS") {
         usdt = _usdt;
         stakestate = toBalanceUINT256(uint128(block.timestamp), 0);
         dao_admin = _dao_admin;
@@ -166,7 +166,7 @@ contract TTS is ERC20Permit, I_TTS {
         require(
             left_share - _share.leftamount >= 0 && _msgSender() == dao_admin
         );
-        left_share -= _share.leftamount;
+        left_share -= uint64(_share.leftamount);
         shares_index += 1;
         shares[shares_index] = _share;
         emit e_addShare(
@@ -187,7 +187,7 @@ contract TTS is ERC20Permit, I_TTS {
      */
     function burnShare(uint8 index) public onlymain {
         require(_msgSender() == dao_admin);
-        left_share += shares[index].leftamount;
+        left_share += uint64(shares[index].leftamount);
         emit e_burnShare(index);
         delete shares[index];
     }
@@ -210,7 +210,7 @@ contract TTS is ERC20Permit, I_TTS {
                 false &&
                 _msgSender() == shares[index].recipient
         );
-        uint256 mintamount = shares[index].leftamount / shares[index].chips;
+        uint128 mintamount = shares[index].leftamount / shares[index].chips;
         shares[index].leftamount -= mintamount;
         shares[index].metric += 1;
         _mint(_msgSender(), mintamount);
@@ -266,7 +266,7 @@ contract TTS is ERC20Permit, I_TTS {
      * @param usdtamount Amount of USDT to spend on token purchase
      */
     function publicSell(uint256 usdtamount) external onlymain {
-        publicsell += usdtamount;
+        publicsell += uint128(usdtamount);
         require(publicsell <= 5000000 * decimals());
         if (IERC20(usdt).transferFrom(msg.sender, address(this), usdtamount)) {
             uint256 ttsamount;
@@ -306,7 +306,7 @@ contract TTS is ERC20Permit, I_TTS {
      * @return poolasset Amount of pool asset
      */
     function syncChainStake(
-        uint256 chainid,
+        uint32 chainid,
         uint128 chainvalue
     ) external onlymain returns (uint128 poolasset) {
         require(
@@ -389,7 +389,7 @@ contract TTS is ERC20Permit, I_TTS {
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance and checks if the caller has sufficient balance
      */
-    function chain_withdraw(uint256 chainid, uint128 asset) external onlymain {
+    function chain_withdraw(uint32 chainid, uint128 asset) external onlymain {
         require(
             auths[msg.sender] == 100005 &&
                 (chains[chainid].recipient == msg.sender ||
@@ -409,7 +409,7 @@ contract TTS is ERC20Permit, I_TTS {
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance
      */
-    function chain_deposit(uint256 chainid, uint128 asset) external onlymain {
+    function chain_deposit(uint32 chainid, uint128 asset) external onlymain {
         require(
             auths[msg.sender] == 100005 &&
                 (chains[chainid].recipient == msg.sender ||

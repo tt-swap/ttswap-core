@@ -2,9 +2,9 @@
 pragma solidity 0.8.26;
 
 import {console2} from "forge-std/Test.sol";
-import {L_Good} from "../../Contracts/libraries/L_Good.sol";
-import {L_CurrencyLibrary} from "../../Contracts/libraries/L_Currency.sol";
-import {L_GoodConfigLibrary} from "../../Contracts/libraries/L_GoodConfig.sol";
+import {L_Good} from "../../src/libraries/L_Good.sol";
+import {L_CurrencyLibrary} from "../../src/libraries/L_Currency.sol";
+import {L_GoodConfigLibrary} from "../../src/libraries/L_GoodConfig.sol";
 
 library GoodUtil {
     using L_GoodConfigLibrary for uint256;

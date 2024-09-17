@@ -3,16 +3,16 @@ pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
-import "../Contracts/MarketManager.sol";
-import {TTS} from "../Contracts/TTSwap_Token.sol";
+import "../src/MarketManager.sol";
+import {TTS} from "../src/TTSwap_Token.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_ProofKey} from "../Contracts/libraries/L_Struct.sol";
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256} from "../Contracts/libraries/L_BalanceUINT256.sol";
+import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
+import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
 
-import {L_ProofIdLibrary, L_Proof} from "../Contracts/libraries/L_Proof.sol";
-import {L_GoodIdLibrary, L_Good} from "../Contracts/libraries/L_Good.sol";
-import {L_CurrencyLibrary} from "../Contracts/libraries/L_Currency.sol";
-import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
+import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
+import {L_CurrencyLibrary} from "../src/libraries/L_Currency.sol";
+import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 import {ProofUtil} from "./util/ProofUtil.sol";
 import {GoodUtil} from "./util/GoodUtil.sol";
 

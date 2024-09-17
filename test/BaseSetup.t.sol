@@ -4,8 +4,8 @@ pragma solidity 0.8.26;
 import "forge-gas-snapshot/GasSnapshot.sol";
 import {Test} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
-import "../Contracts/MarketManager.sol";
-import {TTS} from "../Contracts/TTSwap_Token.sol";
+import "../src/MarketManager.sol";
+import {TTS} from "../src/TTSwap_Token.sol";
 
 contract BaseSetup is Test, GasSnapshot {
     address payable[8] internal users;

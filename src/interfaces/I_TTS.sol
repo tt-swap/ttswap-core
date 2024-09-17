@@ -48,7 +48,7 @@ interface I_TTS {
         uint256 leftamount,
         uint8 metric,
         uint8 chips,
-        uint8 index
+        uint32 index
     );
 
     /// @notice Emitted when minting is burned

@@ -2,7 +2,7 @@
 pragma solidity 0.8.26;
 
 import "forge-std/Test.sol";
-import {L_GoodConfigLibrary} from "../Contracts/libraries/L_GoodConfig.sol";
+import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 
 contract testGoodConfig is Test {
     using L_GoodConfigLibrary for uint256;

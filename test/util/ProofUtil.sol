@@ -2,7 +2,7 @@
 pragma solidity 0.8.26;
 
 import {console2} from "forge-std/Test.sol";
-import {L_Proof} from "../../Contracts/libraries/L_Proof.sol";
+import {L_Proof} from "../../src/libraries/L_Proof.sol";
 
 library ProofUtil {
     function showproof(L_Proof.S_ProofState memory p_) public pure {

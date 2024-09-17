@@ -3,7 +3,7 @@ pragma solidity 0.8.26;
 
 import "forge-gas-snapshot/GasSnapshot.sol";
 import "forge-std/Test.sol";
-import {L_MarketConfigLibrary} from "../Contracts/libraries/L_MarketConfig.sol";
+import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 
 contract testMarketConfig is Test, GasSnapshot {
     using L_MarketConfigLibrary for uint256;

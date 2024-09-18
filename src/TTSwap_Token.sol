@@ -368,7 +368,7 @@ contract TTS is ERC20Permit, I_TTS {
                 toBalanceUINT256(poolasset, poolasset);
             _mint(chains[chainid].recipient, poolasset);
         }
-        emit e_syncChainStake(chainid, chainvalue, chainconstruct, poolasset);
+        emit e_syncChainStake(chainid, poolasset, chains[chainid].proofstate);
     }
 
     /**

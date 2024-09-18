@@ -4,7 +4,7 @@ pragma solidity 0.8.26;
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../src/MarketManager.sol";
-import {TTS} from "../src/TTSwap_Token.sol";
+import {TTSwap_Token} from "../src/TTSwap_Token.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
@@ -37,14 +37,14 @@ contract testBuy1 is Test {
     MyToken eth;
     MyToken wbtc;
 
-    TTS tts_token;
+    TTSwap_Token tts_token;
     function setUp() public {
         marketcreator = address(1);
         vm.startPrank(marketcreator);
         usdt = new MyToken("USDT", "USDT", 6);
         wbtc = new MyToken("BTC", "BTC", 8);
         eth = new MyToken("ETH", "ETH", 18);
-        tts_token = new TTS(address(usdt), marketcreator, 2 ** 255);
+        tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
         market = new MarketManager(
             81562183917421901855786361352751156561780156203962646020495653018153967943680,
             address(tts_token)

@@ -32,6 +32,7 @@ library L_Good {
         T_BalanceUINT256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
         T_BalanceUINT256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
         mapping(address => uint128) commission; // Mapping to store commission amounts for each address
+        address trigge;
     }
 
     /**

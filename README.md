@@ -57,6 +57,7 @@ Contract
 ├── GoodManage.sol(BUSL-1.1)  
 ├── MarketManager.sol(BUSL-1.1)  
 ├── ProofManage.sol(BUSL-1.1)  
+├── TTSwap_Token.sol(BUSL-1.1)
 ├── interfaces  
 │   ├── I_Good.sol(MIT)  
 │   ├── I_MarketManage.sol(MIT)  
@@ -66,10 +67,11 @@ Contract
    ├── L_GoodConfig.sol(MIT)     
    ├── L_MarketConfig.sol(MIT)    
    ├── L_Proof.sol(BUSL-1.1)   
-   ├── T_BalanceUINT256.sol (MIT)     
-   ├── T_Currency.sol (MIT)       
+   ├── L_BalanceUINT256.sol (MIT)     
+   ├── L_Currency.sol (MIT)       
    ├── L_Struct.sol (MIT)     
-   └── L_ArrayStorage.sol(MIT)    
+   ├── L_Lock.sol (MIT)     
+   └── L_TTSTokenConfig.sol(MIT)    
 docs
 ├── ebook
 ├── whitepaper-cn

@@ -7,7 +7,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {I_MarketManage} from "./interfaces/I_Marketmanage.sol";
 import {I_Proof} from "./interfaces/I_Proof.sol";
-import {I_TTS} from "./interfaces/I_TTS.sol";
+import {I_TTS, s_share, s_chain} from "./interfaces/I_TTS.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {toBalanceUINT256, T_BalanceUINT256, L_BalanceUINT256Library, add, sub, mulDiv} from "./libraries/L_BalanceUINT256.sol";
 
@@ -15,21 +15,15 @@ import {toBalanceUINT256, T_BalanceUINT256, L_BalanceUINT256Library, add, sub, m
  * @title TTS Token Contract
  * @dev Implements ERC20 token with additional staking and cross-chain functionality
  */
-contract TTS is ERC20Permit, I_TTS {
+contract TTSwap_Token is ERC20Permit, I_TTS {
     using L_BalanceUINT256Library for T_BalanceUINT256;
     using L_TTSTokenConfigLibrary for uint256;
     uint256 public ttstokenconfig;
 
-    struct s_share {
-        address recipient; //owner
-        uint128 leftamount; // unlock amount
-        uint120 metric; //last unlock's metric
-        uint8 chips; // define the share's chips, and every time unlock one chips
-    }
-    mapping(uint32 => s_share) shares; // all share's mapping
+    mapping(uint32 => s_share) public shares; // all share's mapping
 
-    T_BalanceUINT256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
-    T_BalanceUINT256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
+    T_BalanceUINT256 public stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
+    T_BalanceUINT256 public poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
 
     struct s_proof {
         address fromcontract; // from which contract
@@ -37,11 +31,6 @@ contract TTS is ERC20Permit, I_TTS {
     }
     mapping(uint256 => s_proof) stakeproof;
 
-    struct s_chain {
-        T_BalanceUINT256 asset; //128 shareasset&poolasset 128 poolasset
-        T_BalanceUINT256 proofstate; //128 value 128 constructasset
-        address recipient;
-    }
     mapping(uint32 => s_chain) chains;
 
     uint256 internal normalgoodid;
@@ -50,7 +39,7 @@ contract TTS is ERC20Permit, I_TTS {
     address internal marketcontract;
     uint32 shares_index;
     uint32 chainindex;
-    uint128 public left_share = 5 * 10 ** 8 * 10 ** 6;
+    uint128 public left_share = 50000000000000;
     uint128 public publicsell;
 
     mapping(address => address) referrals;
@@ -167,8 +156,8 @@ contract TTS is ERC20Permit, I_TTS {
             left_share - _share.leftamount >= 0 && _msgSender() == dao_admin
         );
         left_share -= uint64(_share.leftamount);
-        shares_index += 1;
         shares[shares_index] = _share;
+        shares_index += 1;
         emit e_addShare(
             _share.recipient,
             _share.leftamount,
@@ -185,13 +174,12 @@ contract TTS is ERC20Permit, I_TTS {
      * @notice Adds the leftamount of the burned share back to left_share
      * @notice Emits an e_burnShare event and deletes the share from the shares mapping
      */
-    function burnShare(uint8 index) public onlymain {
+    function burnShare(uint32 index) public onlymain {
         require(_msgSender() == dao_admin);
         left_share += uint64(shares[index].leftamount);
         emit e_burnShare(index);
         delete shares[index];
     }
-
     /**
      * @dev Allows the DAO to mint tokens based on a specific share
      * @param index The index of the share to mint from
@@ -200,21 +188,19 @@ contract TTS is ERC20Permit, I_TTS {
      * @notice Mints tokens to the share recipient, reduces leftamount, and increments metric
      * @notice Emits an e_daomint event with the minted amount and index
      */
-    function shareMint(uint8 index) public onlymain {
+    function shareMint(uint32 index) public onlymain {
         require(
             I_MarketManage(marketcontract).ishigher(
                 normalgoodid,
                 valuegoodid,
-                2 ** shares[index].metric * 2 ** 128 + 1
-            ) ==
-                false &&
-                _msgSender() == shares[index].recipient
+                2 ** shares[index].metric * 2 ** 128 + 10
+            ) && msg.sender == shares[index].recipient
         );
+
         uint128 mintamount = shares[index].leftamount / shares[index].chips;
         shares[index].leftamount -= mintamount;
         shares[index].metric += 1;
         _mint(_msgSender(), mintamount);
-        emit e_shareMint(mintamount, index);
     }
 
     /**
@@ -267,17 +253,18 @@ contract TTS is ERC20Permit, I_TTS {
      */
     function publicSell(uint256 usdtamount) external onlymain {
         publicsell += uint128(usdtamount);
-        require(publicsell <= 5000000 * decimals());
+        require(publicsell <= 500000000000);
         if (IERC20(usdt).transferFrom(msg.sender, address(this), usdtamount)) {
             uint256 ttsamount;
-            if (publicsell <= 1750000 * decimals()) {
-                ttsamount = (usdtamount / 5) * 6;
+            //
+            if (publicsell <= 175000000000) {
+                ttsamount = (usdtamount / 5) * 60;
                 _mint(msg.sender, ttsamount);
-            } else if (publicsell <= 3250000 * decimals()) {
-                ttsamount = usdtamount;
+            } else if (publicsell <= 325000000000) {
+                ttsamount = usdtamount * 10;
                 _mint(msg.sender, ttsamount);
-            } else if (publicsell <= 5000000 * decimals()) {
-                ttsamount = (usdtamount / 5) * 4;
+            } else if (publicsell <= 500000000000) {
+                ttsamount = (usdtamount / 5) * 40;
                 _mint(msg.sender, ttsamount);
             }
             emit e_publicsell(usdtamount, ttsamount);
@@ -519,9 +506,9 @@ contract TTS is ERC20Permit, I_TTS {
     function _stakeFee() internal {
         if (stakestate.amount0() + 86400 < block.timestamp) {
             stakestate = stakestate + toBalanceUINT256(86400, 0);
-            uint256 mintamount = totalSupply() > 5000000 * decimals()
+            uint256 mintamount = totalSupply() > 50000000000000
                 ? totalSupply() / 18300
-                : 274 * decimals(); //27322404=(500000 * decimals) / 18300
+                : 2739726027; //2739726027=(50000000 * decimals) /50/ 366
             poolstate = poolstate + toBalanceUINT256(uint128(mintamount), 0);
             emit e_updatepool(
                 T_BalanceUINT256.unwrap(poolstate),

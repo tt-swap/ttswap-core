@@ -53,12 +53,12 @@ interface I_TTS {
 
     /// @notice Emitted when minting is burned
     /// @param index The index of the minting operation being burned
-    event e_burnShare(uint8 index);
+    event e_burnShare(uint32 index);
 
     /// @notice Emitted when DAO minting occurs
     /// @param mintamount The amount being minted
     /// @param index The index of the minting operation
-    event e_shareMint(uint256 mintamount, uint8 index);
+    event e_shareMint(uint128 mintamount, uint32 index);
 
     /// @notice Emitted during a public sale
     /// @param usdtamount The amount of USDT involved
@@ -71,7 +71,7 @@ interface I_TTS {
     /// @param proofstate  The value of the pool
     event e_syncChainStake(
         uint32 chain,
-        uint256 poolasset,
+        uint128 poolasset,
         T_BalanceUINT256 proofstate //first 128 bit proofvalue,last 128 bit proofconstruct
     );
 
@@ -127,4 +127,17 @@ interface I_TTS {
     function getreferralanddaoadmin(
         address _customer
     ) external view returns (address dba_admin, address referral);
+}
+
+struct s_share {
+    address recipient; //owner
+    uint128 leftamount; // unlock amount
+    uint120 metric; //last unlock's metric
+    uint8 chips; // define the share's chips, and every time unlock one chips
+}
+
+struct s_chain {
+    T_BalanceUINT256 asset; //128 shareasset&poolasset 128 poolasset
+    T_BalanceUINT256 proofstate; //128 value 128 constructasset
+    address recipient;
 }

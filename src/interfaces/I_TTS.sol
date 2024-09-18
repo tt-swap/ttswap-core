@@ -67,28 +67,12 @@ interface I_TTS {
 
     /// @notice Emitted when chain stake is synchronized
     /// @param chain The chain ID
-    /// @param poolvalue The value of the pool
-    /// @param poolconstruct The pool construct value
     /// @param poolasset The pool asset value
+    /// @param proofstate  The value of the pool
     event e_syncChainStake(
-        uint256 chain,
-        uint256 poolvalue,
-        uint256 poolconstruct,
-        uint256 poolasset
-    );
-
-    /// @notice Emitted when staking occurs
-    /// @param stakeid The ID of the stake
-    /// @param marketcontract The address of the market contract
-    /// @param proofid The ID of the proof
-    /// @param stakevalue The value being staked
-    /// @param stakeconstruct The stake construct value
-    event e_stake(
-        uint256 stakeid,
-        address marketcontract,
-        uint256 proofid,
-        uint256 stakevalue,
-        uint256 stakeconstruct
+        uint32 chain,
+        uint256 poolasset,
+        T_BalanceUINT256 proofstate //first 128 bit proofvalue,last 128 bit proofconstruct
     );
 
     /// @notice Emitted when unstaking occurs

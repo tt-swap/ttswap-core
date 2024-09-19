@@ -15,13 +15,15 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @notice Emitted when a meta good is created and initialized
     /// @dev The decimal precision of _initial.amount0() defaults to 6
     /// @param _proofNo The ID of the investment proof
-    /// @param _extendinfo A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
+    /// @param _goodid A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
+    /// @param _construct A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
     /// @param _erc20address The contract address of the meta good
     /// @param _goodConfig The configuration of the meta good (refer to the whitepaper for details)
     /// @param _initial Market initialization parameters: amount0 is the value, amount1 is the quantity
     event e_initMetaGood(
         uint256 _proofNo,
-        T_BalanceUINT256 _extendinfo,
+        uint256 _goodid,
+        uint256 _construct,
         address _erc20address,
         uint256 _goodConfig,
         T_BalanceUINT256 _initial
@@ -29,7 +31,8 @@ interface I_MarketManage is I_Good, I_Proof {
 
     /// @notice Emitted when a good is created and initialized
     /// @param _proofNo The ID of the investment proof
-    /// @param _extendinfo A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
+    /// @param _goodid A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
+    /// @param _construct A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
     /// @param _valuegoodNo The ID of the good
     /// @param _erc20address The contract address of the meta good
     /// @param _goodConfig The configuration of the meta good (refer to the whitepaper for details)
@@ -37,10 +40,11 @@ interface I_MarketManage is I_Good, I_Proof {
     /// @param _value Value good initialization parameters: amount0 is the investment fee, amount1 is the investment quantity
     event e_initGood(
         uint256 _proofNo,
-        T_BalanceUINT256 _extendinfo,
+        uint256 _goodid,
         uint256 _valuegoodNo,
         address _erc20address,
         uint256 _goodConfig,
+        uint256 _construct,
         T_BalanceUINT256 _normalinitial,
         T_BalanceUINT256 _value
     );
@@ -81,14 +85,14 @@ interface I_MarketManage is I_Good, I_Proof {
 
     /// @notice Emitted when a user invests in a normal good
     /// @param _proofNo The ID of the investment proof
-    /// @param _extendinfo Packed data: first 128 bits for good's ID, last 128 bits for stake construct
+    /// @param _normalgoodid Packed data: first 128 bits for good's ID, last 128 bits for stake construct
     /// @param _valueGoodNo The ID of the value good
-    /// @param _value Investment value (amount0: invest value, amount1: 0)
+    /// @param _value Investment value (amount0: invest value, amount1: restake construct)
     /// @param _invest Normal good investment details (amount0: actual fee, amount1: actual invest quantity)
     /// @param _valueinvest Value good investment details (amount0: actual fee, amount1: actual invest quantity)
     event e_investGood(
         uint256 indexed _proofNo,
-        T_BalanceUINT256 _extendinfo,
+        uint256 _normalgoodid,
         uint256 _valueGoodNo,
         T_BalanceUINT256 _value,
         T_BalanceUINT256 _invest,

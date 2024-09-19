@@ -184,12 +184,6 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:normalgood owner error"
         );
 
-        assertEq(
-            market.goodNum(),
-            2,
-            "after initial normal:normalgoodgood num error"
-        );
-
         ///////////////////////////
         uint256 normalproof = market.proofmapping(
             S_ProofKey(users[1], normalgoodkey, metagoodkey).toId()
@@ -324,8 +318,6 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:metagoodkey marketcreator error"
         );
 
-        assertEq(market.goodNum(), 2, "after initial:good num error");
-
         uint256 normalgoodkey = S_GoodKey(users[1], address(0)).toId();
 
         ////////////////////////////////////////
@@ -360,8 +352,6 @@ contract testInitNormalGood is BaseSetup {
             users[1],
             "after initial normalgood:normalgood owner error"
         );
-
-        assertEq(market.goodNum(), 2, "after initial normal:good num error");
 
         ///////////////////////////
 

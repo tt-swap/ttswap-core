@@ -147,8 +147,6 @@ contract investERC20ValueGood is BaseSetup {
             "after invest metagood:metagood marketcreator error"
         );
 
-        assertEq(market.goodNum(), 1, "after invest:good num error");
-
         _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
@@ -267,8 +265,6 @@ contract investERC20ValueGood is BaseSetup {
             marketcreator,
             "after invest metagood:metagood marketcreator error"
         );
-
-        assertEq(market.goodNum(), 1, "after invest:good num error");
 
         normalproof = market.proofmapping(
             S_ProofKey(users[2], metagood, 0).toId()

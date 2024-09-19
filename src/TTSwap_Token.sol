@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.26;
 
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -29,9 +29,9 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
         address fromcontract; // from which contract
         T_BalanceUINT256 proofstate; // stake's state
     }
-    mapping(uint256 => s_proof) stakeproof;
+    mapping(uint256 => s_proof) public stakeproof;
 
-    mapping(uint32 => s_chain) chains;
+    mapping(uint32 => s_chain) public chains;
 
     uint256 internal normalgoodid;
     uint256 internal valuegoodid;

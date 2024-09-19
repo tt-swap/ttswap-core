@@ -1,0 +1,2594 @@
+{
+	"compiler": {
+		"version": "0.8.26+commit.8a97fa7a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_marketconfig",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_officialcontract",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "ERC20TransferFailed",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidShortString",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NativeTransferFailed",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "str",
+						"type": "string"
+					}
+				],
+				"name": "StringTooLong",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "approved",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "Approval",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "operator",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "bool",
+						"name": "approved",
+						"type": "bool"
+					}
+				],
+				"name": "ApprovalForAll",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [],
+				"name": "EIP712DomainChanged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "Transfer",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					}
+				],
+				"name": "e_addbanlist",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "referals",
+						"type": "address"
+					}
+				],
+				"name": "e_addreferal",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "sellgood",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "forgood",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "fromer",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint128",
+						"name": "swapvalue",
+						"type": "uint128"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "sellgoodstate",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "forgoodstate",
+						"type": "uint256"
+					}
+				],
+				"name": "e_buyGood",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "buygood",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "usegood",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "fromer",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "receipt",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint128",
+						"name": "swapvalue",
+						"type": "uint128"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "buygoodstate",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "usegoodstate",
+						"type": "uint256"
+					}
+				],
+				"name": "e_buyGoodForPay",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_owner",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_to",
+						"type": "address"
+					}
+				],
+				"name": "e_changeOwner",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "goodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					}
+				],
+				"name": "e_changegoodowner",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "_proofNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_normalGoodNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_valueGoodNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_profit",
+						"type": "uint256"
+					}
+				],
+				"name": "e_collectProof",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "goodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "feeamount",
+						"type": "uint256"
+					}
+				],
+				"name": "e_collectProtocolFee",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256[]",
+						"name": "_gooid",
+						"type": "uint256[]"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256[]",
+						"name": "_commisionamount",
+						"type": "uint256[]"
+					}
+				],
+				"name": "e_collectcommission",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "_proofNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_normalGoodNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_valueGoodNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_value",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_normalgood",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_valuegood",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_profit",
+						"type": "uint256"
+					}
+				],
+				"name": "e_disinvestProof",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_valuegood",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_quantity",
+						"type": "uint256"
+					}
+				],
+				"name": "e_enpower",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "goodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint128",
+						"name": "welfare",
+						"type": "uint128"
+					}
+				],
+				"name": "e_goodWelfare",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_proofNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_valuegoodNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_erc20address",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_goodConfig",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_construct",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_normalinitial",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_value",
+						"type": "uint256"
+					}
+				],
+				"name": "e_initGood",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_proofNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_construct",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_erc20address",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_goodConfig",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_initial",
+						"type": "uint256"
+					}
+				],
+				"name": "e_initMetaGood",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "_proofNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_normalgoodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_valueGoodNo",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_value",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_invest",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "T_BalanceUINT256",
+						"name": "_valueinvest",
+						"type": "uint256"
+					}
+				],
+				"name": "e_investGood",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_goodconfig",
+						"type": "uint256"
+					}
+				],
+				"name": "e_modifyGoodConfig",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					}
+				],
+				"name": "e_removebanlist",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_marketconfig",
+						"type": "uint256"
+					}
+				],
+				"name": "e_setMarketConfig",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "_goodConfig",
+						"type": "uint256"
+					}
+				],
+				"name": "e_updateGoodConfig",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "DOMAIN_SEPARATOR",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					}
+				],
+				"name": "addbanlist",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "approve",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "banlist",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_goodid1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_goodid2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint128",
+						"name": "_swapQuantity",
+						"type": "uint128"
+					},
+					{
+						"internalType": "T_BalanceUINT256",
+						"name": "_limitPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "_istotal",
+						"type": "bool"
+					},
+					{
+						"internalType": "address",
+						"name": "_referal",
+						"type": "address"
+					}
+				],
+				"name": "buyGood",
+				"outputs": [
+					{
+						"internalType": "uint128",
+						"name": "goodid2Quantity_",
+						"type": "uint128"
+					},
+					{
+						"internalType": "uint128",
+						"name": "goodid2FeeQuantity_",
+						"type": "uint128"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_goodid1",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_goodid2",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint128",
+						"name": "_swapQuantity",
+						"type": "uint128"
+					},
+					{
+						"internalType": "T_BalanceUINT256",
+						"name": "_limitPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_recipient",
+						"type": "address"
+					}
+				],
+				"name": "buyGoodForPay",
+				"outputs": [
+					{
+						"internalType": "uint128",
+						"name": "goodid1Quantity_",
+						"type": "uint128"
+					},
+					{
+						"internalType": "uint128",
+						"name": "goodid1FeeQuantity_",
+						"type": "uint128"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_to",
+						"type": "address"
+					}
+				],
+				"name": "changeGoodOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "_goodid",
+						"type": "uint256[]"
+					}
+				],
+				"name": "collectCommission",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_proofid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_gater",
+						"type": "address"
+					}
+				],
+				"name": "collectProof",
+				"outputs": [
+					{
+						"internalType": "T_BalanceUINT256",
+						"name": "profit_",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_proofid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint128",
+						"name": "_goodQuantity",
+						"type": "uint128"
+					},
+					{
+						"internalType": "address",
+						"name": "_gater",
+						"type": "address"
+					}
+				],
+				"name": "disinvestProof",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "eip712Domain",
+				"outputs": [
+					{
+						"internalType": "bytes1",
+						"name": "fields",
+						"type": "bytes1"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "version",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "chainId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "verifyingContract",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "salt",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint256[]",
+						"name": "extensions",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "getApproved",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "goodkey",
+						"type": "uint256"
+					}
+				],
+				"name": "getGoodState",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "goodConfig",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "owner",
+								"type": "address"
+							},
+							{
+								"internalType": "address",
+								"name": "erc20address",
+								"type": "address"
+							},
+							{
+								"internalType": "T_BalanceUINT256",
+								"name": "currentState",
+								"type": "uint256"
+							},
+							{
+								"internalType": "T_BalanceUINT256",
+								"name": "investState",
+								"type": "uint256"
+							},
+							{
+								"internalType": "T_BalanceUINT256",
+								"name": "feeQuantityState",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct L_Good.S_GoodTmpState",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "proofid",
+						"type": "uint256"
+					}
+				],
+				"name": "getProofState",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "currentgood",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "valuegood",
+								"type": "uint256"
+							},
+							{
+								"internalType": "T_BalanceUINT256",
+								"name": "state",
+								"type": "uint256"
+							},
+							{
+								"internalType": "T_BalanceUINT256",
+								"name": "invest",
+								"type": "uint256"
+							},
+							{
+								"internalType": "T_BalanceUINT256",
+								"name": "valueinvest",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct L_Proof.S_ProofState",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "goodid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint128",
+						"name": "welfare",
+						"type": "uint128"
+					}
+				],
+				"name": "goodWelfare",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_valuegood",
+						"type": "uint256"
+					},
+					{
+						"internalType": "T_BalanceUINT256",
+						"name": "_initial",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_erc20address",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_goodConfig",
+						"type": "uint256"
+					}
+				],
+				"name": "initGood",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_erc20address",
+						"type": "address"
+					},
+					{
+						"internalType": "T_BalanceUINT256",
+						"name": "_initial",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_goodConfig",
+						"type": "uint256"
+					}
+				],
+				"name": "initMetaGood",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_togood",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_valuegood",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint128",
+						"name": "_quantity",
+						"type": "uint128"
+					}
+				],
+				"name": "investGood",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "operator",
+						"type": "address"
+					}
+				],
+				"name": "isApprovedForAll",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "goodid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "valuegood",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "compareprice",
+						"type": "uint256"
+					}
+				],
+				"name": "ishigher",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "marketconfig",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_goodConfig",
+						"type": "uint256"
+					}
+				],
+				"name": "modifyGoodConfig",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "name",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "nonces",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "ownerOf",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_payquanity",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_recipent",
+						"type": "address"
+					}
+				],
+				"name": "payGood",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "spender",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "deadline",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"name": "permit",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "proofmapping",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "_goodid",
+						"type": "uint256[]"
+					},
+					{
+						"internalType": "address",
+						"name": "_recipent",
+						"type": "address"
+					}
+				],
+				"name": "queryCommission",
+				"outputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "",
+						"type": "uint256[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					}
+				],
+				"name": "removebanlist",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "safeTransferFrom",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "data",
+						"type": "bytes"
+					}
+				],
+				"name": "safeTransferFrom",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "_data",
+						"type": "bytes"
+					},
+					{
+						"internalType": "uint256",
+						"name": "deadline",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "signature",
+						"type": "bytes"
+					}
+				],
+				"name": "safeTransferFromWithPermit",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "operator",
+						"type": "address"
+					},
+					{
+						"internalType": "bool",
+						"name": "approved",
+						"type": "bool"
+					}
+				],
+				"name": "setApprovalForAll",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_marketconfig",
+						"type": "uint256"
+					}
+				],
+				"name": "setMarketConfig",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes4",
+						"name": "interfaceId",
+						"type": "bytes4"
+					}
+				],
+				"name": "supportsInterface",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "symbol",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "tokenURI",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalSupply",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "transferFrom",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_goodid",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_goodConfig",
+						"type": "uint256"
+					}
+				],
+				"name": "updateGoodConfig",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"details": "Manages the market operations for goods and proofs.",
+			"events": {
+				"Approval(address,address,uint256)": {
+					"details": "Emitted when `owner` enables `approved` to manage the `tokenId` token."
+				},
+				"ApprovalForAll(address,address,bool)": {
+					"details": "Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets."
+				},
+				"EIP712DomainChanged()": {
+					"details": "MAY be emitted to signal that the domain could have changed."
+				},
+				"Transfer(address,address,uint256)": {
+					"details": "Emitted when `tokenId` token is transferred from `from` to `to`."
+				},
+				"e_addbanlist(address)": {
+					"params": {
+						"_user": "The banned user's address"
+					}
+				},
+				"e_addreferal(address)": {
+					"params": {
+						"referals": "The address of the referral"
+					}
+				},
+				"e_buyGood(uint256,uint256,address,uint128,uint256,uint256)": {
+					"params": {
+						"forgood": "The ID of the good being bought",
+						"forgoodstate": "The status of the bought good (amount0: fee, amount1: quantity)",
+						"fromer": "The address of the buyer",
+						"sellgood": "The ID of the good being sold",
+						"sellgoodstate": "The status of the sold good (amount0: fee, amount1: quantity)",
+						"swapvalue": "The trade value"
+					}
+				},
+				"e_buyGoodForPay(uint256,uint256,address,address,uint128,uint256,uint256)": {
+					"params": {
+						"buygood": "The ID of the good being bought",
+						"buygoodstate": "The status of the bought good (amount0: fee, amount1: quantity)",
+						"fromer": "The address of the buyer",
+						"receipt": "The address of the recipient (seller)",
+						"swapvalue": "The trade value",
+						"usegood": "The ID of the good being used for payment",
+						"usegoodstate": "The status of the used good (amount0: fee, amount1: quantity)"
+					}
+				},
+				"e_changeOwner(uint256,address,address)": {
+					"params": {
+						"_goodid": "The ID of the good",
+						"_owner": "The previous owner",
+						"_to": "The new owner"
+					}
+				},
+				"e_changegoodowner(uint256,address)": {
+					"params": {
+						"goodid": "The ID of the good",
+						"to": "The new owner's address"
+					}
+				},
+				"e_collectProof(uint256,uint256,uint256,uint256)": {
+					"params": {
+						"_normalGoodNo": "The ID of the normal good",
+						"_profit": "The collected profit (amount0: normal good profit, amount1: value good profit)",
+						"_proofNo": "The ID of the investment proof",
+						"_valueGoodNo": "The ID of the value good"
+					}
+				},
+				"e_collectProtocolFee(uint256,uint256)": {
+					"params": {
+						"feeamount": "The amount of fee collected",
+						"goodid": "The ID of the good"
+					}
+				},
+				"e_collectcommission(uint256[],uint256[])": {
+					"params": {
+						"_commisionamount": "Array of commission amounts",
+						"_gooid": "Array of good IDs"
+					}
+				},
+				"e_disinvestProof(uint256,uint256,uint256,uint256,uint256,uint256,uint256)": {
+					"params": {
+						"_normalGoodNo": "The ID of the normal good",
+						"_normalgood": "The disinvestment details of the normal good (amount0: actual fee, amount1: actual disinvest quantity)",
+						"_profit": "The profit (amount0: normal good profit, amount1: value good profit)",
+						"_proofNo": "The ID of the investment proof",
+						"_valueGoodNo": "The ID of the value good",
+						"_valuegood": "The disinvestment details of the value good (amount0: actual fee, amount1: actual disinvest quantity)"
+					}
+				},
+				"e_enpower(uint256,uint256,uint256)": {
+					"params": {
+						"_goodid": "The ID of the good",
+						"_quantity": "The quantity of the value good to empower",
+						"_valuegood": "The ID of the value good"
+					}
+				},
+				"e_goodWelfare(uint256,uint128)": {
+					"params": {
+						"goodid": "The ID of the good",
+						"welfare": "The amount of welfare"
+					}
+				},
+				"e_initGood(uint256,uint256,uint256,address,uint256,uint256,uint256,uint256)": {
+					"params": {
+						"_construct": "A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct",
+						"_erc20address": "The contract address of the meta good",
+						"_goodConfig": "The configuration of the meta good (refer to the whitepaper for details)",
+						"_goodid": "A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct",
+						"_normalinitial": "Normal good initialization parameters: amount0 is the quantity, amount1 is the value",
+						"_proofNo": "The ID of the investment proof",
+						"_value": "Value good initialization parameters: amount0 is the investment fee, amount1 is the investment quantity",
+						"_valuegoodNo": "The ID of the good"
+					}
+				},
+				"e_initMetaGood(uint256,uint256,uint256,address,uint256,uint256)": {
+					"details": "The decimal precision of _initial.amount0() defaults to 6",
+					"params": {
+						"_construct": "A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct",
+						"_erc20address": "The contract address of the meta good",
+						"_goodConfig": "The configuration of the meta good (refer to the whitepaper for details)",
+						"_goodid": "A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct",
+						"_initial": "Market initialization parameters: amount0 is the value, amount1 is the quantity",
+						"_proofNo": "The ID of the investment proof"
+					}
+				},
+				"e_investGood(uint256,uint256,uint256,uint256,uint256,uint256)": {
+					"params": {
+						"_invest": "Normal good investment details (amount0: actual fee, amount1: actual invest quantity)",
+						"_normalgoodid": "Packed data: first 128 bits for good's ID, last 128 bits for stake construct",
+						"_proofNo": "The ID of the investment proof",
+						"_value": "Investment value (amount0: invest value, amount1: restake construct)",
+						"_valueGoodNo": "The ID of the value good",
+						"_valueinvest": "Value good investment details (amount0: actual fee, amount1: actual invest quantity)"
+					}
+				},
+				"e_modifyGoodConfig(uint256,uint256)": {
+					"params": {
+						"_goodconfig": "The new configuration",
+						"_goodid": "The ID of the good"
+					}
+				},
+				"e_removebanlist(address)": {
+					"params": {
+						"_user": "The unbanned user's address"
+					}
+				},
+				"e_setMarketConfig(uint256)": {
+					"params": {
+						"_marketconfig": "The market configuration"
+					}
+				},
+				"e_updateGoodConfig(uint256,uint256)": {
+					"params": {
+						"_goodConfig": "The new configuration",
+						"_goodid": "The ID of the good"
+					}
+				}
+			},
+			"kind": "dev",
+			"methods": {
+				"DOMAIN_SEPARATOR()": {
+					"returns": {
+						"_0": "the bytes32 domain separator"
+					}
+				},
+				"addbanlist(address)": {
+					"params": {
+						"_user": "The address to ban"
+					},
+					"returns": {
+						"_0": "Success status"
+					}
+				},
+				"approve(address,uint256)": {
+					"details": "See {IERC721-approve}."
+				},
+				"balanceOf(address)": {
+					"details": "See {IERC721-balanceOf}."
+				},
+				"buyGood(uint256,uint256,uint128,uint256,bool,address)": {
+					"params": {
+						"_goodid1": "ID of the good to sell",
+						"_goodid2": "ID of the good to buy",
+						"_istotal": "Whether to trade all or partial amount",
+						"_limitprice": "Price limit for the trade",
+						"_referal": "Referral address",
+						"_swapQuantity": "Quantity of _goodid1 to sell"
+					},
+					"returns": {
+						"goodid2FeeQuantity_": "Fee quantity for good2",
+						"goodid2Quantity_": "Actual quantity of good2 received"
+					}
+				},
+				"buyGoodForPay(uint256,uint256,uint128,uint256,address)": {
+					"params": {
+						"_goodid1": "ID of the good to buy",
+						"_goodid2": "ID of the good to sell",
+						"_limitprice": "Price limit for the trade",
+						"_recipent": "Address of the recipient",
+						"_swapQuantity": "Quantity of _goodid2 to buy"
+					},
+					"returns": {
+						"goodid1FeeQuantity_": "Fee quantity for good1",
+						"goodid1Quantity_": "Actual quantity of good1 received"
+					}
+				},
+				"changeGoodOwner(uint256,address)": {
+					"params": {
+						"_goodid": "The ID of the good",
+						"_to": "The new owner's address"
+					}
+				},
+				"collectCommission(uint256[])": {
+					"details": "Collect commission for multiple goods",
+					"params": {
+						"_goodid": "Array of good IDs"
+					}
+				},
+				"collectProof(uint256,address)": {
+					"params": {
+						"_gater": "Address of the gater",
+						"_proofid": "ID of the investment proof"
+					},
+					"returns": {
+						"profit_": "Collected profit (amount0: normal good profit, amount1: value good profit)"
+					}
+				},
+				"constructor": {
+					"details": "Constructor for MarketManager",
+					"params": {
+						"_marketconfig": "The market configuration",
+						"_officialcontract": "The address of the official contract"
+					}
+				},
+				"disinvestProof(uint256,uint128,address)": {
+					"params": {
+						"_gater": "Address of the gater",
+						"_goodQuantity": "Quantity to disinvest",
+						"_proofid": "ID of the investment proof"
+					},
+					"returns": {
+						"_0": "Success status"
+					}
+				},
+				"eip712Domain()": {
+					"details": "See {EIP-5267}. _Available since v4.9._"
+				},
+				"getApproved(uint256)": {
+					"details": "See {IERC721-getApproved}."
+				},
+				"getGoodState(uint256)": {
+					"details": "Get the state of a good",
+					"params": {
+						"goodkey": "The ID of the good"
+					},
+					"returns": {
+						"_0": "Temporary state structure of the good"
+					}
+				},
+				"getProofState(uint256)": {
+					"details": "Retrieves the proof state for a given proof ID.",
+					"params": {
+						"proofid": "The ID of the proof."
+					},
+					"returns": {
+						"_0": "L_Proof.S_ProofState The state of the proof."
+					}
+				},
+				"goodWelfare(uint256,uint128)": {
+					"details": "Add welfare to a good",
+					"params": {
+						"goodid": "The ID of the good",
+						"welfare": "The amount of welfare to add"
+					}
+				},
+				"initGood(uint256,uint256,address,uint256)": {
+					"params": {
+						"_erc20address": "The contract address of the good",
+						"_goodConfig": "Configuration of the good",
+						"_initial": "Initial parameters (amount0: normal good quantity, amount1: value good quantity)",
+						"_valuegood": "The ID of the value good used to measure the normal good's value"
+					},
+					"returns": {
+						"_0": "Success status"
+					}
+				},
+				"initMetaGood(address,uint256,uint256)": {
+					"params": {
+						"_erc20address": "The contract address of the good",
+						"_goodconfig": "Configuration of the good",
+						"_initial": "Initial parameters for the good (amount0: value, amount1: quantity)"
+					},
+					"returns": {
+						"_0": "Success status"
+					}
+				},
+				"investGood(uint256,uint256,uint128)": {
+					"params": {
+						"_quantity": "Quantity of normal good to invest",
+						"_togood": "ID of the normal good to invest in",
+						"_valuegood": "ID of the value good"
+					},
+					"returns": {
+						"_0": "Success status"
+					}
+				},
+				"isApprovedForAll(address,address)": {
+					"details": "See {IERC721-isApprovedForAll}."
+				},
+				"ishigher(uint256,uint256,uint256)": {
+					"params": {
+						"compareprice": "Price to compare against",
+						"goodid": "ID of the good to check",
+						"valuegood": "ID of the value good"
+					},
+					"returns": {
+						"_0": "Whether the good's price is higher"
+					}
+				},
+				"modifyGoodConfig(uint256,uint256)": {
+					"params": {
+						"_goodConfig": "The new configuration",
+						"_goodid": "The ID of the good"
+					},
+					"returns": {
+						"_0": "Success status"
+					}
+				},
+				"name()": {
+					"details": "See {IERC721Metadata-name}."
+				},
+				"nonces(uint256)": {
+					"params": {
+						"tokenId": "the index of the NFT to get the nonce of"
+					},
+					"returns": {
+						"_0": "the uint256 representation of the nonce"
+					}
+				},
+				"ownerOf(uint256)": {
+					"details": "See {IERC721-ownerOf}."
+				},
+				"payGood(uint256,uint256,address)": {
+					"params": {
+						"_goodid": "The ID of the good",
+						"_payquanity": "The quantity to transfer",
+						"_recipent": "The recipient's address"
+					},
+					"returns": {
+						"_0": "Success status"
+					}
+				},
+				"queryCommission(uint256[],address)": {
+					"details": "Query commission for multiple goods",
+					"params": {
+						"_goodid": "Array of good IDs",
+						"_recipent": "Address of the recipient"
+					},
+					"returns": {
+						"_0": "Array of commission amounts"
+					}
+				},
+				"removebanlist(address)": {
+					"params": {
+						"_user": "The address to unban"
+					},
+					"returns": {
+						"_0": "Success status"
+					}
+				},
+				"safeTransferFrom(address,address,uint256)": {
+					"details": "See {IERC721-safeTransferFrom}."
+				},
+				"safeTransferFrom(address,address,uint256,bytes)": {
+					"details": "Safely transfers the ownership of a given token ID to another address.",
+					"params": {
+						"data": "Additional data with no specified format.",
+						"from": "The current owner of the token.",
+						"to": "The new owner.",
+						"tokenId": "The ID of the token to be transferred."
+					}
+				},
+				"safeTransferFromWithPermit(address,address,uint256,bytes,uint256,bytes)": {
+					"details": "Safely transfers the ownership of a given token ID to another address with a permit.",
+					"params": {
+						"_data": "Additional data with no specified format.",
+						"deadline": "The time at which the signature expires.",
+						"from": "The current owner of the token.",
+						"signature": "A valid EIP712 signature.",
+						"to": "The new owner.",
+						"tokenId": "The ID of the token to be transferred."
+					}
+				},
+				"setApprovalForAll(address,bool)": {
+					"details": "See {IERC721-setApprovalForAll}."
+				},
+				"setMarketConfig(uint256)": {
+					"params": {
+						"_marketconfig": "The new market configuration"
+					},
+					"returns": {
+						"_0": "Success status"
+					}
+				},
+				"symbol()": {
+					"details": "See {IERC721Metadata-symbol}."
+				},
+				"tokenURI(uint256)": {
+					"details": "See {IERC721Metadata-tokenURI}."
+				},
+				"transferFrom(address,address,uint256)": {
+					"details": "Transfers ownership of a token from one address to another address.",
+					"params": {
+						"from": "The current owner of the token.",
+						"to": "The new owner.",
+						"tokenId": "The ID of the token being transferred."
+					}
+				},
+				"updateGoodConfig(uint256,uint256)": {
+					"details": "Update the configuration of a good",
+					"params": {
+						"_goodConfig": "The new configuration for the good",
+						"_goodid": "The ID of the good"
+					},
+					"returns": {
+						"_0": "Boolean indicating if the operation was successful"
+					}
+				}
+			},
+			"title": "MarketManager",
+			"version": 1
+		},
+		"userdoc": {
+			"errors": {
+				"ERC20TransferFailed()": [
+					{
+						"notice": "Thrown when an ERC20 transfer fails"
+					}
+				],
+				"NativeTransferFailed()": [
+					{
+						"notice": "Thrown when a native transfer fails"
+					}
+				]
+			},
+			"events": {
+				"e_addbanlist(address)": {
+					"notice": "Emitted when an address is added to the ban list"
+				},
+				"e_addreferal(address)": {
+					"notice": "Emitted when a referral is added"
+				},
+				"e_buyGood(uint256,uint256,address,uint128,uint256,uint256)": {
+					"notice": "Emitted when a user buys a good"
+				},
+				"e_buyGoodForPay(uint256,uint256,address,address,uint128,uint256,uint256)": {
+					"notice": "Emitted when a user buys a good and pays the seller"
+				},
+				"e_changeOwner(uint256,address,address)": {
+					"notice": "Emitted when a good's ownership is transferred"
+				},
+				"e_changegoodowner(uint256,address)": {
+					"notice": "Emitted when a good's owner is changed"
+				},
+				"e_collectProof(uint256,uint256,uint256,uint256)": {
+					"notice": "Emitted when a user collects profit from an investment proof"
+				},
+				"e_collectProtocolFee(uint256,uint256)": {
+					"notice": "Emitted when protocol fee is collected"
+				},
+				"e_collectcommission(uint256[],uint256[])": {
+					"notice": "Emitted when market commission is collected"
+				},
+				"e_disinvestProof(uint256,uint256,uint256,uint256,uint256,uint256,uint256)": {
+					"notice": "Emitted when a user disinvests from a normal good"
+				},
+				"e_enpower(uint256,uint256,uint256)": {
+					"notice": "Emitted when a good is empowered"
+				},
+				"e_goodWelfare(uint256,uint128)": {
+					"notice": "Emitted when welfare is delivered to investors"
+				},
+				"e_initGood(uint256,uint256,uint256,address,uint256,uint256,uint256,uint256)": {
+					"notice": "Emitted when a good is created and initialized"
+				},
+				"e_initMetaGood(uint256,uint256,uint256,address,uint256,uint256)": {
+					"notice": "Emitted when a meta good is created and initialized"
+				},
+				"e_investGood(uint256,uint256,uint256,uint256,uint256,uint256)": {
+					"notice": "Emitted when a user invests in a normal good"
+				},
+				"e_modifyGoodConfig(uint256,uint256)": {
+					"notice": "Emitted when a good's configuration is modified by market admin"
+				},
+				"e_removebanlist(address)": {
+					"notice": "Emitted when an address is removed from the ban list"
+				},
+				"e_setMarketConfig(uint256)": {
+					"notice": "Emitted when market configuration is set"
+				},
+				"e_updateGoodConfig(uint256,uint256)": {
+					"notice": "Emitted when a good's configuration is updated"
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"DOMAIN_SEPARATOR()": {
+					"notice": "Returns the domain separator used in the encoding of the signature for permits, as defined by EIP-712"
+				},
+				"addbanlist(address)": {
+					"notice": "Adds an address to the ban list"
+				},
+				"buyGood(uint256,uint256,uint128,uint256,bool,address)": {
+					"notice": "Sell one good to buy another"
+				},
+				"buyGoodForPay(uint256,uint256,uint128,uint256,address)": {
+					"notice": "Buy a good, sell another, and send to a recipient"
+				},
+				"changeGoodOwner(uint256,address)": {
+					"notice": "Changes the owner of a good"
+				},
+				"collectProof(uint256,address)": {
+					"notice": "Collect profit from an investment proof"
+				},
+				"disinvestProof(uint256,uint128,address)": {
+					"notice": "Disinvest from a normal good"
+				},
+				"initGood(uint256,uint256,address,uint256)": {
+					"notice": "Initialize a normal good in the market"
+				},
+				"initMetaGood(address,uint256,uint256)": {
+					"notice": "Initialize the first good in the market"
+				},
+				"investGood(uint256,uint256,uint128)": {
+					"notice": "Invest in a normal good"
+				},
+				"ishigher(uint256,uint256,uint256)": {
+					"notice": "Check if the price of a good is higher than a comparison price"
+				},
+				"marketconfig()": {
+					"notice": "Returns the market configuration"
+				},
+				"modifyGoodConfig(uint256,uint256)": {
+					"notice": "Allows market admin to modify a good's attributes"
+				},
+				"nonces(uint256)": {
+					"notice": "Returns the nonce of an NFT - useful for creating permits"
+				},
+				"payGood(uint256,uint256,address)": {
+					"notice": "Transfers a good to another address"
+				},
+				"removebanlist(address)": {
+					"notice": "Removes an address from the ban list"
+				},
+				"setMarketConfig(uint256)": {
+					"notice": "Sets the market configuration"
+				},
+				"totalSupply()": {
+					"notice": "Returns the total number of proofs in the market"
+				}
+			},
+			"notice": "This contract handles initialization, buying, selling, investing, and disinvesting of goods and proofs.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/MarketManager.sol": "MarketManager"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": [
+			":@erc721permit/=lib/erc721-permit/contracts/",
+			":@openzeppelin/=lib/openzeppelin-contracts/",
+			":ds-test/=lib/openzeppelin-contracts/lib/forge-std/lib/ds-test/src/",
+			":erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+			":forge-gas-snapshot/=lib/forge-gas-snapshot/src/",
+			":forge-std/=lib/forge-std/src/"
+		]
+	},
+	"sources": {
+		"lib/erc721-permit/contracts/ERC721Permit.sol": {
+			"keccak256": "0x644bf8f30e145bdc2d449063b59041b3d71ba00ac721d801c754f322e7d45f7a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2ea6a3a23ddab224f34bda73ec823993b719e9744d069fc3c2c0f8e10c54ad89",
+				"dweb:/ipfs/QmTobE8Lydt8x2xb3H311LL21kZgg7sShaL1ty6cDcygDr"
+			]
+		},
+		"lib/erc721-permit/contracts/interfaces/IERC721Permit.sol": {
+			"keccak256": "0xfba2d50af2e60911cc3af0451940054ee23e1d3f981dbe0038aa860e81756fdc",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://24b25dbae8122afdefcd061a194013f6e9814c44e670ef9cc238ad17e275cf0c",
+				"dweb:/ipfs/QmRsEerk5aedRXWjyy9qQQwMdoR7X9MGMYRB6XEqN9oFEt"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/interfaces/IERC1271.sol": {
+			"keccak256": "0x0705a4b1b86d7b0bd8432118f226ba139c44b9dcaba0a6eafba2dd7d0639c544",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c45b821ef9e882e57c256697a152e108f0f2ad6997609af8904cae99c9bd422e",
+				"dweb:/ipfs/QmRKCJW6jjzR5UYZcLpGnhEJ75UVbH6EHkEa49sWx2SKng"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol": {
+			"keccak256": "0xd04b0f06e0666f29cf7cccc82894de541e19bb30a765b107b1e40bb7fe5f7d7a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7b652499d098e88d8d878374616bb58434301061cae2253298b3f374044e0ddb",
+				"dweb:/ipfs/QmbhAzctqo5jrSKU6idHdVyqfmzCcDbNUPvmx4GiXxfA6q"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/interfaces/IERC5267.sol": {
+			"keccak256": "0xac6c2efc64baccbde4904ae18ed45139c9aa8cff96d6888344d1e4d2eb8b659f",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6e416a280c610b6b7a5f158e4a41aacfaec01ef14d5d1de13b46be9e090265fc",
+				"dweb:/ipfs/QmYZP2KrdyccBbhLZT42auhvBTMkwiwUS3V6HWb42rbwbG"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol": {
+			"keccak256": "0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5",
+				"dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol": {
+			"keccak256": "0x2c309e7df9e05e6ce15bedfe74f3c61b467fc37e0fae9eab496acf5ea0bbd7ff",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7063b5c98711a98018ba4635ac74cee1c1cfa2ea01099498e062699ed9530005",
+				"dweb:/ipfs/QmeJ8rGXkcv7RrqLdAW8PCXPAykxVsddfYY6g5NaTwmRFE"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol": {
+			"keccak256": "0x5bce51e11f7d194b79ea59fe00c9e8de9fa2c5530124960f29a24d4c740a3266",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7e66dfde185df46104c11bc89d08fa0760737aa59a2b8546a656473d810a8ea4",
+				"dweb:/ipfs/QmXvyqtXPaPss2PD7eqPoSao5Szm2n6UMoiG8TZZDjmChR"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol": {
+			"keccak256": "0xa82b58eca1ee256be466e536706850163d2ec7821945abd6b4778cfb3bee37da",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6e75cf83beb757b8855791088546b8337e9d4684e169400c20d44a515353b708",
+				"dweb:/ipfs/QmYvPafLfoquiDMEj7CKHtvbgHu7TJNPSVPSCjrtjV8HjV"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Metadata.sol": {
+			"keccak256": "0x75b829ff2f26c14355d1cba20e16fe7b29ca58eb5fef665ede48bc0f9c6c74b9",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a0a107160525724f9e1bbbab031defc2f298296dd9e331f16a6f7130cec32146",
+				"dweb:/ipfs/QmemujxSd7gX8A9M8UwmNbz4Ms3U9FG9QfudUgxwvTmPWf"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/Address.sol": {
+			"keccak256": "0x006dd67219697fe68d7fbfdea512e7c4cb64a43565ed86171d67e844982da6fa",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2455248c8ddd9cc6a7af76a13973cddf222072427e7b0e2a7d1aff345145e931",
+				"dweb:/ipfs/QmfYjnjRbWqYpuxurqveE6HtzsY1Xx323J428AKQgtBJZm"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/Context.sol": {
+			"keccak256": "0xa92e4fa126feb6907daa0513ddd816b2eb91f30a808de54f63c17d0e162c3439",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a367861093b74443b137564d3f3c472f70bcf114739e62059c939f25e315706c",
+				"dweb:/ipfs/Qmd7JMpcxD9RuQjK3uM3EzJUgSqdN8vzp8eytEiuwxQJ6h"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/Counters.sol": {
+			"keccak256": "0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee",
+				"dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/ShortStrings.sol": {
+			"keccak256": "0xc0e310c163edf15db45d4ff938113ab357f94fa86e61ea8e790853c4d2e13256",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://04db5bc05dcb05ba1f6ca2dfbead17adc8a2e2f911aa80b05e7a36d9eaf96516",
+				"dweb:/ipfs/QmVkfHZbXVBUPsTopueCn3qGJX8aEjahFF3Fn4NcygLNm5"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/StorageSlot.sol": {
+			"keccak256": "0xf09e68aa0dc6722a25bc46490e8d48ed864466d17313b8a0b254c36b54e49899",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e26daf81e2252dc1fe1ce0e4b55c2eb7c6d1ee84ae6558d1a9554432ea1d32da",
+				"dweb:/ipfs/Qmb1UANWiWq5pCKbmHSu772hd4nt374dVaghGmwSVNuk8Q"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/Strings.sol": {
+			"keccak256": "0x3088eb2868e8d13d89d16670b5f8612c4ab9ff8956272837d8e90106c59c14a0",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b81d9ff6559ea5c47fc573e17ece6d9ba5d6839e213e6ebc3b4c5c8fe4199d7f",
+				"dweb:/ipfs/QmPCW1bFisUzJkyjroY3yipwfism9RRCigCcK1hbXtVM8n"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol": {
+			"keccak256": "0x809bc3edb4bcbef8263fa616c1b60ee0004b50a8a1bfa164d8f57fd31f520c58",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8b93a1e39a4a19eba1600b92c96f435442db88cac91e315c8291547a2a7bcfe2",
+				"dweb:/ipfs/QmTm34KVe6uZBZwq8dZDNWwPcm24qBJdxqL3rPxBJ4LrMv"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol": {
+			"keccak256": "0x8432884527a7ad91e6eed1cfc5a0811ae2073e5bca107bd0ca442e9236b03dbd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://e3aa0eadab7aafcf91a95684765f778f64386f0368de88522ce873c21385278a",
+				"dweb:/ipfs/QmPfaVAqWgH1QsT3dHVuL6jwMZbVKdoP8w1PvpiPT2FPWd"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/cryptography/draft-EIP712.sol": {
+			"keccak256": "0xea30c402170bc240354b74e6c6f6a8e5bdb1935d90d168cc58c0654461c6a72b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://95cbddf89006e6dbbc200eb091eb90025c97a9980310f2325c9bda2c4fdc97e3",
+				"dweb:/ipfs/QmT67Dt3xrKEQSDC4XyDcrKwZUYsJzddrRFjEopRZNP9yR"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/introspection/ERC165.sol": {
+			"keccak256": "0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d",
+				"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol": {
+			"keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+				"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/math/Math.sol": {
+			"keccak256": "0xe4455ac1eb7fc497bb7402579e7b4d64d928b846fce7d2b6fde06d366f21c2b3",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cc8841b3cd48ad125e2f46323c8bad3aa0e88e399ec62acb9e57efa7e7c8058c",
+				"dweb:/ipfs/QmSqE4mXHA2BXW58deDbXE8MTcsL5JSKNDbm23sVQxRLPS"
+			]
+		},
+		"lib/openzeppelin-contracts/contracts/utils/math/SignedMath.sol": {
+			"keccak256": "0xf92515413956f529d95977adc9b0567d583c6203fc31ab1c23824c35187e3ddc",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c50fcc459e49a9858b6d8ad5f911295cb7c9ab57567845a250bf0153f84a95c7",
+				"dweb:/ipfs/QmcEW85JRzvDkQggxiBBLVAasXWdkhEysqypj9EaB6H2g6"
+			]
+		},
+		"src/GoodManage.sol": {
+			"keccak256": "0x4a50ffaf5fb2c3e5967b9ed2271d4d419c2d23cdb319255bfb3296e32e111d15",
+			"license": "BUSL-1.1",
+			"urls": [
+				"bzz-raw://fb0ec66492bf0c74b4bea414d0b3c686e5d4810e3bbfcffc5565c757a52fa00a",
+				"dweb:/ipfs/QmeHYA7wmbB4TdZavzKYKnYUsVfzMLJMTmkeVPPCKfqnuY"
+			]
+		},
+		"src/MarketManager.sol": {
+			"keccak256": "0x4212a7fb41d0a5d7708d692be523d73419984033c13ffe53d776c13f858c3150",
+			"license": "BUSL-1.1",
+			"urls": [
+				"bzz-raw://f34d6c7c6e76d05acc1b76a7e664b6e2adc7441bc3ea6982e5b76c76dfe75a80",
+				"dweb:/ipfs/QmbM8DBsadbqPr5MD6vxAekSAWF9fRh4ygFpp8UyhchRQz"
+			]
+		},
+		"src/ProofManage.sol": {
+			"keccak256": "0x8cc994f30ab946501256df40d73c9c653578c198c96516a0854792996401cd21",
+			"license": "BUSL-1.1",
+			"urls": [
+				"bzz-raw://61d60f7e4e7411e2aac32b17ead57f6d4264bd213d7446a11934de60ad2a4a2c",
+				"dweb:/ipfs/Qma7upZmgoKQepJ3Kd62HrUekDzhETerMNkCN4s27uGbf1"
+			]
+		},
+		"src/interfaces/IERC721Permit.sol": {
+			"keccak256": "0xfba2d50af2e60911cc3af0451940054ee23e1d3f981dbe0038aa860e81756fdc",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://24b25dbae8122afdefcd061a194013f6e9814c44e670ef9cc238ad17e275cf0c",
+				"dweb:/ipfs/QmRsEerk5aedRXWjyy9qQQwMdoR7X9MGMYRB6XEqN9oFEt"
+			]
+		},
+		"src/interfaces/I_Good.sol": {
+			"keccak256": "0x672cc1a31b9d6edc1e6f3befbaf8d167415815854d62a179a11089f515c1c78a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b2184281e370252f51179f9690613bbcc74f6c1391eee957bbe68e5f9c2c15b1",
+				"dweb:/ipfs/Qme5uavjcNvP3nh3RofAfgg1m7bRmgriGjWV4w4kC1jU6y"
+			]
+		},
+		"src/interfaces/I_MarketManage.sol": {
+			"keccak256": "0xd3167215216a5e421ca1c1d061a021890698d8f1cbcc5f57f2674e18e54fc2a6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://de5e3e132be463960dab880fb2cb937a8b533194733a4ce275f9fdff63bf78d3",
+				"dweb:/ipfs/QmTbg5WQsWHaqTcjCbJ43jxFbmUSVLYevUWjzxPBDvV1vH"
+			]
+		},
+		"src/interfaces/I_Proof.sol": {
+			"keccak256": "0xd7ad9dec684edaa7eeb563054013f3bc73206857120308802f6423ed9454e34c",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://be76ac9a6515ae29bc36aa3dce8aed189c33a2e7be1792f494e906d0c1c67139",
+				"dweb:/ipfs/QmcmGqc5K5k5PRw8uhTQp5LHuAbNhgcuu2AaFGma6GXnVK"
+			]
+		},
+		"src/interfaces/I_TTS.sol": {
+			"keccak256": "0x8ed752af4db35d19924c3dc30163cd9285ac784760af87dd09e1226a18feb391",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ef35ce9af23baac27ca78d587bce3384337f197a8ea00f3d788418a16fcc18d6",
+				"dweb:/ipfs/Qmae8pAqCqX9XUkicHGNatHbCvxG4s28iBJ2e6Gj9awivh"
+			]
+		},
+		"src/libraries/L_BalanceUINT256.sol": {
+			"keccak256": "0xee730fa098ac5a744cbe0f17d7c0fa66b2f07d6668771b6324965d641e11b906",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4ffc129f7858d39a279613ad3e6716bc534b2e5d16528f69bb98b6ea971e5ddc",
+				"dweb:/ipfs/QmRWZFQNUSLAFJuvoXyNHSC2NgzQBsky6RqQKzB3D4nyK1"
+			]
+		},
+		"src/libraries/L_Currency.sol": {
+			"keccak256": "0x4ec2d182e7a72c7118e840b6322ae2c4e5d8cce877e74ed7692f1726930b86e4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4701b1f19d3ec1fccb680dbc371206a08635ae3ad8bb4db98b8ae02aa38ca64f",
+				"dweb:/ipfs/QmXzJvDLbTbAixL44XYnGYEReYML4C7v4sYPVgnongX2WW"
+			]
+		},
+		"src/libraries/L_Good.sol": {
+			"keccak256": "0xcf6c9f2cfc70e5cc2b532be9fbde88c4e0c040969f677b21124b4f50ba75ec01",
+			"license": "BUSL-1.1",
+			"urls": [
+				"bzz-raw://637a74816f6ed4ced8a64f088f1a3c8f544cb7db63ae6d8c79d35fbbeefa28ff",
+				"dweb:/ipfs/QmWv31RafYaPJQJ39GHPhYFy9y6ZMU8hv2dtsGcmd9Yvc7"
+			]
+		},
+		"src/libraries/L_GoodConfig.sol": {
+			"keccak256": "0x7308ecfd2ff16633de529b38ff668a64c903b9d80dd70942710b410c2fd28cec",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://17f5c6ec2a734c71f128b3487b55984d8cf3f44ea5392a9ecb6de63b11c709d7",
+				"dweb:/ipfs/QmVyU9mA1R3rsqwz3UGuk58XG5c5r2x7rtDP4Yj38AAQSD"
+			]
+		},
+		"src/libraries/L_Lock.sol": {
+			"keccak256": "0xde0a0908e06ead877d60b64c536013d787b685a5f3c6ac18ad68384e010d4ec4",
+			"license": "GPL-3.0-or-later",
+			"urls": [
+				"bzz-raw://8bffeda6e5c7e1d21e895eae923e7dceb7218c76b77deb76a4013b8f8844fa69",
+				"dweb:/ipfs/Qmd8YH27uTjaeEDxLiYzv9qc5jQKMjANfh2jwQZvziqUwQ"
+			]
+		},
+		"src/libraries/L_MarketConfig.sol": {
+			"keccak256": "0x7bf482a86f6fc00d6a3a72aa4fc6c9826d2c0b0f9d71d4742bb01fe2ecb0025a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2c1b9fefd12668bfa976ae0247cda8ce49201050cace9fc9a82d53f8c19b7ae7",
+				"dweb:/ipfs/QmbBhcwABg6T44iDmUPv3PhtHohNUHuPQSKeMPmmndgmcy"
+			]
+		},
+		"src/libraries/L_Proof.sol": {
+			"keccak256": "0x5ddc4c90e43e12ff8d8f061dbae2089ee1d022450380e532f206b8edeede56ef",
+			"license": "BUSL-1.1",
+			"urls": [
+				"bzz-raw://0701444a99cb05e161b36f501e688ab3aec867b6844ef59fa2511fe148a13b3e",
+				"dweb:/ipfs/QmZqX7UVXBSHtieQHwKbrKqqiMKV57xWXXh92cDyhkWzMx"
+			]
+		},
+		"src/libraries/L_Struct.sol": {
+			"keccak256": "0x82b7610a79a4d5f041a95f4089c7a9c4c96bf4988aed58beec001645adaad491",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://2df06fab4728a389b0e60538aa5a4aab84f72b342df69aba55c5fa950eaa2ae9",
+				"dweb:/ipfs/QmPd262UGBGbJ8vh4nz9ECD32bayv6kHfPYas3ThRq6Zz2"
+			]
+		}
+	},
+	"version": 1
+}

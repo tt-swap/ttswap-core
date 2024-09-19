@@ -89,8 +89,6 @@ contract testInitMetaGood is BaseSetup {
             "after initial metagood:metagood marketcreator error"
         );
 
-        assertEq(market.goodNum(), 1, "after initial:good num error");
-
         uint256 metaproof = market.proofmapping(
             S_ProofKey(marketcreator, metagood, 0).toId()
         );
@@ -192,9 +190,6 @@ contract testInitMetaGood is BaseSetup {
             marketcreator,
             "after initial metagood:metagood marketcreator error"
         );
-
-        assertEq(market.goodNum(), 1, "after initial:good num error");
-
         uint256 metaproof = market.proofmapping(
             S_ProofKey(marketcreator, metagood, 0).toId()
         );

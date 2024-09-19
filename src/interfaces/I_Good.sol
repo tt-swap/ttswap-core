@@ -65,10 +65,6 @@ interface I_Good {
     /// @return marketconfig_ The market configuration
     function marketconfig() external view returns (uint256 marketconfig_);
 
-    /// @notice Returns the total number of goods in the market
-    /// @return goodNum_ The total number of goods
-    function goodNum() external view returns (uint256 goodNum_);
-
     /// @notice Sets the market configuration
     /// @param _marketconfig The new market configuration
     /// @return Success status

@@ -25,8 +25,6 @@ abstract contract GoodManage is I_Good, ProofManage {
 
     /// @inheritdoc I_Good
     uint256 public override marketconfig;
-    /// @inheritdoc I_Good
-    uint256 public override goodNum;
 
     mapping(uint256 => L_Good.S_GoodState) internal goods;
     mapping(address => uint256) public banlist;

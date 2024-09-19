@@ -31,7 +31,6 @@ contract ttstoken is BaseSetup {
         BaseSetup.setUp();
         vm.warp(1);
         initmetagood();
-
         vm.warp(1 + 86410);
         initbtcgood();
         vm.warp(1 + 86410 * 2);

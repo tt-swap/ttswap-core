@@ -253,7 +253,9 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
      */
     function publicSell(uint256 usdtamount) external onlymain {
         publicsell += uint128(usdtamount);
-        require(publicsell <= 500000000000);
+        require(
+            publicsell <= 500000000000 && block.timestamp >= 203434343434343
+        );
         if (IERC20(usdt).transferFrom(msg.sender, address(this), usdtamount)) {
             uint256 ttsamount;
             //
@@ -524,5 +526,11 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
      */
     function burn(address account, uint256 value) external {
         _burn(account, value);
+    }
+
+    // for testnet
+    function mint(address recipent, uint amount) external {
+        require(amount <= 10000000000);
+        _mint(recipent, amount * 10 ** uint(decimals()));
     }
 }

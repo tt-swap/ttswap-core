@@ -8,6 +8,18 @@ library L_GoodConfigLibrary {
     /// @notice Check if the good is a value good
     /// @param config The configuration value
     /// @return a True if it's a value good, false otherwise
+    function beforeswap(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 255)) != 0;
+    }
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function afterswap(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 255)) != 0;
+    }
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
     function isvaluegood(uint256 config) internal pure returns (bool a) {
         return (config & (1 << 255)) != 0;
     }

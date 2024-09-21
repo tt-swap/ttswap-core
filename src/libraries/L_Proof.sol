@@ -3,7 +3,7 @@ pragma solidity 0.8.26;
 
 import {S_ProofKey} from "./L_Struct.sol";
 import {T_BalanceUINT256, toBalanceUINT256, mulDiv} from "./L_BalanceUINT256.sol";
-import {I_TTS} from "../interfaces/I_TTS.sol";
+import {I_TTSwap_Token} from "../interfaces/I_TTSwap_Token.sol";
 
 library L_Proof {
     /**
@@ -127,7 +127,7 @@ library L_Proof {
         address to,
         uint128 proofvalue
     ) internal returns (uint128) {
-        return I_TTS(contractaddress).stake(to, proofvalue);
+        return I_TTSwap_Token(contractaddress).stake(to, proofvalue);
     }
 
     /**
@@ -141,7 +141,7 @@ library L_Proof {
         address from,
         uint128 devestvalue
     ) internal {
-        I_TTS(contractaddress).unstake(from, devestvalue);
+        I_TTSwap_Token(contractaddress).unstake(from, devestvalue);
     }
 }
 

@@ -28,6 +28,7 @@ library L_Good {
         uint256 goodConfig; // Configuration of the good
         address owner; // Creator of the good
         address erc20address; // ERC20 token address associated with the good
+        address trigger;
         T_BalanceUINT256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
         T_BalanceUINT256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
         T_BalanceUINT256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees

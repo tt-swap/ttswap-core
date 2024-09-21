@@ -3,7 +3,7 @@ pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
-import "../src/MarketManager.sol";
+import "../src/TTSwap_Market.sol";
 import {TTS} from "../src/TTSwap_Token.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
@@ -32,7 +32,7 @@ contract testBuy1 is Test {
     uint256 metaproofid;
     address marketcreator;
 
-    MarketManager market;
+    TTSwap_Market market;
     MyToken usdt;
     MyToken eth;
     MyToken wbtc;
@@ -45,7 +45,7 @@ contract testBuy1 is Test {
         wbtc = new MyToken("BTC", "BTC", 8);
         eth = new MyToken("ETH", "ETH", 18);
         tts_token = new TTS(address(usdt), marketcreator, 2 ** 255);
-        market = new MarketManager(
+        market = new TTSwap_Market(
             81562183917421901855786361352751156561780156203962646020495653018153967943680,
             address(tts_token)
         );

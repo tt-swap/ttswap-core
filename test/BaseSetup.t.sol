@@ -4,7 +4,7 @@ pragma solidity 0.8.26;
 import "forge-gas-snapshot/GasSnapshot.sol";
 import {Test} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
-import "../src/MarketManager.sol";
+import "../src/TTSwap_Market.sol";
 import {TTS} from "../src/TTSwap_Token.sol";
 
 contract BaseSetup is Test, GasSnapshot {
@@ -13,7 +13,7 @@ contract BaseSetup is Test, GasSnapshot {
     MyToken usdt;
     MyToken eth;
     address marketcreator;
-    MarketManager market;
+    TTSwap_Market market;
     TTS tts_token;
 
     function setUp() public virtual {
@@ -39,7 +39,7 @@ contract BaseSetup is Test, GasSnapshot {
         vm.startPrank(marketcreator);
         tts_token = new TTS(address(usdt), marketcreator, 2 ** 255);
         snapStart("depoly Market Manager");
-        market = new MarketManager(m_marketconfig, address(tts_token));
+        market = new TTSwap_Market(m_marketconfig, address(tts_token));
         snapEnd();
         tts_token.addauths(address(market), 1);
         vm.stopPrank();

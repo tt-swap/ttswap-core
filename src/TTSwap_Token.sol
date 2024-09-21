@@ -7,7 +7,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {I_MarketManage} from "./interfaces/I_Marketmanage.sol";
 import {I_Proof} from "./interfaces/I_Proof.sol";
-import {I_TTS} from "./interfaces/I_TTS.sol";
+import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {toBalanceUINT256, T_BalanceUINT256, L_BalanceUINT256Library, add, sub, mulDiv} from "./libraries/L_BalanceUINT256.sol";
 
@@ -15,7 +15,7 @@ import {toBalanceUINT256, T_BalanceUINT256, L_BalanceUINT256Library, add, sub, m
  * @title TTS Token Contract
  * @dev Implements ERC20 token with additional staking and cross-chain functionality
  */
-contract TTS is ERC20Permit, I_TTS {
+contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     using L_BalanceUINT256Library for T_BalanceUINT256;
     using L_TTSTokenConfigLibrary for uint256;
     uint256 public ttstokenconfig;
@@ -225,7 +225,11 @@ contract TTS is ERC20Permit, I_TTS {
      * @notice Will only set the referral if the user doesn't already have one
      */
     function addreferral(address user, address referral) external override {
-        if (auths[msg.sender] == 1 && referrals[user] == address(0)) {
+        if (
+            auths[msg.sender] == 1 &&
+            referrals[user] == address(0) &&
+            user != referral
+        ) {
             referrals[user] = referral;
             emit e_addreferral(user, referral);
         }

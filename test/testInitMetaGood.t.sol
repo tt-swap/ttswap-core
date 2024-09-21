@@ -89,8 +89,6 @@ contract testInitMetaGood is BaseSetup {
             "after initial metagood:metagood marketcreator error"
         );
 
-        assertEq(market.goodNum(), 1, "after initial:good num error");
-
         uint256 metaproof = market.proofmapping(
             S_ProofKey(marketcreator, metagood, 0).toId()
         );
@@ -112,13 +110,13 @@ contract testInitMetaGood is BaseSetup {
         );
 
         assertEq(
-            market.balanceOf(marketcreator),
+            tts_nft.balanceOf(marketcreator),
             1,
             "erc721 market balance error"
         );
 
         assertEq(
-            market.ownerOf(metaproof),
+            tts_nft.ownerOf(metaproof),
             marketcreator,
             "erc721 proof owner error"
         );
@@ -193,8 +191,6 @@ contract testInitMetaGood is BaseSetup {
             "after initial metagood:metagood marketcreator error"
         );
 
-        assertEq(market.goodNum(), 1, "after initial:good num error");
-
         uint256 metaproof = market.proofmapping(
             S_ProofKey(marketcreator, metagood, 0).toId()
         );
@@ -215,13 +211,13 @@ contract testInitMetaGood is BaseSetup {
             "after initial:proof quantity error"
         );
         assertEq(
-            market.balanceOf(marketcreator),
+            tts_nft.balanceOf(marketcreator),
             1,
             "erc721 market balance error"
         );
 
         assertEq(
-            market.ownerOf(metaproof),
+            tts_nft.ownerOf(metaproof),
             marketcreator,
             "erc721 proof owner error"
         );

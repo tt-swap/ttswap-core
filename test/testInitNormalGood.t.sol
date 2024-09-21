@@ -184,12 +184,6 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:normalgood owner error"
         );
 
-        assertEq(
-            market.goodNum(),
-            2,
-            "after initial normal:normalgoodgood num error"
-        );
-
         ///////////////////////////
         uint256 normalproof = market.proofmapping(
             S_ProofKey(users[1], normalgoodkey, metagoodkey).toId()
@@ -206,13 +200,13 @@ contract testInitNormalGood is BaseSetup {
             "after initial:proof quantity error"
         );
         assertEq(
-            market.balanceOf(users[1]),
+            tts_nft.balanceOf(users[1]),
             1,
             "erc721 users[1] balance error"
         );
 
         assertEq(
-            market.ownerOf(normalproof),
+            tts_nft.ownerOf(normalproof),
             users[1],
             "erc721 proof owner error"
         );
@@ -324,8 +318,6 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:metagoodkey marketcreator error"
         );
 
-        assertEq(market.goodNum(), 2, "after initial:good num error");
-
         uint256 normalgoodkey = S_GoodKey(users[1], address(0)).toId();
 
         ////////////////////////////////////////
@@ -361,8 +353,6 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:normalgood owner error"
         );
 
-        assertEq(market.goodNum(), 2, "after initial normal:good num error");
-
         ///////////////////////////
 
         uint256 normalproof = market.proofmapping(
@@ -386,13 +376,13 @@ contract testInitNormalGood is BaseSetup {
             "after initial:proof value quantity error"
         );
         assertEq(
-            market.balanceOf(users[1]),
+            tts_nft.balanceOf(users[1]),
             1,
             "erc721 users[1] balance error"
         );
 
         assertEq(
-            market.ownerOf(normalproof),
+            tts_nft.ownerOf(normalproof),
             users[1],
             "erc721 proof owner error"
         );

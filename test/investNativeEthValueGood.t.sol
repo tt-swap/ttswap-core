@@ -81,7 +81,6 @@ contract investNativeETHValueGood is BaseSetup {
 
         market.investGood{value: 50000000000}(metagood, 0, 50000 * 10 ** 6);
         snapLastCall("invest_own_nativeeth_valuegood_first");
-        assertEq(market.goodNum(), 1, "befor invest:good num error");
         assertEq(
             marketcreator.balance,
             900000000000,
@@ -144,8 +143,6 @@ contract investNativeETHValueGood is BaseSetup {
             marketcreator,
             "after invest metagood:metagood marketcreator error"
         );
-
-        assertEq(market.goodNum(), 1, "after invest:good num error");
 
         assertEq(
             good_.erc20address,
@@ -272,8 +269,6 @@ contract investNativeETHValueGood is BaseSetup {
             marketcreator,
             "after invest metagood:metagood marketcreator error"
         );
-
-        assertEq(market.goodNum(), 1, "after invest:good num error");
 
         assertEq(
             good_.erc20address,

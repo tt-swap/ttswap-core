@@ -4,7 +4,8 @@ pragma solidity 0.8.26;
 interface I_TTSwap_APP {
     function beforeswap(
         uint256 state,
-        uint256 feestate,
+        uint256 feestate1,
+        uint256 feestate2,
         address recipent
     ) external returns (bool);
 

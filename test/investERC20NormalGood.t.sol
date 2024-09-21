@@ -204,8 +204,6 @@ contract investERC20NormalGood is BaseSetup {
             "after invest erc20_normalgood:metagood marketcreator error"
         );
 
-        assertEq(market.goodNum(), 2, "after invest:good num error");
-
         assertEq(
             good_.erc20address,
             address(usdt),
@@ -367,8 +365,6 @@ contract investERC20NormalGood is BaseSetup {
             marketcreator,
             "after invest erc20_normalgood:metagood marketcreator error"
         );
-
-        assertEq(market.goodNum(), 2, "after invest:good num error");
 
         assertEq(
             good_.erc20address,

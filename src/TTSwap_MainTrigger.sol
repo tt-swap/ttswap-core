@@ -3,15 +3,21 @@ pragma solidity 0.8.26;
 
 import {I_TTSwap_APP} from "./interfaces/I_TTSwap_APP.sol";
 import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
-contract officialTrigge is I_TTSwap_MainTrigger {
+contract TTSwap_MainTrigger is I_TTSwap_MainTrigger {
     function main_beforeswap(
         address triggercontract,
-        uint256 state,
-        uint256 feestate,
+        uint256 trade,
+        uint256 currentstate,
+        uint256 depositstate,
         address recipent
     ) external override returns (bool) {
         return
-            I_TTSwap_APP(triggercontract).beforeswap(state, feestate, recipent);
+            I_TTSwap_APP(triggercontract).beforeswap(
+                trade,
+                currentstate,
+                depositstate,
+                recipent
+            );
     }
     function main_afterswap(
         address triggercontract,

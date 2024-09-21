@@ -79,7 +79,7 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @param _goodConfig The good configuration
      * @return bool Returns true if successful
      */
-    /// @inheritdoc I_MarketManage
+    /// @inheritdoc I_TTSwap_Market
     function initMetaGood(
         address _erc20address,
         T_BalanceUINT256 _initial,
@@ -124,7 +124,7 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @param _goodConfig The good configuration
      * @return bool Returns true if successful
      */
-    /// @inheritdoc I_MarketManage
+    /// @inheritdoc I_TTSwap_Market
     function initGood(
         uint256 _valuegood,
         T_BalanceUINT256 _initial,
@@ -189,7 +189,6 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         return true;
     }
-
     /**
      * @dev Buys a good
      * @param _goodid1 The ID of the first good
@@ -201,7 +200,7 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @return goodid2Quantity_ The quantity of the second good received
      * @return goodid2FeeQuantity_ The fee quantity for the second good
      */
-    /// @inheritdoc I_MarketManage
+    /// @inheritdoc I_TTSwap_Market
     function buyGood(
         uint256 _goodid1,
         uint256 _goodid2,
@@ -231,13 +230,13 @@ contract TTSwap_Market is I_TTSwap_Market {
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
-
         if (swapcache.good1config.beforeswap())
             I_TTSwap_MainTrigger(officialTrigger)
                 .main_beforeswap(
                     goods[_goodid1].trigger,
-                    _goodid2,
                     _swapQuantity,
+                    T_BalanceUINT256.unwrap(swapcache.good1currentState),
+                    T_BalanceUINT256.unwrap(swapcache.good2currentState),
                     msg.sender
                 )
                 .isOk();
@@ -245,8 +244,9 @@ contract TTSwap_Market is I_TTSwap_Market {
             I_TTSwap_MainTrigger(officialTrigger)
                 .main_beforeswap(
                     goods[_goodid2].trigger,
-                    _goodid1,
                     _swapQuantity,
+                    T_BalanceUINT256.unwrap(swapcache.good2currentState),
+                    T_BalanceUINT256.unwrap(swapcache.good1currentState),
                     msg.sender
                 )
                 .isOk();
@@ -299,7 +299,7 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @return goodid1Quantity_ The quantity of the first good received
      * @return goodid1FeeQuantity_ The fee quantity for the first good
      */
-    /// @inheritdoc I_MarketManage
+    /// @inheritdoc I_TTSwap_Market
     function buyGoodForPay(
         uint256 _goodid1,
         uint256 _goodid2,
@@ -368,7 +368,7 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @param _quantity The quantity to invest
      * @return bool Returns true if successful
      */
-    /// @inheritdoc I_MarketManage
+    /// @inheritdoc I_TTSwap_Market
     function investGood(
         uint256 _togood,
         uint256 _valuegood,
@@ -455,7 +455,7 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @param _gater The gater address
      * @return bool Returns true if successful
      */
-    /// @inheritdoc I_MarketManage
+    /// @inheritdoc I_TTSwap_Market
     function disinvestProof(
         uint256 _proofid,
         uint128 _goodQuantity,
@@ -521,7 +521,7 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @param _gater The gater address
      * @return profit_ The collected profit
      */
-    /// @inheritdoc I_MarketManage
+    /// @inheritdoc I_TTSwap_Market
     function collectProof(
         uint256 _proofid,
         address _gater
@@ -692,5 +692,43 @@ contract TTSwap_Market is I_TTSwap_Market {
         marketconfig = _marketconfig;
         emit e_setMarketConfig(_marketconfig);
         return true;
+    }
+
+    function setGoodTrigger(address) external {}
+
+    /**
+     * @dev Internal function to handle proof data deletion and updates during transfer.
+     * @param proofid The ID of the proof being transferred.
+     * @param from The address transferring the proof.
+     * @param to The address receiving the proof.
+     */
+    function delproofdata(uint256 proofid, address from, address to) external {
+        require(msg.sender == officialNFTContract);
+        L_Proof.unstake(
+            officialTokenContract,
+            from,
+            proofs[proofid].state.amount0()
+        );
+        L_Proof.S_ProofState memory proofState = proofs[proofid];
+        uint256 proofKey1 = S_ProofKey(
+            from,
+            proofState.currentgood,
+            proofState.valuegood
+        ).toId();
+        uint256 proofKey2 = S_ProofKey(
+            to,
+            proofState.currentgood,
+            proofState.valuegood
+        ).toId();
+        L_Proof.stake(officialTokenContract, to, proofState.state.amount0());
+        uint256 existingProofId = proofmapping[proofKey2];
+        if (existingProofId == 0) {
+            proofmapping[proofKey2] = proofmapping[proofKey1];
+        } else {
+            proofs[existingProofId].conbine(proofs[proofid]);
+            delete proofs[proofid];
+            I_TTSwap_NFT(officialNFTContract).burn(proofid);
+        }
+        delete proofmapping[proofKey1];
     }
 }

@@ -5,8 +5,7 @@ import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20P
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {I_MarketManage} from "./interfaces/I_Marketmanage.sol";
-import {I_Proof} from "./interfaces/I_Proof.sol";
+import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {toBalanceUINT256, T_BalanceUINT256, L_BalanceUINT256Library, add, sub, mulDiv} from "./libraries/L_BalanceUINT256.sol";
@@ -202,7 +201,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     function shareMint(uint8 index) public onlymain {
         require(
-            I_MarketManage(marketcontract).ishigher(
+            I_TTSwap_Market(marketcontract).ishigher(
                 normalgoodid,
                 valuegoodid,
                 2 ** shares[index].metric * 2 ** 128 + 1

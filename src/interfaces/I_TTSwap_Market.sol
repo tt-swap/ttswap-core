@@ -358,4 +358,12 @@ interface I_TTSwap_Market {
     /// @notice Returns the total number of proofs in the market
     /// @return proofnum_ The total number of proofs
     function totalSupply() external view returns (uint256 proofnum_);
+
+    /**
+     * @dev Internal function to handle proof data deletion and updates during transfer.
+     * @param proofid The ID of the proof being transferred.
+     * @param from The address transferring the proof.
+     * @param to The address receiving the proof.
+     */
+    function delproofdata(uint256 proofid, address from, address to) external;
 }

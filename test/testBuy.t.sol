@@ -3,8 +3,10 @@ pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
-import "../src/TTSwap_Market.sol";
-import {TTS} from "../src/TTSwap_Token.sol";
+import {TTSwap_Market} from "../src/TTSwap_Market.sol";
+import {TTSwap_Token} from "../src/TTSwap_Token.sol";
+import {TTSwap_NFT} from "../src/TTSwap_NFT.sol";
+import {TTSwap_MainTrigger} from "../src/TTSwap_MainTrigger.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
 import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
@@ -15,6 +17,7 @@ import {L_CurrencyLibrary} from "../src/libraries/L_Currency.sol";
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 import {ProofUtil} from "./util/ProofUtil.sol";
 import {GoodUtil} from "./util/GoodUtil.sol";
+import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 
 contract testBuy1 is Test {
     using L_MarketConfigLibrary for uint256;
@@ -33,21 +36,27 @@ contract testBuy1 is Test {
     address marketcreator;
 
     TTSwap_Market market;
+    TTSwap_Token tts_token;
+    TTSwap_NFT tts_nft;
+    TTSwap_MainTrigger tts_trigger;
     MyToken usdt;
     MyToken eth;
     MyToken wbtc;
 
-    TTS tts_token;
     function setUp() public {
         marketcreator = address(1);
         vm.startPrank(marketcreator);
         usdt = new MyToken("USDT", "USDT", 6);
         wbtc = new MyToken("BTC", "BTC", 8);
         eth = new MyToken("ETH", "ETH", 18);
-        tts_token = new TTS(address(usdt), marketcreator, 2 ** 255);
+        tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
+        tts_nft = new TTSwap_NFT(address(tts_token));
+        tts_trigger = new TTSwap_MainTrigger();
         market = new TTSwap_Market(
             81562183917421901855786361352751156561780156203962646020495653018153967943680,
-            address(tts_token)
+            address(tts_token),
+            address(tts_nft),
+            address(tts_trigger)
         );
         tts_token.addauths(address(market), 1);
         //81562183917421901855786361352751956561780156203962646020495653018153967943680

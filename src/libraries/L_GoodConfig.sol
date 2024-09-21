@@ -9,13 +9,13 @@ library L_GoodConfigLibrary {
     /// @param config The configuration value
     /// @return a True if it's a value good, false otherwise
     function beforeswap(uint256 config) internal pure returns (bool a) {
-        return (config & (1 << 255)) != 0;
+        return (config & (1 << 254)) != 0;
     }
     /// @notice Check if the good is a value good
     /// @param config The configuration value
     /// @return a True if it's a value good, false otherwise
     function afterswap(uint256 config) internal pure returns (bool a) {
-        return (config & (1 << 255)) != 0;
+        return (config & (1 << 254)) != 0;
     }
     /// @notice Check if the good is a value good
     /// @param config The configuration value

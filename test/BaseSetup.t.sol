@@ -43,7 +43,7 @@ contract BaseSetup is Test, GasSnapshot {
         vm.startPrank(marketcreator);
         tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
         tts_nft = new TTSwap_NFT(address(tts_token));
-        tts_trigger = new TTSwap_MainTrigger();
+        tts_trigger = new TTSwap_MainTrigger(address(tts_token));
         snapStart("depoly Market Manager");
         market = new TTSwap_Market(
             m_marketconfig,
@@ -52,6 +52,8 @@ contract BaseSetup is Test, GasSnapshot {
             address(tts_trigger)
         );
         snapEnd();
+
+        tts_token.setMainTriggerMarket(address(tts_trigger), address(market));
         tts_token.addauths(address(market), 1);
         vm.stopPrank();
     }

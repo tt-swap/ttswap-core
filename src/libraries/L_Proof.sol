@@ -136,19 +136,27 @@ library L_Proof {
      * @dev Unstakes a certain amount of proof value
      * @param contractaddress The address of the staking contract
      * @param from The address to unstake from
-     * @param devestvalue The amount of proof value to unstake
+     * @param divestvalue The amount of proof value to unstake
      */
     function unstake(
         address contractaddress,
         address from,
-        uint128 devestvalue
+        uint128 divestvalue
     ) internal {
-        I_TTSwap_Token(contractaddress).unstake(from, devestvalue);
+        I_TTSwap_Token(contractaddress).unstake(from, divestvalue);
     }
 }
 
-library L_ProofIdLibrary {
-    function toId(S_ProofKey memory proofKey) internal pure returns (uint256) {
+library L_ProofKeyLibrary {
+    function toKey(S_ProofKey memory proofKey) internal pure returns (uint256) {
         return uint256(keccak256(abi.encode(proofKey)));
+    }
+}
+library L_ProofIdLibrary {
+    function toId(uint256 proofkey) internal view returns (uint256) {
+        return
+            uint256(
+                keccak256(abi.encode(proofkey, address(this), block.timestamp))
+            );
     }
 }

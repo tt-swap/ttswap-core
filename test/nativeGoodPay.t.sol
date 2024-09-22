@@ -8,7 +8,7 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
 
-import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_CurrencyLibrary} from "../src/libraries/L_Currency.sol";
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
@@ -20,7 +20,7 @@ contract nativeGoodPay is Test, BaseSetup {
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
-    using L_ProofIdLibrary for S_ProofKey;
+    using L_ProofKeyLibrary for S_ProofKey;
     using L_CurrencyLibrary for address;
     using L_TTSwapUINT256Library for uint256;
 

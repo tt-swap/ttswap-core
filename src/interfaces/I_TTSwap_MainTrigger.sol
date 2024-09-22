@@ -2,78 +2,55 @@
 pragma solidity 0.8.26;
 
 interface I_TTSwap_MainTrigger {
-    function main_beforeswap(
+    function setofficialMarket(address _officialMarket) external;
+
+    function main_beforeswaptake(
         address triggercontract,
+        uint256 opgood,
         uint256 trade,
         uint256 currentstate,
-        uint256 depositstate,
+        uint256 opstate,
         address recipent
     ) external returns (bool);
 
-    function main_afterswap(
+    function main_beforeswapmake(
         address triggercontract,
-        uint256 goodid,
-        uint256 state,
-        uint256 feestate,
+        uint256 opgood,
+        uint256 trade,
+        uint256 currentstate,
+        uint256 opstate,
         address recipent
     ) external returns (bool);
 
-    function main_beforinvest(
+    function main_afterswaptake(
         address triggercontract,
-        uint256 goodid,
-        uint256 investstate,
-        uint256 feestate,
-        address recipent
-    ) external returns (bool);
-    function main_afterinvest(
-        address triggercontract,
-        uint256 goodid,
-        uint256 investstate,
-        uint256 feestate,
+        uint256 opgood,
+        uint256 traderesult,
+        uint256 currentstate,
+        uint256 opstate,
         address recipent
     ) external returns (bool);
 
-    function main_befordevest(
+    function main_afterswapmake(
         address triggercontract,
-        uint256 goodid,
-        uint256 investstate,
-        uint256 feestate,
+        uint256 opgood,
+        uint256 traderesult,
+        uint256 currentstate,
+        uint256 opstate,
         address recipent
     ) external returns (bool);
 
-    function main_afterdevest(
+    function main_invest(
         address triggercontract,
-        uint256 goodid,
-        uint256 investstate,
-        uint256 feestate,
+        uint256 investquanity,
+        uint256 currentstate,
         address recipent
     ) external returns (bool);
-    function main_beforeinitproof(
+
+    function main_divest(
         address triggercontract,
-        uint256 proofid,
-        uint256 investstate,
-        uint128 amount,
-        address recipent
-    ) external returns (bool);
-    function main_beforeupdateproof(
-        address triggercontract,
-        uint256 proofid,
-        uint256 investstate,
-        uint128 amount,
-        address recipent
-    ) external returns (bool);
-    function main_afterinitproof(
-        address triggercontract,
-        uint256 proofid,
-        uint256 investstate,
-        uint128 amount,
-        address recipent
-    ) external returns (bool);
-    function main_afterupdateproof(
-        address triggercontract,
-        uint256 proofid,
-        uint256 investstate,
-        uint128 amount,
+        uint256 divestquanity,
+        uint256 currentstate,
         address recipent
     ) external returns (bool);
 }

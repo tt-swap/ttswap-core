@@ -7,7 +7,7 @@ import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
-import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
@@ -25,7 +25,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
 
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
-    using L_ProofIdLibrary for S_ProofKey;
+    using L_ProofKeyLibrary for S_ProofKey;
 
     // State variables
     uint256 metagood;
@@ -120,7 +120,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
         vm.startPrank(users[2]);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodbtc, metagood).toId()
+            S_ProofKey(users[2], normalgoodbtc, metagood).toKey()
         );
 
         // Check initial proof state
@@ -186,7 +186,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
             "before collect erc20 good:normalgoodbtc feeQuantityState amount1 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodbtc, metagood).toId()
+            S_ProofKey(users[2], normalgoodbtc, metagood).toKey()
         );
 
         // Collect proof first time

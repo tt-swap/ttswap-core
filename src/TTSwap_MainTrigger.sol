@@ -4,155 +4,118 @@ pragma solidity 0.8.26;
 import {I_TTSwap_APP} from "./interfaces/I_TTSwap_APP.sol";
 import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
 contract TTSwap_MainTrigger is I_TTSwap_MainTrigger {
-    function main_beforeswap(
+    address public immutable officialToken;
+    address public officialMarket;
+    constructor(address _officialToken) {
+        officialToken = _officialToken;
+    }
+
+    function setofficialMarket(address _officialMarket) external override {
+        require(msg.sender == officialToken);
+        officialMarket = _officialMarket;
+    }
+
+    function main_beforeswaptake(
         address triggercontract,
+        uint256 opgood,
         uint256 trade,
         uint256 currentstate,
-        uint256 depositstate,
+        uint256 opstate,
         address recipent
     ) external override returns (bool) {
+        require(msg.sender == officialMarket);
         return
-            I_TTSwap_APP(triggercontract).beforeswap(
+            I_TTSwap_APP(triggercontract).beforeswaptake(
+                opgood,
                 trade,
                 currentstate,
-                depositstate,
+                opstate,
                 recipent
             );
     }
-    function main_afterswap(
+    function main_beforeswapmake(
         address triggercontract,
-        uint256 goodid,
-        uint256 state,
-        uint256 feestate,
+        uint256 opgood,
+        uint256 trade,
+        uint256 currentstate,
+        uint256 opstate,
         address recipent
     ) external override returns (bool) {
+        require(msg.sender == officialMarket);
         return
-            I_TTSwap_APP(triggercontract).afterswap(
-                goodid,
-                state,
-                feestate,
-                recipent
-            );
-    }
-    function main_beforinvest(
-        address triggercontract,
-        uint256 goodid,
-        uint256 investstate,
-        uint256 feestate,
-        address recipent
-    ) external override returns (bool) {
-        return
-            I_TTSwap_APP(triggercontract).beforinvest(
-                goodid,
-                investstate,
-                feestate,
-                recipent
-            );
-    }
-    function main_afterinvest(
-        address triggercontract,
-        uint256 goodid,
-        uint256 investstate,
-        uint256 feestate,
-        address recipent
-    ) external override returns (bool) {
-        return
-            I_TTSwap_APP(triggercontract).afterinvest(
-                goodid,
-                investstate,
-                feestate,
+            I_TTSwap_APP(triggercontract).beforeswaptake(
+                opgood,
+                trade,
+                currentstate,
+                opstate,
                 recipent
             );
     }
 
-    function main_befordevest(
+    function main_afterswaptake(
         address triggercontract,
-        uint256 goodid,
-        uint256 investstate,
-        uint256 feestate,
+        uint256 opgood,
+        uint256 traderesult,
+        uint256 currentstate,
+        uint256 opstate,
         address recipent
-    ) external override returns (bool) {
+    ) external returns (bool) {
+        require(msg.sender == officialMarket);
         return
-            I_TTSwap_APP(triggercontract).befordevest(
-                goodid,
-                investstate,
-                feestate,
+            I_TTSwap_APP(triggercontract).afterswaptake(
+                opgood,
+                traderesult,
+                currentstate,
+                opstate,
                 recipent
             );
     }
 
-    function main_afterdevest(
+    function main_afterswapmake(
         address triggercontract,
-        uint256 goodid,
-        uint256 investstate,
-        uint256 feestate,
+        uint256 opgood,
+        uint256 traderesult,
+        uint256 currentstate,
+        uint256 opstate,
         address recipent
-    ) external override returns (bool) {
+    ) external returns (bool) {
+        require(msg.sender == officialMarket);
         return
-            I_TTSwap_APP(triggercontract).afterdevest(
-                goodid,
-                investstate,
-                feestate,
+            I_TTSwap_APP(triggercontract).afterswapmake(
+                opgood,
+                traderesult,
+                currentstate,
+                opstate,
                 recipent
             );
     }
-    function main_beforeinitproof(
+
+    function main_invest(
         address triggercontract,
-        uint256 proofid,
-        uint256 investstate,
-        uint128 amount,
+        uint256 investquanity,
+        uint256 currentstate,
         address recipent
     ) external override returns (bool) {
+        require(msg.sender == officialMarket);
         return
-            I_TTSwap_APP(triggercontract).beforeinitproof(
-                proofid,
-                investstate,
-                amount,
+            I_TTSwap_APP(triggercontract).invest(
+                investquanity,
+                currentstate,
                 recipent
             );
     }
-    function main_beforeupdateproof(
+
+    function main_divest(
         address triggercontract,
-        uint256 proofid,
-        uint256 investstate,
-        uint128 amount,
+        uint256 divestquanity,
+        uint256 currentstate,
         address recipent
     ) external override returns (bool) {
+        require(msg.sender == officialMarket);
         return
-            I_TTSwap_APP(triggercontract).beforeupdateproof(
-                proofid,
-                investstate,
-                amount,
-                recipent
-            );
-    }
-    function main_afterinitproof(
-        address triggercontract,
-        uint256 proofid,
-        uint256 investstate,
-        uint128 amount,
-        address recipent
-    ) external override returns (bool) {
-        return
-            I_TTSwap_APP(triggercontract).afterinitproof(
-                proofid,
-                investstate,
-                amount,
-                recipent
-            );
-    }
-    function main_afterupdateproof(
-        address triggercontract,
-        uint256 proofid,
-        uint256 investstate,
-        uint128 amount,
-        address recipent
-    ) external override returns (bool) {
-        return
-            I_TTSwap_APP(triggercontract).afterupdateproof(
-                proofid,
-                investstate,
-                amount,
+            I_TTSwap_APP(triggercontract).divest(
+                divestquanity,
+                currentstate,
                 recipent
             );
     }

@@ -142,4 +142,9 @@ interface I_TTSwap_Token {
     function getreferralanddaoadmin(
         address _customer
     ) external view returns (address dba_admin, address referral);
+
+    function setMainTriggerMarket(
+        address Maintriggeradd,
+        address marketadd
+    ) external;
 }

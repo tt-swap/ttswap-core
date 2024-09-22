@@ -19,6 +19,11 @@ interface I_TTSwap_Market {
     /// @param _marketconfig The market configuration
     event e_setMarketConfig(uint256 _marketconfig);
 
+    event e_setGoodTrigger(
+        uint256 goodid,
+        address triggeraddress,
+        uint256 goodconfig
+    );
     /// @notice Emitted when a good's configuration is updated
     /// @param _goodid The ID of the good
     /// @param _goodConfig The new configuration
@@ -354,10 +359,6 @@ interface I_TTSwap_Market {
     /// @param goodid The ID of the good
     /// @param welfare The amount of welfare
     function goodWelfare(uint256 goodid, uint128 welfare) external payable;
-
-    /// @notice Returns the total number of proofs in the market
-    /// @return proofnum_ The total number of proofs
-    function totalSupply() external view returns (uint256 proofnum_);
 
     /**
      * @dev Internal function to handle proof data deletion and updates during transfer.

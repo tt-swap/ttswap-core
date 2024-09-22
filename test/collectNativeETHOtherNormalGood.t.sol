@@ -6,7 +6,7 @@ import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
-import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
 
@@ -19,7 +19,7 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
     using L_GoodConfigLibrary for uint256;
 
     using L_GoodIdLibrary for S_GoodKey;
-    using L_ProofIdLibrary for S_ProofKey;
+    using L_ProofKeyLibrary for S_ProofKey;
 
     uint256 metagood;
     uint256 normalgoodusdt;
@@ -102,7 +102,7 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
         vm.startPrank(users[2]);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodnativeETH, metagood).toId()
+            S_ProofKey(users[2], normalgoodnativeETH, metagood).toKey()
         );
         L_Proof.S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(
@@ -167,7 +167,7 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
             "before collect nativeeth good:normalgoodnativeETH feeQuantityState amount1 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodnativeETH, metagood).toId()
+            S_ProofKey(users[2], normalgoodnativeETH, metagood).toKey()
         );
 
         market.collectProof(normalproof, address(0));

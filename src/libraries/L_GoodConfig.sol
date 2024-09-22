@@ -8,18 +8,6 @@ library L_GoodConfigLibrary {
     /// @notice Check if the good is a value good
     /// @param config The configuration value
     /// @return a True if it's a value good, false otherwise
-    function beforeswap(uint256 config) internal pure returns (bool a) {
-        return (config & (1 << 254)) != 0;
-    }
-    /// @notice Check if the good is a value good
-    /// @param config The configuration value
-    /// @return a True if it's a value good, false otherwise
-    function afterswap(uint256 config) internal pure returns (bool a) {
-        return (config & (1 << 254)) != 0;
-    }
-    /// @notice Check if the good is a value good
-    /// @param config The configuration value
-    /// @return a True if it's a value good, false otherwise
     function isvaluegood(uint256 config) internal pure returns (bool a) {
         return (config & (1 << 255)) != 0;
     }
@@ -29,6 +17,44 @@ library L_GoodConfigLibrary {
     /// @return a True if it's a normal good, false otherwise
     function isnormalgood(uint256 config) internal pure returns (bool a) {
         return (config & (1 << 255)) == 0;
+    }
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function beforeswaptake(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 228)) != 0;
+    }
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function beforeswapmake(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 227)) != 0;
+    }
+
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function afterswaptake(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 226)) != 0;
+    }
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function afterswapmake(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 225)) != 0;
+    }
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function invest(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 224)) != 0;
+    }
+
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function divest(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 223)) != 0;
     }
 
     /// @notice Calculate the investment fee for a given amount

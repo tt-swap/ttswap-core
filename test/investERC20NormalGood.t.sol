@@ -15,6 +15,7 @@ import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 
 contract investERC20NormalGood is BaseSetup {
     using L_MarketConfigLibrary for uint256;
+    using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;

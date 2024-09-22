@@ -43,7 +43,10 @@ library L_Good {
         uint256 goodConfig; // Configuration of the good
         address owner; // Creator of the good
         address erc20address; // ERC20 token address associated with the good
+<<<<<<< HEAD
         address trigger;
+=======
+>>>>>>> 7ff40e0 (remove balance type 20240922)
         uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
         uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
         uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
@@ -813,6 +816,7 @@ library L_Good {
             (_goodconfig << 223);
     }
 
+<<<<<<< HEAD
     function swaptake(
         S_GoodState storage _self,
         address officialadd,
@@ -884,6 +888,22 @@ library L_Good {
                     _self.trigger,
                     divestquanity,
                     _self.currentState,
+=======
+    function beforswap(
+        S_GoodState storage _self,
+        address officialadd,
+        uint256 _tradestate,
+        uint256 takerstate,
+        address recipent
+    ) internal {
+        if (_self.goodConfig.beforeswap())
+            if (
+                I_TTSwap_MainTrigger(officialadd).main_beforeswap(
+                    _self.trigger,
+                    _tradestate,
+                    _self.currentState,
+                    takerstate,
+>>>>>>> 7ff40e0 (remove balance type 20240922)
                     recipent
                 )
             ) revert();

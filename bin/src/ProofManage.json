@@ -1,0 +1,1220 @@
+{
+    "contractName": "ProofManage",
+    "abi": [
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "proofid",
+                    "type": "uint256"
+                }
+            ],
+            "name": "getProofState",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "uint256",
+                            "name": "currentgood",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "valuegood",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "T_BalanceUINT256",
+                            "name": "state",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "T_BalanceUINT256",
+                            "name": "invest",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "T_BalanceUINT256",
+                            "name": "valueinvest",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct L_Proof.S_ProofState",
+                    "name": "",
+                    "type": "tuple"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "name": "proofmapping",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "totalSupply",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"proofid\",\"type\":\"uint256\"}],\"name\":\"getProofState\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"currentgood\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"valuegood\",\"type\":\"uint256\"},{\"internalType\":\"T_BalanceUINT256\",\"name\":\"state\",\"type\":\"uint256\"},{\"internalType\":\"T_BalanceUINT256\",\"name\":\"invest\",\"type\":\"uint256\"},{\"internalType\":\"T_BalanceUINT256\",\"name\":\"valueinvest\",\"type\":\"uint256\"}],\"internalType\":\"struct L_Proof.S_ProofState\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"proofmapping\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Abstract contract for managing proofs as ERC721 tokens with additional functionality. Inherits from I_Proof and ERC721Permit.\",\"kind\":\"dev\",\"methods\":{\"constructor\":{\"details\":\"Constructor to initialize the ProofManage contract.\",\"params\":{\"_officialNFTcontract\":\"Address of the official contract.\",\"_officialTokenContract\":\"Address of the official contract.\"}},\"getProofState(uint256)\":{\"details\":\"Retrieves the proof state for a given proof ID.\",\"params\":{\"proofid\":\"The ID of the proof.\"},\"returns\":{\"_0\":\"L_Proof.S_ProofState The state of the proof.\"}}},\"stateVariables\":{\"totalSupply\":{\"return\":\"The total number of proofs\",\"returns\":{\"_0\":\"The total number of proofs\"}}},\"title\":\"ProofManage\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"totalSupply()\":{\"notice\":\"Returns the total number of proofs in the market\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/admin/workspace/50Self_project/ttswap-core/src/ProofManage.sol\":\"ProofManage\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[],\"viaIR\":true},\"sources\":{\"/Users/admin/workspace/50Self_project/ttswap-core/lib/openzeppelin-contracts/contracts/interfaces/IERC165.sol\":{\"keccak256\":\"0xd04b0f06e0666f29cf7cccc82894de541e19bb30a765b107b1e40bb7fe5f7d7a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7b652499d098e88d8d878374616bb58434301061cae2253298b3f374044e0ddb\",\"dweb:/ipfs/QmbhAzctqo5jrSKU6idHdVyqfmzCcDbNUPvmx4GiXxfA6q\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0x5bce51e11f7d194b79ea59fe00c9e8de9fa2c5530124960f29a24d4c740a3266\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7e66dfde185df46104c11bc89d08fa0760737aa59a2b8546a656473d810a8ea4\",\"dweb:/ipfs/QmXvyqtXPaPss2PD7eqPoSao5Szm2n6UMoiG8TZZDjmChR\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/lib/openzeppelin-contracts/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/src/ProofManage.sol\":{\"keccak256\":\"0xf963be5eed62bcad661f1ae9fe026c572cca9c64953e7f3bce58f65798df4d31\",\"license\":\"BUSL-1.1\",\"urls\":[\"bzz-raw://981754a2d069583de8dcebed8ae8b427def6607b4a371a998943c07187c42cb6\",\"dweb:/ipfs/Qmaa1it1N9tthFtCiV6VpprAvprZeRykyGHrHNfAhbzspF\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/src/interfaces/IERC721Permit.sol\":{\"keccak256\":\"0x2f37afde637a40303c22e167a237d37f8ece9a63625faf55bac380a345788573\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a43f5ad0f797d6a3a4075961e9c11abf693cfad17f39eb940ee13aa04c95b4a8\",\"dweb:/ipfs/QmfAHF2Kcnov6e2PVjJioAVhSSHydi1BnH9agqxMizXeeT\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/src/interfaces/I_Proof.sol\":{\"keccak256\":\"0xd8e522df7effceeabffa3bfa8486056ea7433536935fa8c2fb13df9f4acd8fdc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6667bb65b10016bfc2943d49aebf8285cf89e595486263d4269b9f68656b419e\",\"dweb:/ipfs/QmNX6yFyB1vBmQDhgVwReMVjEvde5AFNCn5ZYHWQWb25nT\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/src/interfaces/I_TTSwap_NFT.sol\":{\"keccak256\":\"0x145ef576cb1dfa92d8d7b2fb0d88897edf70983921a15ce06b108c3d7dee46a1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1643cf59c1d3f40158102c852f67462d03464051bad4f18391636a44f256d9d7\",\"dweb:/ipfs/QmUcPKSfRCdwtoDTPAGHbjss9Cotxch6pQ3dCv5AJAsCPX\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/src/interfaces/I_TTSwap_Token.sol\":{\"keccak256\":\"0x230e343e56683a025af4281adca3fe5e3b0e8cc004b6bc108b1130bf235e61b8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://974ec3054346fc55ce7fa78f5e3197ae35a476da5f3fbe6c51b7571dde6eaa0a\",\"dweb:/ipfs/QmNgiP4Kus7vbaLvWWGwDUD5FmmrWhHhxcbCBU2ioHVwGU\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/src/libraries/L_BalanceUINT256.sol\":{\"keccak256\":\"0xb6efd63616449ab5aa0d867fc1cba4ee99b9a576e8eb937e4787ceb416989147\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9c070bb4dbe17e6048473e0a178a871b214ab164404ddf13e1849dd3330e5cff\",\"dweb:/ipfs/QmZf9sjYoLXDTjH8qSHiCCRio85YxsJ4g4DQ9ruUMzgA4j\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/src/libraries/L_Proof.sol\":{\"keccak256\":\"0x65fd196c2e956b31393795e8214727ea7dc6208fa88deec769e85f24f39eb942\",\"license\":\"BUSL-1.1\",\"urls\":[\"bzz-raw://072997ae6d15614e460263836d8c2ce58b18c25b099d8a85d16a6969921a57e4\",\"dweb:/ipfs/QmYNkxLP2wwLtoYMx73BBZAk519EXvnWMAgu2kZ2xeDnno\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/src/libraries/L_Struct.sol\":{\"keccak256\":\"0x82b7610a79a4d5f041a95f4089c7a9c4c96bf4988aed58beec001645adaad491\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2df06fab4728a389b0e60538aa5a4aab84f72b342df69aba55c5fa950eaa2ae9\",\"dweb:/ipfs/QmPd262UGBGbJ8vh4nz9ECD32bayv6kHfPYas3ThRq6Zz2\"]}},\"version\":1}",
+    "bytecode": "",
+    "deployedBytecode": "",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "sourcePath": "/Users/admin/workspace/50Self_project/ttswap-core/src/ProofManage.sol",
+    "compiler": {
+        "name": "solc",
+        "version": "0.8.26+commit.8a97fa7a"
+    },
+    "ast": {
+        "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/src/ProofManage.sol",
+        "exportedSymbols": {
+            "I_Proof": [
+                275
+            ],
+            "I_TTSwap_NFT": [
+                298
+            ],
+            "I_TTSwap_Token": [
+                471
+            ],
+            "L_BalanceUINT256Library": [
+                791
+            ],
+            "L_Proof": [
+                1120
+            ],
+            "L_ProofIdLibrary": [
+                1140
+            ],
+            "ProofManage": [
+                224
+            ],
+            "S_ProofKey": [
+                1154
+            ],
+            "T_BalanceUINT256": [
+                475
+            ]
+        },
+        "id": 225,
+        "license": "BUSL-1.1",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 132,
+                "literals": [
+                    "solidity",
+                    "0.8",
+                    ".26"
+                ],
+                "nodeType": "PragmaDirective",
+                "src": "37:23:3"
+            },
+            {
+                "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/src/interfaces/I_Proof.sol",
+                "file": "./interfaces/I_Proof.sol",
+                "id": 134,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 225,
+                "sourceUnit": 276,
+                "src": "62:49:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "id": 133,
+                            "name": "I_Proof",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 275,
+                            "src": "70:7:3",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/src/interfaces/I_TTSwap_Token.sol",
+                "file": "./interfaces/I_TTSwap_Token.sol",
+                "id": 136,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 225,
+                "sourceUnit": 472,
+                "src": "112:63:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "id": 135,
+                            "name": "I_TTSwap_Token",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 471,
+                            "src": "120:14:3",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/src/libraries/L_Struct.sol",
+                "file": "./libraries/L_Struct.sol",
+                "id": 138,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 225,
+                "sourceUnit": 1155,
+                "src": "176:52:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "id": 137,
+                            "name": "S_ProofKey",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1154,
+                            "src": "184:10:3",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/src/interfaces/I_TTSwap_NFT.sol",
+                "file": "./interfaces/I_TTSwap_NFT.sol",
+                "id": 140,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 225,
+                "sourceUnit": 299,
+                "src": "229:59:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "id": 139,
+                            "name": "I_TTSwap_NFT",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 298,
+                            "src": "237:12:3",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/src/libraries/L_Proof.sol",
+                "file": "./libraries/L_Proof.sol",
+                "id": 143,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 225,
+                "sourceUnit": 1141,
+                "src": "289:66:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "id": 141,
+                            "name": "L_Proof",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1120,
+                            "src": "297:7:3",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    },
+                    {
+                        "foreign": {
+                            "id": 142,
+                            "name": "L_ProofIdLibrary",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 1140,
+                            "src": "306:16:3",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/src/libraries/L_BalanceUINT256.sol",
+                "file": "./libraries/L_BalanceUINT256.sol",
+                "id": 146,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 225,
+                "sourceUnit": 792,
+                "src": "356:91:3",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "id": 144,
+                            "name": "T_BalanceUINT256",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 475,
+                            "src": "364:16:3",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    },
+                    {
+                        "foreign": {
+                            "id": 145,
+                            "name": "L_BalanceUINT256Library",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 791,
+                            "src": "382:23:3",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "abstract": true,
+                "baseContracts": [
+                    {
+                        "baseName": {
+                            "id": 148,
+                            "name": "I_Proof",
+                            "nameLocations": [
+                                "649:7:3"
+                            ],
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 275,
+                            "src": "649:7:3"
+                        },
+                        "id": 149,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "649:7:3"
+                    }
+                ],
+                "canonicalName": "ProofManage",
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": {
+                    "id": 147,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "449:166:3",
+                    "text": " @title ProofManage\n @dev Abstract contract for managing proofs as ERC721 tokens with additional functionality.\n Inherits from I_Proof and ERC721Permit."
+                },
+                "fullyImplemented": true,
+                "id": 224,
+                "linearizedBaseContracts": [
+                    224,
+                    275
+                ],
+                "name": "ProofManage",
+                "nameLocation": "634:11:3",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "global": false,
+                        "id": 151,
+                        "libraryName": {
+                            "id": 150,
+                            "name": "L_Proof",
+                            "nameLocations": [
+                                "669:7:3"
+                            ],
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 1120,
+                            "src": "669:7:3"
+                        },
+                        "nodeType": "UsingForDirective",
+                        "src": "663:20:3"
+                    },
+                    {
+                        "global": false,
+                        "id": 155,
+                        "libraryName": {
+                            "id": 152,
+                            "name": "L_ProofIdLibrary",
+                            "nameLocations": [
+                                "694:16:3"
+                            ],
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 1140,
+                            "src": "694:16:3"
+                        },
+                        "nodeType": "UsingForDirective",
+                        "src": "688:38:3",
+                        "typeName": {
+                            "id": 154,
+                            "nodeType": "UserDefinedTypeName",
+                            "pathNode": {
+                                "id": 153,
+                                "name": "S_ProofKey",
+                                "nameLocations": [
+                                    "715:10:3"
+                                ],
+                                "nodeType": "IdentifierPath",
+                                "referencedDeclaration": 1154,
+                                "src": "715:10:3"
+                            },
+                            "referencedDeclaration": 1154,
+                            "src": "715:10:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_S_ProofKey_$1154_storage_ptr",
+                                "typeString": "struct S_ProofKey"
+                            }
+                        }
+                    },
+                    {
+                        "global": false,
+                        "id": 159,
+                        "libraryName": {
+                            "id": 156,
+                            "name": "L_BalanceUINT256Library",
+                            "nameLocations": [
+                                "737:23:3"
+                            ],
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 791,
+                            "src": "737:23:3"
+                        },
+                        "nodeType": "UsingForDirective",
+                        "src": "731:51:3",
+                        "typeName": {
+                            "id": 158,
+                            "nodeType": "UserDefinedTypeName",
+                            "pathNode": {
+                                "id": 157,
+                                "name": "T_BalanceUINT256",
+                                "nameLocations": [
+                                    "765:16:3"
+                                ],
+                                "nodeType": "IdentifierPath",
+                                "referencedDeclaration": 475,
+                                "src": "765:16:3"
+                            },
+                            "referencedDeclaration": 475,
+                            "src": "765:16:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_userDefinedValueType$_T_BalanceUINT256_$475",
+                                "typeString": "T_BalanceUINT256"
+                            }
+                        }
+                    },
+                    {
+                        "baseFunctions": [
+                            274
+                        ],
+                        "constant": false,
+                        "functionSelector": "18160ddd",
+                        "id": 162,
+                        "mutability": "mutable",
+                        "name": "totalSupply",
+                        "nameLocation": "812:11:3",
+                        "nodeType": "VariableDeclaration",
+                        "overrides": {
+                            "id": 161,
+                            "nodeType": "OverrideSpecifier",
+                            "overrides": [],
+                            "src": "803:8:3"
+                        },
+                        "scope": 224,
+                        "src": "788:35:3",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                        },
+                        "typeName": {
+                            "id": 160,
+                            "name": "uint256",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "788:7:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                            }
+                        },
+                        "visibility": "public"
+                    },
+                    {
+                        "constant": false,
+                        "id": 167,
+                        "mutability": "mutable",
+                        "name": "proofs",
+                        "nameLocation": "879:6:3",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 224,
+                        "src": "829:56:3",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_S_ProofState_$816_storage_$",
+                            "typeString": "mapping(uint256 => struct L_Proof.S_ProofState)"
+                        },
+                        "typeName": {
+                            "id": 166,
+                            "keyName": "",
+                            "keyNameLocation": "-1:-1:-1",
+                            "keyType": {
+                                "id": 163,
+                                "name": "uint256",
+                                "nodeType": "ElementaryTypeName",
+                                "src": "837:7:3",
+                                "typeDescriptions": {
+                                    "typeIdentifier": "t_uint256",
+                                    "typeString": "uint256"
+                                }
+                            },
+                            "nodeType": "Mapping",
+                            "src": "829:40:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_S_ProofState_$816_storage_$",
+                                "typeString": "mapping(uint256 => struct L_Proof.S_ProofState)"
+                            },
+                            "valueName": "",
+                            "valueNameLocation": "-1:-1:-1",
+                            "valueType": {
+                                "id": 165,
+                                "nodeType": "UserDefinedTypeName",
+                                "pathNode": {
+                                    "id": 164,
+                                    "name": "L_Proof.S_ProofState",
+                                    "nameLocations": [
+                                        "848:7:3",
+                                        "856:12:3"
+                                    ],
+                                    "nodeType": "IdentifierPath",
+                                    "referencedDeclaration": 816,
+                                    "src": "848:20:3"
+                                },
+                                "referencedDeclaration": 816,
+                                "src": "848:20:3",
+                                "typeDescriptions": {
+                                    "typeIdentifier": "t_struct$_S_ProofState_$816_storage_ptr",
+                                    "typeString": "struct L_Proof.S_ProofState"
+                                }
+                            }
+                        },
+                        "visibility": "internal"
+                    },
+                    {
+                        "constant": false,
+                        "functionSelector": "5e008cc4",
+                        "id": 171,
+                        "mutability": "mutable",
+                        "name": "proofmapping",
+                        "nameLocation": "926:12:3",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 224,
+                        "src": "891:47:3",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_mapping$_t_uint256_$_t_uint256_$",
+                            "typeString": "mapping(uint256 => uint256)"
+                        },
+                        "typeName": {
+                            "id": 170,
+                            "keyName": "",
+                            "keyNameLocation": "-1:-1:-1",
+                            "keyType": {
+                                "id": 168,
+                                "name": "uint256",
+                                "nodeType": "ElementaryTypeName",
+                                "src": "899:7:3",
+                                "typeDescriptions": {
+                                    "typeIdentifier": "t_uint256",
+                                    "typeString": "uint256"
+                                }
+                            },
+                            "nodeType": "Mapping",
+                            "src": "891:27:3",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_mapping$_t_uint256_$_t_uint256_$",
+                                "typeString": "mapping(uint256 => uint256)"
+                            },
+                            "valueName": "",
+                            "valueNameLocation": "-1:-1:-1",
+                            "valueType": {
+                                "id": 169,
+                                "name": "uint256",
+                                "nodeType": "ElementaryTypeName",
+                                "src": "910:7:3",
+                                "typeDescriptions": {
+                                    "typeIdentifier": "t_uint256",
+                                    "typeString": "uint256"
+                                }
+                            }
+                        },
+                        "visibility": "public"
+                    },
+                    {
+                        "constant": false,
+                        "id": 173,
+                        "mutability": "immutable",
+                        "name": "officialTokenContract",
+                        "nameLocation": "972:21:3",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 224,
+                        "src": "945:48:3",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                        },
+                        "typeName": {
+                            "id": 172,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "945:7:3",
+                            "stateMutability": "nonpayable",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                            }
+                        },
+                        "visibility": "internal"
+                    },
+                    {
+                        "constant": false,
+                        "id": 175,
+                        "mutability": "immutable",
+                        "name": "officialNFTContract",
+                        "nameLocation": "1026:19:3",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 224,
+                        "src": "999:46:3",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                        },
+                        "typeName": {
+                            "id": 174,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "999:7:3",
+                            "stateMutability": "nonpayable",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                            }
+                        },
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 191,
+                            "nodeType": "Block",
+                            "src": "1346:115:3",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "id": 185,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "id": 183,
+                                            "name": "officialTokenContract",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 173,
+                                            "src": "1356:21:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "id": 184,
+                                            "name": "_officialTokenContract",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 178,
+                                            "src": "1380:22:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "src": "1356:46:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 186,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1356:46:3"
+                                },
+                                {
+                                    "expression": {
+                                        "id": 189,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "id": 187,
+                                            "name": "officialNFTContract",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 175,
+                                            "src": "1412:19:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "id": 188,
+                                            "name": "_officialNFTcontract",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 180,
+                                            "src": "1434:20:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "src": "1412:42:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 190,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1412:42:3"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 176,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "1052:215:3",
+                            "text": " @dev Constructor to initialize the ProofManage contract.\n @param _officialTokenContract Address of the official contract.\n @param _officialNFTcontract Address of the official contract."
+                        },
+                        "id": 192,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nameLocation": "-1:-1:-1",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 181,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 178,
+                                    "mutability": "mutable",
+                                    "name": "_officialTokenContract",
+                                    "nameLocation": "1292:22:3",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 192,
+                                    "src": "1284:30:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 177,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1284:7:3",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 180,
+                                    "mutability": "mutable",
+                                    "name": "_officialNFTcontract",
+                                    "nameLocation": "1324:20:3",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 192,
+                                    "src": "1316:28:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 179,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1316:7:3",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1283:62:3"
+                        },
+                        "returnParameters": {
+                            "id": 182,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1346:0:3"
+                        },
+                        "scope": 224,
+                        "src": "1272:189:3",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 208,
+                            "nodeType": "Block",
+                            "src": "1566:99:3",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "arguments": [
+                                            {
+                                                "commonType": {
+                                                    "typeIdentifier": "t_uint256",
+                                                    "typeString": "uint256"
+                                                },
+                                                "id": 204,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "lValueRequested": false,
+                                                "leftExpression": {
+                                                    "arguments": [
+                                                        {
+                                                            "expression": {
+                                                                "id": 200,
+                                                                "name": "msg",
+                                                                "nodeType": "Identifier",
+                                                                "overloadedDeclarations": [],
+                                                                "referencedDeclaration": 4294967281,
+                                                                "src": "1630:3:3",
+                                                                "typeDescriptions": {
+                                                                    "typeIdentifier": "t_magic_message",
+                                                                    "typeString": "msg"
+                                                                }
+                                                            },
+                                                            "id": 201,
+                                                            "isConstant": false,
+                                                            "isLValue": false,
+                                                            "isPure": false,
+                                                            "lValueRequested": false,
+                                                            "memberLocation": "1634:6:3",
+                                                            "memberName": "sender",
+                                                            "nodeType": "MemberAccess",
+                                                            "src": "1630:10:3",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_address",
+                                                                "typeString": "address"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": [
+                                                            {
+                                                                "typeIdentifier": "t_address",
+                                                                "typeString": "address"
+                                                            }
+                                                        ],
+                                                        "expression": {
+                                                            "arguments": [
+                                                                {
+                                                                    "id": 197,
+                                                                    "name": "officialTokenContract",
+                                                                    "nodeType": "Identifier",
+                                                                    "overloadedDeclarations": [],
+                                                                    "referencedDeclaration": 173,
+                                                                    "src": "1599:21:3",
+                                                                    "typeDescriptions": {
+                                                                        "typeIdentifier": "t_address",
+                                                                        "typeString": "address"
+                                                                    }
+                                                                }
+                                                            ],
+                                                            "expression": {
+                                                                "argumentTypes": [
+                                                                    {
+                                                                        "typeIdentifier": "t_address",
+                                                                        "typeString": "address"
+                                                                    }
+                                                                ],
+                                                                "id": 196,
+                                                                "name": "I_TTSwap_Token",
+                                                                "nodeType": "Identifier",
+                                                                "overloadedDeclarations": [],
+                                                                "referencedDeclaration": 471,
+                                                                "src": "1584:14:3",
+                                                                "typeDescriptions": {
+                                                                    "typeIdentifier": "t_type$_t_contract$_I_TTSwap_Token_$471_$",
+                                                                    "typeString": "type(contract I_TTSwap_Token)"
+                                                                }
+                                                            },
+                                                            "id": 198,
+                                                            "isConstant": false,
+                                                            "isLValue": false,
+                                                            "isPure": false,
+                                                            "kind": "typeConversion",
+                                                            "lValueRequested": false,
+                                                            "nameLocations": [],
+                                                            "names": [],
+                                                            "nodeType": "FunctionCall",
+                                                            "src": "1584:37:3",
+                                                            "tryCall": false,
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_contract$_I_TTSwap_Token_$471",
+                                                                "typeString": "contract I_TTSwap_Token"
+                                                            }
+                                                        },
+                                                        "id": 199,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": false,
+                                                        "lValueRequested": false,
+                                                        "memberLocation": "1622:7:3",
+                                                        "memberName": "isauths",
+                                                        "nodeType": "MemberAccess",
+                                                        "referencedDeclaration": 460,
+                                                        "src": "1584:45:3",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_uint256_$",
+                                                            "typeString": "function (address) view external returns (uint256)"
+                                                        }
+                                                    },
+                                                    "id": 202,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "kind": "functionCall",
+                                                    "lValueRequested": false,
+                                                    "nameLocations": [],
+                                                    "names": [],
+                                                    "nodeType": "FunctionCall",
+                                                    "src": "1584:57:3",
+                                                    "tryCall": false,
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_uint256",
+                                                        "typeString": "uint256"
+                                                    }
+                                                },
+                                                "nodeType": "BinaryOperation",
+                                                "operator": "==",
+                                                "rightExpression": {
+                                                    "hexValue": "32",
+                                                    "id": 203,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "number",
+                                                    "lValueRequested": false,
+                                                    "nodeType": "Literal",
+                                                    "src": "1645:1:3",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_rational_2_by_1",
+                                                        "typeString": "int_const 2"
+                                                    },
+                                                    "value": "2"
+                                                },
+                                                "src": "1584:62:3",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            ],
+                                            "id": 195,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [
+                                                4294967278,
+                                                4294967278,
+                                                4294967278
+                                            ],
+                                            "referencedDeclaration": 4294967278,
+                                            "src": "1576:7:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
+                                                "typeString": "function (bool) pure"
+                                            }
+                                        },
+                                        "id": 205,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "nameLocations": [],
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1576:71:3",
+                                        "tryCall": false,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 206,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1576:71:3"
+                                },
+                                {
+                                    "id": 207,
+                                    "nodeType": "PlaceholderStatement",
+                                    "src": "1657:1:3"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 193,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "1467:70:3",
+                            "text": " @dev Modifier to restrict access to only marketors."
+                        },
+                        "id": 209,
+                        "name": "onlyMarketor",
+                        "nameLocation": "1551:12:3",
+                        "nodeType": "ModifierDefinition",
+                        "parameters": {
+                            "id": 194,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1563:2:3"
+                        },
+                        "src": "1542:123:3",
+                        "virtual": false,
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 222,
+                            "nodeType": "Block",
+                            "src": "1956:39:3",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "baseExpression": {
+                                            "id": 218,
+                                            "name": "proofs",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 167,
+                                            "src": "1973:6:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_S_ProofState_$816_storage_$",
+                                                "typeString": "mapping(uint256 => struct L_Proof.S_ProofState storage ref)"
+                                            }
+                                        },
+                                        "id": 220,
+                                        "indexExpression": {
+                                            "id": 219,
+                                            "name": "proofid",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 212,
+                                            "src": "1980:7:3",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "isConstant": false,
+                                        "isLValue": true,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "nodeType": "IndexAccess",
+                                        "src": "1973:15:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_struct$_S_ProofState_$816_storage",
+                                            "typeString": "struct L_Proof.S_ProofState storage ref"
+                                        }
+                                    },
+                                    "functionReturnParameters": 217,
+                                    "id": 221,
+                                    "nodeType": "Return",
+                                    "src": "1966:22:3"
+                                }
+                            ]
+                        },
+                        "documentation": {
+                            "id": 210,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "1671:174:3",
+                            "text": " @dev Retrieves the proof state for a given proof ID.\n @param proofid The ID of the proof.\n @return L_Proof.S_ProofState The state of the proof."
+                        },
+                        "functionSelector": "3f117740",
+                        "id": 223,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "getProofState",
+                        "nameLocation": "1859:13:3",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 213,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 212,
+                                    "mutability": "mutable",
+                                    "name": "proofid",
+                                    "nameLocation": "1890:7:3",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 223,
+                                    "src": "1882:15:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 211,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1882:7:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1872:31:3"
+                        },
+                        "returnParameters": {
+                            "id": 217,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 216,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nameLocation": "-1:-1:-1",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 223,
+                                    "src": "1927:27:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "memory",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_struct$_S_ProofState_$816_memory_ptr",
+                                        "typeString": "struct L_Proof.S_ProofState"
+                                    },
+                                    "typeName": {
+                                        "id": 215,
+                                        "nodeType": "UserDefinedTypeName",
+                                        "pathNode": {
+                                            "id": 214,
+                                            "name": "L_Proof.S_ProofState",
+                                            "nameLocations": [
+                                                "1927:7:3",
+                                                "1935:12:3"
+                                            ],
+                                            "nodeType": "IdentifierPath",
+                                            "referencedDeclaration": 816,
+                                            "src": "1927:20:3"
+                                        },
+                                        "referencedDeclaration": 816,
+                                        "src": "1927:20:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_struct$_S_ProofState_$816_storage_ptr",
+                                            "typeString": "struct L_Proof.S_ProofState"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1926:29:3"
+                        },
+                        "scope": 224,
+                        "src": "1850:145:3",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 225,
+                "src": "616:1381:3",
+                "usedErrors": [],
+                "usedEvents": []
+            }
+        ],
+        "src": "37:1961:3"
+    },
+    "functionHashes": {
+        "getProofState(uint256)": "3f117740",
+        "proofmapping(uint256)": "5e008cc4",
+        "totalSupply()": "18160ddd"
+    },
+    "gasEstimates": null
+}

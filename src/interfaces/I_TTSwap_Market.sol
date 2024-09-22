@@ -74,8 +74,12 @@ interface I_TTSwap_Market {
     /// @param _initial Market initialization parameters: amount0 is the value, amount1 is the quantity
     event e_initMetaGood(
         uint256 _proofNo,
+<<<<<<< HEAD
         uint256 _goodid,
         uint256 _construct,
+=======
+        uint256 _extendinfo,
+>>>>>>> 7ff40e0 (remove balance type 20240922)
         address _erc20address,
         uint256 _goodConfig,
         uint256 _initial
@@ -92,11 +96,18 @@ interface I_TTSwap_Market {
     /// @param _value Value good initialization parameters: amount0 is the investment fee, amount1 is the investment quantity
     event e_initGood(
         uint256 _proofNo,
+<<<<<<< HEAD
         uint256 _goodid,
         uint256 _valuegoodNo,
         address _erc20address,
         uint256 _goodConfig,
         uint256 _construct,
+=======
+        uint256 _extendinfo,
+        uint256 _valuegoodNo,
+        address _erc20address,
+        uint256 _goodConfig,
+>>>>>>> 7ff40e0 (remove balance type 20240922)
         uint256 _normalinitial,
         uint256 _value
     );
@@ -144,7 +155,11 @@ interface I_TTSwap_Market {
     /// @param _valueinvest Value good investment details (amount0: actual fee, amount1: actual invest quantity)
     event e_investGood(
         uint256 indexed _proofNo,
+<<<<<<< HEAD
         uint256 _normalgoodid,
+=======
+        uint256 _extendinfo,
+>>>>>>> 7ff40e0 (remove balance type 20240922)
         uint256 _valueGoodNo,
         uint256 _value,
         uint256 _invest,

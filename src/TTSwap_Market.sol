@@ -23,8 +23,12 @@ import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lower
 contract TTSwap_Market is I_TTSwap_Market {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
+<<<<<<< HEAD
     using L_ProofKeyLibrary for S_ProofKey;
     using L_ProofIdLibrary for uint256;
+=======
+    using L_ProofIdLibrary for S_ProofKey;
+>>>>>>> 7ff40e0 (remove balance type 20240922)
     using L_TTSwapUINT256Library for uint256;
     using L_Good for L_Good.S_GoodState;
     using L_Proof for L_Proof.S_ProofState;
@@ -109,9 +113,14 @@ contract TTSwap_Market is I_TTSwap_Market {
             _initial.amount0()
         );
         emit e_initMetaGood(
+<<<<<<< HEAD
             proofid,
             togood,
             construct,
+=======
+            totalSupply,
+            toTTSwapUINT256(toInt128(togood), construct),
+>>>>>>> 7ff40e0 (remove balance type 20240922)
             _erc20address,
             _goodConfig,
             _initial
@@ -171,6 +180,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
 
         emit e_initGood(
+<<<<<<< HEAD
             proofmapping[proofKey],
             togood,
             _valuegood,
@@ -181,6 +191,13 @@ contract TTSwap_Market is I_TTSwap_Market {
                 msg.sender,
                 investResult.actualInvestValue * 2
             ),
+=======
+            totalSupply,
+            toTTSwapUINT256(toInt128(togood), construct),
+            _valuegood,
+            _erc20address,
+            _goodConfig,
+>>>>>>> 7ff40e0 (remove balance type 20240922)
             toTTSwapUINT256(_initial.amount0(), investResult.actualInvestValue),
             toTTSwapUINT256(
                 investResult.actualFeeQuantity,
@@ -246,6 +263,29 @@ contract TTSwap_Market is I_TTSwap_Market {
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
+<<<<<<< HEAD
+=======
+        if (swapcache.good1config.beforeswap())
+            I_TTSwap_MainTrigger(officialTrigger)
+                .main_beforeswap(
+                    goods[_goodid1].trigger,
+                    _swapQuantity,
+                    swapcache.good1currentState,
+                    swapcache.good2currentState,
+                    msg.sender
+                )
+                .isOk();
+        if (swapcache.good2config.beforeswap())
+            I_TTSwap_MainTrigger(officialTrigger)
+                .main_beforeswap(
+                    goods[_goodid2].trigger,
+                    _swapQuantity,
+                    swapcache.good2currentState,
+                    swapcache.good1currentState,
+                    msg.sender
+                )
+                .isOk();
+>>>>>>> 7ff40e0 (remove balance type 20240922)
         swapcache = L_Good.swapCompute1(swapcache, _limitPrice);
 
         require(
@@ -452,9 +492,15 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         emit e_investGood(
             proofNo,
+<<<<<<< HEAD
             _togood,
             _valuegood,
             toTTSwapUINT256(normalInvest_.actualInvestValue, construct),
+=======
+            toTTSwapUINT256(toInt128(_togood), construct),
+            _valuegood,
+            toTTSwapUINT256(normalInvest_.actualInvestValue, 0),
+>>>>>>> 7ff40e0 (remove balance type 20240922)
             toTTSwapUINT256(
                 normalInvest_.actualFeeQuantity,
                 normalInvest_.actualInvestQuantity

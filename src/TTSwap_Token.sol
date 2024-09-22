@@ -10,7 +10,10 @@ import {I_TTSwap_Token, s_share, s_chain, s_proof} from "./interfaces/I_TTSwap_T
 import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
+<<<<<<< HEAD
 import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
+=======
+>>>>>>> 7ff40e0 (remove balance type 20240922)
 
 /**
  * @title TTS Token Contract
@@ -26,8 +29,22 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     uint256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
     uint256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
 
+<<<<<<< HEAD
     mapping(uint256 => s_proof) stakeproof;
 
+=======
+    struct s_proof {
+        address fromcontract; // from which contract
+        uint256 proofstate; // stake's state
+    }
+    mapping(uint256 => s_proof) stakeproof;
+
+    struct s_chain {
+        uint256 asset; //128 shareasset&poolasset 128 poolasset
+        uint256 proofstate; //128 value 128 constructasset
+        address recipient;
+    }
+>>>>>>> 7ff40e0 (remove balance type 20240922)
     mapping(uint32 => s_chain) chains;
 
     uint256 internal normalgoodid;
@@ -514,9 +531,15 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     function _stakeFee() internal {
         if (stakestate.amount0() + 86400 < block.timestamp) {
             stakestate = sub(stakestate, toTTSwapUINT256(86400, 0));
+<<<<<<< HEAD
             uint256 mintamount = totalSupply() > 50000000 * decimals()
                 ? totalSupply() / 18300
                 : 2740 * decimals(); //27322404=(500000 * decimals) / 18300
+=======
+            uint256 mintamount = totalSupply() > 5000000 * decimals()
+                ? totalSupply() / 18300
+                : 274 * decimals(); //27322404=(500000 * decimals) / 18300
+>>>>>>> 7ff40e0 (remove balance type 20240922)
             poolstate = sub(poolstate, toTTSwapUINT256(uint128(mintamount), 0));
             emit e_updatepool(poolstate, stakestate);
         }

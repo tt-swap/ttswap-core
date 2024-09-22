@@ -1,0 +1,1 @@
+[{"inputs":[],"name":"ERC20TransferFailed","type":"error"},{"inputs":[],"name":"NativeTransferFailed","type":"error"},{"inputs":[],"name":"NATIVE","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}]

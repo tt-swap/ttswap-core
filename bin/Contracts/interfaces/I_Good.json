@@ -1,0 +1,2132 @@
+{
+    "contractName": "I_Good",
+    "abi": [
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "_user",
+                    "type": "address"
+                }
+            ],
+            "name": "e_addbanlist",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "referals",
+                    "type": "address"
+                }
+            ],
+            "name": "e_addreferal",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "_goodid",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "_owner",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "_to",
+                    "type": "address"
+                }
+            ],
+            "name": "e_changeOwner",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "goodid",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "feeamount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "e_collectProtocolFee",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "goodid",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint128",
+                    "name": "welfare",
+                    "type": "uint128"
+                }
+            ],
+            "name": "e_goodWelfare",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "_goodid",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "_goodconfig",
+                    "type": "uint256"
+                }
+            ],
+            "name": "e_modifyGoodConfig",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "_user",
+                    "type": "address"
+                }
+            ],
+            "name": "e_removebanlist",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "_marketconfig",
+                    "type": "uint256"
+                }
+            ],
+            "name": "e_setMarketConfig",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "_goodid",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "_goodConfig",
+                    "type": "uint256"
+                }
+            ],
+            "name": "e_updateGoodConfig",
+            "type": "event"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_user",
+                    "type": "address"
+                }
+            ],
+            "name": "addbanlist",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_goodid",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_to",
+                    "type": "address"
+                }
+            ],
+            "name": "changeGoodOwner",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_goodid",
+                    "type": "uint256"
+                }
+            ],
+            "name": "collectProtocolFee",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "goodNum",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "goodNum_",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "goodid",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint128",
+                    "name": "welfare",
+                    "type": "uint128"
+                }
+            ],
+            "name": "goodWelfare",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "marketconfig",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "marketconfig_",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "marketcreator",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "marketcreator_",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_goodid",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_goodConfig",
+                    "type": "uint256"
+                }
+            ],
+            "name": "modifyGoodConfig",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_goodid",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_payquanity",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_recipent",
+                    "type": "address"
+                }
+            ],
+            "name": "payGood",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_user",
+                    "type": "address"
+                }
+            ],
+            "name": "removebanlist",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_marketconfig",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setMarketConfig",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_goodid",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "_goodConfig",
+                    "type": "uint256"
+                }
+            ],
+            "name": "updateGoodConfig",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"}],\"name\":\"e_addbanlist\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"referals\",\"type\":\"address\"}],\"name\":\"e_addreferal\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"_goodid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"}],\"name\":\"e_changeOwner\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"goodid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"feeamount\",\"type\":\"uint256\"}],\"name\":\"e_collectProtocolFee\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"goodid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint128\",\"name\":\"welfare\",\"type\":\"uint128\"}],\"name\":\"e_goodWelfare\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_goodid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_goodconfig\",\"type\":\"uint256\"}],\"name\":\"e_modifyGoodConfig\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"}],\"name\":\"e_removebanlist\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_marketconfig\",\"type\":\"uint256\"}],\"name\":\"e_setMarketConfig\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_goodid\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_goodConfig\",\"type\":\"uint256\"}],\"name\":\"e_updateGoodConfig\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"}],\"name\":\"addbanlist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_goodid\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"}],\"name\":\"changeGoodOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_goodid\",\"type\":\"uint256\"}],\"name\":\"collectProtocolFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"goodNum\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"goodNum_\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"goodid\",\"type\":\"uint256\"},{\"internalType\":\"uint128\",\"name\":\"welfare\",\"type\":\"uint128\"}],\"name\":\"goodWelfare\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"marketconfig\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"marketconfig_\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"marketcreator\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"marketcreator_\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_goodid\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_goodConfig\",\"type\":\"uint256\"}],\"name\":\"modifyGoodConfig\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_goodid\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_payquanity\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_recipent\",\"type\":\"address\"}],\"name\":\"payGood\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_user\",\"type\":\"address\"}],\"name\":\"removebanlist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_marketconfig\",\"type\":\"uint256\"}],\"name\":\"setMarketConfig\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_goodid\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_goodConfig\",\"type\":\"uint256\"}],\"name\":\"updateGoodConfig\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"e_addbanlist(address)\":{\"params\":{\"_user\":\"address ~\\u7528\\u6237\\u5730\\u5740\"}},\"e_changeOwner(uint256,address,address)\":{\"params\":{\"_goodid\":\"good number,\\u5546\\u54c1\\u7f16\\u53f7\",\"_owner\":\"the older owner,\\u539f\\u62e5\\u6709\\u8005\",\"_to\":\"the new owner,\\u65b0\\u62e5\\u6709\\u8005\"}},\"e_collectProtocolFee(uint256,uint256)\":{\"params\":{\"feeamount\":\"\\u798f\\u5229\\u6570\\u91cf\",\"goodid\":\"\\u5546\\u54c1\\u7f16\\u53f7\"}},\"e_goodWelfare(uint256,uint128)\":{\"params\":{\"goodid\":\"\\u5546\\u54c1\\u7f16\\u53f7\",\"welfare\":\"\\u798f\\u5229\\u6570\\u91cf\"}},\"e_modifyGoodConfig(uint256,uint256)\":{\"params\":{\"_goodid\":\"good No,\\u5546\\u54c1\\u7f16\\u53f7\\u914d\"}},\"e_removebanlist(address)\":{\"params\":{\"_user\":\"user address ~\\u7528\\u6237\\u5730\\u5740\"}},\"e_setMarketConfig(uint256)\":{\"params\":{\"_marketconfig\":\"\\u5e02\\u573a\\u914d\\u7f6e\"}},\"e_updateGoodConfig(uint256,uint256)\":{\"params\":{\"_goodConfig\":\"Good config \\u5e02\\u573a\\u914d\\u7f6e\",\"_goodid\":\"Good No,\\u5546\\u54c1\\u7f16\\u53f7\"}}},\"kind\":\"dev\",\"methods\":{\"addbanlist(address)\":{\"params\":{\"_user\":\"address \\u5730\\u5740\"}},\"changeGoodOwner(uint256,address)\":{\"params\":{\"_goodid\":\"good's id \\u5546\\u54c1\\u7684\\u5546\\u54c1ID\",\"_to\":\"recipent \\u63a5\\u6536\\u8005\"},\"returns\":{\"_0\":\"the result\"}},\"collectProtocolFee(uint256)\":{\"params\":{\"_goodid\":\"good's id \\u5546\\u54c1\\u7684\\u5546\\u54c1ID\"},\"returns\":{\"_0\":\"the result \\u624b\\u7eed\\u8d39\\u6570\\u91cf\"}},\"goodNum()\":{\"returns\":{\"goodNum_\":\"the good number of the market~\\u5e02\\u573a\\u5546\\u54c1\\u603b\\u6570\"}},\"goodWelfare(uint256,uint128)\":{\"params\":{\"goodid\":\"\\u5546\\u54c1\\u7f16\\u53f7\",\"welfare\":\"\\u7528\\u6237\\u5730\\u5740\"}},\"marketconfig()\":{\"details\":\"Can be changed by the marketmanager~\\u53ef\\u4ee5\\u88ab\\u7ba1\\u7406\\u5458\\u8c03\\u6574\",\"returns\":{\"marketconfig_\":\"the config of market(according the white paper)~\\u5e02\\u573a\\u914d\\u7f6e(\\u53c2\\u89c1\\u767d\\u76ae\\u4e66)\"}},\"marketcreator()\":{\"returns\":{\"marketcreator_\":\"The address of the factory manager\"}},\"modifyGoodConfig(uint256,uint256)\":{\"params\":{\"_goodConfig\":\"\\u5546\\u54c1\\u914d\\u7f6e\",\"_goodid\":\"\\u5546\\u54c1\\u7684\\u5546\\u54c1ID\"}},\"payGood(uint256,uint256,address)\":{\"params\":{\"_goodid\":\"\\u5546\\u54c1\\u7684\\u5546\\u54c1ID\",\"_payquanity\":\"\\u6570\\u91cf\",\"_recipent\":\"\\u63a5\\u6536\\u8005\"},\"returns\":{\"_0\":\"the result\"}},\"removebanlist(address)\":{\"params\":{\"_user\":\"address \\u5730\\u5740\"}},\"setMarketConfig(uint256)\":{\"params\":{\"_marketconfig\":\"the market config ~\\u5e02\\u573a\\u914d\\u7f6e\"}},\"updateGoodConfig(uint256,uint256)\":{\"params\":{\"_goodConfig\":\"\\u5546\\u54c1\\u914d\\u7f6e\",\"_goodid\":\"good's id \\u5546\\u54c1\\u7684\\u5546\\u54c1ID\"}}},\"title\":\"\\u5546\\u54c1\\u63a5\\u53e3good's interface\",\"version\":1},\"userdoc\":{\"events\":{\"e_addbanlist(address)\":{\"notice\":\"add ban list~\\u6dfb\\u52a0\\u9ed1\\u540d\\u5355\"},\"e_changeOwner(uint256,address,address)\":{\"notice\":\"emitted when good's user tranfer the good to another \\u5546\\u54c1\\u62e5\\u6709\\u8005\\u8f6c\\u79fb\\u5173\\u7cfb\\u7ed9\\u53e6\\u4e00\\u4eba\"},\"e_collectProtocolFee(uint256,uint256)\":{\"notice\":\"collect fee\"},\"e_goodWelfare(uint256,uint128)\":{\"notice\":\"preject or seller deliver welfare to investor\"},\"e_modifyGoodConfig(uint256,uint256)\":{\"notice\":\"\\u5e02\\u573a\\u7ba1\\u7406\\u5458\\u66f4\\u65b0\\u5546\\u54c1\\u7684\\u5206\\u7c7b\"},\"e_removebanlist(address)\":{\"notice\":\"remove  out address from banlist~ \\u79fb\\u51fa\\u9ed1\\u540d\\u5355\"},\"e_setMarketConfig(uint256)\":{\"notice\":\"Config Market Config~ \\u8fdb\\u884c\\u5e02\\u573a\\u914d\\u7f6e\"},\"e_updateGoodConfig(uint256,uint256)\":{\"notice\":\"Config good \\u5546\\u54c1\\u914d\\u7f6e\"}},\"kind\":\"user\",\"methods\":{\"addbanlist(address)\":{\"notice\":\"add ban list  \\u589e\\u52a0\\u7981\\u6b62\\u540d\\u5355\"},\"changeGoodOwner(uint256,address)\":{\"notice\":\"set good's Owner \\u6539\\u53d8\\u5546\\u54c1\\u7684\\u62e5\\u6709\\u8005\"},\"collectProtocolFee(uint256)\":{\"notice\":\"collect protocalFee \\u6536\\u76ca\\u534f\\u8bae\\u624b\\u7eed\\u8d39\"},\"goodNum()\":{\"notice\":\"Returns the good's total number of the market \\u8fd4\\u56de\\u5e02\\u573a\\u5546\\u54c1\\u603b\\u6570\"},\"goodWelfare(uint256,uint128)\":{\"notice\":\"\\u4e3a\\u6295\\u8d44\\u8005\\u53d1\\u798f\\u5229\"},\"marketconfig()\":{\"notice\":\"Returns the config of the market~\\u8fd4\\u56de\\u5e02\\u573a\\u7684\\u914d\\u7f6e\"},\"marketcreator()\":{\"notice\":\"Returns the manger of market \\u8fd4\\u56de\\u5e02\\u573a\\u7ba1\\u7406\\u8005 \\u8fd4\\u56de\\u5e02\\u573a\\u5546\\u54c1\\u603b\\u6570\"},\"modifyGoodConfig(uint256,uint256)\":{\"notice\":\"\\u5e02\\u573a\\u7ba1\\u7406\\u5458\\u4fee\\u6539\\u5546\\u54c1\\u7684\\u5c5e\\u6027\"},\"payGood(uint256,uint256,address)\":{\"notice\":\"pay good to  \\u8f6c\\u7ed9\"},\"removebanlist(address)\":{\"notice\":\"rm ban list  \\u79fb\\u9664\\u7981\\u6b62\\u540d\\u5355\"},\"setMarketConfig(uint256)\":{\"notice\":\"config market config \\u8bbe\\u7f6e\\u5e02\\u573a\\u4e2d\\u5e02\\u573a\\u914d\\u7f6e\"},\"updateGoodConfig(uint256,uint256)\":{\"notice\":\"update good's config \\u66f4\\u65b0\\u5546\\u54c1\\u914d\\u7f6e\"}},\"notice\":\"\\u5305\\u542b\\u5546\\u54c1\\u7684\\u4e00\\u7cfb\\u5217\\u63a5\\u53e3  contain good's all interfaces\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/admin/workspace/50Self_project/ttswap-core/Contracts/interfaces/I_Good.sol\":\"I_Good\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/admin/workspace/50Self_project/ttswap-core/Contracts/interfaces/I_Good.sol\":{\"keccak256\":\"0x49faf9d23ba606cbe6507cdcf5ee764976cdf9a038ea0d70f45e04a629ae4d3d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://21b2f0d993fa68ca41740ce0d2bcd2b7c350e503e8fca2b8ad1caea646ca1351\",\"dweb:/ipfs/QmTaPuY6pRCLeLGxEShPk7kfT6KRhtzrXS5Ng2pcXy8sN2\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_BalanceUINT256.sol\":{\"keccak256\":\"0xfc575703e31e0f6365541e64bc35299b3226883dda282b56d39c14f525870619\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://aa6bddbb3dd36c84be2e4dc754597b1405a46f5b236590157e015295ecf0de32\",\"dweb:/ipfs/QmRNVeJY21C6QcgwQyaBcnBy4QuTeoxjoE9M4n6fU8UNiv\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_Currency.sol\":{\"keccak256\":\"0xec7b77377f57adbf84ceba14a626ca2dfe5693fd2ab37feb70c7f8a89a01e7df\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fba7a8badcb099c35ce10be6b9be2d5cad4ba4e7f6b1a0dd3fabfc91f4d5a794\",\"dweb:/ipfs/QmdbMxpw5jV8wSwL4HmhoZQxuoBEpKMsa8Gf9QqebWikta\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_Good.sol\":{\"keccak256\":\"0x609a11e1567a623ac9f3ff41d120b19a8c5d76689265cbaa0fe82813ea0e2eaa\",\"license\":\"BUSL-1.1\",\"urls\":[\"bzz-raw://d1216b65d057e0cd8e99eb752adcbda9ec8b461d1736b2166b3ec0abe4831558\",\"dweb:/ipfs/QmQFc6CCKYJeMWZHZYhWBkQtUyXkA8KrtutmoaxU6RoK49\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_GoodConfig.sol\":{\"keccak256\":\"0xffeea4d8eb703707facc58ec9ba6bf31a035f732c02d0aa9e5a6a82eb58a2b88\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9851e6699be530bd6fd5ba45f8871d7b9030e8d1d0101e1a2f4ce47f14b1cc5d\",\"dweb:/ipfs/QmW233q8JEtrcoVdsLiK7Nv1KgG9pvNjyqhxm8mLGWBGQJ\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_MarketConfig.sol\":{\"keccak256\":\"0xa092030d3afa8dccb4b870b908d24a7f496a23d43c58d8ceed10fdc2c181d461\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://130844d15214c5872c50ff3726f53916f511fe1064d05378d8af5517e50c40e5\",\"dweb:/ipfs/QmW6AEi3z5xpvM9jTpyvi25igsH4NVFuCGhzgookESQXao\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_Proof.sol\":{\"keccak256\":\"0x009cab571ab09c7f57580ff2f390786e2f00db78e728c101ca2cf1867ff385f3\",\"license\":\"BUSL-1.1\",\"urls\":[\"bzz-raw://ded699f5bd19f6f6d3ef0fc2badbb561ba30892de4c60064e6f1d51c149ba25a\",\"dweb:/ipfs/QmSACE5TgHSBVtBMpfEhXE5WSFyRHwViaGNgni8cwNdT5f\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_Struct.sol\":{\"keccak256\":\"0x82b7610a79a4d5f041a95f4089c7a9c4c96bf4988aed58beec001645adaad491\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2df06fab4728a389b0e60538aa5a4aab84f72b342df69aba55c5fa950eaa2ae9\",\"dweb:/ipfs/QmPd262UGBGbJ8vh4nz9ECD32bayv6kHfPYas3ThRq6Zz2\"]},\"/Users/admin/workspace/50Self_project/ttswap-core/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bd39944e8fc06be6dbe2dd1d8449b5336e23c6a7ba3e8e9ae5ae0f37f35283f5\",\"dweb:/ipfs/QmPV3FGYjVwvKSgAXKUN3r9T9GwniZz83CxBpM7vyj2G53\"]}},\"version\":1}",
+    "bytecode": "",
+    "deployedBytecode": "",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "sourcePath": "/Users/admin/workspace/50Self_project/ttswap-core/Contracts/interfaces/I_Good.sol",
+    "compiler": {
+        "name": "solc",
+        "version": "0.8.26+commit.8a97fa7a"
+    },
+    "ast": {
+        "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/Contracts/interfaces/I_Good.sol",
+        "exportedSymbols": {
+            "I_Good": [
+                155
+            ],
+            "L_Good": [
+                2202
+            ],
+            "S_GoodKey": [
+                2988
+            ],
+            "T_BalanceUINT256": [
+                159
+            ]
+        },
+        "id": 156,
+        "license": "MIT",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1,
+                "literals": [
+                    "solidity",
+                    "0.8",
+                    ".26"
+                ],
+                "nodeType": "PragmaDirective",
+                "src": "32:23:0"
+            },
+            {
+                "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_Struct.sol",
+                "file": "../libraries/L_Struct.sol",
+                "id": 3,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 156,
+                "sourceUnit": 2996,
+                "src": "57:52:0",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "id": 2,
+                            "name": "S_GoodKey",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 2988,
+                            "src": "65:9:0",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_Good.sol",
+                "file": "../libraries/L_Good.sol",
+                "id": 5,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 156,
+                "sourceUnit": 2223,
+                "src": "110:47:0",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "id": 4,
+                            "name": "L_Good",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 2202,
+                            "src": "118:6:0",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/Users/admin/workspace/50Self_project/ttswap-core/Contracts/libraries/L_BalanceUINT256.sol",
+                "file": "../libraries/L_BalanceUINT256.sol",
+                "id": 7,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 156,
+                "sourceUnit": 492,
+                "src": "158:67:0",
+                "symbolAliases": [
+                    {
+                        "foreign": {
+                            "id": 6,
+                            "name": "T_BalanceUINT256",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 159,
+                            "src": "166:16:0",
+                            "typeDescriptions": {}
+                        },
+                        "nameLocation": "-1:-1:-1"
+                    }
+                ],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [],
+                "canonicalName": "I_Good",
+                "contractDependencies": [],
+                "contractKind": "interface",
+                "documentation": {
+                    "id": 8,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "227:114:0",
+                    "text": "@title 商品接口good's interface\n @notice 包含商品的一系列接口  contain good's all interfaces"
+                },
+                "fullyImplemented": false,
+                "id": 155,
+                "linearizedBaseContracts": [
+                    155
+                ],
+                "name": "I_Good",
+                "nameLocation": "351:6:0",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "anonymous": false,
+                        "documentation": {
+                            "id": 9,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "364:249:0",
+                            "text": "@notice emitted when good's user tranfer the good to another 商品拥有者转移关系给另一人\n @param _goodid good number,商品编号\n @param _owner the older owner,原拥有者\n @param _to the new owner,新拥有者"
+                        },
+                        "eventSelector": "8ef070efbad4fdeedaefa55813446a48d7e44138ff268ca1cd8daba30a0f7025",
+                        "id": 17,
+                        "name": "e_changeOwner",
+                        "nameLocation": "624:13:0",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 16,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 11,
+                                    "indexed": true,
+                                    "mutability": "mutable",
+                                    "name": "_goodid",
+                                    "nameLocation": "654:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 17,
+                                    "src": "638:23:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 10,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "638:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 13,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "_owner",
+                                    "nameLocation": "671:6:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 17,
+                                    "src": "663:14:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 12,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "663:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 15,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "_to",
+                                    "nameLocation": "687:3:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 17,
+                                    "src": "679:11:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 14,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "679:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "637:54:0"
+                        },
+                        "src": "618:74:0"
+                    },
+                    {
+                        "anonymous": false,
+                        "documentation": {
+                            "id": 18,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "698:94:0",
+                            "text": "@notice Config Market Config~ 进行市场配置\n @param _marketconfig 市场配置"
+                        },
+                        "eventSelector": "bd209961024f2694b0afb3c8badd20b6477abb77b336b16892c3fa4b906d323c",
+                        "id": 22,
+                        "name": "e_setMarketConfig",
+                        "nameLocation": "803:17:0",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 21,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 20,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "_marketconfig",
+                                    "nameLocation": "829:13:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 22,
+                                    "src": "821:21:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 19,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "821:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "820:23:0"
+                        },
+                        "src": "797:47:0"
+                    },
+                    {
+                        "anonymous": false,
+                        "documentation": {
+                            "id": 23,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "850:132:0",
+                            "text": "@notice Config good 商品配置\n @param _goodid Good No,商品编号\n @param _goodConfig Good config 市场配置"
+                        },
+                        "eventSelector": "c360eef79f1e7d7e7564e3cd446a9839f5a632a38a4d34b507c08e1ceef46147",
+                        "id": 29,
+                        "name": "e_updateGoodConfig",
+                        "nameLocation": "993:18:0",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 28,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 25,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "_goodid",
+                                    "nameLocation": "1020:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 29,
+                                    "src": "1012:15:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 24,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1012:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 27,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "_goodConfig",
+                                    "nameLocation": "1037:11:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 29,
+                                    "src": "1029:19:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 26,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1029:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1011:38:0"
+                        },
+                        "src": "987:63:0"
+                    },
+                    {
+                        "anonymous": false,
+                        "documentation": {
+                            "id": 30,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "1056:95:0",
+                            "text": "@notice 市场管理员更新商品的分类\n @param _goodid good No,商品编号配"
+                        },
+                        "eventSelector": "5af113730f9ee4153f120c893809feafa233584bbe5e93b5d78e0699c9c8ca56",
+                        "id": 36,
+                        "name": "e_modifyGoodConfig",
+                        "nameLocation": "1162:18:0",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 35,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 32,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "_goodid",
+                                    "nameLocation": "1189:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 36,
+                                    "src": "1181:15:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 31,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1181:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 34,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "_goodconfig",
+                                    "nameLocation": "1206:11:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 36,
+                                    "src": "1198:19:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 33,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1198:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1180:38:0"
+                        },
+                        "src": "1156:63:0"
+                    },
+                    {
+                        "anonymous": false,
+                        "documentation": {
+                            "id": 37,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "1225:84:0",
+                            "text": "@notice add ban list~添加黑名单\n @param _user  address ~用户地址"
+                        },
+                        "eventSelector": "8e1c2d1a5dce36a56a9dfcb96e5816e793c16d6c897b4e3c0b1f99588bb88a1c",
+                        "id": 41,
+                        "name": "e_addbanlist",
+                        "nameLocation": "1320:12:0",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 40,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 39,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "_user",
+                                    "nameLocation": "1341:5:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 41,
+                                    "src": "1333:13:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 38,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1333:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1332:15:0"
+                        },
+                        "src": "1314:34:0"
+                    },
+                    {
+                        "anonymous": false,
+                        "documentation": {
+                            "id": 42,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "1353:109:0",
+                            "text": "@notice remove  out address from banlist~ 移出黑名单\n @param _user user address ~用户地址"
+                        },
+                        "eventSelector": "004ba2ca448db089eb9fb0b25431f0d57664d46141171fed2476281b578d96d4",
+                        "id": 46,
+                        "name": "e_removebanlist",
+                        "nameLocation": "1473:15:0",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 45,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 44,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "_user",
+                                    "nameLocation": "1497:5:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 46,
+                                    "src": "1489:13:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 43,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1489:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1488:15:0"
+                        },
+                        "src": "1467:37:0"
+                    },
+                    {
+                        "anonymous": false,
+                        "documentation": {
+                            "id": 47,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "1509:128:0",
+                            "text": "@notice preject or seller deliver welfare to investor\n @param goodid 商品编号\n @param welfare 福利数量"
+                        },
+                        "eventSelector": "54fe3e24ce316357354d8b9553364de253d61c742d913dfd419149ddf696947a",
+                        "id": 53,
+                        "name": "e_goodWelfare",
+                        "nameLocation": "1648:13:0",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 52,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 49,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "goodid",
+                                    "nameLocation": "1670:6:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 53,
+                                    "src": "1662:14:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 48,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1662:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 51,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "welfare",
+                                    "nameLocation": "1686:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 53,
+                                    "src": "1678:15:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint128",
+                                        "typeString": "uint128"
+                                    },
+                                    "typeName": {
+                                        "id": 50,
+                                        "name": "uint128",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1678:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint128",
+                                            "typeString": "uint128"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1661:33:0"
+                        },
+                        "src": "1642:53:0"
+                    },
+                    {
+                        "anonymous": false,
+                        "documentation": {
+                            "id": 54,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "1700:96:0",
+                            "text": "@notice collect fee\n @param goodid 商品编号\n @param feeamount 福利数量"
+                        },
+                        "eventSelector": "e5b56551be531c17d0c26ed5b513b4756c152f2ec216bd76db42f90ad317513a",
+                        "id": 60,
+                        "name": "e_collectProtocolFee",
+                        "nameLocation": "1807:20:0",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 59,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 56,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "goodid",
+                                    "nameLocation": "1836:6:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 60,
+                                    "src": "1828:14:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 55,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1828:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 58,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "feeamount",
+                                    "nameLocation": "1852:9:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 60,
+                                    "src": "1844:17:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 57,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1844:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1827:35:0"
+                        },
+                        "src": "1801:62:0"
+                    },
+                    {
+                        "anonymous": false,
+                        "eventSelector": "7da361ef032ddb975b4fa950921c1ecb79041d004acea71333e2dac6ec917c98",
+                        "id": 64,
+                        "name": "e_addreferal",
+                        "nameLocation": "1875:12:0",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 63,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 62,
+                                    "indexed": false,
+                                    "mutability": "mutable",
+                                    "name": "referals",
+                                    "nameLocation": "1896:8:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 64,
+                                    "src": "1888:16:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 61,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1888:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1887:18:0"
+                        },
+                        "src": "1869:37:0"
+                    },
+                    {
+                        "documentation": {
+                            "id": 65,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "1912:248:0",
+                            "text": "@notice Returns the config of the market~返回市场的配置\n @dev Can be changed by the marketmanager~可以被管理员调整\n @return marketconfig_ the config of market(according the white paper)~市场配置(参见白皮书)"
+                        },
+                        "functionSelector": "402f5ab5",
+                        "id": 70,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "marketconfig",
+                        "nameLocation": "2174:12:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 66,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "2186:2:0"
+                        },
+                        "returnParameters": {
+                            "id": 69,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 68,
+                                    "mutability": "mutable",
+                                    "name": "marketconfig_",
+                                    "nameLocation": "2220:13:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 70,
+                                    "src": "2212:21:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 67,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "2212:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "2211:23:0"
+                        },
+                        "scope": 155,
+                        "src": "2165:70:0",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 71,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "2241:153:0",
+                            "text": "@notice Returns the manger of market 返回市场管理者 返回市场商品总数\n @return marketcreator_ The address of the factory manager"
+                        },
+                        "functionSelector": "3d995173",
+                        "id": 76,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "marketcreator",
+                        "nameLocation": "2408:13:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 72,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "2421:2:0"
+                        },
+                        "returnParameters": {
+                            "id": 75,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 74,
+                                    "mutability": "mutable",
+                                    "name": "marketcreator_",
+                                    "nameLocation": "2455:14:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 76,
+                                    "src": "2447:22:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 73,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "2447:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "2446:24:0"
+                        },
+                        "scope": 155,
+                        "src": "2399:72:0",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 77,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "2477:156:0",
+                            "text": "@notice Returns the good's total number of the market 返回市场商品总数\n @return goodNum_ the good number of the market~市场商品总数"
+                        },
+                        "functionSelector": "5a5da4dd",
+                        "id": 82,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "goodNum",
+                        "nameLocation": "2647:7:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 78,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "2654:2:0"
+                        },
+                        "returnParameters": {
+                            "id": 81,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 80,
+                                    "mutability": "mutable",
+                                    "name": "goodNum_",
+                                    "nameLocation": "2688:8:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 82,
+                                    "src": "2680:16:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 79,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "2680:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "2679:18:0"
+                        },
+                        "scope": 155,
+                        "src": "2638:60:0",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 83,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "2704:123:0",
+                            "text": "@notice config market config 设置市场中市场配置\n @param _marketconfig   the market config ~市场配置"
+                        },
+                        "functionSelector": "45818e4c",
+                        "id": 88,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "setMarketConfig",
+                        "nameLocation": "2841:15:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 86,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 85,
+                                    "mutability": "mutable",
+                                    "name": "_marketconfig",
+                                    "nameLocation": "2865:13:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 88,
+                                    "src": "2857:21:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 84,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "2857:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "2856:23:0"
+                        },
+                        "returnParameters": {
+                            "id": 87,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "2888:0:0"
+                        },
+                        "scope": 155,
+                        "src": "2832:57:0",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 89,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "2895:147:0",
+                            "text": "@notice  update good's config 更新商品配置\n @param _goodid   good's id 商品的商品ID\n @param _goodConfig   商品配置"
+                        },
+                        "functionSelector": "144aeb83",
+                        "id": 96,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "updateGoodConfig",
+                        "nameLocation": "3056:16:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 94,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 91,
+                                    "mutability": "mutable",
+                                    "name": "_goodid",
+                                    "nameLocation": "3081:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 96,
+                                    "src": "3073:15:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 90,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3073:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 93,
+                                    "mutability": "mutable",
+                                    "name": "_goodConfig",
+                                    "nameLocation": "3098:11:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 96,
+                                    "src": "3090:19:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 92,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3090:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "3072:38:0"
+                        },
+                        "returnParameters": {
+                            "id": 95,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "3119:0:0"
+                        },
+                        "scope": 155,
+                        "src": "3047:73:0",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 97,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "3126:133:0",
+                            "text": "@notice 市场管理员修改商品的属性\n @param _goodid   商品的商品ID\n @param _goodConfig   商品配置"
+                        },
+                        "functionSelector": "0e21a1ac",
+                        "id": 104,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "modifyGoodConfig",
+                        "nameLocation": "3273:16:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 102,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 99,
+                                    "mutability": "mutable",
+                                    "name": "_goodid",
+                                    "nameLocation": "3298:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 104,
+                                    "src": "3290:15:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 98,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3290:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 101,
+                                    "mutability": "mutable",
+                                    "name": "_goodConfig",
+                                    "nameLocation": "3315:11:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 104,
+                                    "src": "3307:19:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 100,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3307:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "3289:38:0"
+                        },
+                        "returnParameters": {
+                            "id": 103,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "3336:0:0"
+                        },
+                        "scope": 155,
+                        "src": "3264:73:0",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 105,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "3342:174:0",
+                            "text": "@notice pay good to  转给\n @param _goodid   商品的商品ID\n @param _payquanity   数量\n @param _recipent   接收者\n @return the result"
+                        },
+                        "functionSelector": "920acbb8",
+                        "id": 116,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "payGood",
+                        "nameLocation": "3530:7:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 112,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 107,
+                                    "mutability": "mutable",
+                                    "name": "_goodid",
+                                    "nameLocation": "3555:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 116,
+                                    "src": "3547:15:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 106,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3547:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 109,
+                                    "mutability": "mutable",
+                                    "name": "_payquanity",
+                                    "nameLocation": "3580:11:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 116,
+                                    "src": "3572:19:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 108,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3572:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 111,
+                                    "mutability": "mutable",
+                                    "name": "_recipent",
+                                    "nameLocation": "3609:9:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 116,
+                                    "src": "3601:17:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 110,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3601:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "3537:87:0"
+                        },
+                        "returnParameters": {
+                            "id": 115,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 114,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nameLocation": "-1:-1:-1",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 116,
+                                    "src": "3651:4:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 113,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3651:4:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "3650:6:0"
+                        },
+                        "scope": 155,
+                        "src": "3521:136:0",
+                        "stateMutability": "payable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 117,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "3663:171:0",
+                            "text": "@notice set good's Owner 改变商品的拥有者\n @param _goodid  good's id 商品的商品ID\n @param _to  recipent 接收者\n @return the result"
+                        },
+                        "functionSelector": "2a7c5a91",
+                        "id": 126,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "changeGoodOwner",
+                        "nameLocation": "3848:15:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 122,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 119,
+                                    "mutability": "mutable",
+                                    "name": "_goodid",
+                                    "nameLocation": "3881:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 126,
+                                    "src": "3873:15:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 118,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3873:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 121,
+                                    "mutability": "mutable",
+                                    "name": "_to",
+                                    "nameLocation": "3906:3:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 126,
+                                    "src": "3898:11:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 120,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3898:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "3863:52:0"
+                        },
+                        "returnParameters": {
+                            "id": 125,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 124,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nameLocation": "-1:-1:-1",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 126,
+                                    "src": "3934:4:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 123,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "3934:4:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "3933:6:0"
+                        },
+                        "scope": 155,
+                        "src": "3839:101:0",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 127,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "3945:148:0",
+                            "text": "@notice collect protocalFee 收益协议手续费\n @param _goodid  good's id 商品的商品ID\n @return the result 手续费数量"
+                        },
+                        "functionSelector": "0292eb4a",
+                        "id": 134,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "collectProtocolFee",
+                        "nameLocation": "4107:18:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 130,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 129,
+                                    "mutability": "mutable",
+                                    "name": "_goodid",
+                                    "nameLocation": "4134:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 134,
+                                    "src": "4126:15:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 128,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "4126:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "4125:17:0"
+                        },
+                        "returnParameters": {
+                            "id": 133,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 132,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nameLocation": "-1:-1:-1",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 134,
+                                    "src": "4161:7:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 131,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "4161:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "4160:9:0"
+                        },
+                        "scope": 155,
+                        "src": "4098:72:0",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 135,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "4175:81:0",
+                            "text": "@notice add ban list  增加禁止名单\n @param _user  address 地址"
+                        },
+                        "functionSelector": "b153b920",
+                        "id": 140,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "addbanlist",
+                        "nameLocation": "4270:10:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 138,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 137,
+                                    "mutability": "mutable",
+                                    "name": "_user",
+                                    "nameLocation": "4289:5:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 140,
+                                    "src": "4281:13:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 136,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "4281:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "4280:15:0"
+                        },
+                        "returnParameters": {
+                            "id": 139,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "4304:0:0"
+                        },
+                        "scope": 155,
+                        "src": "4261:44:0",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 141,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "4310:81:0",
+                            "text": "@notice  rm ban list  移除禁止名单\n @param _user  address 地址"
+                        },
+                        "functionSelector": "9551177a",
+                        "id": 146,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "removebanlist",
+                        "nameLocation": "4405:13:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 144,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 143,
+                                    "mutability": "mutable",
+                                    "name": "_user",
+                                    "nameLocation": "4427:5:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 146,
+                                    "src": "4419:13:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 142,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "4419:7:0",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "4418:15:0"
+                        },
+                        "returnParameters": {
+                            "id": 145,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "4442:0:0"
+                        },
+                        "scope": 155,
+                        "src": "4396:47:0",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "external"
+                    },
+                    {
+                        "documentation": {
+                            "id": 147,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "4449:108:0",
+                            "text": "@notice 为投资者发福利\n @param goodid   商品编号\n @param welfare   用户地址"
+                        },
+                        "functionSelector": "18ad50d1",
+                        "id": 154,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "goodWelfare",
+                        "nameLocation": "4571:11:0",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 152,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 149,
+                                    "mutability": "mutable",
+                                    "name": "goodid",
+                                    "nameLocation": "4591:6:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 154,
+                                    "src": "4583:14:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 148,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "4583:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 151,
+                                    "mutability": "mutable",
+                                    "name": "welfare",
+                                    "nameLocation": "4607:7:0",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 154,
+                                    "src": "4599:15:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint128",
+                                        "typeString": "uint128"
+                                    },
+                                    "typeName": {
+                                        "id": 150,
+                                        "name": "uint128",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "4599:7:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint128",
+                                            "typeString": "uint128"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "4582:33:0"
+                        },
+                        "returnParameters": {
+                            "id": 153,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "4632:0:0"
+                        },
+                        "scope": 155,
+                        "src": "4562:71:0",
+                        "stateMutability": "payable",
+                        "virtual": false,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 156,
+                "src": "341:4294:0",
+                "usedErrors": [],
+                "usedEvents": [
+                    17,
+                    22,
+                    29,
+                    36,
+                    41,
+                    46,
+                    53,
+                    60,
+                    64
+                ]
+            }
+        ],
+        "src": "32:4604:0"
+    },
+    "functionHashes": {
+        "addbanlist(address)": "b153b920",
+        "changeGoodOwner(uint256,address)": "2a7c5a91",
+        "collectProtocolFee(uint256)": "0292eb4a",
+        "goodNum()": "5a5da4dd",
+        "goodWelfare(uint256,uint128)": "18ad50d1",
+        "marketconfig()": "402f5ab5",
+        "marketcreator()": "3d995173",
+        "modifyGoodConfig(uint256,uint256)": "0e21a1ac",
+        "payGood(uint256,uint256,address)": "920acbb8",
+        "removebanlist(address)": "9551177a",
+        "setMarketConfig(uint256)": "45818e4c",
+        "updateGoodConfig(uint256,uint256)": "144aeb83"
+    },
+    "gasEstimates": null
+}

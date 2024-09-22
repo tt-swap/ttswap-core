@@ -9,7 +9,7 @@ import {TTSwap_NFT} from "../src/TTSwap_NFT.sol";
 import {TTSwap_MainTrigger} from "../src/TTSwap_MainTrigger.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
 
 import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
@@ -21,11 +21,12 @@ import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 
 contract testBuy1 is Test {
     using L_MarketConfigLibrary for uint256;
+    using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
     using L_CurrencyLibrary for address;
-    using L_BalanceUINT256Library for T_BalanceUINT256;
+    using L_TTSwapUINT256Library for uint256;
 
     uint256 usdtgood;
     uint256 nativenormalgood;
@@ -67,7 +68,7 @@ contract testBuy1 is Test {
         console2.log(1, 1);
         market.initMetaGood(
             address(usdt),
-            toBalanceUINT256(4316279969830, 4316279969830),
+            toTTSwapUINT256(4316279969830, 4316279969830),
             58014493144340224047723362035128774673999617126840714024924520715586495315968 +
                 2 *
                 2 ** 216 +
@@ -84,7 +85,7 @@ contract testBuy1 is Test {
         eth.approve(address(market), 100 * 10 ** 18);
         market.initGood(
             usdtgood,
-            toBalanceUINT256(10 * 10 ** 18, 33000 * 10 ** 6),
+            toTTSwapUINT256(10 * 10 ** 18, 33000 * 10 ** 6),
             address(eth),
             574294852927029179450682055812555939397509459020590716783642472657759240192
         );
@@ -94,7 +95,7 @@ contract testBuy1 is Test {
         wbtc.approve(address(market), 100 * 10 ** 8);
         market.initGood(
             usdtgood,
-            toBalanceUINT256(2 * 10 ** 8, 128000 * 10 ** 6),
+            toTTSwapUINT256(2 * 10 ** 8, 128000 * 10 ** 6),
             address(wbtc),
             574294852927029179450682055812555939397509459020590716783642472657759240192
         );
@@ -110,7 +111,7 @@ contract testBuy1 is Test {
             ethgood,
             btcgood,
             1 * 10 ** 18,
-            toBalanceUINT256(
+            toTTSwapUINT256(
                 33000 * 10 ** 6 * 2 * 10 ** 5 * 995,
                 10 * 10 ** 18 * 128000 * 10 ** 6
             ),

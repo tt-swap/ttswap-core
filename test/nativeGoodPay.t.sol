@@ -6,7 +6,7 @@ import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
 
 import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
@@ -17,11 +17,12 @@ import {GoodUtil} from "./util/GoodUtil.sol";
 
 contract nativeGoodPay is Test, BaseSetup {
     using L_MarketConfigLibrary for uint256;
+    using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
     using L_CurrencyLibrary for address;
-    using L_BalanceUINT256Library for T_BalanceUINT256;
+    using L_TTSwapUINT256Library for uint256;
 
     uint256 metagood;
     uint256 nativenormalgood;
@@ -67,7 +68,7 @@ contract nativeGoodPay is Test, BaseSetup {
 
         market.initMetaGood{value: 1 ether}(
             nativeCurrency,
-            toBalanceUINT256(uint128(4000 * 10 ** 6), 1 * 10 ** 18),
+            toTTSwapUINT256(uint128(4000 * 10 ** 6), 1 * 10 ** 18),
             _goodConfig
         );
         metagood = S_GoodKey(marketcreator, nativeCurrency).toId();
@@ -110,7 +111,7 @@ contract nativeGoodPay is Test, BaseSetup {
 
         market.initGood{value: 0.9 ether}(
             metagood,
-            toBalanceUINT256(9 * 10 ** 17, 9 * 10 ** 17),
+            toTTSwapUINT256(9 * 10 ** 17, 9 * 10 ** 17),
             address(0),
             _goodConfig
         );
@@ -147,7 +148,7 @@ contract nativeGoodPay is Test, BaseSetup {
             2 ** 197;
         market.initGood{value: 2 ether}(
             metagood,
-            toBalanceUINT256(8000 * 10 ** 6, 2 ether),
+            toTTSwapUINT256(8000 * 10 ** 6, 2 ether),
             address(usdt),
             _goodConfig
         );
@@ -172,20 +173,18 @@ contract nativeGoodPay is Test, BaseSetup {
         );
         console2.log(
             "tbalance.amount0()",
-            T_BalanceUINT256.wrap(10000 * 2 ** 128 + 1).amount0()
+            uint256(10000 * 2 ** 128 + 1).amount0()
         );
 
         console2.log(
             "tbalance.amount0()",
-            T_BalanceUINT256.wrap(10000 * 2 ** 128 + 1).amount1()
+            uint256(10000 * 2 ** 128 + 1).amount1()
         );
         market.buyGood(
             normalgoodusdt,
             metagood,
             4000 * 10 ** 6,
-            T_BalanceUINT256.wrap(
-                90000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 18
-            ),
+            90000 * 1 * 10 ** 6 * 2 ** 128 + 1 * 10 ** 18,
             false,
             address(0)
         );

@@ -8,14 +8,14 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
-import {toBalanceUINT256, T_BalanceUINT256, L_BalanceUINT256Library, add, sub, mulDiv} from "./libraries/L_BalanceUINT256.sol";
+import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
 
 /**
  * @title TTS Token Contract
  * @dev Implements ERC20 token with additional staking and cross-chain functionality
  */
 contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
-    using L_BalanceUINT256Library for T_BalanceUINT256;
+    using L_TTSwapUINT256Library for uint256;
     using L_TTSTokenConfigLibrary for uint256;
     uint256 public ttstokenconfig;
 
@@ -27,18 +27,18 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     }
     mapping(uint32 => s_share) shares; // all share's mapping
 
-    T_BalanceUINT256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
-    T_BalanceUINT256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
+    uint256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
+    uint256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
 
     struct s_proof {
         address fromcontract; // from which contract
-        T_BalanceUINT256 proofstate; // stake's state
+        uint256 proofstate; // stake's state
     }
     mapping(uint256 => s_proof) stakeproof;
 
     struct s_chain {
-        T_BalanceUINT256 asset; //128 shareasset&poolasset 128 poolasset
-        T_BalanceUINT256 proofstate; //128 value 128 constructasset
+        uint256 asset; //128 shareasset&poolasset 128 poolasset
+        uint256 proofstate; //128 value 128 constructasset
         address recipient;
     }
     mapping(uint32 => s_chain) chains;
@@ -72,7 +72,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         uint256 _ttsconfig
     ) ERC20Permit("TTSwap Token") ERC20("TTSwap Token", "TTS") {
         usdt = _usdt;
-        stakestate = toBalanceUINT256(uint128(block.timestamp), 0);
+        stakestate = toTTSwapUINT256(uint128(block.timestamp), 0);
         dao_admin = _dao_admin;
         ttstokenconfig = _ttsconfig;
     }
@@ -326,11 +326,12 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
                 chainvalue,
                 stakestate.amount1()
             );
-            poolstate =
-                poolstate +
-                toBalanceUINT256(chainconstruct, chainconstruct);
-            stakestate = stakestate + toBalanceUINT256(0, chainvalue);
-            chains[chainid].proofstate = toBalanceUINT256(
+            poolstate = sub(
+                poolstate,
+                toTTSwapUINT256(chainconstruct, chainconstruct)
+            );
+            stakestate = sub(stakestate, toTTSwapUINT256(0, chainvalue));
+            chains[chainid].proofstate = toTTSwapUINT256(
                 chainvalue,
                 chainconstruct
             );
@@ -344,31 +345,33 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
 
             poolstate =
                 poolstate -
-                toBalanceUINT256(
+                toTTSwapUINT256(
                     poolasset,
                     chains[chainid].proofstate.amount1()
                 );
             stakestate =
                 stakestate -
-                toBalanceUINT256(0, chains[chainid].proofstate.amount0());
+                toTTSwapUINT256(0, chains[chainid].proofstate.amount0());
             poolasset = poolasset - chains[chainid].proofstate.amount0();
             chainconstruct = mulDiv(
                 poolstate.amount0(),
                 chainvalue,
                 stakestate.amount1()
             );
-            poolstate =
-                poolstate +
-                toBalanceUINT256(chainconstruct, chainconstruct);
-            stakestate = stakestate + toBalanceUINT256(0, chainvalue);
+            poolstate = sub(
+                poolstate,
+                toTTSwapUINT256(chainconstruct, chainconstruct)
+            );
+            stakestate = sub(stakestate, toTTSwapUINT256(0, chainvalue));
 
-            chains[chainid].proofstate = toBalanceUINT256(
+            chains[chainid].proofstate = toTTSwapUINT256(
                 chainvalue,
                 chainconstruct
             );
-            chains[chainid].asset =
-                chains[chainid].asset +
-                toBalanceUINT256(poolasset, poolasset);
+            chains[chainid].asset = sub(
+                chains[chainid].asset,
+                toTTSwapUINT256(poolasset, poolasset)
+            );
             _mint(chains[chainid].recipient, poolasset);
         }
         emit e_syncChainStake(chainid, chainvalue, chainconstruct, poolasset);
@@ -381,7 +384,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     function syncPoolAsset(uint128 amount) external onlysub {
         require(auths[msg.sender] == 5);
-        poolstate = poolstate + toBalanceUINT256(amount, 0);
+        poolstate = sub(poolstate, toTTSwapUINT256(amount, 0));
     }
 
     /**
@@ -398,9 +401,10 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
                 (chains[chainid].recipient == msg.sender ||
                     chains[chainid].recipient == address(0))
         );
-        chains[chainid].asset =
-            chains[chainid].asset +
-            toBalanceUINT256(asset, 0);
+        chains[chainid].asset = sub(
+            chains[chainid].asset,
+            toTTSwapUINT256(asset, 0)
+        );
         require(balanceOf(msg.sender) >= chains[chainid].asset.amount0());
     }
 
@@ -420,7 +424,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         );
         chains[chainid].asset =
             chains[chainid].asset -
-            toBalanceUINT256(asset, 0);
+            toTTSwapUINT256(asset, 0);
     }
 
     /**
@@ -471,12 +475,13 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         netconstruct = poolstate.amount1() == 0
             ? 0
             : mulDiv(poolstate.amount1(), proofvalue, stakestate.amount1());
-        poolstate = poolstate + toBalanceUINT256(netconstruct, netconstruct);
-        stakestate = stakestate + toBalanceUINT256(0, proofvalue);
+        poolstate = sub(poolstate, toTTSwapUINT256(netconstruct, netconstruct));
+        stakestate = sub(stakestate, toTTSwapUINT256(0, proofvalue));
         stakeproof[restakeid].fromcontract = msg.sender;
-        stakeproof[restakeid].proofstate =
-            stakeproof[restakeid].proofstate +
-            toBalanceUINT256(proofvalue, netconstruct);
+        stakeproof[restakeid].proofstate = sub(
+            stakeproof[restakeid].proofstate,
+            toTTSwapUINT256(proofvalue, netconstruct)
+        );
     }
 
     /**
@@ -500,18 +505,18 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             );
             stakeproof[restakeid].proofstate =
                 stakeproof[restakeid].proofstate -
-                toBalanceUINT256(proofvalue, construct);
+                toTTSwapUINT256(proofvalue, construct);
         }
-        profit = toBalanceUINT256(poolstate.amount0(), stakestate.amount1())
+        profit = toTTSwapUINT256(poolstate.amount0(), stakestate.amount1())
             .getamount0fromamount1(proofvalue);
-        stakestate = stakestate - toBalanceUINT256(0, proofvalue);
-        poolstate = poolstate - toBalanceUINT256(profit, construct);
+        stakestate = stakestate - toTTSwapUINT256(0, proofvalue);
+        poolstate = poolstate - toTTSwapUINT256(profit, construct);
         profit = profit - construct;
         if (profit > 0) _mint(_staker, profit);
         emit e_unstake(
             _staker,
             proofvalue,
-            toBalanceUINT256(construct, profit),
+            toTTSwapUINT256(construct, profit),
             stakeproof[restakeid].proofstate
         );
     }
@@ -521,15 +526,12 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     function _stakeFee() internal {
         if (stakestate.amount0() + 86400 < block.timestamp) {
-            stakestate = stakestate + toBalanceUINT256(86400, 0);
+            stakestate = sub(stakestate, toTTSwapUINT256(86400, 0));
             uint256 mintamount = totalSupply() > 5000000 * decimals()
                 ? totalSupply() / 18300
                 : 274 * decimals(); //27322404=(500000 * decimals) / 18300
-            poolstate = poolstate + toBalanceUINT256(uint128(mintamount), 0);
-            emit e_updatepool(
-                T_BalanceUINT256.unwrap(poolstate),
-                T_BalanceUINT256.unwrap(stakestate)
-            );
+            poolstate = sub(poolstate, toTTSwapUINT256(uint128(mintamount), 0));
+            emit e_updatepool(poolstate, stakestate);
         }
     }
     // burn

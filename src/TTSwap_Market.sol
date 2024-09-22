@@ -13,7 +13,7 @@ import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
 import {I_TTSwap_NFT} from "./interfaces/I_TTSwap_NFT.sol";
 import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice, toInt128} from "./libraries/L_BalanceUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice, toInt128} from "./libraries/L_TTSwapUINT256.sol";
 
 /**
  * @title TTSwap_Market
@@ -24,6 +24,7 @@ contract TTSwap_Market is I_TTSwap_Market {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
+    using L_TTSwapUINT256Library for uint256;
     using L_Good for L_Good.S_GoodState;
     using L_Proof for L_Proof.S_ProofState;
     using L_CurrencyLibrary for address;
@@ -82,7 +83,7 @@ contract TTSwap_Market is I_TTSwap_Market {
     /// @inheritdoc I_TTSwap_Market
     function initMetaGood(
         address _erc20address,
-        T_BalanceUINT256 _initial,
+        uint256 _initial,
         uint256 _goodConfig
     ) external payable override returns (bool) {
         require(_goodConfig.isvaluegood());
@@ -97,9 +98,9 @@ contract TTSwap_Market is I_TTSwap_Market {
         proofs[totalSupply].updateInvest(
             togood,
             0,
-            toBalanceUINT256(_initial.amount0(), 0),
-            toBalanceUINT256(0, _initial.amount1()),
-            toBalanceUINT256(0, 0)
+            toTTSwapUINT256(_initial.amount0(), 0),
+            toTTSwapUINT256(0, _initial.amount1()),
+            toTTSwapUINT256(0, 0)
         );
         uint128 construct = L_Proof.stake(
             officialTokenContract,
@@ -108,7 +109,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         emit e_initMetaGood(
             totalSupply,
-            toBalanceUINT256(toInt128(togood), construct),
+            toTTSwapUINT256(toInt128(togood), construct),
             _erc20address,
             _goodConfig,
             _initial
@@ -127,7 +128,7 @@ contract TTSwap_Market is I_TTSwap_Market {
     /// @inheritdoc I_TTSwap_Market
     function initGood(
         uint256 _valuegood,
-        T_BalanceUINT256 _initial,
+        uint256 _initial,
         address _erc20address,
         uint256 _goodConfig
     ) external payable override noReentrant returns (bool) {
@@ -145,10 +146,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         L_Good.S_GoodInvestReturn memory investResult = goods[_valuegood]
             .investGood(_initial.amount1());
         goods[togood].init(
-            toBalanceUINT256(
-                investResult.actualInvestValue,
-                _initial.amount0()
-            ),
+            toTTSwapUINT256(investResult.actualInvestValue, _initial.amount0()),
             _erc20address,
             _goodConfig
         );
@@ -159,9 +157,9 @@ contract TTSwap_Market is I_TTSwap_Market {
         proofs[totalSupply] = L_Proof.S_ProofState(
             togood,
             _valuegood,
-            toBalanceUINT256(investResult.actualInvestValue, 0),
-            toBalanceUINT256(0, _initial.amount0()),
-            toBalanceUINT256(
+            toTTSwapUINT256(investResult.actualInvestValue, 0),
+            toTTSwapUINT256(0, _initial.amount0()),
+            toTTSwapUINT256(
                 investResult.constructFeeQuantity,
                 investResult.actualInvestQuantity
             )
@@ -174,15 +172,12 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         emit e_initGood(
             totalSupply,
-            toBalanceUINT256(toInt128(togood), construct),
+            toTTSwapUINT256(toInt128(togood), construct),
             _valuegood,
             _erc20address,
             _goodConfig,
-            toBalanceUINT256(
-                _initial.amount0(),
-                investResult.actualInvestValue
-            ),
-            toBalanceUINT256(
+            toTTSwapUINT256(_initial.amount0(), investResult.actualInvestValue),
+            toTTSwapUINT256(
                 investResult.actualFeeQuantity,
                 investResult.actualInvestQuantity
             )
@@ -205,7 +200,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         uint256 _goodid1,
         uint256 _goodid2,
         uint128 _swapQuantity,
-        T_BalanceUINT256 _limitPrice,
+        uint256 _limitPrice,
         bool _istotal,
         address _referal
     )
@@ -235,8 +230,8 @@ contract TTSwap_Market is I_TTSwap_Market {
                 .main_beforeswap(
                     goods[_goodid1].trigger,
                     _swapQuantity,
-                    T_BalanceUINT256.unwrap(swapcache.good1currentState),
-                    T_BalanceUINT256.unwrap(swapcache.good2currentState),
+                    swapcache.good1currentState,
+                    swapcache.good2currentState,
                     msg.sender
                 )
                 .isOk();
@@ -245,8 +240,8 @@ contract TTSwap_Market is I_TTSwap_Market {
                 .main_beforeswap(
                     goods[_goodid2].trigger,
                     _swapQuantity,
-                    T_BalanceUINT256.unwrap(swapcache.good2currentState),
-                    T_BalanceUINT256.unwrap(swapcache.good1currentState),
+                    swapcache.good2currentState,
+                    swapcache.good1currentState,
                     msg.sender
                 )
                 .isOk();
@@ -281,11 +276,11 @@ contract TTSwap_Market is I_TTSwap_Market {
             _goodid2,
             msg.sender,
             swapcache.swapvalue,
-            toBalanceUINT256(
+            toTTSwapUINT256(
                 _swapQuantity - swapcache.remainQuantity,
                 swapcache.feeQuantity
             ),
-            toBalanceUINT256(goodid2Quantity_, goodid2FeeQuantity_)
+            toTTSwapUINT256(goodid2Quantity_, goodid2FeeQuantity_)
         );
     }
 
@@ -304,7 +299,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         uint256 _goodid1,
         uint256 _goodid2,
         uint128 _swapQuantity,
-        T_BalanceUINT256 _limitPrice,
+        uint256 _limitPrice,
         address _recipient
     )
         external
@@ -356,8 +351,8 @@ contract TTSwap_Market is I_TTSwap_Market {
             msg.sender,
             _recipient,
             swapcache.swapvalue,
-            toBalanceUINT256(_swapQuantity, swapcache.feeQuantity),
-            toBalanceUINT256(goodid1Quantity_, goodid1FeeQuantity_)
+            toTTSwapUINT256(_swapQuantity, swapcache.feeQuantity),
+            toTTSwapUINT256(goodid1Quantity_, goodid1FeeQuantity_)
         );
     }
 
@@ -413,12 +408,12 @@ contract TTSwap_Market is I_TTSwap_Market {
         proofs[proofNo].updateInvest(
             _togood,
             _valuegood,
-            toBalanceUINT256(normalInvest_.actualInvestValue, 0),
-            toBalanceUINT256(
+            toTTSwapUINT256(normalInvest_.actualInvestValue, 0),
+            toTTSwapUINT256(
                 normalInvest_.constructFeeQuantity,
                 normalInvest_.actualInvestQuantity
             ),
-            toBalanceUINT256(
+            toTTSwapUINT256(
                 valueInvest_.constructFeeQuantity,
                 valueInvest_.actualInvestQuantity
             )
@@ -433,14 +428,14 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         emit e_investGood(
             proofNo,
-            toBalanceUINT256(toInt128(_togood), construct),
+            toTTSwapUINT256(toInt128(_togood), construct),
             _valuegood,
-            toBalanceUINT256(normalInvest_.actualInvestValue, 0),
-            toBalanceUINT256(
+            toTTSwapUINT256(normalInvest_.actualInvestValue, 0),
+            toTTSwapUINT256(
                 normalInvest_.actualFeeQuantity,
                 normalInvest_.actualInvestQuantity
             ),
-            toBalanceUINT256(
+            toTTSwapUINT256(
                 valueInvest_.actualFeeQuantity,
                 valueInvest_.actualInvestQuantity
             )
@@ -498,16 +493,16 @@ contract TTSwap_Market is I_TTSwap_Market {
             _proofid,
             normalgood,
             valuegood,
-            toBalanceUINT256(divestvalue, 0),
-            toBalanceUINT256(
+            toTTSwapUINT256(divestvalue, 0),
+            toTTSwapUINT256(
                 disinvestNormalResult1_.actual_fee,
                 disinvestNormalResult1_.actualDisinvestQuantity
             ),
-            toBalanceUINT256(
+            toTTSwapUINT256(
                 disinvestValueResult2_.actual_fee,
                 disinvestValueResult2_.actualDisinvestQuantity
             ),
-            toBalanceUINT256(
+            toTTSwapUINT256(
                 disinvestNormalResult1_.profit,
                 disinvestValueResult2_.profit
             )
@@ -525,7 +520,7 @@ contract TTSwap_Market is I_TTSwap_Market {
     function collectProof(
         uint256 _proofid,
         address _gater
-    ) external override noReentrant returns (T_BalanceUINT256 profit_) {
+    ) external override noReentrant returns (uint256 profit_) {
         require(
             I_TTSwap_NFT(officialNFTContract).isApprovedOrOwner(
                 msg.sender,
@@ -560,7 +555,7 @@ contract TTSwap_Market is I_TTSwap_Market {
             lowerprice(
                 goods[goodid].currentState,
                 goods[valuegood].currentState,
-                T_BalanceUINT256.wrap(compareprice)
+                compareprice
             );
     }
 
@@ -664,9 +659,10 @@ contract TTSwap_Market is I_TTSwap_Market {
     ) external payable override noReentrant {
         require(goods[goodid].feeQuantityState.amount0() + welfare <= 2 ** 109);
         goods[goodid].erc20address.transferFrom(msg.sender, welfare);
-        goods[goodid].feeQuantityState =
-            goods[goodid].feeQuantityState +
-            toBalanceUINT256(uint128(welfare), 0);
+        goods[goodid].feeQuantityState = add(
+            goods[goodid].feeQuantityState,
+            toTTSwapUINT256(uint128(welfare), 0)
+        );
         emit e_goodWelfare(goodid, welfare);
     }
 

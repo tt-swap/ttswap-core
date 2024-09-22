@@ -4,7 +4,7 @@ pragma solidity 0.8.26;
 import {S_GoodKey, S_ProofKey} from "../libraries/L_Struct.sol";
 import {L_Good} from "../libraries/L_Good.sol";
 
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd} from "../libraries/L_BalanceUINT256.sol";
+import {toTTSwapUINT256, addsub, subadd} from "../libraries/L_TTSwapUINT256.sol";
 
 /// @title Market Management Interface
 /// @notice Defines the interface for managing market operations
@@ -66,10 +66,10 @@ interface I_TTSwap_Market {
     /// @param _initial Market initialization parameters: amount0 is the value, amount1 is the quantity
     event e_initMetaGood(
         uint256 _proofNo,
-        T_BalanceUINT256 _extendinfo,
+        uint256 _extendinfo,
         address _erc20address,
         uint256 _goodConfig,
-        T_BalanceUINT256 _initial
+        uint256 _initial
     );
 
     /// @notice Emitted when a good is created and initialized
@@ -82,12 +82,12 @@ interface I_TTSwap_Market {
     /// @param _value Value good initialization parameters: amount0 is the investment fee, amount1 is the investment quantity
     event e_initGood(
         uint256 _proofNo,
-        T_BalanceUINT256 _extendinfo,
+        uint256 _extendinfo,
         uint256 _valuegoodNo,
         address _erc20address,
         uint256 _goodConfig,
-        T_BalanceUINT256 _normalinitial,
-        T_BalanceUINT256 _value
+        uint256 _normalinitial,
+        uint256 _value
     );
 
     /// @notice Emitted when a user buys a good
@@ -102,8 +102,8 @@ interface I_TTSwap_Market {
         uint256 indexed forgood,
         address fromer,
         uint128 swapvalue,
-        T_BalanceUINT256 sellgoodstate,
-        T_BalanceUINT256 forgoodstate
+        uint256 sellgoodstate,
+        uint256 forgoodstate
     );
 
     /// @notice Emitted when a user buys a good and pays the seller
@@ -120,8 +120,8 @@ interface I_TTSwap_Market {
         address fromer,
         address receipt,
         uint128 swapvalue,
-        T_BalanceUINT256 buygoodstate,
-        T_BalanceUINT256 usegoodstate
+        uint256 buygoodstate,
+        uint256 usegoodstate
     );
 
     /// @notice Emitted when a user invests in a normal good
@@ -133,11 +133,11 @@ interface I_TTSwap_Market {
     /// @param _valueinvest Value good investment details (amount0: actual fee, amount1: actual invest quantity)
     event e_investGood(
         uint256 indexed _proofNo,
-        T_BalanceUINT256 _extendinfo,
+        uint256 _extendinfo,
         uint256 _valueGoodNo,
-        T_BalanceUINT256 _value,
-        T_BalanceUINT256 _invest,
-        T_BalanceUINT256 _valueinvest
+        uint256 _value,
+        uint256 _invest,
+        uint256 _valueinvest
     );
 
     /// @notice Emitted when a user disinvests from a normal good
@@ -151,10 +151,10 @@ interface I_TTSwap_Market {
         uint256 indexed _proofNo,
         uint256 _normalGoodNo,
         uint256 _valueGoodNo,
-        T_BalanceUINT256 _value,
-        T_BalanceUINT256 _normalgood,
-        T_BalanceUINT256 _valuegood,
-        T_BalanceUINT256 _profit
+        uint256 _value,
+        uint256 _normalgood,
+        uint256 _valuegood,
+        uint256 _profit
     );
 
     /// @notice Emitted when a user collects profit from an investment proof
@@ -166,7 +166,7 @@ interface I_TTSwap_Market {
         uint256 indexed _proofNo,
         uint256 _normalGoodNo,
         uint256 _valueGoodNo,
-        T_BalanceUINT256 _profit
+        uint256 _profit
     );
 
     /// @notice Emitted when a good is empowered
@@ -184,7 +184,7 @@ interface I_TTSwap_Market {
     /// @return Success status
     function initMetaGood(
         address _erc20address,
-        T_BalanceUINT256 _initial,
+        uint256 _initial,
         uint256 _goodconfig
     ) external payable returns (bool);
 
@@ -196,7 +196,7 @@ interface I_TTSwap_Market {
     /// @return Success status
     function initGood(
         uint256 _valuegood,
-        T_BalanceUINT256 _initial,
+        uint256 _initial,
         address _erc20address,
         uint256 _goodConfig
     ) external payable returns (bool);
@@ -214,7 +214,7 @@ interface I_TTSwap_Market {
         uint256 _goodid1,
         uint256 _goodid2,
         uint128 _swapQuantity,
-        T_BalanceUINT256 _limitprice,
+        uint256 _limitprice,
         bool _istotal,
         address _referal
     )
@@ -234,7 +234,7 @@ interface I_TTSwap_Market {
         uint256 _goodid1,
         uint256 _goodid2,
         uint128 _swapQuantity,
-        T_BalanceUINT256 _limitprice,
+        uint256 _limitprice,
         address _recipent
     )
         external
@@ -270,7 +270,7 @@ interface I_TTSwap_Market {
     function collectProof(
         uint256 _proofid,
         address _gater
-    ) external returns (T_BalanceUINT256 profit_);
+    ) external returns (uint256 profit_);
 
     /// @notice Check if the price of a good is higher than a comparison price
     /// @param goodid ID of the good to check

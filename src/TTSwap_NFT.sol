@@ -7,7 +7,7 @@ import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 import {S_ProofKey} from "./libraries/L_Struct.sol";
 import {ERC721Permit} from "@erc721permit/ERC721Permit.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
-import {T_BalanceUINT256, L_BalanceUINT256Library} from "./libraries/L_BalanceUINT256.sol";
+import {L_TTSwapUINT256Library} from "./libraries/L_TTSwapUINT256.sol";
 
 /**
  * @title ProofManage
@@ -17,7 +17,7 @@ import {T_BalanceUINT256, L_BalanceUINT256Library} from "./libraries/L_BalanceUI
 contract TTSwap_NFT is I_TTSwap_NFT, ERC721Permit {
     using L_Proof for *;
     using L_ProofIdLibrary for S_ProofKey;
-    using L_BalanceUINT256Library for T_BalanceUINT256;
+    using L_TTSwapUINT256Library for uint256;
 
     mapping(uint256 => address) internal proofsource;
 

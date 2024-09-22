@@ -3,7 +3,6 @@ pragma solidity 0.8.26;
 
 import {S_ProofKey} from "../libraries/L_Struct.sol";
 import {L_Proof} from "../libraries/L_Proof.sol";
-import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 import {IERC721Permit} from "./IERC721Permit.sol";
 
 /// @title Investment Proof Interface
@@ -99,8 +98,8 @@ interface I_TTSwap_Token {
     event e_unstake(
         address recipient,
         uint128 proofvalue,
-        T_BalanceUINT256 unstakestate,
-        T_BalanceUINT256 stakestate
+        uint256 unstakestate,
+        uint256 stakestate
     );
     /// @notice Emitted when the pool state is updated
     /// @param poolstate The new state of the pool

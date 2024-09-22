@@ -6,13 +6,14 @@ import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
 import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 
 contract testInitNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofIdLibrary for S_ProofKey;
+    using L_TTSwapUINT256Library for uint256;
     uint256 metagoodkey;
 
     function setUp() public override {
@@ -31,7 +32,7 @@ contract testInitNormalGood is BaseSetup {
             2 ** 197;
         market.initMetaGood(
             address(usdt),
-            toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
         metagoodkey = S_GoodKey(marketcreator, address(usdt)).toId();
@@ -60,7 +61,7 @@ contract testInitNormalGood is BaseSetup {
             2 ** 197;
         market.initGood(
             metagoodkey,
-            toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
+            toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
             normalgoodconfig
         );
@@ -97,30 +98,24 @@ contract testInitNormalGood is BaseSetup {
             metagoodkey
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodkeystate.currentState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(
-                    50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
-                    50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
-                )
+            metagoodkeystate.currentState,
+            toTTSwapUINT256(
+                50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
+                50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
             ),
             "after initial normalgood:metagoodkey currentState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodkeystate.investState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(
-                    50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
-                    50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
-                )
+            metagoodkeystate.investState,
+            toTTSwapUINT256(
+                50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
+                50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
             ),
             "after initial normalgood:metagoodkey investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodkeystate.feeQuantityState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(((63000 * 10 ** 6) / 10000), 0)
-            ),
+            metagoodkeystate.feeQuantityState,
+            toTTSwapUINT256(((63000 * 10 ** 6) / 10000), 0),
             "after initial normalgood:metagoodkey feequnitity error"
         );
 
@@ -160,15 +155,13 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:normalgood currentState amount1()"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(normalgoodstate.investState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(63000 * 10 ** 6 - 63000 * 10 ** 2, 1 * 10 ** 8)
-            ),
+            normalgoodstate.investState,
+            toTTSwapUINT256(63000 * 10 ** 6 - 63000 * 10 ** 2, 1 * 10 ** 8),
             "after initial normalgood:normalgood investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(normalgoodstate.feeQuantityState),
-            T_BalanceUINT256.unwrap(toBalanceUINT256(0, 0)),
+            normalgoodstate.feeQuantityState,
+            0,
             "after initial normalgood:normalgood feequnitity error"
         );
 
@@ -238,7 +231,7 @@ contract testInitNormalGood is BaseSetup {
             2 ** 197;
         market.initGood{value: 1 * 10 ** 8}(
             metagoodkey,
-            toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
+            toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(0),
             normalgoodconfig
         );
@@ -273,28 +266,24 @@ contract testInitNormalGood is BaseSetup {
             metagoodkey
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodkeystate.currentState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(
-                    50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
-                    50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
-                )
+            metagoodkeystate.currentState,
+            toTTSwapUINT256(
+                50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
+                50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
             ),
             "after initial normalgood:metagoodkey currentState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodkeystate.investState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(
-                    50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
-                    50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
-                )
+            metagoodkeystate.investState,
+            toTTSwapUINT256(
+                50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2,
+                50000 * 10 ** 6 + 63000 * 10 ** 6 - 63000 * 10 ** 2
             ),
             "after initial normalgood:metagoodkey investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(metagoodkeystate.feeQuantityState),
-            T_BalanceUINT256.unwrap(toBalanceUINT256(((63000 * 10 ** 2)), 0)),
+            metagoodkeystate.feeQuantityState,
+            toTTSwapUINT256(((63000 * 10 ** 2)), 0),
             "after initial normalgood:metagoodkey feequnitity error"
         );
 
@@ -336,8 +325,8 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:normalgood currentState amount1()"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(normalgoodstate.feeQuantityState),
-            T_BalanceUINT256.unwrap(toBalanceUINT256(0, 0)),
+            normalgoodstate.feeQuantityState,
+            0,
             "after initial normalgood:normalgood feequnitity error"
         );
 

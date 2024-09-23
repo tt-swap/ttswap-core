@@ -14,22 +14,13 @@ contract testGoodConfig is Test {
         assertEq(a_min.isvaluegood(), false);
     }
 
-    function test_beforeswaptake() public pure {
-        uint256 a_min = 1 * 2 ** 228;
-        assertEq(a_min.beforeswaptake(), true);
-    }
-    function test_beforeswapmake() public pure {
-        uint256 a_min = 1 * 2 ** 227;
-        assertEq(a_min.beforeswapmake(), true);
-    }
-
-    function test_afterswaptake() public pure {
+    function test_swaptake() public pure {
         uint256 a_min = 1 * 2 ** 226;
-        assertEq(a_min.afterswaptake(), true);
+        assertEq(a_min.swaptake(), true);
     }
-    function test_afterswapmake() public pure {
+    function test_swapmake() public pure {
         uint256 a_min = 1 * 2 ** 225;
-        assertEq(a_min.afterswapmake(), true);
+        assertEq(a_min.swapmake(), true);
     }
     function test_invest() public pure {
         uint256 a_min = 1 * 2 ** 224;

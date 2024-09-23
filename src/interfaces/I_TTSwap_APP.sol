@@ -2,7 +2,7 @@
 pragma solidity 0.8.26;
 
 interface I_TTSwap_APP {
-    function beforeswaptake(
+    function swaptake(
         uint256 opgood,
         uint256 trade,
         uint256 currentstate,
@@ -10,23 +10,7 @@ interface I_TTSwap_APP {
         address recipent
     ) external returns (bool);
 
-    function beforeswapmake(
-        uint256 oppositiongood,
-        uint256 trade,
-        uint256 currentstate,
-        uint256 opstate,
-        address recipent
-    ) external returns (bool);
-
-    function afterswaptake(
-        uint256 oppositiongood,
-        uint256 trade,
-        uint256 currentstate,
-        uint256 opstate,
-        address recipent
-    ) external returns (bool);
-    
-    function afterswapmake(
+    function swapmake(
         uint256 oppositiongood,
         uint256 trade,
         uint256 currentstate,

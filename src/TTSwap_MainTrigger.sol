@@ -15,7 +15,7 @@ contract TTSwap_MainTrigger is I_TTSwap_MainTrigger {
         officialMarket = _officialMarket;
     }
 
-    function main_beforeswaptake(
+    function main_swaptake(
         address triggercontract,
         uint256 opgood,
         uint256 trade,
@@ -25,7 +25,7 @@ contract TTSwap_MainTrigger is I_TTSwap_MainTrigger {
     ) external override returns (bool) {
         require(msg.sender == officialMarket);
         return
-            I_TTSwap_APP(triggercontract).beforeswaptake(
+            I_TTSwap_APP(triggercontract).swaptake(
                 opgood,
                 trade,
                 currentstate,
@@ -33,7 +33,7 @@ contract TTSwap_MainTrigger is I_TTSwap_MainTrigger {
                 recipent
             );
     }
-    function main_beforeswapmake(
+    function main_swapmake(
         address triggercontract,
         uint256 opgood,
         uint256 trade,
@@ -43,47 +43,9 @@ contract TTSwap_MainTrigger is I_TTSwap_MainTrigger {
     ) external override returns (bool) {
         require(msg.sender == officialMarket);
         return
-            I_TTSwap_APP(triggercontract).beforeswaptake(
+            I_TTSwap_APP(triggercontract).swaptake(
                 opgood,
                 trade,
-                currentstate,
-                opstate,
-                recipent
-            );
-    }
-
-    function main_afterswaptake(
-        address triggercontract,
-        uint256 opgood,
-        uint256 traderesult,
-        uint256 currentstate,
-        uint256 opstate,
-        address recipent
-    ) external returns (bool) {
-        require(msg.sender == officialMarket);
-        return
-            I_TTSwap_APP(triggercontract).afterswaptake(
-                opgood,
-                traderesult,
-                currentstate,
-                opstate,
-                recipent
-            );
-    }
-
-    function main_afterswapmake(
-        address triggercontract,
-        uint256 opgood,
-        uint256 traderesult,
-        uint256 currentstate,
-        uint256 opstate,
-        address recipent
-    ) external returns (bool) {
-        require(msg.sender == officialMarket);
-        return
-            I_TTSwap_APP(triggercontract).afterswapmake(
-                opgood,
-                traderesult,
                 currentstate,
                 opstate,
                 recipent

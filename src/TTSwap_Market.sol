@@ -188,6 +188,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         return true;
     }
+
     /**
      * @dev Buys a good
      * @param _goodid1 The ID of the first good
@@ -219,20 +220,21 @@ contract TTSwap_Market is I_TTSwap_Market {
                 msg.sender,
                 _referal
             );
-        goods[_goodid1].beforeswaptake(
+        goods[_goodid1].swaptake(
             officialTrigger,
             _goodid2,
             _swapQuantity,
             goods[_goodid2].currentState,
             msg.sender
         );
-        goods[_goodid2].beforeswapmake(
+        goods[_goodid2].swapmake(
             officialTrigger,
             _goodid1,
             _swapQuantity,
             goods[_goodid1].currentState,
             msg.sender
         );
+
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
             outputQuantity: 0,
@@ -243,7 +245,6 @@ contract TTSwap_Market is I_TTSwap_Market {
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
-
         swapcache = L_Good.swapCompute1(swapcache, _limitPrice);
 
         require(
@@ -252,6 +253,7 @@ contract TTSwap_Market is I_TTSwap_Market {
                 _goodid1 != _goodid2 &&
                 !(_istotal == true && swapcache.remainQuantity > 0)
         );
+
         goodid2FeeQuantity_ = goods[_goodid2].goodConfig.getBuyFee(
             swapcache.outputQuantity
         );
@@ -271,20 +273,6 @@ contract TTSwap_Market is I_TTSwap_Market {
 
         goods[_goodid2].erc20address.safeTransfer(msg.sender, goodid2Quantity_);
 
-        // goods[_goodid1].afterswaptake(
-        //     officialTrigger,
-        //     _goodid2,
-        //     _swapQuantity * 2 ** 128 + goodid2Quantity_,
-        //     goods[_goodid2].currentState,
-        //     msg.sender
-        // );
-        // goods[_goodid2].afterswapmake(
-        //     officialTrigger,
-        //     _goodid1,
-        //     _swapQuantity * 2 ** 128 + goodid2Quantity_,
-        //     goods[_goodid1].currentState,
-        //     msg.sender
-        // );
         emit e_buyGood(
             _goodid1,
             _goodid2,
@@ -322,14 +310,14 @@ contract TTSwap_Market is I_TTSwap_Market {
         noReentrant
         returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_)
     {
-        goods[_goodid1].beforeswaptake(
+        goods[_goodid1].swaptake(
             officialTrigger,
             _goodid2,
             _swapQuantity,
             goods[_goodid2].currentState,
             msg.sender
         );
-        goods[_goodid2].beforeswapmake(
+        goods[_goodid2].swapmake(
             officialTrigger,
             _goodid1,
             _swapQuantity,
@@ -613,6 +601,7 @@ contract TTSwap_Market is I_TTSwap_Market {
                 goods[goodkey].goodConfig,
                 goods[goodkey].owner,
                 goods[goodkey].erc20address,
+                goods[goodkey].trigger,
                 goods[goodkey].currentState,
                 goods[goodkey].investState,
                 goods[goodkey].feeQuantityState
@@ -736,10 +725,13 @@ contract TTSwap_Market is I_TTSwap_Market {
         uint256 config
     ) external {
         require(msg.sender == goods[goodid].owner);
-        config = (config & 63) << 223;
-        goods[goodid].goodConfig =
-            (goods[goodid].goodConfig & ~uint256(63 << 223)) &
-            config;
+        uint256 goodconfig = goods[goodid].goodConfig;
+        assembly {
+            config := shl(223, and(config, 15))
+            goodconfig := and(not(shl(223, 15)), goodconfig)
+            goodconfig := add(config, goodconfig)
+        }
+        goods[goodid].goodConfig = goodconfig;
         goods[goodid].trigger = apptrigeraddress;
         emit e_setGoodTrigger(
             goodid,

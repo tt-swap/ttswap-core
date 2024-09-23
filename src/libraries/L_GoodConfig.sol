@@ -18,29 +18,17 @@ library L_GoodConfigLibrary {
     function isnormalgood(uint256 config) internal pure returns (bool a) {
         return (config & (1 << 255)) == 0;
     }
-    /// @notice Check if the good is a value good
-    /// @param config The configuration value
-    /// @return a True if it's a value good, false otherwise
-    function beforeswaptake(uint256 config) internal pure returns (bool a) {
-        return (config & (1 << 228)) != 0;
-    }
-    /// @notice Check if the good is a value good
-    /// @param config The configuration value
-    /// @return a True if it's a value good, false otherwise
-    function beforeswapmake(uint256 config) internal pure returns (bool a) {
-        return (config & (1 << 227)) != 0;
-    }
 
     /// @notice Check if the good is a value good
     /// @param config The configuration value
     /// @return a True if it's a value good, false otherwise
-    function afterswaptake(uint256 config) internal pure returns (bool a) {
+    function swaptake(uint256 config) internal pure returns (bool a) {
         return (config & (1 << 226)) != 0;
     }
     /// @notice Check if the good is a value good
     /// @param config The configuration value
     /// @return a True if it's a value good, false otherwise
-    function afterswapmake(uint256 config) internal pure returns (bool a) {
+    function swapmake(uint256 config) internal pure returns (bool a) {
         return (config & (1 << 225)) != 0;
     }
     /// @notice Check if the good is a value good

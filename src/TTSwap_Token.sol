@@ -6,7 +6,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
-import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
+import {I_TTSwap_Token, s_share, s_chain, s_proof} from "./interfaces/I_TTSwap_Token.sol";
 import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
@@ -21,28 +21,13 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     using L_TTSTokenConfigLibrary for uint256;
     uint256 public ttstokenconfig;
 
-    struct s_share {
-        address recipient; //owner
-        uint128 leftamount; // unlock amount
-        uint120 metric; //last unlock's metric
-        uint8 chips; // define the share's chips, and every time unlock one chips
-    }
     mapping(uint32 => s_share) shares; // all share's mapping
 
     uint256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
     uint256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
 
-    struct s_proof {
-        address fromcontract; // from which contract
-        uint256 proofstate; // stake's state
-    }
     mapping(uint256 => s_proof) stakeproof;
 
-    struct s_chain {
-        uint256 asset; //128 shareasset&poolasset 128 poolasset
-        uint256 proofstate; //128 value 128 constructasset
-        address recipient;
-    }
     mapping(uint32 => s_chain) chains;
 
     uint256 internal normalgoodid;

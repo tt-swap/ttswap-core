@@ -52,12 +52,12 @@ interface I_TTSwap_Token {
 
     /// @notice Emitted when minting is burned
     /// @param index The index of the minting operation being burned
-    event e_burnShare(uint8 index);
+    event e_burnShare(uint32 index);
 
     /// @notice Emitted when DAO minting occurs
     /// @param mintamount The amount being minted
     /// @param index The index of the minting operation
-    event e_shareMint(uint256 mintamount, uint8 index);
+    event e_shareMint(uint128 mintamount, uint32 index);
 
     /// @notice Emitted during a public sale
     /// @param usdtamount The amount of USDT involved
@@ -67,21 +67,11 @@ interface I_TTSwap_Token {
     /// @notice Emitted when chain stake is synchronized
     /// @param chain The chain ID
     /// @param poolasset The pool asset value
-    /// @param proofstate first 128 bit chain proofvalue, last128 bit chain construct asset
-    event e_syncChainStake(uint32 chain, uint128 poolasset, uint256 proofstate);
-
-    /// @notice Emitted when staking occurs
-    /// @param stakeid The ID of the stake
-    /// @param marketcontract The address of the market contract
-    /// @param proofid The ID of the proof
-    /// @param stakevalue The value being staked
-    /// @param stakeconstruct The stake construct value
-    event e_stake(
-        uint256 stakeid,
-        address marketcontract,
-        uint256 proofid,
-        uint256 stakevalue,
-        uint256 stakeconstruct
+    /// @param proofstate  The value of the pool
+    event e_syncChainStake(
+        uint32 chain,
+        uint128 poolasset,
+        uint256 proofstate //first 128 bit proofvalue,last 128 bit proofconstruct
     );
 
     /// @notice Emitted when unstaking occurs
@@ -141,4 +131,20 @@ interface I_TTSwap_Token {
         address Maintriggeradd,
         address marketadd
     ) external;
+}
+struct s_share {
+    address recipient; //owner
+    uint128 leftamount; // unlock amount
+    uint120 metric; //last unlock's metric
+    uint8 chips; // define the share's chips, and every time unlock one chips
+}
+
+struct s_chain {
+    uint256 asset; //128 shareasset&poolasset 128 poolasset
+    uint256 proofstate; //128 value 128 constructasset
+    address recipient;
+}
+struct s_proof {
+    address fromcontract; // from which contract
+    uint256 proofstate; // stake's state
 }

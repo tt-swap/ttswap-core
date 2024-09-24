@@ -66,15 +66,9 @@ interface I_TTSwap_Token {
 
     /// @notice Emitted when chain stake is synchronized
     /// @param chain The chain ID
-    /// @param poolvalue The value of the pool
-    /// @param poolconstruct The pool construct value
     /// @param poolasset The pool asset value
-    event e_syncChainStake(
-        uint256 chain,
-        uint256 poolvalue,
-        uint256 poolconstruct,
-        uint256 poolasset
-    );
+    /// @param proofstate first 128 bit chain proofvalue, last128 bit chain construct asset
+    event e_syncChainStake(uint32 chain, uint128 poolasset, uint256 proofstate);
 
     /// @notice Emitted when staking occurs
     /// @param stakeid The ID of the stake

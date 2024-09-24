@@ -206,7 +206,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             I_TTSwap_Market(marketcontract).ishigher(
                 normalgoodid,
                 valuegoodid,
-                2 ** shares[index].metric * 2 ** 128 + 1
+                2 ** shares[index].metric * 2 ** 128 + 10
             ) ==
                 false &&
                 _msgSender() == shares[index].recipient
@@ -376,7 +376,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             );
             _mint(chains[chainid].recipient, poolasset);
         }
-        emit e_syncChainStake(chainid, chainvalue, chainconstruct, poolasset);
+        emit e_syncChainStake(chainid, poolasset, chains[chainid].proofstate);
     }
 
     /**
@@ -529,9 +529,9 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     function _stakeFee() internal {
         if (stakestate.amount0() + 86400 < block.timestamp) {
             stakestate = sub(stakestate, toTTSwapUINT256(86400, 0));
-            uint256 mintamount = totalSupply() > 5000000 * decimals()
+            uint256 mintamount = totalSupply() > 50000000 * decimals()
                 ? totalSupply() / 18300
-                : 274 * decimals(); //27322404=(500000 * decimals) / 18300
+                : 2740 * decimals(); //27322404=(500000 * decimals) / 18300
             poolstate = sub(poolstate, toTTSwapUINT256(uint128(mintamount), 0));
             emit e_updatepool(poolstate, stakestate);
         }

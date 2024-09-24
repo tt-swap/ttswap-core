@@ -110,7 +110,8 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         emit e_initMetaGood(
             proofid,
-            toTTSwapUINT256(toInt128(togood), construct),
+            togood,
+            construct,
             _erc20address,
             _goodConfig,
             _initial
@@ -169,17 +170,17 @@ contract TTSwap_Market is I_TTSwap_Market {
             )
         );
 
-        uint128 construct = L_Proof.stake(
-            officialTokenContract,
-            msg.sender,
-            investResult.actualInvestValue * 2
-        );
         emit e_initGood(
             proofmapping[proofKey],
-            toTTSwapUINT256(toInt128(togood), construct),
+            togood,
             _valuegood,
             _erc20address,
             _goodConfig,
+            L_Proof.stake(
+                officialTokenContract,
+                msg.sender,
+                investResult.actualInvestValue * 2
+            ),
             toTTSwapUINT256(_initial.amount0(), investResult.actualInvestValue),
             toTTSwapUINT256(
                 investResult.actualFeeQuantity,

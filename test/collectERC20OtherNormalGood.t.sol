@@ -4,15 +4,16 @@ pragma solidity 0.8.26;
 // Import necessary contracts and libraries
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
-import "../src/MarketManager.sol";
+import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
-import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
 /**
  * @title collectERC20OtherNormalGood
  * @dev Test contract for collecting ERC20 tokens from normal goods
@@ -20,9 +21,11 @@ import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 contract collectERC20OtherNormalGood is BaseSetup {
     // Use libraries
     using L_MarketConfigLibrary for uint256;
+    using L_TTSwapUINT256Library for uint256;
+
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
-    using L_ProofIdLibrary for S_ProofKey;
+    using L_ProofKeyLibrary for S_ProofKey;
 
     // State variables
     uint256 metagood;
@@ -58,7 +61,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
             2 ** 197;
         market.initMetaGood(
             address(usdt),
-            toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
         metagood = S_GoodKey(marketcreator, address(usdt)).toId();
@@ -89,7 +92,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
             2 ** 197;
         market.initGood(
             metagood,
-            toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
+            toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
             normalgoodconfig
         );
@@ -117,7 +120,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
         vm.startPrank(users[2]);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodbtc, metagood).toId()
+            S_ProofKey(users[2], normalgoodbtc, metagood).toKey()
         );
 
         // Check initial proof state
@@ -183,7 +186,7 @@ contract collectERC20OtherNormalGood is BaseSetup {
             "before collect erc20 good:normalgoodbtc feeQuantityState amount1 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodbtc, metagood).toId()
+            S_ProofKey(users[2], normalgoodbtc, metagood).toKey()
         );
 
         // Collect proof first time

@@ -3,17 +3,18 @@ pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
-import "../src/MarketManager.sol";
+import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
 
-import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
 
 contract testInitMetaGood is BaseSetup {
-    using L_ProofIdLibrary for S_ProofKey;
+    using L_ProofKeyLibrary for S_ProofKey;
     using L_GoodIdLibrary for S_GoodKey;
+    using L_TTSwapUINT256Library for uint256;
 
     uint256 metagood;
 
@@ -39,7 +40,7 @@ contract testInitMetaGood is BaseSetup {
 
         market.initMetaGood(
             address(usdt),
-            toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             goodconfig
         );
         snapLastCall("init_erc20_metagood");
@@ -56,24 +57,18 @@ contract testInitMetaGood is BaseSetup {
         );
 
         assertEq(
-            T_BalanceUINT256.unwrap(market.getGoodState(metagood).currentState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6)
-            ),
+            market.getGoodState(metagood).currentState,
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             "after initial metagood:metagood currentState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(market.getGoodState(metagood).investState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6)
-            ),
+            market.getGoodState(metagood).investState,
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             "after initial metagood:metagood investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(
-                market.getGoodState(metagood).feeQuantityState
-            ),
-            T_BalanceUINT256.unwrap(toBalanceUINT256(0, 0)),
+            market.getGoodState(metagood).feeQuantityState,
+            0,
             "after initial metagood:metagood feequnitity error"
         );
 
@@ -90,7 +85,7 @@ contract testInitMetaGood is BaseSetup {
         );
 
         uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, 0).toId()
+            S_ProofKey(marketcreator, metagood, 0).toKey()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
@@ -110,13 +105,13 @@ contract testInitMetaGood is BaseSetup {
         );
 
         assertEq(
-            market.balanceOf(marketcreator),
+            tts_nft.balanceOf(marketcreator),
             1,
             "erc721 market balance error"
         );
 
         assertEq(
-            market.ownerOf(metaproof),
+            tts_nft.ownerOf(metaproof),
             marketcreator,
             "erc721 proof owner error"
         );
@@ -142,7 +137,7 @@ contract testInitMetaGood is BaseSetup {
 
         market.initMetaGood{value: 50000 * 10 ** 6}(
             nativeCurrency,
-            toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             goodconfig
         );
         snapLastCall("init_nativeerc20_metagood");
@@ -160,22 +155,18 @@ contract testInitMetaGood is BaseSetup {
 
         L_Good.S_GoodTmpState memory good_ = market.getGoodState(metagood);
         assertEq(
-            T_BalanceUINT256.unwrap(good_.currentState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6)
-            ),
+            good_.currentState,
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             "after initial metagood:metagood currentState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(good_.investState),
-            T_BalanceUINT256.unwrap(
-                toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6)
-            ),
+            good_.investState,
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             "after initial metagood:metagood investState error"
         );
         assertEq(
-            T_BalanceUINT256.unwrap(good_.feeQuantityState),
-            T_BalanceUINT256.unwrap(toBalanceUINT256(0, 0)),
+            good_.feeQuantityState,
+            0,
             "after initial metagood:metagood feequnitity error"
         );
 
@@ -190,8 +181,9 @@ contract testInitMetaGood is BaseSetup {
             marketcreator,
             "after initial metagood:metagood marketcreator error"
         );
+
         uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, 0).toId()
+            S_ProofKey(marketcreator, metagood, 0).toKey()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
@@ -210,13 +202,13 @@ contract testInitMetaGood is BaseSetup {
             "after initial:proof quantity error"
         );
         assertEq(
-            market.balanceOf(marketcreator),
+            tts_nft.balanceOf(marketcreator),
             1,
             "erc721 market balance error"
         );
 
         assertEq(
-            market.ownerOf(metaproof),
+            tts_nft.ownerOf(metaproof),
             marketcreator,
             "erc721 proof owner error"
         );

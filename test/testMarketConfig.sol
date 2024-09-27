@@ -5,8 +5,10 @@ import "forge-gas-snapshot/GasSnapshot.sol";
 import "forge-std/Test.sol";
 import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
 contract testMarketConfig is Test, GasSnapshot {
     using L_MarketConfigLibrary for uint256;
+    using L_TTSwapUINT256Library for uint256;
 
     uint256 marketconfig;
     function setUp() public pure {}

@@ -3,21 +3,22 @@ pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
-import "../src/MarketManager.sol";
+import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
-import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
 
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 
 contract investERC20ValueGood is BaseSetup {
     using L_MarketConfigLibrary for uint256;
+    using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
-    using L_ProofIdLibrary for S_ProofKey;
+    using L_ProofKeyLibrary for S_ProofKey;
 
     uint256 metagood;
     uint256 normalgoodusdt;
@@ -43,7 +44,7 @@ contract investERC20ValueGood is BaseSetup {
             2 ** 197;
         market.initMetaGood(
             address(usdt),
-            toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
         metagood = S_GoodKey(marketcreator, address(usdt)).toId();
@@ -56,7 +57,7 @@ contract investERC20ValueGood is BaseSetup {
 
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, 0).toId()
+            S_ProofKey(marketcreator, metagood, 0).toKey()
         );
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
 
@@ -146,7 +147,6 @@ contract investERC20ValueGood is BaseSetup {
             marketcreator,
             "after invest metagood:metagood marketcreator error"
         );
-
         _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
@@ -177,7 +177,7 @@ contract investERC20ValueGood is BaseSetup {
         usdt.approve(address(market), 300000 * 10 ** 6 + 1);
 
         uint256 normalproof = market.proofmapping(
-            S_ProofKey(users[2], metagood, 0).toId()
+            S_ProofKey(users[2], metagood, 0).toKey()
         );
         console2.log("1111111", normalproof);
         L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
@@ -267,7 +267,7 @@ contract investERC20ValueGood is BaseSetup {
         );
 
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], metagood, 0).toId()
+            S_ProofKey(users[2], metagood, 0).toKey()
         );
         _proof1 = market.getProofState(normalproof);
         assertEq(

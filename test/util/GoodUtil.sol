@@ -5,10 +5,12 @@ import {console2} from "forge-std/Test.sol";
 import {L_Good} from "../../src/libraries/L_Good.sol";
 import {L_CurrencyLibrary} from "../../src/libraries/L_Currency.sol";
 import {L_GoodConfigLibrary} from "../../src/libraries/L_GoodConfig.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../../src/libraries/L_TTSwapUINT256.sol";
 
 library GoodUtil {
     using L_GoodConfigLibrary for uint256;
     using L_CurrencyLibrary for address;
+    using L_TTSwapUINT256Library for uint256;
 
     function showGood(L_Good.S_GoodTmpState memory p_) public pure {
         console2.log("good owner:", p_.owner);

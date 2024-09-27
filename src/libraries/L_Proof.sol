@@ -2,10 +2,11 @@
 pragma solidity 0.8.26;
 
 import {S_ProofKey} from "./L_Struct.sol";
-import {T_BalanceUINT256, toBalanceUINT256, mulDiv} from "./L_BalanceUINT256.sol";
-import {I_TTS} from "../interfaces/I_TTS.sol";
+import {toTTSwapUINT256, mulDiv, sub, add, L_TTSwapUINT256Library} from "./L_TTSwapUINT256.sol";
+import {I_TTSwap_Token} from "../interfaces/I_TTSwap_Token.sol";
 
 library L_Proof {
+    using L_TTSwapUINT256Library for uint256;
     /**
      * @dev Represents the state of a proof
      * @member currentgood The current good  associated with the proof
@@ -17,9 +18,9 @@ library L_Proof {
     struct S_ProofState {
         uint256 currentgood;
         uint256 valuegood;
-        T_BalanceUINT256 state;
-        T_BalanceUINT256 invest;
-        T_BalanceUINT256 valueinvest;
+        uint256 state;
+        uint256 invest;
+        uint256 valueinvest;
     }
 
     /**
@@ -35,16 +36,16 @@ library L_Proof {
         S_ProofState storage _self,
         uint256 _currenctgood,
         uint256 _valuegood,
-        T_BalanceUINT256 _state,
-        T_BalanceUINT256 _invest,
-        T_BalanceUINT256 _valueinvest
+        uint256 _state,
+        uint256 _invest,
+        uint256 _valueinvest
     ) internal {
         if (_self.invest.amount1() == 0) _self.currentgood = _currenctgood;
         if (_valuegood != 0) _self.valuegood = _valuegood;
-        _self.state = _self.state + _state;
-        _self.invest = _self.invest + _invest;
+        _self.state = add(_self.state, _state);
+        _self.invest = add(_self.invest, _invest);
         if (_valuegood != 0)
-            _self.valueinvest = _self.valueinvest + _valueinvest;
+            _self.valueinvest = add(_self.valueinvest, _valueinvest);
     }
 
     /**
@@ -54,14 +55,14 @@ library L_Proof {
      */
     function burnProof(S_ProofState storage _self, uint128 _value) internal {
         // Calculate the amount of investment to burn based on the proportion of _value to total state
-        T_BalanceUINT256 burnResult1_ = toBalanceUINT256(
+        uint256 burnResult1_ = toTTSwapUINT256(
             mulDiv(_self.invest.amount0(), _value, _self.state.amount0()),
             mulDiv(_self.invest.amount1(), _value, _self.state.amount0())
         );
 
         // If there's a value good, calculate and burn the corresponding amount of value investment
         if (_self.valuegood != 0) {
-            T_BalanceUINT256 burnResult2_ = toBalanceUINT256(
+            uint256 burnResult2_ = toTTSwapUINT256(
                 mulDiv(
                     _self.valueinvest.amount0(),
                     _value,
@@ -74,14 +75,14 @@ library L_Proof {
                 )
             );
             // Subtract the calculated value investment from the total value investment
-            _self.valueinvest = _self.valueinvest - burnResult2_;
+            _self.valueinvest = sub(_self.valueinvest, burnResult2_);
         }
 
         // Subtract the calculated investment from the total investment
-        _self.invest = _self.invest - burnResult1_;
+        _self.invest = sub(_self.invest, burnResult1_);
 
         // Reduce the total state by the burned value
-        _self.state = _self.state - toBalanceUINT256(_value, 0);
+        _self.state = sub(_self.state, toTTSwapUINT256(_value, 0));
     }
 
     /**
@@ -91,13 +92,14 @@ library L_Proof {
      */
     function collectProofFee(
         S_ProofState storage _self,
-        T_BalanceUINT256 profit
+        uint256 profit
     ) internal {
-        _self.invest = _self.invest + toBalanceUINT256(profit.amount0(), 0);
+        _self.invest = add(_self.invest, toTTSwapUINT256(profit.amount0(), 0));
         if (_self.valuegood != 0) {
-            _self.valueinvest =
-                _self.valueinvest +
-                toBalanceUINT256(profit.amount1(), 0);
+            _self.valueinvest = add(
+                _self.valueinvest,
+                toTTSwapUINT256(profit.amount1(), 0)
+            );
         }
     }
 
@@ -110,9 +112,9 @@ library L_Proof {
         S_ProofState storage _self,
         S_ProofState storage _get
     ) internal {
-        _self.state = _self.state + _get.state;
-        _self.invest = _self.invest + _get.invest;
-        _self.valueinvest = _self.valueinvest + _get.valueinvest;
+        _self.state = add(_self.state, _get.state);
+        _self.invest = add(_self.invest, _get.invest);
+        _self.valueinvest = add(_self.valueinvest, _get.valueinvest);
     }
 
     /**
@@ -127,26 +129,34 @@ library L_Proof {
         address to,
         uint128 proofvalue
     ) internal returns (uint128) {
-        return I_TTS(contractaddress).stake(to, proofvalue);
+        return I_TTSwap_Token(contractaddress).stake(to, proofvalue);
     }
 
     /**
      * @dev Unstakes a certain amount of proof value
      * @param contractaddress The address of the staking contract
      * @param from The address to unstake from
-     * @param devestvalue The amount of proof value to unstake
+     * @param divestvalue The amount of proof value to unstake
      */
     function unstake(
         address contractaddress,
         address from,
-        uint128 devestvalue
+        uint128 divestvalue
     ) internal {
-        I_TTS(contractaddress).unstake(from, devestvalue);
+        I_TTSwap_Token(contractaddress).unstake(from, divestvalue);
     }
 }
 
-library L_ProofIdLibrary {
-    function toId(S_ProofKey memory proofKey) internal pure returns (uint256) {
+library L_ProofKeyLibrary {
+    function toKey(S_ProofKey memory proofKey) internal pure returns (uint256) {
         return uint256(keccak256(abi.encode(proofKey)));
+    }
+}
+library L_ProofIdLibrary {
+    function toId(uint256 proofkey) internal view returns (uint256) {
+        return
+            uint256(
+                keccak256(abi.encode(proofkey, address(this), block.timestamp))
+            );
     }
 }

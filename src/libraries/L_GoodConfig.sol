@@ -19,6 +19,32 @@ library L_GoodConfigLibrary {
         return (config & (1 << 255)) == 0;
     }
 
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function swaptake(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 226)) != 0;
+    }
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function swapmake(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 225)) != 0;
+    }
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function invest(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 224)) != 0;
+    }
+
+    /// @notice Check if the good is a value good
+    /// @param config The configuration value
+    /// @return a True if it's a value good, false otherwise
+    function divest(uint256 config) internal pure returns (bool a) {
+        return (config & (1 << 223)) != 0;
+    }
+
     /// @notice Calculate the investment fee for a given amount
     /// @param config The configuration value
     /// @param amount The investment amount

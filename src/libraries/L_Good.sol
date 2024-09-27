@@ -7,7 +7,8 @@ import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
 import {S_GoodKey} from "./L_Struct.sol";
 import {L_CurrencyLibrary} from "./L_Currency.sol";
 
-import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, subadd, lowerprice} from "./L_BalanceUINT256.sol";
+import {I_TTSwap_MainTrigger} from "../interfaces/I_TTSwap_MainTrigger.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice} from "./L_TTSwapUINT256.sol";
 
 /**
  * @title L_Good Library
@@ -17,7 +18,7 @@ import {T_BalanceUINT256, L_BalanceUINT256Library, toBalanceUINT256, addsub, sub
 library L_Good {
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
-    using L_BalanceUINT256Library for uint256;
+    using L_TTSwapUINT256Library for uint256;
     using L_Proof for L_Proof.S_ProofState;
     using L_CurrencyLibrary for address;
 
@@ -28,11 +29,11 @@ library L_Good {
         uint256 goodConfig; // Configuration of the good
         address owner; // Creator of the good
         address erc20address; // ERC20 token address associated with the good
-        T_BalanceUINT256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
-        T_BalanceUINT256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
-        T_BalanceUINT256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
+        address trigger;
+        uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
+        uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
+        uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
         mapping(address => uint128) commission; // Mapping to store commission amounts for each address
-        address trigge;
     }
 
     /**
@@ -42,9 +43,10 @@ library L_Good {
         uint256 goodConfig; // Configuration of the good
         address owner; // Creator of the good
         address erc20address; // ERC20 token address associated with the good
-        T_BalanceUINT256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
-        T_BalanceUINT256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
-        T_BalanceUINT256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
+        address trigger;
+        uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
+        uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
+        uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
     }
 
     /**
@@ -75,7 +77,7 @@ library L_Good {
      */
     function init(
         S_GoodState storage self,
-        T_BalanceUINT256 _init,
+        uint256 _init,
         address _erc20address,
         uint256 _goodConfig
     ) internal {
@@ -94,9 +96,9 @@ library L_Good {
         uint128 outputQuantity; // Quantity received from the swap
         uint128 feeQuantity; // Fee amount for the swap
         uint128 swapvalue; // Total value of the swap
-        T_BalanceUINT256 good1currentState; // Current state of the first good
+        uint256 good1currentState; // Current state of the first good
         uint256 good1config; // Configuration of the first good
-        T_BalanceUINT256 good2currentState; // Current state of the second good
+        uint256 good2currentState; // Current state of the second good
         uint256 good2config; // Configuration of the second good
     }
 
@@ -109,7 +111,7 @@ library L_Good {
      */
     function swapCompute1(
         swapCache memory _stepCache,
-        T_BalanceUINT256 _limitPrice
+        uint256 _limitPrice
     ) internal pure returns (swapCache memory) {
         // Check if the current price is lower than the limit price, if not, return immediately
         if (
@@ -169,11 +171,11 @@ library L_Good {
                 // Update the states of both goods
                 _stepCache.good1currentState = subadd(
                     _stepCache.good1currentState,
-                    toBalanceUINT256(minValue, minQuantity)
+                    toTTSwapUINT256(minValue, minQuantity)
                 );
                 _stepCache.good2currentState = addsub(
                     _stepCache.good2currentState,
-                    toBalanceUINT256(
+                    toTTSwapUINT256(
                         minValue,
                         _stepCache.good2currentState.getamount1fromamount0(
                             minValue
@@ -192,12 +194,12 @@ library L_Good {
                 // Update the states of both goods
                 _stepCache.good1currentState = subadd(
                     _stepCache.good1currentState,
-                    toBalanceUINT256(minValue, _stepCache.remainQuantity)
+                    toTTSwapUINT256(minValue, _stepCache.remainQuantity)
                 );
 
                 _stepCache.good2currentState = addsub(
                     _stepCache.good2currentState,
-                    toBalanceUINT256(
+                    toTTSwapUINT256(
                         minValue,
                         _stepCache.good2currentState.getamount1fromamount0(
                             minValue
@@ -233,7 +235,7 @@ library L_Good {
      */
     function swapCompute2(
         swapCache memory _stepCache,
-        T_BalanceUINT256 _limitPrice
+        uint256 _limitPrice
     ) internal pure returns (swapCache memory) {
         // Check if the current price is higher than the limit price, if so, return immediately
         if (
@@ -292,11 +294,11 @@ library L_Good {
                 // Update the states of both goods
                 _stepCache.good2currentState = addsub(
                     _stepCache.good2currentState,
-                    toBalanceUINT256(minValue, minQuantity)
+                    toTTSwapUINT256(minValue, minQuantity)
                 );
                 _stepCache.good1currentState = subadd(
                     _stepCache.good1currentState,
-                    toBalanceUINT256(
+                    toTTSwapUINT256(
                         minValue,
                         _stepCache.good1currentState.getamount1fromamount0(
                             minValue
@@ -315,12 +317,12 @@ library L_Good {
                 // Update the states of both goods
                 _stepCache.good2currentState = addsub(
                     _stepCache.good2currentState,
-                    toBalanceUINT256(minValue, _stepCache.remainQuantity)
+                    toTTSwapUINT256(minValue, _stepCache.remainQuantity)
                 );
 
                 _stepCache.good1currentState = subadd(
                     _stepCache.good1currentState,
-                    toBalanceUINT256(
+                    toTTSwapUINT256(
                         minValue,
                         _stepCache.good1currentState.getamount1fromamount0(
                             minValue
@@ -345,13 +347,14 @@ library L_Good {
      */
     function swapCommit(
         S_GoodState storage _self,
-        T_BalanceUINT256 _swapstate,
+        uint256 _swapstate,
         uint128 _fee
     ) internal {
         _self.currentState = _swapstate;
-        _self.feeQuantityState =
-            _self.feeQuantityState +
-            toBalanceUINT256(_fee, 0);
+        _self.feeQuantityState = add(
+            _self.feeQuantityState,
+            toTTSwapUINT256(_fee, 0)
+        );
     }
 
     /**
@@ -391,33 +394,36 @@ library L_Good {
             .getamount0fromamount1(investResult_.actualInvestQuantity);
 
         // Calculate the construction fee
-        investResult_.constructFeeQuantity = toBalanceUINT256(
+        investResult_.constructFeeQuantity = toTTSwapUINT256(
             _self.feeQuantityState.amount0(),
             _self.investState.amount1()
         ).getamount0fromamount1(investResult_.actualInvestQuantity);
 
         // Update the fee quantity state
-        _self.feeQuantityState =
-            _self.feeQuantityState +
-            toBalanceUINT256(
+        _self.feeQuantityState = add(
+            _self.feeQuantityState,
+            toTTSwapUINT256(
                 investResult_.actualFeeQuantity +
                     investResult_.constructFeeQuantity,
                 investResult_.constructFeeQuantity
-            );
+            )
+        );
         // Update the current state with the new investment
-        _self.currentState =
-            _self.currentState +
-            toBalanceUINT256(
+        _self.currentState = add(
+            _self.currentState,
+            toTTSwapUINT256(
                 investResult_.actualInvestValue,
                 investResult_.actualInvestQuantity
-            );
+            )
+        );
         // Update the invest state with the new investment
-        _self.investState =
-            _self.investState +
-            toBalanceUINT256(
+        _self.investState = add(
+            _self.investState,
+            toTTSwapUINT256(
                 investResult_.actualInvestValue,
                 investResult_.actualInvestQuantity
-            );
+            )
+        );
     }
 
     /**
@@ -467,18 +473,18 @@ library L_Good {
         )
     {
         // Calculate the disinvestment value based on the investment proof and requested quantity
-        disinvestvalue = toBalanceUINT256(
+        disinvestvalue = toTTSwapUINT256(
             _investProof.state.amount0(),
             _investProof.invest.amount1()
         ).getamount0fromamount1(_params._goodQuantity);
 
         // Calculate initial disinvestment results for the main good
         normalGoodResult1_ = S_GoodDisinvestReturn(
-            toBalanceUINT256(
+            toTTSwapUINT256(
                 _self.feeQuantityState.amount0(),
                 _self.investState.amount1()
             ).getamount0fromamount1(_params._goodQuantity),
-            toBalanceUINT256(
+            toTTSwapUINT256(
                 _investProof.invest.amount0(),
                 _investProof.invest.amount1()
             ).getamount0fromamount1(_params._goodQuantity),
@@ -501,26 +507,29 @@ library L_Good {
         );
 
         // Update main good states
-        _self.currentState =
-            _self.currentState -
-            toBalanceUINT256(
+        _self.currentState = sub(
+            _self.currentState,
+            toTTSwapUINT256(
                 disinvestvalue,
                 normalGoodResult1_.actualDisinvestQuantity
-            );
+            )
+        );
 
-        _self.investState =
-            _self.investState -
-            toBalanceUINT256(
+        _self.investState = sub(
+            _self.investState,
+            toTTSwapUINT256(
                 disinvestvalue,
                 normalGoodResult1_.actualDisinvestQuantity
-            );
+            )
+        );
 
-        _self.feeQuantityState =
-            _self.feeQuantityState -
-            toBalanceUINT256(
+        _self.feeQuantityState = sub(
+            _self.feeQuantityState,
+            toTTSwapUINT256(
                 normalGoodResult1_.profit,
                 normalGoodResult1_.actual_fee
-            );
+            )
+        );
 
         // Burn the investment proof
         _investProof.burnProof(disinvestvalue);
@@ -548,24 +557,25 @@ library L_Good {
 
         // Update fee state for main good if necessary
         if (normalGoodResult1_.actual_fee > 0) {
-            _self.feeQuantityState =
-                _self.feeQuantityState +
-                toBalanceUINT256(normalGoodResult1_.actual_fee, 0);
+            _self.feeQuantityState = add(
+                _self.feeQuantityState,
+                toTTSwapUINT256(normalGoodResult1_.actual_fee, 0)
+            );
         }
 
         // Handle value good disinvestment if applicable
         if (_investProof.valuegood != 0) {
             // Calculate disinvestment results for value good
             valueGoodResult2_ = S_GoodDisinvestReturn(
-                toBalanceUINT256(
+                toTTSwapUINT256(
                     _valueGoodState.feeQuantityState.amount0(),
                     _valueGoodState.investState.amount1()
                 ).getamount0fromamount1(disinvestvalue),
-                toBalanceUINT256(
+                toTTSwapUINT256(
                     _investProof.valueinvest.amount0(),
                     _investProof.valueinvest.amount1()
                 ).getamount0fromamount1(disinvestvalue),
-                toBalanceUINT256(
+                toTTSwapUINT256(
                     _investProof.state.amount0(),
                     _investProof.valueinvest.amount1()
                 ).getamount1fromamount0(disinvestvalue)
@@ -585,26 +595,29 @@ library L_Good {
             );
 
             // Update value good states
-            _valueGoodState.currentState =
-                _valueGoodState.currentState -
-                toBalanceUINT256(
+            _valueGoodState.currentState = sub(
+                _valueGoodState.currentState,
+                toTTSwapUINT256(
                     disinvestvalue,
                     valueGoodResult2_.actualDisinvestQuantity
-                );
+                )
+            );
 
-            _valueGoodState.investState =
-                _valueGoodState.investState -
-                toBalanceUINT256(
+            _valueGoodState.investState = sub(
+                _valueGoodState.investState,
+                toTTSwapUINT256(
                     disinvestvalue,
                     valueGoodResult2_.actualDisinvestQuantity
-                );
+                )
+            );
 
-            _valueGoodState.feeQuantityState =
-                _valueGoodState.feeQuantityState -
-                toBalanceUINT256(
+            _valueGoodState.feeQuantityState = sub(
+                _valueGoodState.feeQuantityState,
+                toTTSwapUINT256(
                     valueGoodResult2_.profit,
                     valueGoodResult2_.actual_fee
-                );
+                )
+            );
 
             valueGoodResult2_.profit =
                 valueGoodResult2_.profit -
@@ -615,9 +628,10 @@ library L_Good {
                 .getDisinvestFee(valueGoodResult2_.actualDisinvestQuantity);
 
             if (valueGoodResult2_.actual_fee > 0) {
-                _valueGoodState.feeQuantityState =
-                    _valueGoodState.feeQuantityState +
-                    toBalanceUINT256(valueGoodResult2_.actual_fee, 0);
+                _valueGoodState.feeQuantityState = add(
+                    _valueGoodState.feeQuantityState,
+                    toTTSwapUINT256(valueGoodResult2_.actual_fee, 0)
+                );
             }
             allocateFee(
                 _valueGoodState,
@@ -652,18 +666,19 @@ library L_Good {
         address _referral,
         uint256 _marketconfig,
         address _marketcreator
-    ) internal returns (T_BalanceUINT256 profit) {
+    ) internal returns (uint256 profit) {
         // Calculate profit for the main good
-        uint128 profit1 = toBalanceUINT256(
+        uint128 profit1 = toTTSwapUINT256(
             _self.feeQuantityState.amount0(),
             _self.investState.amount1()
         ).getamount0fromamount1(_investProof.invest.amount1()) -
             _investProof.invest.amount0();
 
         // Update fee quantity state for the main good
-        _self.feeQuantityState =
-            _self.feeQuantityState +
-            toBalanceUINT256(0, profit1);
+        _self.feeQuantityState = add(
+            _self.feeQuantityState,
+            toTTSwapUINT256(0, profit1)
+        );
 
         // Allocate fees for the main good
         allocateFee(
@@ -681,16 +696,17 @@ library L_Good {
         if (_valuegood.goodConfig >= 0) {
             // Calculate profit for the value good
             profit2 =
-                toBalanceUINT256(
+                toTTSwapUINT256(
                     _valuegood.feeQuantityState.amount0(),
                     _valuegood.investState.amount1()
                 ).getamount0fromamount1(_investProof.valueinvest.amount1()) -
                 _investProof.valueinvest.amount0();
 
             // Update fee quantity state for the value good
-            _valuegood.feeQuantityState =
-                _valuegood.feeQuantityState +
-                toBalanceUINT256(0, profit2);
+            _valuegood.feeQuantityState = add(
+                _valuegood.feeQuantityState,
+                toTTSwapUINT256(0, profit2)
+            );
 
             // Allocate fees for the value good
             allocateFee(
@@ -705,7 +721,7 @@ library L_Good {
         }
 
         // Combine profits from main good and value good
-        profit = toBalanceUINT256(profit1, profit2);
+        profit = toTTSwapUINT256(profit1, profit2);
 
         // Update the investment proof with collected fees
         _investProof.collectProofFee(profit);
@@ -795,6 +811,82 @@ library L_Good {
         _self.goodConfig =
             (_self.goodConfig % (2 ** 223)) +
             (_goodconfig << 223);
+    }
+
+    function swaptake(
+        S_GoodState storage _self,
+        address officialadd,
+        uint256 opgood,
+        uint256 _tradestate,
+        uint256 opstate,
+        address recipent
+    ) internal {
+        if (_self.goodConfig.swaptake())
+            if (
+                I_TTSwap_MainTrigger(officialadd).main_swaptake(
+                    _self.trigger,
+                    opgood,
+                    _tradestate,
+                    _self.currentState,
+                    opstate,
+                    recipent
+                )
+            ) revert();
+    }
+
+    function swapmake(
+        S_GoodState storage _self,
+        address officialadd,
+        uint256 opgood,
+        uint256 _tradestate,
+        uint256 opstate,
+        address recipent
+    ) internal {
+        if (_self.goodConfig.swapmake())
+            if (
+                I_TTSwap_MainTrigger(officialadd).main_swapmake(
+                    _self.trigger,
+                    opgood,
+                    _tradestate,
+                    _self.currentState,
+                    opstate,
+                    recipent
+                )
+            ) revert();
+    }
+
+    function invest(
+        S_GoodState storage _self,
+        address officialadd,
+        uint256 investquantity,
+        address recipent
+    ) internal {
+        if (_self.goodConfig.invest())
+            if (
+                I_TTSwap_MainTrigger(officialadd).main_invest(
+                    _self.trigger,
+                    investquantity,
+                    _self.currentState,
+                    recipent
+                )
+            ) revert();
+    }
+
+    function divest(
+        S_GoodState storage _self,
+        address officialadd,
+        uint256 divestquanity,
+        address recipent
+    ) internal {
+        if (_self.goodConfig.divest())
+            if (
+                I_TTSwap_MainTrigger(officialadd).main_divest(
+                    _self.trigger,
+                    divestquanity,
+                    _self.currentState,
+                    recipent
+                )
+            ) revert();
     }
 }
 

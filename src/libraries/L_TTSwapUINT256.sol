@@ -1,21 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity ^0.8.1;
 
-/// @title T_BalanceUINT256 Custom Type
-/// @dev Represents a balance with two 128-bit unsigned integers packed into a single uint256
-type T_BalanceUINT256 is uint256;
-
-using {add as +, sub as -} for T_BalanceUINT256 global;
-using L_BalanceUINT256Library for T_BalanceUINT256 global;
-
+using L_TTSwapUINT256Library for uint256;
 /// @notice Converts two uint128 values into a T_BalanceUINT256
 /// @param _amount0 The first 128-bit amount
 /// @param _amount1 The second 128-bit amount
 /// @return balanceDelta The resulting T_BalanceUINT256
-function toBalanceUINT256(
+function toTTSwapUINT256(
     uint128 _amount0,
     uint128 _amount1
-) pure returns (T_BalanceUINT256 balanceDelta) {
+) pure returns (uint256 balanceDelta) {
     /// @solidity memory-safe-assembly
     assembly {
         balanceDelta := or(
@@ -32,10 +26,7 @@ function toBalanceUINT256(
 /// @param a The first T_BalanceUINT256
 /// @param b The second T_BalanceUINT256
 /// @return The sum of a and b as a T_BalanceUINT256
-function add(
-    T_BalanceUINT256 a,
-    T_BalanceUINT256 b
-) pure returns (T_BalanceUINT256) {
+function add(uint256 a, uint256 b) pure returns (uint256) {
     uint256 res0;
     uint256 res1;
     assembly ("memory-safe") {
@@ -52,17 +43,14 @@ function add(
         res0 := add(a0, b0)
         res1 := add(a1, b1)
     }
-    return toBalanceUINT256(toUint128(res0), toUint128(res1));
+    return toTTSwapUINT256(toInt128(res0), toInt128(res1));
 }
 
 /// @notice Subtracts two T_BalanceUINT256 values
 /// @param a The first T_BalanceUINT256
 /// @param b The second T_BalanceUINT256
 /// @return The difference of a and b as a T_BalanceUINT256
-function sub(
-    T_BalanceUINT256 a,
-    T_BalanceUINT256 b
-) pure returns (T_BalanceUINT256) {
+function sub(uint256 a, uint256 b) pure returns (uint256) {
     uint256 res0;
     uint256 res1;
     assembly ("memory-safe") {
@@ -79,17 +67,14 @@ function sub(
         res0 := sub(a0, b0)
         res1 := sub(a1, b1)
     }
-    return toBalanceUINT256(toUint128(res0), toUint128(res1));
+    return toTTSwapUINT256(toInt128(res0), toInt128(res1));
 }
 
 /// @notice Adds the first components and subtracts the second components of two T_BalanceUINT256 values
 /// @param a The first T_BalanceUINT256
 /// @param b The second T_BalanceUINT256
 /// @return The result of (a0 + b0, a1 - b1) as a T_BalanceUINT256
-function addsub(
-    T_BalanceUINT256 a,
-    T_BalanceUINT256 b
-) pure returns (T_BalanceUINT256) {
+function addsub(uint256 a, uint256 b) pure returns (uint256) {
     uint256 res0;
     uint256 res1;
     assembly ("memory-safe") {
@@ -106,17 +91,14 @@ function addsub(
         res0 := add(a0, b0)
         res1 := sub(a1, b1)
     }
-    return toBalanceUINT256(toUint128(res0), toUint128(res1));
+    return toTTSwapUINT256(toInt128(res0), toInt128(res1));
 }
 
 /// @notice Subtracts the first components and adds the second components of two T_BalanceUINT256 values
 /// @param a The first T_BalanceUINT256
 /// @param b The second T_BalanceUINT256
 /// @return The result of (a0 - b0, a1 + b1) as a T_BalanceUINT256
-function subadd(
-    T_BalanceUINT256 a,
-    T_BalanceUINT256 b
-) pure returns (T_BalanceUINT256) {
+function subadd(uint256 a, uint256 b) pure returns (uint256) {
     uint256 res0;
     uint256 res1;
     assembly ("memory-safe") {
@@ -133,13 +115,13 @@ function subadd(
         res0 := sub(a0, b0)
         res1 := add(a1, b1)
     }
-    return toBalanceUINT256(toUint128(res0), toUint128(res1));
+    return toTTSwapUINT256(toInt128(res0), toInt128(res1));
 }
 
 /// @notice Safely converts a uint256 to a uint128
 /// @param a The uint256 value to convert
 /// @return The converted uint128 value, or 0 if overflow
-function toUint128(uint256 a) pure returns (uint128) {
+function toInt128(uint256 a) pure returns (uint128) {
     return a <= type(uint128).max ? uint128(a) : 0;
 }
 
@@ -148,11 +130,7 @@ function toUint128(uint256 a) pure returns (uint128) {
 /// @param b The second T_BalanceUINT256
 /// @param c The third T_BalanceUINT256
 /// @return True if the price of a is lower than the prices of b and c, false otherwise
-function lowerprice(
-    T_BalanceUINT256 a,
-    T_BalanceUINT256 b,
-    T_BalanceUINT256 c
-) pure returns (bool) {
+function lowerprice(uint256 a, uint256 b, uint256 c) pure returns (bool) {
     return
         uint256(a.amount0()) * uint256(b.amount1()) * uint256(c.amount1()) >
             uint256(a.amount1()) * uint256(b.amount0()) * uint256(c.amount0())
@@ -177,17 +155,17 @@ function mulDiv(
             result := div(config, domitor)
         }
     }
-    return toUint128(result);
+    return toInt128(result);
 }
 
-/// @title L_BalanceUINT256Library
+/// @title L_TTSwapUINT256Library
 /// @notice A library for operations on T_BalanceUINT256
-library L_BalanceUINT256Library {
+library L_TTSwapUINT256Library {
     /// @notice Extracts the first 128-bit amount from a T_BalanceUINT256
     /// @param balanceDelta The T_BalanceUINT256 to extract from
     /// @return _amount0 The extracted first 128-bit amount
     function amount0(
-        T_BalanceUINT256 balanceDelta
+        uint256 balanceDelta
     ) internal pure returns (uint128 _amount0) {
         /// @solidity memory-safe-assembly
         assembly {
@@ -199,7 +177,7 @@ library L_BalanceUINT256Library {
     /// @param balanceDelta The T_BalanceUINT256 to extract from
     /// @return _amount1 The extracted second 128-bit amount
     function amount1(
-        T_BalanceUINT256 balanceDelta
+        uint256 balanceDelta
     ) internal pure returns (uint128 _amount1) {
         /// @solidity memory-safe-assembly
         assembly {
@@ -212,7 +190,7 @@ library L_BalanceUINT256Library {
     /// @param amount1delta The amount1 to base the calculation on
     /// @return _amount0 The calculated amount0
     function getamount0fromamount1(
-        T_BalanceUINT256 balanceDelta,
+        uint256 balanceDelta,
         uint128 amount1delta
     ) internal pure returns (uint128 _amount0) {
         return
@@ -228,7 +206,7 @@ library L_BalanceUINT256Library {
     /// @param amount0delta The amount0 to base the calculation on
     /// @return _amount1 The calculated amount1
     function getamount1fromamount0(
-        T_BalanceUINT256 balanceDelta,
+        uint256 balanceDelta,
         uint128 amount0delta
     ) internal pure returns (uint128 _amount1) {
         return

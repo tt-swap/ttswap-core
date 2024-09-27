@@ -1,37 +1,34 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.26;
+pragma solidity ^0.8.13;
 
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {I_MarketManage} from "./interfaces/I_Marketmanage.sol";
-import {I_Proof} from "./interfaces/I_Proof.sol";
-import {I_TTS, s_share, s_chain} from "./interfaces/I_TTS.sol";
+import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
+import {I_TTSwap_Token, s_share, s_chain, s_proof} from "./interfaces/I_TTSwap_Token.sol";
+import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
-import {toBalanceUINT256, T_BalanceUINT256, L_BalanceUINT256Library, add, sub, mulDiv} from "./libraries/L_BalanceUINT256.sol";
+import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
+import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
 
 /**
  * @title TTS Token Contract
  * @dev Implements ERC20 token with additional staking and cross-chain functionality
  */
-contract TTSwap_Token is ERC20Permit, I_TTS {
-    using L_BalanceUINT256Library for T_BalanceUINT256;
+contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
+    using L_TTSwapUINT256Library for uint256;
     using L_TTSTokenConfigLibrary for uint256;
     uint256 public ttstokenconfig;
 
-    mapping(uint32 => s_share) public shares; // all share's mapping
+    mapping(uint32 => s_share) shares; // all share's mapping
 
-    T_BalanceUINT256 public stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
-    T_BalanceUINT256 public poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
+    uint256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
+    uint256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
 
-    struct s_proof {
-        address fromcontract; // from which contract
-        T_BalanceUINT256 proofstate; // stake's state
-    }
-    mapping(uint256 => s_proof) public stakeproof;
+    mapping(uint256 => s_proof) stakeproof;
 
-    mapping(uint32 => s_chain) public chains;
+    mapping(uint32 => s_chain) chains;
 
     uint256 internal normalgoodid;
     uint256 internal valuegoodid;
@@ -39,7 +36,7 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
     address internal marketcontract;
     uint32 shares_index;
     uint32 chainindex;
-    uint128 public left_share = 50000000000000;
+    uint128 public left_share = 5 * 10 ** 8 * 10 ** 6;
     uint128 public publicsell;
 
     mapping(address => address) referrals;
@@ -62,7 +59,7 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
         uint256 _ttsconfig
     ) ERC20Permit("TTSwap Token") ERC20("TTSwap Token", "TTS") {
         usdt = _usdt;
-        stakestate = toBalanceUINT256(uint128(block.timestamp), 0);
+        stakestate = toTTSwapUINT256(uint128(block.timestamp), 0);
         dao_admin = _dao_admin;
         ttstokenconfig = _ttsconfig;
     }
@@ -156,8 +153,8 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
             left_share - _share.leftamount >= 0 && _msgSender() == dao_admin
         );
         left_share -= uint64(_share.leftamount);
-        shares[shares_index] = _share;
         shares_index += 1;
+        shares[shares_index] = _share;
         emit e_addShare(
             _share.recipient,
             _share.leftamount,
@@ -174,12 +171,13 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
      * @notice Adds the leftamount of the burned share back to left_share
      * @notice Emits an e_burnShare event and deletes the share from the shares mapping
      */
-    function burnShare(uint32 index) public onlymain {
+    function burnShare(uint8 index) public onlymain {
         require(_msgSender() == dao_admin);
         left_share += uint64(shares[index].leftamount);
         emit e_burnShare(index);
         delete shares[index];
     }
+
     /**
      * @dev Allows the DAO to mint tokens based on a specific share
      * @param index The index of the share to mint from
@@ -188,19 +186,21 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
      * @notice Mints tokens to the share recipient, reduces leftamount, and increments metric
      * @notice Emits an e_daomint event with the minted amount and index
      */
-    function shareMint(uint32 index) public onlymain {
+    function shareMint(uint8 index) public onlymain {
         require(
-            I_MarketManage(marketcontract).ishigher(
+            I_TTSwap_Market(marketcontract).ishigher(
                 normalgoodid,
                 valuegoodid,
                 2 ** shares[index].metric * 2 ** 128 + 10
-            ) && msg.sender == shares[index].recipient
+            ) ==
+                false &&
+                _msgSender() == shares[index].recipient
         );
-
         uint128 mintamount = shares[index].leftamount / shares[index].chips;
         shares[index].leftamount -= mintamount;
         shares[index].metric += 1;
         _mint(_msgSender(), mintamount);
+        emit e_shareMint(mintamount, index);
     }
 
     /**
@@ -211,7 +211,11 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
      * @notice Will only set the referral if the user doesn't already have one
      */
     function addreferral(address user, address referral) external override {
-        if (auths[msg.sender] == 1 && referrals[user] == address(0)) {
+        if (
+            auths[msg.sender] == 1 &&
+            referrals[user] == address(0) &&
+            user != referral
+        ) {
             referrals[user] = referral;
             emit e_addreferral(user, referral);
         }
@@ -253,20 +257,17 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
      */
     function publicSell(uint256 usdtamount) external onlymain {
         publicsell += uint128(usdtamount);
-        require(
-            publicsell <= 500000000000 && block.timestamp >= 203434343434343
-        );
+        require(publicsell <= 5000000 * decimals());
         if (IERC20(usdt).transferFrom(msg.sender, address(this), usdtamount)) {
             uint256 ttsamount;
-            //
-            if (publicsell <= 175000000000) {
-                ttsamount = (usdtamount / 5) * 60;
+            if (publicsell <= 1750000 * decimals()) {
+                ttsamount = (usdtamount / 5) * 6;
                 _mint(msg.sender, ttsamount);
-            } else if (publicsell <= 325000000000) {
-                ttsamount = usdtamount * 10;
+            } else if (publicsell <= 3250000 * decimals()) {
+                ttsamount = usdtamount;
                 _mint(msg.sender, ttsamount);
-            } else if (publicsell <= 500000000000) {
-                ttsamount = (usdtamount / 5) * 40;
+            } else if (publicsell <= 5000000 * decimals()) {
+                ttsamount = (usdtamount / 5) * 4;
                 _mint(msg.sender, ttsamount);
             }
             emit e_publicsell(usdtamount, ttsamount);
@@ -312,11 +313,12 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
                 chainvalue,
                 stakestate.amount1()
             );
-            poolstate =
-                poolstate +
-                toBalanceUINT256(chainconstruct, chainconstruct);
-            stakestate = stakestate + toBalanceUINT256(0, chainvalue);
-            chains[chainid].proofstate = toBalanceUINT256(
+            poolstate = sub(
+                poolstate,
+                toTTSwapUINT256(chainconstruct, chainconstruct)
+            );
+            stakestate = sub(stakestate, toTTSwapUINT256(0, chainvalue));
+            chains[chainid].proofstate = toTTSwapUINT256(
                 chainvalue,
                 chainconstruct
             );
@@ -330,31 +332,33 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
 
             poolstate =
                 poolstate -
-                toBalanceUINT256(
+                toTTSwapUINT256(
                     poolasset,
                     chains[chainid].proofstate.amount1()
                 );
             stakestate =
                 stakestate -
-                toBalanceUINT256(0, chains[chainid].proofstate.amount0());
+                toTTSwapUINT256(0, chains[chainid].proofstate.amount0());
             poolasset = poolasset - chains[chainid].proofstate.amount0();
             chainconstruct = mulDiv(
                 poolstate.amount0(),
                 chainvalue,
                 stakestate.amount1()
             );
-            poolstate =
-                poolstate +
-                toBalanceUINT256(chainconstruct, chainconstruct);
-            stakestate = stakestate + toBalanceUINT256(0, chainvalue);
+            poolstate = sub(
+                poolstate,
+                toTTSwapUINT256(chainconstruct, chainconstruct)
+            );
+            stakestate = sub(stakestate, toTTSwapUINT256(0, chainvalue));
 
-            chains[chainid].proofstate = toBalanceUINT256(
+            chains[chainid].proofstate = toTTSwapUINT256(
                 chainvalue,
                 chainconstruct
             );
-            chains[chainid].asset =
-                chains[chainid].asset +
-                toBalanceUINT256(poolasset, poolasset);
+            chains[chainid].asset = sub(
+                chains[chainid].asset,
+                toTTSwapUINT256(poolasset, poolasset)
+            );
             _mint(chains[chainid].recipient, poolasset);
         }
         emit e_syncChainStake(chainid, poolasset, chains[chainid].proofstate);
@@ -367,7 +371,7 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
      */
     function syncPoolAsset(uint128 amount) external onlysub {
         require(auths[msg.sender] == 5);
-        poolstate = poolstate + toBalanceUINT256(amount, 0);
+        poolstate = sub(poolstate, toTTSwapUINT256(amount, 0));
     }
 
     /**
@@ -384,9 +388,10 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
                 (chains[chainid].recipient == msg.sender ||
                     chains[chainid].recipient == address(0))
         );
-        chains[chainid].asset =
-            chains[chainid].asset +
-            toBalanceUINT256(asset, 0);
+        chains[chainid].asset = sub(
+            chains[chainid].asset,
+            toTTSwapUINT256(asset, 0)
+        );
         require(balanceOf(msg.sender) >= chains[chainid].asset.amount0());
     }
 
@@ -406,7 +411,7 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
         );
         chains[chainid].asset =
             chains[chainid].asset -
-            toBalanceUINT256(asset, 0);
+            toTTSwapUINT256(asset, 0);
     }
 
     /**
@@ -457,12 +462,13 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
         netconstruct = poolstate.amount1() == 0
             ? 0
             : mulDiv(poolstate.amount1(), proofvalue, stakestate.amount1());
-        poolstate = poolstate + toBalanceUINT256(netconstruct, netconstruct);
-        stakestate = stakestate + toBalanceUINT256(0, proofvalue);
+        poolstate = sub(poolstate, toTTSwapUINT256(netconstruct, netconstruct));
+        stakestate = sub(stakestate, toTTSwapUINT256(0, proofvalue));
         stakeproof[restakeid].fromcontract = msg.sender;
-        stakeproof[restakeid].proofstate =
-            stakeproof[restakeid].proofstate +
-            toBalanceUINT256(proofvalue, netconstruct);
+        stakeproof[restakeid].proofstate = sub(
+            stakeproof[restakeid].proofstate,
+            toTTSwapUINT256(proofvalue, netconstruct)
+        );
     }
 
     /**
@@ -486,18 +492,18 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
             );
             stakeproof[restakeid].proofstate =
                 stakeproof[restakeid].proofstate -
-                toBalanceUINT256(proofvalue, construct);
+                toTTSwapUINT256(proofvalue, construct);
         }
-        profit = toBalanceUINT256(poolstate.amount0(), stakestate.amount1())
+        profit = toTTSwapUINT256(poolstate.amount0(), stakestate.amount1())
             .getamount0fromamount1(proofvalue);
-        stakestate = stakestate - toBalanceUINT256(0, proofvalue);
-        poolstate = poolstate - toBalanceUINT256(profit, construct);
+        stakestate = stakestate - toTTSwapUINT256(0, proofvalue);
+        poolstate = poolstate - toTTSwapUINT256(profit, construct);
         profit = profit - construct;
         if (profit > 0) _mint(_staker, profit);
         emit e_unstake(
             _staker,
             proofvalue,
-            toBalanceUINT256(construct, profit),
+            toTTSwapUINT256(construct, profit),
             stakeproof[restakeid].proofstate
         );
     }
@@ -507,15 +513,12 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
      */
     function _stakeFee() internal {
         if (stakestate.amount0() + 86400 < block.timestamp) {
-            stakestate = stakestate + toBalanceUINT256(86400, 0);
-            uint256 mintamount = totalSupply() > 50000000000000
+            stakestate = sub(stakestate, toTTSwapUINT256(86400, 0));
+            uint256 mintamount = totalSupply() > 50000000 * decimals()
                 ? totalSupply() / 18300
-                : 2739726027; //2739726027=(50000000 * decimals) /50/ 366
-            poolstate = poolstate + toBalanceUINT256(uint128(mintamount), 0);
-            emit e_updatepool(
-                T_BalanceUINT256.unwrap(poolstate),
-                T_BalanceUINT256.unwrap(stakestate)
-            );
+                : 2740 * decimals(); //27322404=(500000 * decimals) / 18300
+            poolstate = sub(poolstate, toTTSwapUINT256(uint128(mintamount), 0));
+            emit e_updatepool(poolstate, stakestate);
         }
     }
     // burn
@@ -527,10 +530,11 @@ contract TTSwap_Token is ERC20Permit, I_TTS {
     function burn(address account, uint256 value) external {
         _burn(account, value);
     }
-
-    // for testnet
-    function mint(address recipent, uint amount) external {
-        require(amount <= 10000000000);
-        _mint(recipent, amount * 10 ** uint(decimals()));
+    function setMainTriggerMarket(
+        address Maintriggeradd,
+        address marketadd
+    ) external override {
+        require(msg.sender == dao_admin);
+        I_TTSwap_MainTrigger(Maintriggeradd).setofficialMarket(marketadd);
     }
 }

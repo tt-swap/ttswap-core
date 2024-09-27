@@ -9,3 +9,8 @@
 	path = lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
 	tag = v4.9.6
+[submodule "lib/erc721-permit"]
+	path = lib/erc721-permit
+	url = https://github.com/soliditylabs/erc721-permit
+	branch = master
+

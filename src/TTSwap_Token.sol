@@ -7,8 +7,10 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 
-import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
+import {I_TTSwap_Token, s_share, s_chain, s_proof} from "./interfaces/I_TTSwap_Token.sol";
+
 import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
+
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
 import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";

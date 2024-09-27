@@ -190,7 +190,6 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         return true;
     }
-
     /**
      * @dev Buys a good
      * @param _goodid1 The ID of the first good
@@ -774,6 +773,7 @@ contract TTSwap_Market is I_TTSwap_Market {
             proofs[existingProofId].conbine(proofs[proofid]);
             delete proofs[proofid];
             I_TTSwap_NFT(officialNFTContract).burn(proofid);
+
             emit e_transferdel(proofid, existingProofId);
         }
         delete proofmapping[proofKey1];

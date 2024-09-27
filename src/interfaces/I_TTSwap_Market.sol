@@ -62,6 +62,8 @@ interface I_TTSwap_Market {
     /// @param feeamount The amount of fee collected
     event e_collectProtocolFee(uint256 goodid, uint256 feeamount);
 
+    event e_transferdel(uint256 delproofid, uint256 existsproofid);
+
     /// @notice Emitted when a meta good is created and initialized
     /// @dev The decimal precision of _initial.amount0() defaults to 6
     /// @param _proofNo The ID of the investment proof
@@ -135,14 +137,14 @@ interface I_TTSwap_Market {
 
     /// @notice Emitted when a user invests in a normal good
     /// @param _proofNo The ID of the investment proof
-    /// @param _extendinfo Packed data: first 128 bits for good's ID, last 128 bits for stake construct
+    /// @param _normalgoodid Packed data: first 128 bits for good's ID, last 128 bits for stake construct
     /// @param _valueGoodNo The ID of the value good
-    /// @param _value Investment value (amount0: invest value, amount1: 0)
+    /// @param _value Investment value (amount0: invest value, amount1: restake construct)
     /// @param _invest Normal good investment details (amount0: actual fee, amount1: actual invest quantity)
     /// @param _valueinvest Value good investment details (amount0: actual fee, amount1: actual invest quantity)
     event e_investGood(
         uint256 indexed _proofNo,
-        uint256 _extendinfo,
+        uint256 _normalgoodid,
         uint256 _valueGoodNo,
         uint256 _value,
         uint256 _invest,

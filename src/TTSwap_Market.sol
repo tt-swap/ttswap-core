@@ -452,9 +452,9 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         emit e_investGood(
             proofNo,
-            toTTSwapUINT256(toInt128(_togood), construct),
+            _togood,
             _valuegood,
-            toTTSwapUINT256(normalInvest_.actualInvestValue, 0),
+            toTTSwapUINT256(normalInvest_.actualInvestValue, construct),
             toTTSwapUINT256(
                 normalInvest_.actualFeeQuantity,
                 normalInvest_.actualInvestQuantity
@@ -773,6 +773,7 @@ contract TTSwap_Market is I_TTSwap_Market {
             proofs[existingProofId].conbine(proofs[proofid]);
             delete proofs[proofid];
             I_TTSwap_NFT(officialNFTContract).burn(proofid);
+            emit e_transferdel(proofid, existingProofId);
         }
         delete proofmapping[proofKey1];
     }

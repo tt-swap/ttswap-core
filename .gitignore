@@ -15,7 +15,7 @@ docs/
 .DS_Store
 
 
-.forge-snapshots
+.forge-snapshots/
 
 docs/tokeneconomics-en
 docs/tokeneconomics-cn

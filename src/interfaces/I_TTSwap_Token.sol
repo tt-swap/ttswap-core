@@ -3,12 +3,11 @@ pragma solidity 0.8.26;
 
 import {S_ProofKey} from "../libraries/L_Struct.sol";
 import {L_Proof} from "../libraries/L_Proof.sol";
-import {T_BalanceUINT256} from "../libraries/L_BalanceUINT256.sol";
 import {IERC721Permit} from "./IERC721Permit.sol";
 
 /// @title Investment Proof Interface
 /// @notice Contains a series of interfaces for goods
-interface I_TTS {
+interface I_TTSwap_Token {
     /// @notice Emitted when a referral is added
     /// @param users The address of the user
     /// @param referral The address of the referrer
@@ -72,7 +71,7 @@ interface I_TTS {
     event e_syncChainStake(
         uint32 chain,
         uint128 poolasset,
-        T_BalanceUINT256 proofstate //first 128 bit proofvalue,last 128 bit proofconstruct
+        uint256 proofstate //first 128 bit proofvalue,last 128 bit proofconstruct
     );
 
     /// @notice Emitted when unstaking occurs
@@ -83,8 +82,8 @@ interface I_TTS {
     event e_unstake(
         address recipient,
         uint128 proofvalue,
-        T_BalanceUINT256 unstakestate,
-        T_BalanceUINT256 stakestate
+        uint256 unstakestate,
+        uint256 stakestate
     );
     /// @notice Emitted when the pool state is updated
     /// @param poolstate The new state of the pool
@@ -127,8 +126,12 @@ interface I_TTS {
     function getreferralanddaoadmin(
         address _customer
     ) external view returns (address dba_admin, address referral);
-}
 
+    function setMainTriggerMarket(
+        address Maintriggeradd,
+        address marketadd
+    ) external;
+}
 struct s_share {
     address recipient; //owner
     uint128 leftamount; // unlock amount
@@ -137,7 +140,11 @@ struct s_share {
 }
 
 struct s_chain {
-    T_BalanceUINT256 asset; //128 shareasset&poolasset 128 poolasset
-    T_BalanceUINT256 proofstate; //128 value 128 constructasset
+    uint256 asset; //128 shareasset&poolasset 128 poolasset
+    uint256 proofstate; //128 value 128 constructasset
     address recipient;
+}
+struct s_proof {
+    address fromcontract; // from which contract
+    uint256 proofstate; // stake's state
 }

@@ -3,21 +3,22 @@ pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
-import "../src/MarketManager.sol";
+import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
-import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
-import {T_BalanceUINT256, toBalanceUINT256} from "../src/libraries/L_BalanceUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
 
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 
 contract commissionNormalGood is BaseSetup {
     using L_MarketConfigLibrary for uint256;
+    using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
-    using L_ProofIdLibrary for S_ProofKey;
+    using L_ProofKeyLibrary for S_ProofKey;
 
     uint256 metagood;
     uint256 normalgoodusdt;
@@ -47,7 +48,7 @@ contract commissionNormalGood is BaseSetup {
             2 ** 197;
         market.initMetaGood(
             address(usdt),
-            toBalanceUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
+            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
         metagood = S_GoodKey(marketcreator, address(usdt)).toId();
@@ -75,7 +76,7 @@ contract commissionNormalGood is BaseSetup {
             2 ** 197;
         market.initGood(
             metagood,
-            toBalanceUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
+            toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
             normalgoodconfig
         );
@@ -95,7 +96,7 @@ contract commissionNormalGood is BaseSetup {
         vm.startPrank(users[1]);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[1], normalgoodbtc, metagood).toId()
+            S_ProofKey(users[1], normalgoodbtc, metagood).toKey()
         );
         L_Proof.S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(
@@ -158,7 +159,7 @@ contract commissionNormalGood is BaseSetup {
             "before collect erc20 good:normalgoodbtc feeQuantityState amount1 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[1], normalgoodbtc, metagood).toId()
+            S_ProofKey(users[1], normalgoodbtc, metagood).toKey()
         );
 
         market.collectProof(normalproof, address(0));

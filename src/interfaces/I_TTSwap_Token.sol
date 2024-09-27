@@ -131,11 +131,6 @@ interface I_TTSwap_Token {
         address Maintriggeradd,
         address marketadd
     ) external;
-
-    function setMainTriggerMarket(
-        address Maintriggeradd,
-        address marketadd
-    ) external;
 }
 struct s_share {
     address recipient; //owner

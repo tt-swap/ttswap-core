@@ -7,7 +7,7 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
-import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 
 contract testInitNormalGood is BaseSetup {

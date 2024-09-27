@@ -20,7 +20,6 @@ contract buyERC20NormalGood is BaseSetup {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
-
     using L_TTSwapUINT256Library for uint256;
 
     uint256 metagood;

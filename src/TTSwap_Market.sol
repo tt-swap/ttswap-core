@@ -25,7 +25,6 @@ contract TTSwap_Market is I_TTSwap_Market {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
     using L_ProofIdLibrary for uint256;
-
     using L_TTSwapUINT256Library for uint256;
     using L_Good for L_Good.S_GoodState;
     using L_Proof for L_Proof.S_ProofState;
@@ -190,6 +189,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         );
         return true;
     }
+
     /**
      * @dev Buys a good
      * @param _goodid1 The ID of the first good
@@ -773,7 +773,6 @@ contract TTSwap_Market is I_TTSwap_Market {
             proofs[existingProofId].conbine(proofs[proofid]);
             delete proofs[proofid];
             I_TTSwap_NFT(officialNFTContract).burn(proofid);
-
             emit e_transferdel(proofid, existingProofId);
         }
         delete proofmapping[proofKey1];

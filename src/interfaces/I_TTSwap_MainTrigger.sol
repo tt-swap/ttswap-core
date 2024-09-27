@@ -3,7 +3,7 @@ pragma solidity 0.8.26;
 
 interface I_TTSwap_MainTrigger {
     function setofficialMarket(address _officialMarket) external;
-    //
+
     function main_swaptake(
         address triggercontract,
         uint256 opgood,

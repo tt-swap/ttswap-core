@@ -813,7 +813,6 @@ library L_Good {
             (_goodconfig << 223);
     }
 
-<<<<<<< HEAD
     function swaptake(
         S_GoodState storage _self,
         address officialadd,
@@ -885,24 +884,6 @@ library L_Good {
                     _self.trigger,
                     divestquanity,
                     _self.currentState,
-=======
-    function beforswap(
-        S_GoodState storage _self,
-        address officialadd,
-        uint256 opgood,
-        uint256 _tradestate,
-        uint256 opstate,
-        address recipent
-    ) internal {
-        if (_self.goodConfig.beforeswaptake())
-            if (
-                I_TTSwap_MainTrigger(officialadd).main_beforeswaptake(
-                    _self.trigger,
-                    opgood,
-                    _tradestate,
-                    _self.currentState,
-                    takerstate,
->>>>>>> 7ff40e0 (remove balance type 20240922)
                     recipent
                 )
             ) revert();

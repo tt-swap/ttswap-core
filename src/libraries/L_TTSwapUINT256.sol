@@ -1,9 +1,5 @@
 // SPDX-License-Identifier: MIT
-<<<<<<< HEAD
 pragma solidity ^0.8.1;
-=======
-pragma solidity 0.8.26;
->>>>>>> 7ff40e0 (remove balance type 20240922)
 
 using L_TTSwapUINT256Library for uint256;
 /// @notice Converts two uint128 values into a T_BalanceUINT256

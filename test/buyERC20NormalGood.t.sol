@@ -19,11 +19,8 @@ contract buyERC20NormalGood is BaseSetup {
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
-<<<<<<< HEAD
     using L_ProofKeyLibrary for S_ProofKey;
-=======
-    using L_ProofIdLibrary for S_ProofKey;
->>>>>>> 7ff40e0 (remove balance type 20240922)
+
     using L_TTSwapUINT256Library for uint256;
 
     uint256 metagood;

@@ -4,7 +4,6 @@ pragma solidity 0.8.26;
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 import {L_Good, L_GoodIdLibrary} from "./libraries/L_Good.sol";
 import {L_Lock} from "./libraries/L_Lock.sol";
-import {L_Triger} from "./libraries/L_Triger.sol";
 import {L_Proof, L_ProofIdLibrary, L_ProofKeyLibrary} from "./libraries/L_Proof.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
 import {S_ProofKey, S_GoodKey} from "./libraries/L_Struct.sol";
@@ -30,7 +29,6 @@ contract TTSwap_Market is I_TTSwap_Market {
     using L_Proof for L_Proof.S_ProofState;
     using L_CurrencyLibrary for address;
     using L_MarketConfigLibrary for uint256;
-    using L_Triger for bool;
 
     uint256 public override marketconfig;
 

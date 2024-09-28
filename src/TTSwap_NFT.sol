@@ -104,6 +104,7 @@ contract TTSwap_NFT is I_TTSwap_NFT, ERC721Permit {
 
     function mint(address recipent, uint256 tokenid) external override {
         require(I_TTSwap_Token(officialTokenContract).isauths(msg.sender) == 1);
+        proofsource[tokenid] = msg.sender;
         _mint(recipent, tokenid);
     }
 

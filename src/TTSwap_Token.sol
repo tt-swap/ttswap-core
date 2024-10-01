@@ -313,11 +313,11 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
                 chainvalue,
                 stakestate.amount1()
             );
-            poolstate = sub(
+            poolstate = add(
                 poolstate,
                 toTTSwapUINT256(chainconstruct, chainconstruct)
             );
-            stakestate = sub(stakestate, toTTSwapUINT256(0, chainvalue));
+            stakestate = add(stakestate, toTTSwapUINT256(0, chainvalue));
             chains[chainid].proofstate = toTTSwapUINT256(
                 chainvalue,
                 chainconstruct
@@ -327,35 +327,34 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             poolasset = mulDiv(
                 poolstate.amount0(),
                 chains[chainid].proofstate.amount0(),
-                poolstate.amount1()
+                stakestate.amount1()
             );
 
-            poolstate =
-                poolstate -
-                toTTSwapUINT256(
-                    poolasset,
-                    chains[chainid].proofstate.amount1()
-                );
-            stakestate =
-                stakestate -
-                toTTSwapUINT256(0, chains[chainid].proofstate.amount0());
+            poolstate = sub(
+                poolstate,
+                toTTSwapUINT256(poolasset, chains[chainid].proofstate.amount1())
+            );
+            stakestate = sub(
+                stakestate,
+                toTTSwapUINT256(0, chains[chainid].proofstate.amount0())
+            );
             poolasset = poolasset - chains[chainid].proofstate.amount0();
             chainconstruct = mulDiv(
                 poolstate.amount0(),
                 chainvalue,
                 stakestate.amount1()
             );
-            poolstate = sub(
+            poolstate = add(
                 poolstate,
                 toTTSwapUINT256(chainconstruct, chainconstruct)
             );
-            stakestate = sub(stakestate, toTTSwapUINT256(0, chainvalue));
+            stakestate = add(stakestate, toTTSwapUINT256(0, chainvalue));
 
             chains[chainid].proofstate = toTTSwapUINT256(
                 chainvalue,
                 chainconstruct
             );
-            chains[chainid].asset = sub(
+            chains[chainid].asset = add(
                 chains[chainid].asset,
                 toTTSwapUINT256(poolasset, poolasset)
             );
@@ -371,7 +370,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     function syncPoolAsset(uint128 amount) external onlysub {
         require(auths[msg.sender] == 5);
-        poolstate = sub(poolstate, toTTSwapUINT256(amount, 0));
+        poolstate = add(poolstate, toTTSwapUINT256(amount, 0));
     }
 
     /**
@@ -388,7 +387,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
                 (chains[chainid].recipient == msg.sender ||
                     chains[chainid].recipient == address(0))
         );
-        chains[chainid].asset = sub(
+        chains[chainid].asset = add(
             chains[chainid].asset,
             toTTSwapUINT256(asset, 0)
         );
@@ -462,10 +461,10 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         netconstruct = poolstate.amount1() == 0
             ? 0
             : mulDiv(poolstate.amount1(), proofvalue, stakestate.amount1());
-        poolstate = sub(poolstate, toTTSwapUINT256(netconstruct, netconstruct));
-        stakestate = sub(stakestate, toTTSwapUINT256(0, proofvalue));
+        poolstate = add(poolstate, toTTSwapUINT256(netconstruct, netconstruct));
+        stakestate = add(stakestate, toTTSwapUINT256(0, proofvalue));
         stakeproof[restakeid].fromcontract = msg.sender;
-        stakeproof[restakeid].proofstate = sub(
+        stakeproof[restakeid].proofstate = add(
             stakeproof[restakeid].proofstate,
             toTTSwapUINT256(proofvalue, netconstruct)
         );
@@ -513,11 +512,11 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     function _stakeFee() internal {
         if (stakestate.amount0() + 86400 < block.timestamp) {
-            stakestate = sub(stakestate, toTTSwapUINT256(86400, 0));
+            stakestate = add(stakestate, toTTSwapUINT256(86400, 0));
             uint256 mintamount = totalSupply() > 50000000 * decimals()
                 ? totalSupply() / 18300
                 : 2740 * decimals(); //27322404=(500000 * decimals) / 18300
-            poolstate = sub(poolstate, toTTSwapUINT256(uint128(mintamount), 0));
+            poolstate = add(poolstate, toTTSwapUINT256(uint128(mintamount), 0));
             emit e_updatepool(poolstate, stakestate);
         }
     }

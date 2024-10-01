@@ -59,7 +59,7 @@ contract TTSwap_Market is I_TTSwap_Market {
     }
 
     modifier onlyMarketor() {
-        require(I_TTSwap_Token(officialTokenContract).isauths(msg.sender) == 2);
+        require(I_TTSwap_Token(officialTokenContract).isauths(msg.sender) == 3);
         _;
     }
 
@@ -82,7 +82,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         address _erc20address,
         uint256 _initial,
         uint256 _goodConfig
-    ) external payable override returns (bool) {
+    ) external payable override onlyMarketor returns (bool) {
         require(_goodConfig.isvaluegood());
         _erc20address.transferFrom(msg.sender, _initial.amount1());
         uint256 togood = S_GoodKey(msg.sender, _erc20address).toId();

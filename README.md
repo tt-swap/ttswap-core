@@ -63,8 +63,7 @@ Contract
 │   ├── I_TTSwap_Token.sol(MIT)  
 │   ├── I_TTSwap_NFT.sol(MIT)  
 │   ├── I_TTSwap_MainTrigger.sol(MIT)  
-│   ├── I_TTSwap_APP.sol(MIT)  
-│   └── I_Proof.sol(MIT)   
+│   └── I_TTSwap_APP.sol(MIT)   
 └── libraries      
    ├── L_Good.sol(BUSL-1.1)    
    ├── L_GoodConfig.sol(MIT)     

@@ -59,8 +59,11 @@ Contract
 ├── TTSwap_Token.sol(BUSL-1.1)
 ├── TTSwap_MainTrigger.sol(BUSL-1.1)  
 ├── interfaces  
-│   ├── I_Good.sol(MIT)  
-│   ├── I_MarketManage.sol(MIT)  
+│   ├── I_TTSwap_Market.sol(MIT)  
+│   ├── I_TTSwap_Token.sol(MIT)  
+│   ├── I_TTSwap_NFT.sol(MIT)  
+│   ├── I_TTSwap_MainTrigger.sol(MIT)  
+│   ├── I_TTSwap_APP.sol(MIT)  
 │   └── I_Proof.sol(MIT)   
 └── libraries      
    ├── L_Good.sol(BUSL-1.1)    

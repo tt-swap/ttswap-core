@@ -30,7 +30,7 @@ contract addbanlist is BaseSetup {
 
     function testaddbanlist() public {
         vm.startPrank(marketcreator);
-        tts_token.addauths(marketcreator, 2);
+        tts_token.addauths(marketcreator, 3);
         market.addbanlist(users[4]);
         assertEq(market.banlist(users[4]), 1, "banlist error");
 

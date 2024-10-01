@@ -408,9 +408,10 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
                 (chains[chainid].recipient == msg.sender ||
                     chains[chainid].recipient == address(0))
         );
-        chains[chainid].asset =
-            chains[chainid].asset -
-            toTTSwapUINT256(asset, 0);
+        chains[chainid].asset = sub(
+            chains[chainid].asset,
+            toTTSwapUINT256(asset, 0)
+        );
     }
 
     /**
@@ -489,14 +490,15 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             construct = stakeproof[restakeid].proofstate.getamount1fromamount0(
                 proofvalue
             );
-            stakeproof[restakeid].proofstate =
-                stakeproof[restakeid].proofstate -
-                toTTSwapUINT256(proofvalue, construct);
+            stakeproof[restakeid].proofstate = sub(
+                stakeproof[restakeid].proofstate,
+                toTTSwapUINT256(proofvalue, construct)
+            );
         }
         profit = toTTSwapUINT256(poolstate.amount0(), stakestate.amount1())
             .getamount0fromamount1(proofvalue);
-        stakestate = stakestate - toTTSwapUINT256(0, proofvalue);
-        poolstate = poolstate - toTTSwapUINT256(profit, construct);
+        stakestate = sub(stakestate, toTTSwapUINT256(0, proofvalue));
+        poolstate = sub(poolstate, toTTSwapUINT256(profit, construct));
         profit = profit - construct;
         if (profit > 0) _mint(_staker, profit);
         emit e_unstake(

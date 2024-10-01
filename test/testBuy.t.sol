@@ -60,6 +60,7 @@ contract testBuy1 is Test {
             address(tts_trigger)
         );
         tts_token.addauths(address(market), 1);
+        tts_token.addauths(marketcreator, 3);
         //81562183917421901855786361352751956561780156203962646020495653018153967943680
         //            (45*2**250+5*2**244+10*2**238+15*2**232+25*2**226+20*2**221)
 

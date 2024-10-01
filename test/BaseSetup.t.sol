@@ -55,6 +55,7 @@ contract BaseSetup is Test, GasSnapshot {
 
         tts_token.setMainTriggerMarket(address(tts_trigger), address(market));
         tts_token.addauths(address(market), 1);
+        tts_token.addauths(marketcreator, 3);
         vm.stopPrank();
     }
 }

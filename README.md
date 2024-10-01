@@ -97,24 +97,64 @@ To integrate with the contracts, the interfaces are available to use:
 
 ```solidity
 
-import {I_MarketManager} from 'ttswap-core/contracts/interfaces/I_MarketManager.sol';
+import {I_TTSwap_Market} from 'ttswap-core/contracts/interfaces/I_TTSwap_Market.sol';
 
 contract MyPortal  {
-    I_MarketManager marketManager;
+    I_TTSwap_Market market;
     address IamGater
 
     function doThing () {
-        marketManager.buyGood(...);
-        marketManager.buyGoodForPay(...);
-        marketManager.initGood(...);
-        marketManager.investGood(...);
-        marketManager.disinvestProof(....,IamGater,referal);
-        marketManager.collectProof(....,IamGater,referal);
+        market.buyGood(...);
+        market.buyGoodForPay(...);
+        market.initGood(...);
+        market.investGood(...);
+        market.disinvestProof(....,IamGater,referal);
+        market.collectProof(....,IamGater,referal);
         ....
     }
 }
-
 ```
+
+## every goods'owner can design a good trigger
+
+### design the contract
+
+```solidity
+import {I_TTSwap_APP} from 'ttswap-core/contracts/interfaces/I_TTSwap_APP.sol';
+
+contract MygoodTrigger is  I_TTSwap_APP {
+    function swaptake(
+        uint256 opgood,
+        uint256 trade,
+        uint256 currentstate,
+        uint256 opstate,
+        address recipent
+    ) external override returns (bool) {}
+
+    function swapmake(
+        uint256 opgood,
+        uint256 trade,
+        uint256 currentstate,
+        uint256 opstate,
+        address recipent
+    ) external override returns (bool) {}
+
+    function invest(
+        uint256 investquanity,
+        uint256 currentstate,
+        address recipent
+    ) external override returns (bool) {}
+
+    function divest(
+        uint256 divestquanity,
+        uint256 currentstate,
+        address recipent
+    ) external override returns (bool) {}
+}
+```
+### update good config and add trigger to good
+go to the profile page in the website , update the goodconfig and add the triger to the goods;
+
 ## User deploy local instruction
 step 1:instrall forge  
 step 2:forge install OpenZeppelin/openzeppelin-contracts@v4.9.6  
@@ -126,4 +166,4 @@ Twitter:[ttswap_exchange](https://x.com/ttswap_exchange)
 Telegram:[@ttswap01](https://t.me/ttswap01)  
 Email:[ttswap.exchange@gmail.com](mailto:ttswap.exchange@gmail.com)  
 Discord:[ttswap](https://discord.gg/5PhXn9DR)  
-Website:[tt-swap.com](http://www.ttswap.io)  
+Website:[ttswap.io](http://www.ttswap.io)  

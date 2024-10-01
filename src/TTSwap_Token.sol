@@ -338,7 +338,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
                 stakestate,
                 toTTSwapUINT256(0, chains[chainid].proofstate.amount0())
             );
-            poolasset = sub(poolasset, chains[chainid].proofstate.amount0());
+            poolasset = poolasset - chains[chainid].proofstate.amount0();
             chainconstruct = mulDiv(
                 poolstate.amount0(),
                 chainvalue,

@@ -19,6 +19,10 @@ interface I_TTSwap_Market {
     /// @param _marketconfig The market configuration
     event e_setMarketConfig(uint256 _marketconfig);
 
+    /// @notice Emitted when good trigger is changed
+    /// @param goodid goodid
+    /// @param triggeraddress trigger contract address
+    /// @param goodconfig  good config for the trigger contract
     event e_setGoodTrigger(
         uint256 goodid,
         address triggeraddress,
@@ -62,6 +66,9 @@ interface I_TTSwap_Market {
     /// @param feeamount The amount of fee collected
     event e_collectProtocolFee(uint256 goodid, uint256 feeamount);
 
+    /// @notice Emitted when proofid deleted when proofid is transfer.
+    /// @param delproofid fromproofid which will be deleted
+    /// @param existsproofid conbine to existsproofid
     event e_transferdel(uint256 delproofid, uint256 existsproofid);
 
     /// @notice Emitted when a meta good is created and initialized

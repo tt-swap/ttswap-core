@@ -300,7 +300,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         uint128 chainvalue
     ) external onlymain returns (uint128 poolasset) {
         require(
-            auths[msg.sender] == 100005 &&
+            auths[msg.sender] == 6 &&
                 (chains[chainid].recipient == msg.sender ||
                     chains[chainid].recipient == address(0))
         );
@@ -377,13 +377,13 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @dev Withdraws assets from a specific chain
      * @param chainid The ID of the chain to withdraw from
      * @param asset The amount of assets to withdraw
-     * @notice Only callable on the main chain by authorized addresses (auths[msg.sender] == 100005)
+     * @notice Only callable on the main chain by authorized addresses (auths[msg.sender] == 6)
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance and checks if the caller has sufficient balance
      */
     function chain_withdraw(uint32 chainid, uint128 asset) external onlymain {
         require(
-            auths[msg.sender] == 100005 &&
+            auths[msg.sender] == 6 &&
                 (chains[chainid].recipient == msg.sender ||
                     chains[chainid].recipient == address(0))
         );
@@ -398,13 +398,13 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @dev Deposits assets to a specific chain
      * @param chainid The ID of the chain to deposit to
      * @param asset The amount of assets to deposit
-     * @notice Only callable on the main chain by authorized addresses (auths[msg.sender] == 100005)
+     * @notice Only callable on the main chain by authorized addresses (auths[msg.sender] == 6)
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance
      */
     function chain_deposit(uint32 chainid, uint128 asset) external onlymain {
         require(
-            auths[msg.sender] == 100005 &&
+            auths[msg.sender] == 6 &&
                 (chains[chainid].recipient == msg.sender ||
                     chains[chainid].recipient == address(0))
         );
@@ -418,7 +418,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @dev Withdraws assets on a sub-chain
      * @param asset The amount of assets to withdraw
      * @param recipient The address to receive the withdrawn assets
-     * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 100005)
+     * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 6)
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance and burns the withdrawn amount from the recipient
      */
@@ -426,7 +426,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         uint128 asset,
         address recipient
     ) external onlysub {
-        require(auths[msg.sender] == 100005);
+        require(auths[msg.sender] == 6);
         _burn(recipient, asset);
     }
 
@@ -434,7 +434,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @dev Deposits assets on a sub-chain
      * @param asset The amount of assets to deposit
      * @param recipient The address to receive the deposited assets
-     * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 100005)
+     * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 6)
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance and mints the deposited amount to the recipient
      */
@@ -442,7 +442,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         uint128 asset,
         address recipient
     ) external onlysub {
-        require(auths[msg.sender] == 100005);
+        require(auths[msg.sender] == 6);
         _mint(recipient, asset);
     }
 

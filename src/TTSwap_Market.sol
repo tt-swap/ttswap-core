@@ -600,7 +600,7 @@ contract TTSwap_Market is I_TTSwap_Market {
 
     function getGoodState(
         uint256 goodkey
-    ) external view returns (S_GoodTmpState memory) {
+    ) external view override returns (S_GoodTmpState memory) {
         return
             S_GoodTmpState(
                 goods[goodkey].goodConfig,
@@ -636,7 +636,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         uint256 _goodid,
         uint256 _payquanity,
         address _recipent
-    ) external payable returns (bool) {
+    ) external payable override returns (bool) {
         if (goods[_goodid].erc20address == address(0)) {
             goods[_goodid].erc20address.safeTransfer(_recipent, _payquanity);
         } else {
@@ -728,7 +728,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         uint256 goodid,
         address apptrigeraddress,
         uint256 config
-    ) external {
+    ) external override {
         require(msg.sender == goods[goodid].owner);
         uint256 goodconfig = goods[goodid].goodConfig;
         assembly {
@@ -751,7 +751,11 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @param from The address transferring the proof.
      * @param to The address receiving the proof.
      */
-    function delproofdata(uint256 proofid, address from, address to) external {
+    function delproofdata(
+        uint256 proofid,
+        address from,
+        address to
+    ) external override {
         require(msg.sender == officialNFTContract);
         L_Proof.unstake(
             officialTokenContract,

@@ -302,11 +302,19 @@ interface I_TTSwap_Market {
         uint256 proofid
     ) external view returns (S_ProofState memory);
 
+    function getGoodState(
+        uint256 goodkey
+    ) external view returns (S_GoodTmpState memory);
+
     /// @notice Returns the market configuration
     /// @dev Can be changed by the market manager
     /// @return marketconfig_ The market configuration
     function marketconfig() external view returns (uint256 marketconfig_);
-
+    function setGoodTrigger(
+        uint256 goodid,
+        address apptrigeraddress,
+        uint256 config
+    ) external;
     /// @notice Sets the market configuration
     /// @param _marketconfig The new market configuration
     /// @return Success status

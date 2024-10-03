@@ -56,7 +56,12 @@ contract TTSwap_Market is I_TTSwap_Market {
         marketconfig = _marketconfig;
         officialTrigger = _officialTrigger;
     }
-
+    modifier onlyDAOadmin() {
+        require(
+            I_TTSwap_Token(officialTokenContract).dao_admin() == msg.sender
+        );
+        _;
+    }
     modifier onlyMarketor() {
         require(I_TTSwap_Token(officialTokenContract).isauths(msg.sender) == 3);
         _;
@@ -81,7 +86,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         address _erc20address,
         uint256 _initial,
         uint256 _goodConfig
-    ) external payable override onlyMarketor returns (bool) {
+    ) external payable override onlyDAOadmin returns (bool) {
         require(_goodConfig.isvaluegood());
         _erc20address.transferFrom(msg.sender, _initial.amount1());
         uint256 togood = S_GoodKey(msg.sender, _erc20address).toId();
@@ -718,7 +723,7 @@ contract TTSwap_Market is I_TTSwap_Market {
 
     function setMarketConfig(
         uint256 _marketconfig
-    ) external override onlyMarketor returns (bool) {
+    ) external override onlyDAOadmin returns (bool) {
         marketconfig = _marketconfig;
         emit e_setMarketConfig(_marketconfig);
         return true;

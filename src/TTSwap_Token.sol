@@ -30,19 +30,19 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
 
     mapping(uint32 => s_chain) public chains;
 
-    uint256 public normalgoodid;
-    uint256 public valuegoodid;
+    uint256 public override normalgoodid;
+    uint256 public override valuegoodid;
     address public override dao_admin;
-    address public marketcontract;
+    address public override marketcontract;
     uint32 public shares_index;
     uint32 public chainindex;
     uint128 public left_share = 5 * 10 ** 8 * 10 ** 6;
-    uint128 public publicsell;
+    uint128 public override publicsell;
 
-    mapping(address => address) public referrals;
+    mapping(address => address) public override referrals;
 
     // uint256 1:add referral priv 2: market priv
-    mapping(address => uint256) public auths;
+    mapping(address => uint256) public override auths;
 
     address public immutable usdt;
     // lasttime is for stake
@@ -90,7 +90,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         uint256 _normalgoodid,
         uint256 _valuegoodid,
         address _marketcontract
-    ) external {
+    ) external override {
         require(_msgSender() == dao_admin);
         normalgoodid = _normalgoodid;
         valuegoodid = _valuegoodid;
@@ -103,7 +103,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @param _recipient The address of the new DAO admin
      * @notice Only the current DAO admin can call this function
      */
-    function changeDAOAdmin(address _recipient) external {
+    function changeDAOAdmin(address _recipient) external override {
         require(_msgSender() == dao_admin);
         dao_admin = _recipient;
         emit e_setdaoadmin(dao_admin);
@@ -115,7 +115,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @param _priv The privilege level to assign
      * @notice Only the DAO admin can call this function
      */
-    function addauths(address _auths, uint256 _priv) external {
+    function addauths(address _auths, uint256 _priv) external override {
         require(_msgSender() == dao_admin);
         auths[_auths] = _priv;
         emit e_addauths(_auths, _priv);
@@ -130,15 +130,6 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         require(_msgSender() == dao_admin);
         auths[_auths] = 0;
         emit e_rmauths(_auths);
-    }
-
-    /**
-     * @dev Checks the authorization level of an address
-     * @param recipient The address to check
-     * @return The authorization level of the address
-     */
-    function isauths(address recipient) external view returns (uint256) {
-        return auths[recipient];
     }
 
     /**
@@ -172,7 +163,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @notice Adds the leftamount of the burned share back to left_share
      * @notice Emits an e_burnShare event and deletes the share from the shares mapping
      */
-    function burnShare(uint8 index) external onlymain {
+    function burnShare(uint8 index) external override onlymain {
         require(_msgSender() == dao_admin);
         left_share += uint64(shares[index].leftamount);
         emit e_burnShare(index);
@@ -228,17 +219,6 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     function decimals() public pure override returns (uint8) {
         return 6;
-    }
-
-    /**
-     * @dev Retrieves the referrer address for a given customer
-     * @param _customer The address of the customer
-     * @return The address of the customer's referrer
-     */
-    function getreferral(
-        address _customer
-    ) external view override returns (address) {
-        return referrals[_customer];
     }
 
     /**
@@ -299,7 +279,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     function syncChainStake(
         uint32 chainid,
         uint128 chainvalue
-    ) external onlymain returns (uint128 poolasset) {
+    ) external override onlymain returns (uint128 poolasset) {
         require(
             auths[msg.sender] == 6 &&
                 (chains[chainid].recipient == msg.sender ||
@@ -369,7 +349,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @param amount The amount to add to the pool state
      * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 5)
      */
-    function syncPoolAsset(uint128 amount) external onlysub {
+    function syncPoolAsset(uint128 amount) external override onlysub {
         require(auths[msg.sender] == 5);
         poolstate = add(poolstate, toTTSwapUINT256(amount, 0));
     }
@@ -382,7 +362,10 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance and checks if the caller has sufficient balance
      */
-    function chain_withdraw(uint32 chainid, uint128 asset) external onlymain {
+    function chain_withdraw(
+        uint32 chainid,
+        uint128 asset
+    ) external override onlymain {
         require(
             auths[msg.sender] == 6 &&
                 (chains[chainid].recipient == msg.sender ||
@@ -403,7 +386,10 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
      * @notice Updates the chain's asset balance
      */
-    function chain_deposit(uint32 chainid, uint128 asset) external onlymain {
+    function chain_deposit(
+        uint32 chainid,
+        uint128 asset
+    ) external override onlymain {
         require(
             auths[msg.sender] == 6 &&
                 (chains[chainid].recipient == msg.sender ||
@@ -426,7 +412,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     function subchainWithdraw(
         uint128 asset,
         address recipient
-    ) external onlysub {
+    ) external override onlysub {
         require(auths[msg.sender] == 6);
         _burn(recipient, asset);
     }
@@ -456,7 +442,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     function stake(
         address _staker,
         uint128 proofvalue
-    ) external returns (uint128 netconstruct) {
+    ) external override returns (uint128 netconstruct) {
         require(auths[msg.sender] == 1);
         _stakeFee();
         uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
@@ -477,7 +463,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @param _staker Address of the staker
      * @param proofvalue Amount to unstake
      */
-    function unstake(address _staker, uint128 proofvalue) external {
+    function unstake(address _staker, uint128 proofvalue) external override {
         require(auths[msg.sender] == 1);
         _stakeFee();
         uint128 profit;
@@ -529,7 +515,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @param account Address of the account to burn tokens from
      * @param value Amount of tokens to burn
      */
-    function burn(address account, uint256 value) external {
+    function burn(address account, uint256 value) external override {
         _burn(account, value);
     }
     function setMainTriggerMarket(

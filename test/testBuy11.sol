@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
+import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
 
 import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
@@ -23,7 +23,7 @@ contract testBuy11 is Test {
     using L_ProofKeyLibrary for S_ProofKey;
     using L_CurrencyLibrary for address;
     using L_TTSwapUINT256Library for uint256;
-    using L_Good for L_Good.S_GoodState;
+    using L_Good for S_GoodState;
 
     uint256 usdtgood;
     uint256 nativenormalgood;
@@ -36,9 +36,9 @@ contract testBuy11 is Test {
     MyToken usdt;
     MyToken eth;
     MyToken wbtc;
-    L_Good.S_GoodState ethstate;
+    S_GoodState ethstate;
 
-    L_Good.S_GoodState btcstate;
+    S_GoodState btcstate;
 
     function setUp() public {
         marketcreator = address(1);

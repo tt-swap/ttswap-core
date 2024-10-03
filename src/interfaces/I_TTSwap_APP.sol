@@ -28,7 +28,7 @@ interface I_TTSwap_APP {
      * @return  true:will interupt the transaction
      */
     function swapmake(
-        uint256 oppositiongood,
+        uint256 opgood,
         uint256 trade,
         uint256 currentstate,
         uint256 opstate,
@@ -48,7 +48,7 @@ interface I_TTSwap_APP {
     ) external returns (bool);
     /**
      * @dev external function will be called before the good is divested
-     * @param investquanity the divest amount of the good.
+     * @param divestquanity the divest amount of the good.
      * @param currentstate the current state ofgood
      * @param recipent The address who call the transaction.
      * @return  true:will interupt the transaction

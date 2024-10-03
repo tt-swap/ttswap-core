@@ -4,10 +4,10 @@ pragma solidity 0.8.26;
 import {L_Proof} from "./L_Proof.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
-import {S_GoodKey} from "./L_Struct.sol";
 import {L_CurrencyLibrary} from "./L_Currency.sol";
 
 import {I_TTSwap_MainTrigger} from "../interfaces/I_TTSwap_MainTrigger.sol";
+import {S_GoodState, S_GoodKey, S_ProofState} from "../interfaces/I_TTSwap_Market.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice} from "./L_TTSwapUINT256.sol";
 
 /**
@@ -19,35 +19,8 @@ library L_Good {
     using L_GoodConfigLibrary for uint256;
     using L_MarketConfigLibrary for uint256;
     using L_TTSwapUINT256Library for uint256;
-    using L_Proof for L_Proof.S_ProofState;
+    using L_Proof for S_ProofState;
     using L_CurrencyLibrary for address;
-
-    /**
-     * @dev Struct representing the state of a good
-     */
-    struct S_GoodState {
-        uint256 goodConfig; // Configuration of the good
-        address owner; // Creator of the good
-        address erc20address; // ERC20 token address associated with the good
-        address trigger;
-        uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
-        uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
-        uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
-        mapping(address => uint128) commission; // Mapping to store commission amounts for each address
-    }
-
-    /**
-     * @dev Struct representing a temporary state of a good
-     */
-    struct S_GoodTmpState {
-        uint256 goodConfig; // Configuration of the good
-        address owner; // Creator of the good
-        address erc20address; // ERC20 token address associated with the good
-        address trigger;
-        uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
-        uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
-        uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
-    }
 
     /**
      * @notice Update the good configuration
@@ -462,7 +435,7 @@ library L_Good {
     function disinvestGood(
         S_GoodState storage _self,
         S_GoodState storage _valueGoodState,
-        L_Proof.S_ProofState storage _investProof,
+        S_ProofState storage _investProof,
         S_GoodDisinvestParam memory _params
     )
         internal
@@ -661,7 +634,7 @@ library L_Good {
     function collectGoodFee(
         S_GoodState storage _self,
         S_GoodState storage _valuegood,
-        L_Proof.S_ProofState storage _investProof,
+        S_ProofState storage _investProof,
         address _gater,
         address _referral,
         uint256 _marketconfig,

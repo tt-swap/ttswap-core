@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
+import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
@@ -86,7 +86,7 @@ contract goodwarefareERC20NormalGood is BaseSetup {
         vm.startPrank(users[1]);
         deal(address(btc), users[1], 10 * 10 ** 8, false);
         btc.approve(address(market), 5 * 10 ** 8 + 1);
-        L_Good.S_GoodTmpState memory good_ = market.getGoodState(normalgoodbtc);
+        S_GoodTmpState memory good_ = market.getGoodState(normalgoodbtc);
         assertEq(
             good_.currentState.amount0(),
             62993700000,

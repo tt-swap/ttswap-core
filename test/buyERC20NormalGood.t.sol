@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
+import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
@@ -139,7 +139,7 @@ contract buyERC20NormalGood is BaseSetup {
             "after buy erc20_normalgood:usdt market account  balance error"
         );
 
-        L_Good.S_GoodTmpState memory good_ = market.getGoodState(metagood);
+        S_GoodTmpState memory good_ = market.getGoodState(metagood);
         assertEq(
             good_.currentState.amount0(),
             106698110000,

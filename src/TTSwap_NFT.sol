@@ -4,9 +4,7 @@ pragma solidity 0.8.26;
 import {I_TTSwap_NFT} from "./interfaces/I_TTSwap_NFT.sol";
 import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
-import {S_ProofKey} from "./libraries/L_Struct.sol";
 import {ERC721Permit} from "@erc721permit/ERC721Permit.sol";
-import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {L_TTSwapUINT256Library} from "./libraries/L_TTSwapUINT256.sol";
 
 /**
@@ -15,8 +13,6 @@ import {L_TTSwapUINT256Library} from "./libraries/L_TTSwapUINT256.sol";
  * Inherits from I_Proof and ERC721Permit.
  */
 contract TTSwap_NFT is I_TTSwap_NFT, ERC721Permit {
-    using L_Proof for *;
-    using L_ProofIdLibrary for S_ProofKey;
     using L_TTSwapUINT256Library for uint256;
 
     mapping(uint256 => address) internal proofsource;

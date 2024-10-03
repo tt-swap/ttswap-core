@@ -56,7 +56,7 @@ interface I_TTSwap_MainTrigger {
     /**
      * @dev external function will be called before the good is divested
      * @param triggercontract The triger address  of the good
-     * @param investquanity the divest amount of the good.
+     * @param divestquanity the divest amount of the good.
      * @param currentstate the current state ofgood
      * @param recipent The address who call the transaction.
      * @return  true:will interupt the transaction

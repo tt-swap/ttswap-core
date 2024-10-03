@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
+import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
@@ -103,7 +103,7 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
         normalproof = market.proofmapping(
             S_ProofKey(users[2], normalgoodnativeETH, metagood).toKey()
         );
-        L_Proof.S_ProofState memory _proof = market.getProofState(normalproof);
+        S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(
             _proof.state.amount0(),
             62987400630,
@@ -132,9 +132,7 @@ contract disinvestNativeETHOtherNormalGood is BaseSetup {
             "before disinvest:proof  valueinvest contruct error"
         );
 
-        L_Good.S_GoodTmpState memory good_ = market.getGoodState(
-            normalgoodnativeETH
-        );
+        S_GoodTmpState memory good_ = market.getGoodState(normalgoodnativeETH);
         assertEq(
             good_.currentState.amount0(),
             125981100630,

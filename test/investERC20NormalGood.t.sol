@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
+import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
@@ -91,7 +91,7 @@ contract investERC20NormalGood is BaseSetup {
         normalproof = market.proofmapping(
             S_ProofKey(users[1], normalgoodbtc, metagood).toKey()
         );
-        L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
+        S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
             btc.balanceOf(users[1]),
@@ -153,7 +153,7 @@ contract investERC20NormalGood is BaseSetup {
             "after invest erc20_normalgood:usdt users[1] account invest balance error"
         );
 
-        L_Good.S_GoodTmpState memory good_ = market.getGoodState(metagood);
+        S_GoodTmpState memory good_ = market.getGoodState(metagood);
         assertEq(
             good_.currentState.amount0(),
             175981100630,
@@ -256,7 +256,7 @@ contract investERC20NormalGood is BaseSetup {
         uint256 normalproof = market.proofmapping(
             S_ProofKey(users[4], normalgoodbtc, metagood).toKey()
         );
-        L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
+        S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
             btc.balanceOf(users[4]),
@@ -315,7 +315,7 @@ contract investERC20NormalGood is BaseSetup {
             "after invest erc20_normalgood:usdt users[4] account invest balance error"
         );
 
-        L_Good.S_GoodTmpState memory good_ = market.getGoodState(metagood);
+        S_GoodTmpState memory good_ = market.getGoodState(metagood);
         assertEq(
             good_.currentState.amount0(),
             175981100630,

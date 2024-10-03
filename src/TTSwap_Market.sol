@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.26;
 
-import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
+import {I_TTSwap_Market, S_ProofState, S_GoodState, S_ProofKey, S_GoodKey, S_GoodTmpState} from "./interfaces/I_TTSwap_Market.sol";
 import {L_Good, L_GoodIdLibrary} from "./libraries/L_Good.sol";
 import {L_Lock} from "./libraries/L_Lock.sol";
 import {L_Proof, L_ProofIdLibrary, L_ProofKeyLibrary} from "./libraries/L_Proof.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
-import {S_ProofKey, S_GoodKey} from "./libraries/L_Struct.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
@@ -25,16 +24,16 @@ contract TTSwap_Market is I_TTSwap_Market {
     using L_ProofKeyLibrary for S_ProofKey;
     using L_ProofIdLibrary for uint256;
     using L_TTSwapUINT256Library for uint256;
-    using L_Good for L_Good.S_GoodState;
-    using L_Proof for L_Proof.S_ProofState;
+    using L_Good for S_GoodState;
+    using L_Proof for S_ProofState;
     using L_CurrencyLibrary for address;
     using L_MarketConfigLibrary for uint256;
 
     uint256 public override marketconfig;
 
-    mapping(uint256 goodid => L_Good.S_GoodState) internal goods;
+    mapping(uint256 goodid => S_GoodState) internal goods;
     mapping(uint256 proofkey => uint256 proofid) public proofmapping;
-    mapping(uint256 proofid => L_Proof.S_ProofState) internal proofs;
+    mapping(uint256 proofid => S_ProofState) internal proofs;
     mapping(address => uint256) public banlist;
 
     address internal immutable officialTokenContract;
@@ -92,14 +91,14 @@ contract TTSwap_Market is I_TTSwap_Market {
         uint256 proofKey = S_ProofKey(msg.sender, togood, 0).toKey();
 
         uint256 proofid = proofKey.toId();
-        proofmapping[proofKey] = proofKey.toId();
+        proofmapping[proofKey] = proofid;
         I_TTSwap_NFT(officialNFTContract).mint(msg.sender, proofid);
         proofs[proofid].updateInvest(
             togood,
             0,
             toTTSwapUINT256(_initial.amount0(), 0),
-            toTTSwapUINT256(0, _initial.amount1()),
-            toTTSwapUINT256(0, 0)
+            _initial.amount1(),
+            0
         );
         uint128 construct = L_Proof.stake(
             officialTokenContract,
@@ -157,11 +156,11 @@ contract TTSwap_Market is I_TTSwap_Market {
             msg.sender,
             proofmapping[proofKey]
         );
-        proofs[proofmapping[proofKey]] = L_Proof.S_ProofState(
+        proofs[proofmapping[proofKey]] = S_ProofState(
             togood,
             _valuegood,
             toTTSwapUINT256(investResult.actualInvestValue, 0),
-            toTTSwapUINT256(0, _initial.amount0()),
+            _initial.amount0(),
             toTTSwapUINT256(
                 investResult.constructFeeQuantity,
                 investResult.actualInvestQuantity
@@ -253,7 +252,7 @@ contract TTSwap_Market is I_TTSwap_Market {
                 !(_istotal == true && swapcache.remainQuantity > 0)
         );
 
-        goodid2FeeQuantity_ = goods[_goodid2].goodConfig.getBuyFee(
+        goodid2FeeQuantity_ = swapcache.good2config.getBuyFee(
             swapcache.outputQuantity
         );
         goodid2Quantity_ = swapcache.outputQuantity - goodid2FeeQuantity_;
@@ -342,7 +341,7 @@ contract TTSwap_Market is I_TTSwap_Market {
                 swapcache.remainQuantity == 0
         );
 
-        goodid1FeeQuantity_ = goods[_goodid1].goodConfig.getSellFee(
+        goodid1FeeQuantity_ = swapcache.good1config.getSellFee(
             swapcache.outputQuantity
         );
         goodid1Quantity_ = swapcache.outputQuantity + goodid1FeeQuantity_;
@@ -360,8 +359,6 @@ contract TTSwap_Market is I_TTSwap_Market {
             _swapQuantity - swapcache.feeQuantity
         );
         goods[_goodid1].erc20address.transferFrom(msg.sender, goodid1Quantity_);
-        // goods[_goodid1].afterswap();
-        // goods[_goodid2].afterswap();
         emit e_buyGoodForPay(
             _goodid1,
             _goodid2,
@@ -489,8 +486,6 @@ contract TTSwap_Market is I_TTSwap_Market {
         uint256 normalgood = proofs[_proofid].currentgood;
         uint256 valuegood = proofs[_proofid].valuegood;
 
-        // goods[_goodid1].beforedivest();
-        // goods[_goodid2].beforedivest();
         uint128 divestvalue;
         (address dao_admin, address referal) = I_TTSwap_Token(
             officialTokenContract
@@ -511,11 +506,22 @@ contract TTSwap_Market is I_TTSwap_Market {
                     dao_admin
                 )
             );
+        goods[normalgood].divest(
+            officialTokenContract,
+            disinvestNormalResult1_.actualDisinvestQuantity,
+            msg.sender
+        );
 
-        if (valuegood != 0) divestvalue = divestvalue * 2;
+        if (valuegood != 0) {
+            divestvalue = divestvalue * 2;
+            goods[valuegood].divest(
+                officialTokenContract,
+                disinvestNormalResult1_.actualDisinvestQuantity,
+                msg.sender
+            );
+        }
         L_Proof.unstake(officialTokenContract, msg.sender, divestvalue);
-        // goods[_goodid1].afterdivest();
-        // goods[_goodid2].afterdivest();
+
         emit e_disinvestProof(
             _proofid,
             normalgood,
@@ -588,15 +594,15 @@ contract TTSwap_Market is I_TTSwap_Market {
 
     function getProofState(
         uint256 proofid
-    ) external view returns (L_Proof.S_ProofState memory) {
+    ) external view override returns (S_ProofState memory) {
         return proofs[proofid];
     }
 
     function getGoodState(
         uint256 goodkey
-    ) external view returns (L_Good.S_GoodTmpState memory) {
+    ) external view override returns (S_GoodTmpState memory) {
         return
-            L_Good.S_GoodTmpState(
+            S_GoodTmpState(
                 goods[goodkey].goodConfig,
                 goods[goodkey].owner,
                 goods[goodkey].erc20address,
@@ -630,7 +636,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         uint256 _goodid,
         uint256 _payquanity,
         address _recipent
-    ) external payable returns (bool) {
+    ) external payable override returns (bool) {
         if (goods[_goodid].erc20address == address(0)) {
             goods[_goodid].erc20address.safeTransfer(_recipent, _payquanity);
         } else {
@@ -722,7 +728,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         uint256 goodid,
         address apptrigeraddress,
         uint256 config
-    ) external {
+    ) external override {
         require(msg.sender == goods[goodid].owner);
         uint256 goodconfig = goods[goodid].goodConfig;
         assembly {
@@ -745,14 +751,18 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @param from The address transferring the proof.
      * @param to The address receiving the proof.
      */
-    function delproofdata(uint256 proofid, address from, address to) external {
+    function delproofdata(
+        uint256 proofid,
+        address from,
+        address to
+    ) external override {
         require(msg.sender == officialNFTContract);
         L_Proof.unstake(
             officialTokenContract,
             from,
             proofs[proofid].state.amount0()
         );
-        L_Proof.S_ProofState memory proofState = proofs[proofid];
+        S_ProofState memory proofState = proofs[proofid];
         uint256 proofKey1 = S_ProofKey(
             from,
             proofState.currentgood,

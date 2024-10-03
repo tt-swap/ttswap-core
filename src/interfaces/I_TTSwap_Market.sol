@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
 
-import {S_GoodKey, S_ProofKey} from "../libraries/L_Struct.sol";
-import {L_Good} from "../libraries/L_Good.sol";
-
 import {toTTSwapUINT256, addsub, subadd} from "../libraries/L_TTSwapUINT256.sol";
 
 /// @title Market Management Interface
@@ -301,11 +298,23 @@ interface I_TTSwap_Market {
         uint256 compareprice
     ) external view returns (bool);
 
+    function getProofState(
+        uint256 proofid
+    ) external view returns (S_ProofState memory);
+
+    function getGoodState(
+        uint256 goodkey
+    ) external view returns (S_GoodTmpState memory);
+
     /// @notice Returns the market configuration
     /// @dev Can be changed by the market manager
     /// @return marketconfig_ The market configuration
     function marketconfig() external view returns (uint256 marketconfig_);
-
+    function setGoodTrigger(
+        uint256 goodid,
+        address apptrigeraddress,
+        uint256 config
+    ) external;
     /// @notice Sets the market configuration
     /// @param _marketconfig The new market configuration
     /// @return Success status
@@ -380,4 +389,54 @@ interface I_TTSwap_Market {
      * @param to The address receiving the proof.
      */
     function delproofdata(uint256 proofid, address from, address to) external;
+}
+/**
+ * @dev Represents the state of a proof
+ * @member currentgood The current good  associated with the proof
+ * @member valuegood The value good associated with the proof
+ * @member state amount0 (first 128 bits) represents total value
+ * @member invest amount0 (first 128 bits) represents invest normal good quantity, amount1 (last 128 bits) represents normal good constuct fee when investing
+ * @member valueinvest amount0 (first 128 bits) represents invest value good quantity, amount1 (last 128 bits) represents value good constuct fee when investing
+ */
+struct S_ProofState {
+    uint256 currentgood;
+    uint256 valuegood;
+    uint256 state;
+    uint256 invest;
+    uint256 valueinvest;
+}
+/**
+ * @dev Struct representing the state of a good
+ */
+struct S_GoodState {
+    uint256 goodConfig; // Configuration of the good
+    address owner; // Creator of the good
+    address erc20address; // ERC20 token address associated with the good
+    address trigger;
+    uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
+    uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
+    uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
+    mapping(address => uint128) commission; // Mapping to store commission amounts for each address
+}
+/**
+ * @dev Struct representing a temporary state of a good
+ */
+struct S_GoodTmpState {
+    uint256 goodConfig; // Configuration of the good
+    address owner; // Creator of the good
+    address erc20address; // ERC20 token address associated with the good
+    address trigger;
+    uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
+    uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
+    uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
+}
+struct S_GoodKey {
+    address owner;
+    address erc20address;
+}
+
+struct S_ProofKey {
+    address owner;
+    uint256 currentgood;
+    uint256 valuegood;
 }

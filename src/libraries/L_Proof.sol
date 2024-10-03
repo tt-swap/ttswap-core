@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.26;
 
-import {S_ProofKey} from "./L_Struct.sol";
 import {toTTSwapUINT256, mulDiv, sub, add, L_TTSwapUINT256Library} from "./L_TTSwapUINT256.sol";
 import {I_TTSwap_Token} from "../interfaces/I_TTSwap_Token.sol";
+import {S_ProofState, S_ProofKey} from "../interfaces/I_TTSwap_Market.sol";
 
 library L_Proof {
     using L_TTSwapUINT256Library for uint256;
@@ -15,13 +15,13 @@ library L_Proof {
      * @member invest amount0 (first 128 bits) represents invest normal good quantity, amount1 (last 128 bits) represents normal good constuct fee when investing
      * @member valueinvest amount0 (first 128 bits) represents invest value good quantity, amount1 (last 128 bits) represents value good constuct fee when investing
      */
-    struct S_ProofState {
-        uint256 currentgood;
-        uint256 valuegood;
-        uint256 state;
-        uint256 invest;
-        uint256 valueinvest;
-    }
+    // struct S_ProofState {
+    //     uint256 currentgood;
+    //     uint256 valuegood;
+    //     uint256 state;
+    //     uint256 invest;
+    //     uint256 valueinvest;
+    // }
 
     /**
      * @dev Updates the investment state of a proof

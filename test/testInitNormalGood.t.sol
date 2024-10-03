@@ -4,7 +4,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {S_GoodKey, S_ProofKey, S_ProofKey} from "../src/libraries/L_Struct.sol";
+import {S_GoodKey, S_ProofKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
 import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
@@ -94,7 +94,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normal good, balance of market error"
         );
 
-        L_Good.S_GoodTmpState memory metagoodkeystate = market.getGoodState(
+        S_GoodTmpState memory metagoodkeystate = market.getGoodState(
             metagoodkey
         );
         assertEq(
@@ -140,7 +140,7 @@ contract testInitNormalGood is BaseSetup {
         );
 
         ////////////////////////////////////////
-        L_Good.S_GoodTmpState memory normalgoodstate = market.getGoodState(
+        S_GoodTmpState memory normalgoodstate = market.getGoodState(
             normalgoodkey
         );
         assertEq(
@@ -181,7 +181,7 @@ contract testInitNormalGood is BaseSetup {
         uint256 normalproof = market.proofmapping(
             S_ProofKey(users[1], normalgoodkey, metagoodkey).toKey()
         );
-        L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
+        S_ProofState memory _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
             63000 * 10 ** 6 - 63000 * 10 ** 2,
@@ -262,7 +262,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normal good, balance of market error"
         );
 
-        L_Good.S_GoodTmpState memory metagoodkeystate = market.getGoodState(
+        S_GoodTmpState memory metagoodkeystate = market.getGoodState(
             metagoodkey
         );
         assertEq(
@@ -310,7 +310,7 @@ contract testInitNormalGood is BaseSetup {
         uint256 normalgoodkey = S_GoodKey(users[1], address(0)).toId();
 
         ////////////////////////////////////////
-        L_Good.S_GoodTmpState memory normalgoodstate = market.getGoodState(
+        S_GoodTmpState memory normalgoodstate = market.getGoodState(
             normalgoodkey
         );
         assertEq(
@@ -348,7 +348,7 @@ contract testInitNormalGood is BaseSetup {
             S_ProofKey(users[1], normalgoodkey, metagoodkey).toKey()
         );
 
-        L_Proof.S_ProofState memory _proof1 = market.getProofState(normalproof);
+        S_ProofState memory _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
             63000 * 10 ** 6 - 63000 * 10 ** 2,

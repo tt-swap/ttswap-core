@@ -26,23 +26,23 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     uint256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
     uint256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
 
-    mapping(uint256 => s_proof) stakeproof;
+    mapping(uint256 => s_proof) public stakeproof;
 
-    mapping(uint32 => s_chain) chains;
+    mapping(uint32 => s_chain) public chains;
 
-    uint256 internal normalgoodid;
-    uint256 internal valuegoodid;
-    address internal dao_admin;
-    address internal marketcontract;
-    uint32 shares_index;
-    uint32 chainindex;
+    uint256 public normalgoodid;
+    uint256 public valuegoodid;
+    address public override dao_admin;
+    address public marketcontract;
+    uint32 public shares_index;
+    uint32 public chainindex;
     uint128 public left_share = 5 * 10 ** 8 * 10 ** 6;
     uint128 public publicsell;
 
-    mapping(address => address) referrals;
+    mapping(address => address) public referrals;
 
     // uint256 1:add referral priv 2: market priv
-    mapping(address => uint256) auths;
+    mapping(address => uint256) public auths;
 
     address public immutable usdt;
     // lasttime is for stake
@@ -129,6 +129,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     function rmauths(address _auths) external {
         require(_msgSender() == dao_admin);
         auths[_auths] = 0;
+        emit e_rmauths(_auths);
     }
 
     /**
@@ -148,7 +149,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @notice Increments the shares_index and adds the new share to the shares mapping
      * @notice Emits an e_addShare event with the share details
      */
-    function addShare(s_share calldata _share) public onlymain {
+    function addShare(s_share calldata _share) external onlymain {
         require(
             left_share - _share.leftamount >= 0 && _msgSender() == dao_admin
         );
@@ -171,7 +172,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @notice Adds the leftamount of the burned share back to left_share
      * @notice Emits an e_burnShare event and deletes the share from the shares mapping
      */
-    function burnShare(uint8 index) public onlymain {
+    function burnShare(uint8 index) external onlymain {
         require(_msgSender() == dao_admin);
         left_share += uint64(shares[index].leftamount);
         emit e_burnShare(index);
@@ -186,7 +187,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @notice Mints tokens to the share recipient, reduces leftamount, and increments metric
      * @notice Emits an e_daomint event with the minted amount and index
      */
-    function shareMint(uint8 index) public onlymain {
+    function shareMint(uint8 index) external onlymain {
         require(
             I_TTSwap_Market(marketcontract).ishigher(
                 normalgoodid,

@@ -88,6 +88,8 @@ interface I_TTSwap_Token {
     /// @param stakestate The new state of the stake
     event e_updatepool(uint256 poolstate, uint256 stakestate);
 
+    function dao_admin() external view returns (address);
+
     /// @notice Get the referral address for a customer
     /// @param _customer The address of the customer
     /// @return The address of the referrer

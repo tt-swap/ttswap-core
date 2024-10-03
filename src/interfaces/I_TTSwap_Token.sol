@@ -89,11 +89,39 @@ interface I_TTSwap_Token {
     event e_updatepool(uint256 poolstate, uint256 stakestate);
 
     function dao_admin() external view returns (address);
-
-    /// @notice Get the referral address for a customer
-    /// @param _customer The address of the customer
-    /// @return The address of the referrer
-    function getreferral(address _customer) external view returns (address);
+    function marketcontract() external view returns (address);
+    function normalgoodid() external view returns (uint256);
+    function valuegoodid() external view returns (uint256);
+    function publicsell() external view returns (uint128);
+    function referrals(address) external view returns (address);
+    function auths(address) external view returns (uint256);
+    function setEnv(
+        uint256 _normalgoodid,
+        uint256 _valuegoodid,
+        address _marketcontract
+    ) external;
+    function changeDAOAdmin(address _recipient) external;
+    function burnShare(uint8 index) external;
+    function shareMint(uint8 index) external;
+    function publicSell(uint256 usdtamount) external;
+    function withdrawPublicSell(uint256 amount, address recipient) external;
+    function syncChainStake(
+        uint32 chainid,
+        uint128 chainvalue
+    ) external returns (uint128 poolasset);
+    function syncPoolAsset(uint128 amount) external;
+    function chain_withdraw(uint32 chainid, uint128 asset) external;
+    function chain_deposit(uint32 chainid, uint128 asset) external;
+    function subchainWithdraw(uint128 asset, address recipient) external;
+    function subchainDeposit(uint128 asset, address recipient) external;
+    function burn(address account, uint256 value) external;
+    /**
+     * @dev Adds or updates authorization for an address
+     * @param _auths The address to authorize
+     * @param _priv The privilege level to assign
+     * @notice Only the DAO admin can call this function
+     */
+    function addauths(address _auths, uint256 _priv) external;
 
     /// @notice Add a referral relationship
     /// @param user The address of the user being referred
@@ -113,11 +141,6 @@ interface I_TTSwap_Token {
     /// @param staker The address of the staker
     /// @param proofvalue The proof value for unstaking
     function unstake(address staker, uint128 proofvalue) external;
-
-    /// @notice Check if an address is authorized
-    /// @param recipient The address to check
-    /// @return The authorization level (0 if not authorized)
-    function isauths(address recipient) external view returns (uint256);
 
     /// @notice Get the DAO admin and referral for a customer
     /// @param _customer The address of the customer

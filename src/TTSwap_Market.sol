@@ -63,7 +63,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         _;
     }
     modifier onlyMarketor() {
-        require(I_TTSwap_Token(officialTokenContract).isauths(msg.sender) == 3);
+        require(I_TTSwap_Token(officialTokenContract).auths(msg.sender) == 3);
         _;
     }
 

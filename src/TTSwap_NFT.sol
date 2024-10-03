@@ -99,7 +99,7 @@ contract TTSwap_NFT is I_TTSwap_NFT, ERC721Permit {
     }
 
     function mint(address recipent, uint256 tokenid) external override {
-        require(I_TTSwap_Token(officialTokenContract).isauths(msg.sender) == 1);
+        require(I_TTSwap_Token(officialTokenContract).auths(msg.sender) == 1);
         proofsource[tokenid] = msg.sender;
         _mint(recipent, tokenid);
     }
@@ -112,7 +112,7 @@ contract TTSwap_NFT is I_TTSwap_NFT, ERC721Permit {
     }
 
     function burn(uint256 tokenId) external override {
-        require(I_TTSwap_Token(officialTokenContract).isauths(msg.sender) == 1);
+        require(I_TTSwap_Token(officialTokenContract).auths(msg.sender) == 1);
         _burn(tokenId);
     }
 }

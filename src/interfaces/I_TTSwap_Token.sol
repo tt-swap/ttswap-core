@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
 
-import {IERC721Permit} from "./IERC721Permit.sol";
-
 /// @title Investment Proof Interface
 /// @notice Contains a series of interfaces for goods
 interface I_TTSwap_Token {
@@ -87,34 +85,130 @@ interface I_TTSwap_Token {
     /// @param poolstate The new state of the pool
     /// @param stakestate The new state of the stake
     event e_updatepool(uint256 poolstate, uint256 stakestate);
-
-    function dao_admin() external view returns (address);
-    function marketcontract() external view returns (address);
-    function normalgoodid() external view returns (uint256);
-    function valuegoodid() external view returns (uint256);
-    function publicsell() external view returns (uint128);
-    function referrals(address) external view returns (address);
-    function auths(address) external view returns (uint256);
+    /**
+     * @dev  Returns the address of the DAO admin
+     * @return _dao_admin Returns the address of the DAO admin
+     */
+    function dao_admin() external view returns (address _dao_admin);
+    /**
+     * @dev  Returns the address of the market contract
+     * @return _marketcontract Returns the address of marketcontract
+     */
+    function marketcontract() external view returns (address _marketcontract);
+    /**
+     * @dev   Returns the ID of the normal good
+     * @return _normalgoodid Returns the id of normalgood
+     */
+    function normalgoodid() external view returns (uint256 _normalgoodid);
+    /**
+     * @dev   Returns the ID of the value good
+     * @return _valuegoodid Returns the id of the valuegoodid
+     */
+    function valuegoodid() external view returns (uint256 _valuegoodid);
+    /**
+     * @dev  Returns the amount of TTS available for public sale
+     * @return _publicsell Returns the amount of TTS available for public sale
+     */
+    function publicsell() external view returns (uint128 _publicsell);
+    /**
+     * @dev  Returns the referrer address for a given user
+     * @param _recipent user's address
+     * @return _referral Returns the referrer address for a given user
+     */
+    function referrals(
+        address _recipent
+    ) external view returns (address _referral);
+    /**
+     * @dev Returns the authorization level for a given address
+     * @param recipent user's address
+     * @return _auth Returns the authorization level
+     */
+    function auths(address recipent) external view returns (uint256 _auth);
     function setEnv(
         uint256 _normalgoodid,
         uint256 _valuegoodid,
         address _marketcontract
-    ) external;
+    ) external; // Sets the environment variables for normal good ID, value good ID, and market contract address
+    /**
+     * @dev Changes the DAO admin to the specified recipient address
+     * @param _recipient user's address
+     */
     function changeDAOAdmin(address _recipient) external;
+    /**
+     * @dev Adds a new mint share to the contract
+     * @param _share The share structure containing recipient, amount, metric, and chips
+     * @notice Only callable on the main chain by the DAO admin
+     * @notice Reduces the left_share by the amount in _share
+     * @notice Increments the shares_index and adds the new share to the shares mapping
+     * @notice Emits an e_addShare event with the share details
+     */
+    function addShare(s_share calldata _share) external;
+    /**
+     * @dev  Burns the share at the specified index
+     * @param index index of share
+     */
     function burnShare(uint8 index) external;
+    /**
+     * @dev  Mints a share at the specified index
+     * @param index index of share
+     */
     function shareMint(uint8 index) external;
-    function publicSell(uint256 usdtamount) external;
-    function withdrawPublicSell(uint256 amount, address recipient) external;
+    /**
+     * @dev how much cost to buy tts
+     * @param usdtamount usdt amount
+     */
+    function public_Sell(uint256 usdtamount) external;
+    /**
+     * @dev  Withdraws the specified amount from the public sale to the recipient
+     * @param amount admin tranfer public sell to another address
+     * @param recipent user's address
+     */
+    function withdrawPublicSell(uint256 amount, address recipent) external;
+    /**
+     * @dev  Synchronizes the chain stake and returns the pool asset value
+     * @param chainid  the chain's id
+     * @param chainvalue the chain's stake value
+     */
     function syncChainStake(
         uint32 chainid,
         uint128 chainvalue
-    ) external returns (uint128 poolasset);
-    function syncPoolAsset(uint128 amount) external;
-    function chain_withdraw(uint32 chainid, uint128 asset) external;
-    function chain_deposit(uint32 chainid, uint128 asset) external;
+    ) external returns (uint128 poolasset); //
+    /**
+     * @dev Synchronizes the pool asset with the specified amount to the subchain in stakepool
+     * @param amount the  amount will be Synchronizes
+     */
+    function syncPoolAsset(uint128 amount) external; // Synchronizes the pool asset with the specified amount
+    /**
+     * @dev Withdraws the specified asset from the subchain to the recipient
+     * @param chainid the subchain id
+     * @param asset the asset amount will be withdraw
+     */
+    function chain_withdraw(uint32 chainid, uint128 asset) external; // Withdraws the specified asset from the given chain
+    /**
+     * @dev Deposit the specified asset from the subchain to the recipient
+     * @param chainid the subchain id
+     * @param asset the asset amount will be deposit
+     */
+    function chain_deposit(uint32 chainid, uint128 asset) external; // Deposits the specified asset to the given chain
+    /**
+     * @dev Withdraws the specified asset from the subchain to the recipient
+     * @param asset the asset amount will be withdraw
+     * @param recipient the asset owner
+     */
     function subchainWithdraw(uint128 asset, address recipient) external;
-    function subchainDeposit(uint128 asset, address recipient) external;
+    /**
+     * @dev Deposits the specified asset to the subchain for the recipient
+     * @param asset the asset amount will be deposit
+     * @param recipient the receiver
+     */
+    function subchainDeposit(uint128 asset, address recipient) external; //
+    /**
+     * @dev Burns the specified value of tokens from the given account
+     * @param account the given account
+     * @param value the amount will be burned
+     */
     function burn(address account, uint256 value) external;
+
     /**
      * @dev Adds or updates authorization for an address
      * @param _auths The address to authorize
@@ -122,7 +216,12 @@ interface I_TTSwap_Token {
      * @notice Only the DAO admin can call this function
      */
     function addauths(address _auths, uint256 _priv) external;
-
+    /**
+     * @dev Removes authorization from an address
+     * @param _auths The address to remove authorization from
+     * @notice Only the DAO admin can call this function
+     */
+    function rmauths(address _auths) external;
     /// @notice Add a referral relationship
     /// @param user The address of the user being referred
     /// @param referral The address of the referrer
@@ -149,7 +248,9 @@ interface I_TTSwap_Token {
     function getreferralanddaoadmin(
         address _customer
     ) external view returns (address dba_admin, address referral);
-
+    /// @notice set Maintrigger's market address
+    /// @param Maintriggeradd The address of the customer
+    /// @param marketadd The address of the DAO admin
     function setMainTriggerMarket(
         address Maintriggeradd,
         address marketadd

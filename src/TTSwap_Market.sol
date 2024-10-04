@@ -584,6 +584,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         emit e_collectProof(_proofid, currentgood, valuegood, profit_);
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function ishigher(
         uint256 goodid,
         uint256 valuegood,
@@ -597,12 +598,14 @@ contract TTSwap_Market is I_TTSwap_Market {
             );
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function getProofState(
         uint256 proofid
     ) external view override returns (S_ProofState memory) {
         return proofs[proofid];
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function getGoodState(
         uint256 goodkey
     ) external view override returns (S_GoodTmpState memory) {
@@ -618,6 +621,7 @@ contract TTSwap_Market is I_TTSwap_Market {
             );
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function updateGoodConfig(
         uint256 _goodid,
         uint256 _goodConfig
@@ -628,6 +632,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         return true;
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function modifyGoodConfig(
         uint256 _goodid,
         uint256 _goodConfig
@@ -637,6 +642,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         return true;
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function payGood(
         uint256 _goodid,
         uint256 _payquanity,
@@ -653,6 +659,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         }
         return true;
     }
+    /// @inheritdoc I_TTSwap_Market
     function changeGoodOwner(
         uint256 _goodid,
         address _to
@@ -660,6 +667,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         goods[_goodid].owner = _to;
         emit e_changegoodowner(_goodid, _to);
     }
+    /// @inheritdoc I_TTSwap_Market
     function collectCommission(uint256[] memory _goodid) external override {
         require(_goodid.length < 100);
         uint256[] memory commissionamount = new uint256[](_goodid.length);
@@ -680,6 +688,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         emit e_collectcommission(_goodid, commissionamount);
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function queryCommission(
         uint256[] memory _goodid,
         address _recipent
@@ -692,6 +701,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         return feeamount;
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function goodWelfare(
         uint256 goodid,
         uint128 welfare
@@ -705,6 +715,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         emit e_goodWelfare(goodid, welfare);
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function addbanlist(
         address _user
     ) external override onlyMarketor returns (bool) {
@@ -713,6 +724,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         return true;
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function removebanlist(
         address _user
     ) external override onlyMarketor returns (bool) {
@@ -721,6 +733,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         return true;
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function setMarketConfig(
         uint256 _marketconfig
     ) external override onlyDAOadmin returns (bool) {
@@ -729,6 +742,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         return true;
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function setGoodTrigger(
         uint256 goodid,
         address apptrigeraddress,
@@ -756,6 +770,7 @@ contract TTSwap_Market is I_TTSwap_Market {
      * @param from The address transferring the proof.
      * @param to The address receiving the proof.
      */
+    /// @inheritdoc I_TTSwap_Market
     function delproofdata(
         uint256 proofid,
         address from,

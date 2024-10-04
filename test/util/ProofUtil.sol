@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.24;
+pragma solidity 0.8.26;
 
 import {console2} from "forge-std/Test.sol";
-import {L_Proof} from "../../Contracts/libraries/L_Proof.sol";
+import {L_Proof} from "../../src/libraries/L_Proof.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../../src/libraries/L_TTSwapUINT256.sol";
+import {S_GoodTmpState, S_GoodState, S_ProofState} from "../../src/interfaces/I_TTSwap_Market.sol";
 
 library ProofUtil {
-    function showproof(L_Proof.S_ProofState memory p_) public pure {
-        console2.log("proof address", p_.owner);
+    using L_TTSwapUINT256Library for uint256;
+    function showproof(S_ProofState memory p_) public pure {
         // console2.log('proof currentgood',T_GoodId.unwrap(p_.currentgood));
         // console2.log('proof valuegood',p_.valuegood);
         console2.log("proof extends:", uint256(p_.state.amount0()));

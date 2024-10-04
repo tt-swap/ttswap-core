@@ -15,7 +15,8 @@ import {L_TTSwapUINT256Library} from "./libraries/L_TTSwapUINT256.sol";
 contract TTSwap_NFT is I_TTSwap_NFT, ERC721Permit {
     using L_TTSwapUINT256Library for uint256;
 
-    mapping(uint256 => address) internal proofsource;
+    /// @inheritdoc I_TTSwap_NFT
+    mapping(uint256 => address) public override proofsource;
 
     address internal immutable officialTokenContract;
 
@@ -24,7 +25,7 @@ contract TTSwap_NFT is I_TTSwap_NFT, ERC721Permit {
      */
     constructor(
         address _officialTokenContract
-    ) ERC721Permit("TTSwap NFT", "TTS") {
+    ) ERC721Permit("TTSwap NFT", "TTN") {
         officialTokenContract = _officialTokenContract;
     }
 
@@ -76,16 +77,7 @@ contract TTSwap_NFT is I_TTSwap_NFT, ERC721Permit {
         _safeTransfer(from, to, tokenId, data);
         I_TTSwap_Market(proofsource[tokenId]).delproofdata(tokenId, from, to);
     }
-
-    /**
-     * @dev Safely transfers the ownership of a given token ID to another address with a permit.
-     * @param from The current owner of the token.
-     * @param to The new owner.
-     * @param tokenId The ID of the token to be transferred.
-     * @param _data Additional data with no specified format.
-     * @param deadline The time at which the signature expires.
-     * @param signature A valid EIP712 signature.
-     */
+    /// @inheritdoc I_TTSwap_NFT
     function safeTransferFromWithPermit(
         address from,
         address to,
@@ -93,26 +85,38 @@ contract TTSwap_NFT is I_TTSwap_NFT, ERC721Permit {
         bytes memory _data,
         uint256 deadline,
         bytes memory signature
-    ) external {
+    ) external override {
         _permit(msg.sender, tokenId, deadline, signature);
         safeTransferFrom(from, to, tokenId, _data);
     }
 
+    /// @inheritdoc I_TTSwap_NFT
     function mint(address recipent, uint256 tokenid) external override {
+        // Ensure the caller has the necessary authorization (auth level 1) to mint tokens
         require(I_TTSwap_Token(officialTokenContract).auths(msg.sender) == 1);
+
+        // Set the proofsource mapping for the newly minted token to the caller's address
         proofsource[tokenid] = msg.sender;
+
+        // Mint the token to the specified recipient address
         _mint(recipent, tokenid);
     }
 
+    /// @inheritdoc I_TTSwap_NFT
     function isApprovedOrOwner(
         address spender,
         uint256 tokenId
     ) external view override returns (bool) {
+        // Check if the spender is either the owner of the token or has been approved to spend it
         return _isApprovedOrOwner(spender, tokenId);
     }
 
+    /// @inheritdoc I_TTSwap_NFT
     function burn(uint256 tokenId) external override {
+        // Ensure the caller has the necessary authorization (auth level 1) to burn tokens
         require(I_TTSwap_Token(officialTokenContract).auths(msg.sender) == 1);
+
+        // Burn the specified token, removing it from existence
         _burn(tokenId);
     }
 }

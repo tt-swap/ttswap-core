@@ -23,8 +23,8 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
 
     mapping(uint32 => s_share) shares; // all share's mapping
 
-    uint256 stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
-    uint256 poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
+    uint256 public stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
+    uint256 public poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
 
     mapping(uint256 => s_proof) public stakeproof;
 
@@ -516,9 +516,10 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         if (profit > 0) _mint(_staker, profit);
         emit e_unstake(
             _staker,
-            proofvalue,
+            toTTSwapUINT256(proofvalue, stakestate.amount1()),
             toTTSwapUINT256(construct, profit),
-            stakeproof[restakeid].proofstate
+            stakeproof[restakeid].proofstate,
+            poolstate
         );
     }
 
@@ -530,9 +531,11 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             stakestate = add(stakestate, toTTSwapUINT256(86400, 0));
             uint256 mintamount = totalSupply() > 50000000 * decimals()
                 ? totalSupply() / 18300
-                : 2740 * decimals(); //27322404=(500000 * decimals) / 18300
+                : 2739726027; //2739726027=(50000000 * decimals) / 18300
             poolstate = add(poolstate, toTTSwapUINT256(uint128(mintamount), 0));
-            emit e_updatepool(poolstate, stakestate);
+            emit e_updatepool(
+                toTTSwapUINT256(stakestate.amount0(), poolstate.amount0())
+            );
         }
     }
     // burn

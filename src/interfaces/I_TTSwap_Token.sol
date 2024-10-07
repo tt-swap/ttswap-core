@@ -72,19 +72,20 @@ interface I_TTSwap_Token {
 
     /// @notice Emitted when unstaking occurs
     /// @param recipient The address receiving the unstaked tokens
-    /// @param proofvalue The proof value
+    /// @param proofvalue //first 128 bit proofvalue,last 128 bit poolvalue
     /// @param unstakestate The state after unstaking
     /// @param stakestate The state of the stake
+    /// @param poolstate The state of the pool
     event e_unstake(
         address recipient,
-        uint128 proofvalue,
+        uint256 proofvalue,
         uint256 unstakestate,
-        uint256 stakestate
+        uint256 stakestate,
+        uint256 poolstate
     );
     /// @notice Emitted when the pool state is updated
     /// @param poolstate The new state of the pool
-    /// @param stakestate The new state of the stake
-    event e_updatepool(uint256 poolstate, uint256 stakestate);
+    event e_updatepool(uint256 poolstate);
     /**
      * @dev  Returns the address of the DAO admin
      * @return _dao_admin Returns the address of the DAO admin

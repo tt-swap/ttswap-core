@@ -146,8 +146,8 @@ contract TTSwap_Market is I_TTSwap_Market {
             msg.sender,
             _initial.amount1()
         );
-        L_Good.S_GoodInvestReturn memory investResult = goods[_valuegood]
-            .investGood(_initial.amount1());
+        L_Good.S_GoodInvestReturn memory investResult;
+        goods[_valuegood].investGood(_initial.amount1(), investResult);
         goods[togood].init(
             toTTSwapUINT256(investResult.actualInvestValue, _initial.amount0()),
             _erc20address,
@@ -237,7 +237,6 @@ contract TTSwap_Market is I_TTSwap_Market {
             goods[_goodid1].currentState,
             msg.sender
         );
-
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
             outputQuantity: 0,
@@ -248,8 +247,7 @@ contract TTSwap_Market is I_TTSwap_Market {
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
-        swapcache = L_Good.swapCompute1(swapcache, _limitPrice);
-
+        L_Good.swapCompute1(swapcache, _limitPrice);
         require(
             _swapQuantity > 0 &&
                 swapcache.remainQuantity != _swapQuantity &&
@@ -337,9 +335,7 @@ contract TTSwap_Market is I_TTSwap_Market {
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
-
-        swapcache = L_Good.swapCompute2(swapcache, _limitPrice);
-
+        L_Good.swapCompute2(swapcache, _limitPrice);
         require(
             _swapQuantity >= 0 &&
                 _goodid1 != _goodid2 &&
@@ -397,7 +393,7 @@ contract TTSwap_Market is I_TTSwap_Market {
                 (goods[_togood].goodConfig.isvaluegood() ||
                     goods[_valuegood].goodConfig.isvaluegood())
         );
-        normalInvest_ = goods[_togood].investGood(_quantity);
+        goods[_togood].investGood(_quantity, normalInvest_);
         goods[_togood].erc20address.transferFrom(msg.sender, _quantity);
         if (_valuegood != 0) {
             valueInvest_.actualInvestQuantity = goods[_valuegood]
@@ -416,8 +412,9 @@ contract TTSwap_Market is I_TTSwap_Market {
                 msg.sender,
                 valueInvest_.actualInvestQuantity
             );
-            valueInvest_ = goods[_valuegood].investGood(
-                valueInvest_.actualInvestQuantity
+            goods[_valuegood].investGood(
+                valueInvest_.actualInvestQuantity,
+                valueInvest_
             );
         }
 

@@ -6,6 +6,7 @@ import {toTTSwapUINT256, addsub, subadd} from "../libraries/L_TTSwapUINT256.sol"
 /// @title Market Management Interface
 /// @notice Defines the interface for managing market operations
 interface I_TTSwap_Market {
+    error noEnoughOutputError();
     /// @notice Emitted when a good's ownership is transferred
     /// @param _goodid The ID of the good
     /// @param _owner The previous owner
@@ -16,34 +17,25 @@ interface I_TTSwap_Market {
     /// @param _marketconfig The market configuration
     event e_setMarketConfig(uint256 _marketconfig);
 
-    /// @notice Emitted when good trigger is changed
-    /// @param goodid goodid
-    /// @param triggeraddress trigger contract address
-    /// @param goodconfig  good config for the trigger contract
-    event e_setGoodTrigger(
-        uint256 goodid,
-        address triggeraddress,
-        uint256 goodconfig
-    );
     /// @notice Emitted when a good's configuration is updated
     /// @param _goodid The ID of the good
     /// @param _goodConfig The new configuration
-    event e_updateGoodConfig(uint256 _goodid, uint256 _goodConfig);
+    event e_updateGoodConfig(address _goodid, uint256 _goodConfig);
 
     /// @notice Emitted when a good's configuration is modified by market admin
     /// @param _goodid The ID of the good
     /// @param _goodconfig The new configuration
-    event e_modifyGoodConfig(uint256 _goodid, uint256 _goodconfig);
+    event e_modifyGoodConfig(address _goodid, uint256 _goodconfig);
 
     /// @notice Emitted when a good's owner is changed
     /// @param goodid The ID of the good
     /// @param to The new owner's address
-    event e_changegoodowner(uint256 goodid, address to);
+    event e_changegoodowner(address goodid, address to);
 
     /// @notice Emitted when market commission is collected
     /// @param _gooid Array of good IDs
     /// @param _commisionamount Array of commission amounts
-    event e_collectcommission(uint256[] _gooid, uint256[] _commisionamount);
+    event e_collectcommission(address[] _gooid, uint256[] _commisionamount);
 
     /// @notice Emitted when an address is added to the ban list
     /// @param _user The banned user's address
@@ -56,12 +48,12 @@ interface I_TTSwap_Market {
     /// @notice Emitted when welfare is delivered to investors
     /// @param goodid The ID of the good
     /// @param welfare The amount of welfare
-    event e_goodWelfare(uint256 goodid, uint128 welfare);
+    event e_goodWelfare(address goodid, uint128 welfare);
 
     /// @notice Emitted when protocol fee is collected
     /// @param goodid The ID of the good
     /// @param feeamount The amount of fee collected
-    event e_collectProtocolFee(uint256 goodid, uint256 feeamount);
+    event e_collectProtocolFee(address goodid, uint256 feeamount);
 
     /// @notice Emitted when proofid deleted when proofid is transfer.
     /// @param delproofid fromproofid which will be deleted
@@ -73,14 +65,12 @@ interface I_TTSwap_Market {
     /// @param _proofNo The ID of the investment proof
     /// @param _goodid A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
     /// @param _construct A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
-    /// @param _erc20address The contract address of the meta good
     /// @param _goodConfig The configuration of the meta good (refer to the whitepaper for details)
     /// @param _initial Market initialization parameters: amount0 is the value, amount1 is the quantity
     event e_initMetaGood(
         uint256 _proofNo,
-        uint256 _goodid,
+        address _goodid,
         uint256 _construct,
-        address _erc20address,
         uint256 _goodConfig,
         uint256 _initial
     );
@@ -90,15 +80,13 @@ interface I_TTSwap_Market {
     /// @param _goodid A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
     /// @param _construct A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
     /// @param _valuegoodNo The ID of the good
-    /// @param _erc20address The contract address of the meta good
     /// @param _goodConfig The configuration of the meta good (refer to the whitepaper for details)
     /// @param _normalinitial Normal good initialization parameters: amount0 is the quantity, amount1 is the value
     /// @param _value Value good initialization parameters: amount0 is the investment fee, amount1 is the investment quantity
     event e_initGood(
         uint256 _proofNo,
-        uint256 _goodid,
-        uint256 _valuegoodNo,
-        address _erc20address,
+        address _goodid,
+        address _valuegoodNo,
         uint256 _goodConfig,
         uint256 _construct,
         uint256 _normalinitial,
@@ -113,8 +101,8 @@ interface I_TTSwap_Market {
     /// @param sellgoodstate The status of the sold good (amount0: fee, amount1: quantity)
     /// @param forgoodstate The status of the bought good (amount0: fee, amount1: quantity)
     event e_buyGood(
-        uint256 indexed sellgood,
-        uint256 indexed forgood,
+        address indexed sellgood,
+        address indexed forgood,
         address fromer,
         uint128 swapvalue,
         uint256 sellgoodstate,
@@ -130,8 +118,8 @@ interface I_TTSwap_Market {
     /// @param buygoodstate The status of the bought good (amount0: fee, amount1: quantity)
     /// @param usegoodstate The status of the used good (amount0: fee, amount1: quantity)
     event e_buyGoodForPay(
-        uint256 indexed buygood,
-        uint256 indexed usegood,
+        address indexed buygood,
+        address indexed usegood,
         address fromer,
         address receipt,
         uint128 swapvalue,
@@ -148,8 +136,8 @@ interface I_TTSwap_Market {
     /// @param _valueinvest Value good investment details (amount0: actual fee, amount1: actual invest quantity)
     event e_investGood(
         uint256 indexed _proofNo,
-        uint256 _normalgoodid,
-        uint256 _valueGoodNo,
+        address _normalgoodid,
+        address _valueGoodNo,
         uint256 _value,
         uint256 _invest,
         uint256 _valueinvest
@@ -164,8 +152,8 @@ interface I_TTSwap_Market {
     /// @param _profit The profit (amount0: normal good profit, amount1: value good profit)
     event e_disinvestProof(
         uint256 indexed _proofNo,
-        uint256 _normalGoodNo,
-        uint256 _valueGoodNo,
+        address _normalGoodNo,
+        address _valueGoodNo,
         uint256 _value,
         uint256 _normalgood,
         uint256 _valuegood,
@@ -179,8 +167,8 @@ interface I_TTSwap_Market {
     /// @param _profit The collected profit (amount0: normal good profit, amount1: value good profit)
     event e_collectProof(
         uint256 indexed _proofNo,
-        uint256 _normalGoodNo,
-        uint256 _valueGoodNo,
+        address _normalGoodNo,
+        address _valueGoodNo,
         uint256 _profit
     );
 
@@ -210,7 +198,7 @@ interface I_TTSwap_Market {
     /// @param _goodConfig Configuration of the good
     /// @return Success status
     function initGood(
-        uint256 _valuegood,
+        address _valuegood,
         uint256 _initial,
         address _erc20address,
         uint256 _goodConfig
@@ -226,8 +214,8 @@ interface I_TTSwap_Market {
     /// @return goodid2Quantity_ Actual quantity of good2 received
     /// @return goodid2FeeQuantity_ Fee quantity for good2
     function buyGood(
-        uint256 _goodid1,
-        uint256 _goodid2,
+        address _goodid1,
+        address _goodid2,
         uint128 _swapQuantity,
         uint256 _limitprice,
         bool _istotal,
@@ -236,7 +224,24 @@ interface I_TTSwap_Market {
         external
         payable
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
+    /**
+     * @dev Buys a good
+     * @param _inputData The ID of the first good
+     * @param _tolerance The ID of the first good
+     * @param _takecaller The ID of the first good
+     * @return _isSuccess the result
+     */
+    function takeLimitOrder(
+        bytes calldata _inputData,
+        uint96 _tolerance,
+        address _takecaller
+    ) external payable returns (bool _isSuccess);
 
+    function batchTakelimitOrder(
+        bytes[] calldata _inputData,
+        uint96 _tolerance,
+        address _takecaller
+    ) external returns (bool[] memory result);
     /// @notice Buy a good, sell another, and send to a recipient
     /// @param _goodid1 ID of the good to buy
     /// @param _goodid2 ID of the good to sell
@@ -246,8 +251,8 @@ interface I_TTSwap_Market {
     /// @return goodid1Quantity_ Actual quantity of good1 received
     /// @return goodid1FeeQuantity_ Fee quantity for good1
     function buyGoodForPay(
-        uint256 _goodid1,
-        uint256 _goodid2,
+        address _goodid1,
+        address _goodid2,
         uint128 _swapQuantity,
         uint256 _limitprice,
         address _recipent
@@ -262,8 +267,8 @@ interface I_TTSwap_Market {
     /// @param _quantity Quantity of normal good to invest
     /// @return Success status
     function investGood(
-        uint256 _togood,
-        uint256 _valuegood,
+        address _togood,
+        address _valuegood,
         uint128 _quantity
     ) external payable returns (bool);
 
@@ -293,8 +298,8 @@ interface I_TTSwap_Market {
     /// @param compareprice Price to compare against
     /// @return Whether the good's price is higher
     function ishigher(
-        uint256 goodid,
-        uint256 valuegood,
+        address goodid,
+        address valuegood,
         uint256 compareprice
     ) external view returns (bool);
 
@@ -303,18 +308,14 @@ interface I_TTSwap_Market {
     ) external view returns (S_ProofState memory);
 
     function getGoodState(
-        uint256 goodkey
+        address goodkey
     ) external view returns (S_GoodTmpState memory);
 
     /// @notice Returns the market configuration
     /// @dev Can be changed by the market manager
     /// @return marketconfig_ The market configuration
     function marketconfig() external view returns (uint256 marketconfig_);
-    function setGoodTrigger(
-        uint256 goodid,
-        address apptrigeraddress,
-        uint256 config
-    ) external;
+
     /// @notice Sets the market configuration
     /// @param _marketconfig The new market configuration
     /// @return Success status
@@ -325,7 +326,7 @@ interface I_TTSwap_Market {
     /// @param _goodConfig The new configuration
     /// @return Success status
     function updateGoodConfig(
-        uint256 _goodid,
+        address _goodid,
         uint256 _goodConfig
     ) external returns (bool);
 
@@ -334,7 +335,7 @@ interface I_TTSwap_Market {
     /// @param _goodConfig The new configuration
     /// @return Success status
     function modifyGoodConfig(
-        uint256 _goodid,
+        address _goodid,
         uint256 _goodConfig
     ) external returns (bool);
 
@@ -344,7 +345,7 @@ interface I_TTSwap_Market {
     /// @param _recipent The recipient's address
     /// @return Success status
     function payGood(
-        uint256 _goodid,
+        address _goodid,
         uint256 _payquanity,
         address _recipent
     ) external payable returns (bool);
@@ -352,18 +353,18 @@ interface I_TTSwap_Market {
     /// @notice Changes the owner of a good
     /// @param _goodid The ID of the good
     /// @param _to The new owner's address
-    function changeGoodOwner(uint256 _goodid, address _to) external;
+    function changeGoodOwner(address _goodid, address _to) external;
 
     /// @notice Collects commission for specified goods
     /// @param _goodid Array of good IDs
-    function collectCommission(uint256[] memory _goodid) external;
+    function collectCommission(address[] memory _goodid) external;
 
     /// @notice Queries commission for specified goods and recipient
     /// @param _goodid Array of good IDs
     /// @param _recipent The recipient's address
     /// @return Array of commission amounts
     function queryCommission(
-        uint256[] memory _goodid,
+        address[] memory _goodid,
         address _recipent
     ) external returns (uint256[] memory);
 
@@ -380,7 +381,7 @@ interface I_TTSwap_Market {
     /// @notice Delivers welfare to investors
     /// @param goodid The ID of the good
     /// @param welfare The amount of welfare
-    function goodWelfare(uint256 goodid, uint128 welfare) external payable;
+    function goodWelfare(address goodid, uint128 welfare) external payable;
 
     /**
      * @dev Internal function to handle proof data deletion and updates during transfer.
@@ -399,8 +400,8 @@ interface I_TTSwap_Market {
  * @member valueinvest amount0 (first 128 bits) represents invest value good quantity, amount1 (last 128 bits) represents value good constuct fee when investing
  */
 struct S_ProofState {
-    uint256 currentgood;
-    uint256 valuegood;
+    address currentgood;
+    address valuegood;
     uint256 state;
     uint256 invest;
     uint256 valueinvest;
@@ -412,7 +413,6 @@ struct S_GoodState {
     uint256 goodConfig; // Configuration of the good
     address owner; // Creator of the good
     address erc20address; // ERC20 token address associated with the good
-    address trigger;
     uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
     uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
     uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
@@ -425,7 +425,6 @@ struct S_GoodTmpState {
     uint256 goodConfig; // Configuration of the good
     address owner; // Creator of the good
     address erc20address; // ERC20 token address associated with the good
-    address trigger;
     uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
     uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
     uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
@@ -437,6 +436,13 @@ struct S_GoodKey {
 
 struct S_ProofKey {
     address owner;
-    uint256 currentgood;
-    uint256 valuegood;
+    address currentgood;
+    address valuegood;
+}
+
+struct S_takeGoodInputPrams {
+    address _goodid1;
+    address _goodid2;
+    uint256 _swapQuantity;
+    address _orderowner;
 }

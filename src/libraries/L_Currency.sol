@@ -17,6 +17,17 @@ library L_CurrencyLibrary {
 
     address public constant NATIVE = address(0);
 
+    function balanceof(
+        address token,
+        address _sender
+    ) internal view returns (uint256 amount) {
+        if (token.isNative()) {
+            amount = address(_sender).balance;
+        } else {
+            amount = IERC20(token).balanceOf(_sender);
+        }
+    }
+
     function transferFrom(
         address token,
         address from,

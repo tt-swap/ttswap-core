@@ -45,19 +45,16 @@ library L_Good {
      * @dev Sets up the initial state, configuration, and owner of the good
      * @param self Storage pointer to the good state
      * @param _init Initial balance state
-     * @param _erc20address Address of the ERC20 token associated with the good
      * @param _goodConfig Configuration of the good
      */
     function init(
         S_GoodState storage self,
         uint256 _init,
-        address _erc20address,
         uint256 _goodConfig
     ) internal {
         self.currentState = _init;
         self.investState = _init;
         self.goodConfig = (_goodConfig << 33) >> 33;
-        self.erc20address = _erc20address;
         self.owner = msg.sender;
     }
 
@@ -202,7 +199,6 @@ library L_Good {
      * @dev Implements a complex swap algorithm considering price limits, fees, and minimum swap amounts
      * @param _stepCache A cache structure containing swap state and configurations
      * @param _limitPrice The price limit for the swap
-    
      */
     function swapCompute2(
         swapCache memory _stepCache,
@@ -533,7 +529,7 @@ library L_Good {
         }
 
         // Handle value good disinvestment if applicable
-        if (_investProof.valuegood != 0) {
+        if (_investProof.valuegood != address(0)) {
             // Calculate disinvestment results for value good
             valueGoodResult2_ = S_GoodDisinvestReturn(
                 toTTSwapUINT256(
@@ -780,82 +776,6 @@ library L_Good {
         _self.goodConfig =
             (_self.goodConfig % (2 ** 223)) +
             (_goodconfig << 223);
-    }
-
-    function swaptake(
-        S_GoodState storage _self,
-        address officialadd,
-        uint256 opgood,
-        uint256 _tradestate,
-        uint256 opstate,
-        address recipent
-    ) internal {
-        if (_self.goodConfig.swaptake())
-            if (
-                I_TTSwap_MainTrigger(officialadd).main_swaptake(
-                    _self.trigger,
-                    opgood,
-                    _tradestate,
-                    _self.currentState,
-                    opstate,
-                    recipent
-                )
-            ) revert();
-    }
-
-    function swapmake(
-        S_GoodState storage _self,
-        address officialadd,
-        uint256 opgood,
-        uint256 _tradestate,
-        uint256 opstate,
-        address recipent
-    ) internal {
-        if (_self.goodConfig.swapmake())
-            if (
-                I_TTSwap_MainTrigger(officialadd).main_swapmake(
-                    _self.trigger,
-                    opgood,
-                    _tradestate,
-                    _self.currentState,
-                    opstate,
-                    recipent
-                )
-            ) revert();
-    }
-
-    function invest(
-        S_GoodState storage _self,
-        address officialadd,
-        uint256 investquantity,
-        address recipent
-    ) internal {
-        if (_self.goodConfig.invest())
-            if (
-                I_TTSwap_MainTrigger(officialadd).main_invest(
-                    _self.trigger,
-                    investquantity,
-                    _self.currentState,
-                    recipent
-                )
-            ) revert();
-    }
-
-    function divest(
-        S_GoodState storage _self,
-        address officialadd,
-        uint256 divestquanity,
-        address recipent
-    ) internal {
-        if (_self.goodConfig.divest())
-            if (
-                I_TTSwap_MainTrigger(officialadd).main_divest(
-                    _self.trigger,
-                    divestquanity,
-                    _self.currentState,
-                    recipent
-                )
-            ) revert();
     }
 }
 

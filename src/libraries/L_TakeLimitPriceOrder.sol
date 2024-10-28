@@ -6,7 +6,8 @@ import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
 import {L_CurrencyLibrary} from "./L_Currency.sol";
 
-import {S_GoodState, S_GoodKey, S_ProofState, S_takeGoodInputPrams} from "../interfaces/I_TTSwap_Market.sol";
+import {S_GoodState, S_GoodKey, S_ProofState} from "../interfaces/I_TTSwap_Market.sol";
+import {S_takeGoodInputPrams} from "../interfaces/I_TTSwap_LimitOrderTaker.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice} from "./L_TTSwapUINT256.sol";
 
 /**

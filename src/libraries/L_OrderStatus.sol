@@ -64,22 +64,23 @@ library L_OrderStatus {
         mapping(uint256 => uint256) storage _orderStatus,
         uint256 index,
         uint256 _maxslot
-    ) internal view returns (uint256) {
+    ) internal returns (uint256 orderid) {
         bool result = true;
         uint256 bucket = index >> 8;
         uint256 batchorder;
         while (result) {
             batchorder = _orderStatus[bucket];
             index = index & 0xff;
-            while (index < 255 || result) {
+            while (index < 255 && result) {
                 index = index + 1;
-                result = batchorder & (1 << index) == 0;
+                result = batchorder & (1 << index) != 0;
             }
             if (index == 256) {
                 bucket = bucket == _maxslot ? 0 : bucket + 1;
                 index = 0;
             }
         }
-        return bucket << (8 + index);
+        orderid = (bucket << 8) + index;
+        _orderStatus.set(index);
     }
 }

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.26;
 
-import {I_TTSwap_Market, S_ProofState, S_GoodState, S_ProofKey, S_GoodKey, S_GoodTmpState, S_takeGoodInputPrams} from "./interfaces/I_TTSwap_Market.sol";
+import {I_TTSwap_Market, S_ProofState, S_GoodState, S_ProofKey, S_GoodKey, S_GoodTmpState} from "./interfaces/I_TTSwap_Market.sol";
+import {I_TTSwap_LimitOrderTaker, S_takeGoodInputPrams} from "./interfaces/I_TTSwap_LimitOrderTaker.sol";
 import {L_Good, L_GoodIdLibrary} from "./libraries/L_Good.sol";
 import {L_TakeLimitPriceOrder} from "./libraries/L_TakeLimitPriceOrder.sol";
 import {L_Lock} from "./libraries/L_Lock.sol";
@@ -18,7 +19,7 @@ import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lower
  * @dev Manages the market operations for goods and proofs.
  * @notice This contract handles initialization, buying, selling, investing, and disinvesting of goods and proofs.
  */
-contract TTSwap_Market is I_TTSwap_Market {
+contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
@@ -343,7 +344,7 @@ contract TTSwap_Market is I_TTSwap_Market {
         bytes[] calldata _inputData,
         uint96 _tolerance,
         address _takecaller
-    ) external returns (bool[] memory result) {
+    ) external payable returns (bool[] memory result) {
         for (uint256 i = 0; i < _inputData.length; i++) {
             result[i] = takeLimitOrder(_inputData[i], _tolerance, _takecaller);
         }

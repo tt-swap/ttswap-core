@@ -224,24 +224,7 @@ interface I_TTSwap_Market {
         external
         payable
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
-    /**
-     * @dev Buys a good
-     * @param _inputData The ID of the first good
-     * @param _tolerance The ID of the first good
-     * @param _takecaller The ID of the first good
-     * @return _isSuccess the result
-     */
-    function takeLimitOrder(
-        bytes calldata _inputData,
-        uint96 _tolerance,
-        address _takecaller
-    ) external payable returns (bool _isSuccess);
 
-    function batchTakelimitOrder(
-        bytes[] calldata _inputData,
-        uint96 _tolerance,
-        address _takecaller
-    ) external returns (bool[] memory result);
     /// @notice Buy a good, sell another, and send to a recipient
     /// @param _goodid1 ID of the good to buy
     /// @param _goodid2 ID of the good to sell
@@ -438,11 +421,4 @@ struct S_ProofKey {
     address owner;
     address currentgood;
     address valuegood;
-}
-
-struct S_takeGoodInputPrams {
-    address _goodid1;
-    address _goodid2;
-    uint256 _swapQuantity;
-    address _orderowner;
 }

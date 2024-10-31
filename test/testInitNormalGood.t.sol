@@ -14,7 +14,7 @@ contract testInitNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
     using L_TTSwapUINT256Library for uint256;
-    uint256 metagoodkey;
+    address metagoodkey;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -35,7 +35,7 @@ contract testInitNormalGood is BaseSetup {
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagoodkey = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagoodkey = address(usdt);
         vm.stopPrank();
     }
 
@@ -68,7 +68,7 @@ contract testInitNormalGood is BaseSetup {
         snapLastCall("init_erc20_normalgood");
 
         //normal good
-        uint256 normalgoodkey = S_GoodKey(users[1], address(btc)).toId();
+        address normalgoodkey = address(btc);
 
         assertEq(
             usdt.balanceOf(address(market)),
@@ -307,7 +307,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:metagoodkey marketcreator error"
         );
 
-        uint256 normalgoodkey = S_GoodKey(users[1], address(0)).toId();
+        address normalgoodkey = address(0);
 
         ////////////////////////////////////////
         S_GoodTmpState memory normalgoodstate = market.getGoodState(

@@ -6,7 +6,6 @@ import {I_TTSwap_LimitOrderTaker, S_takeGoodInputPrams} from "./interfaces/I_TTS
 import {L_OrderStatus} from "./libraries/L_OrderStatus.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {L_TTSwapUINT256Library} from "./libraries/L_TTSwapUINT256.sol";
-import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 
 /**
  * @title TTS Token Contract
@@ -16,15 +15,85 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
     using L_OrderStatus for mapping(uint256 => uint256);
     using L_CurrencyLibrary for address;
     using L_TTSwapUINT256Library for uint256;
-    I_TTSwap_Market internal immutable TTSWAP;
     uint256 public maxslot;
     uint256 public orderpointer;
     mapping(uint256 => uint256) public orderstatus;
     mapping(uint256 => S_orderDetails) public orders;
+    mapping(address => uint256) auths;
+    address public marketcreator;
+    uint96 public maxfreeremain;
+
+    constructor(address _marketor) {
+        marketcreator = _marketor;
+        maxfreeremain = 40425200;
+    }
+    //180天
+    function setMaxfreeRemain(uint96 times) external {
+        require(times > 40425200 && msg.sender == marketcreator);
+        maxfreeremain = times;
+        emit e_setmaxfreeremain(times);
+    }
+    function changemarketcreator(address _newmarketor) external {
+        require(msg.sender == marketcreator);
+        marketcreator = _newmarketor;
+        emit e_changemarketcreator(_newmarketor);
+    }
+
+    function addauths(address _marketor, uint256 _auths) external {
+        require(msg.sender == marketcreator);
+        auths[_marketor] = _auths;
+        emit e_addauths(_marketor, _auths);
+    }
+
+    function removeauths(address _marketor) external {
+        require(msg.sender == marketcreator);
+        delete auths[_marketor];
+        emit e_removeauths(_marketor);
+    }
+
+    function cleandeadorder(uint256[] memory ids, bool smallorder) internal {
+        require(auths[msg.sender] == 1);
+        uint256 computetimes;
+        uint256 amount;
+        if (smallorder) {
+            for (uint256 i = 0; i < ids.length; i++) {
+                if (orderstatus.get(i)) {
+                    orderstatus.unset(ids[i]);
+                }
+            }
+            emit e_deletedeadorders(ids);
+        } else {
+            for (uint256 i = 0; i < ids.length; i++) {
+                computetimes = block.timestamp - uint256(orders[i].timestamp);
+                if (
+                    orderstatus.get(i) && computetimes > uint256(maxfreeremain)
+                ) {
+                    computetimes = computetimes > uint256(maxfreeremain)
+                        ? computetimes - uint256(maxfreeremain)
+                        : 0;
+                    computetimes = computetimes == 0 ? 0 : computetimes / 86400;
+                    computetimes = computetimes > 0 ? computetimes + 10 : 0;
+                    computetimes = computetimes > 100 ? 100 : computetimes;
+                    if (computetimes > 0) {
+                        amount =
+                            (orders[i].amount.amount0() * computetimes) /
+                            1000;
+                        orders[i].fromerc20.transferFrom(
+                            orders[i].sender,
+                            msg.sender,
+                            amount
+                        );
+                        emit e_deletedeadorder(ids[i], amount, msg.sender);
+                    }
+                }
+            }
+        }
+    }
 
     function addLimitOrder(S_orderDetails[] memory _orders) external override {
         for (uint256 i; i < _orders.length; i++) {
             orderpointer = orderstatus.getValidOrderId(orderpointer, maxslot);
+            _orders[i].timestamp = uint96(block.timestamp);
             orders[orderpointer] = _orders[i];
             emit e_addLimitOrder(
                 orderpointer,
@@ -51,6 +120,7 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             orders[orderid].toerc20 = _order.toerc20;
         if (orders[orderid].amount != _order.amount)
             orders[orderid].amount = _order.amount;
+        orders[orderid].timestamp = uint96(block.timestamp);
         emit e_updateLimitOrder(
             _order.sender,
             _order.fromerc20,

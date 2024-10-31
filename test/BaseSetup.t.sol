@@ -7,7 +7,7 @@ import {MyToken} from "../src/ERC20.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";
 import {TTSwap_Market} from "../src/TTSwap_Market.sol";
 import {TTSwap_NFT} from "../src/TTSwap_NFT.sol";
-import {TTSwap_MainTrigger} from "../src/TTSwap_MainTrigger.sol";
+import {TTSwap_LimitOrder} from "../src/TTSwap_LimitOrder.sol";
 
 contract BaseSetup is Test, GasSnapshot {
     address payable[8] internal users;
@@ -18,7 +18,7 @@ contract BaseSetup is Test, GasSnapshot {
     TTSwap_Market market;
     TTSwap_Token tts_token;
     TTSwap_NFT tts_nft;
-    TTSwap_MainTrigger tts_trigger;
+    TTSwap_LimitOrder tts_limitorder;
 
     function setUp() public virtual {
         uint256 m_marketconfig = (45 << 250) +
@@ -43,17 +43,16 @@ contract BaseSetup is Test, GasSnapshot {
         vm.startPrank(marketcreator);
         tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
         tts_nft = new TTSwap_NFT(address(tts_token));
-        tts_trigger = new TTSwap_MainTrigger(address(tts_token));
+        tts_limitorder = new TTSwap_LimitOrder(address(tts_token));
         snapStart("depoly Market Manager");
         market = new TTSwap_Market(
             m_marketconfig,
             address(tts_token),
             address(tts_nft),
-            address(tts_trigger)
+            address(tts_limitorder),
+            marketcreator
         );
         snapEnd();
-
-        tts_token.setMainTriggerMarket(address(tts_trigger), address(market));
         tts_token.addauths(address(market), 1);
         tts_token.addauths(marketcreator, 3);
         vm.stopPrank();

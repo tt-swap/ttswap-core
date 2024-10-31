@@ -24,11 +24,11 @@ contract nativeGoodPay is Test, BaseSetup {
     using L_CurrencyLibrary for address;
     using L_TTSwapUINT256Library for uint256;
 
-    uint256 metagood;
-    uint256 nativenormalgood;
-    uint256 normalgoodbtc;
-    uint256 normalgoodeth;
-    uint256 normalgoodusdt;
+    address metagood;
+    address nativenormalgood;
+    address normalgoodbtc;
+    address normalgoodeth;
+    address normalgoodusdt;
 
     uint256 metaproofid;
 
@@ -45,7 +45,7 @@ contract nativeGoodPay is Test, BaseSetup {
     function NativeETHInitMetagood() public {
         vm.startPrank(marketcreator);
         uint256 sentBalance = 2 ether;
-        address nativeCurrency = address(0);
+        address nativeCurrency = address(1);
 
         vm.deal(marketcreator, 1000 ether);
         nativeCurrency.safeTransfer(address(1), sentBalance);
@@ -71,7 +71,7 @@ contract nativeGoodPay is Test, BaseSetup {
             toTTSwapUINT256(uint128(4000 * 10 ** 6), 1 * 10 ** 18),
             _goodConfig
         );
-        metagood = S_GoodKey(marketcreator, nativeCurrency).toId();
+        metagood = nativeCurrency;
         vm.stopPrank();
 
         console2.log(
@@ -115,7 +115,7 @@ contract nativeGoodPay is Test, BaseSetup {
             address(0),
             _goodConfig
         );
-        nativenormalgood = 2;
+        nativenormalgood = address(0);
         console2.log("2jeck.balance before swap", jeck.balance);
         console2.log("2market.balance before swap", address(market).balance);
         console2.log("2good config is valueGood?:", _goodConfig.isvaluegood());
@@ -152,7 +152,7 @@ contract nativeGoodPay is Test, BaseSetup {
             address(usdt),
             _goodConfig
         );
-        normalgoodusdt = S_GoodKey(edson, address(usdt)).toId();
+        normalgoodusdt = address(usdt);
         goodInfo(normalgoodusdt);
         console2.log("usdt good id:", normalgoodusdt);
         vm.stopPrank();
@@ -215,7 +215,7 @@ contract nativeGoodPay is Test, BaseSetup {
         market.payGood{value: 50}(metagood, 50, Jeck);
         snapLastCall("pay_nativeeth_good_first");
         assertEq(Tom.balance, 950);
-        assertEq(Jeck.balance, 50);
+        assertEq(Jeck.balance, 50, "assf");
         console2.log("5-2Tom balance : ", Tom.balance);
         console2.log("5-2Jeck balance : ", Jeck.balance);
         console2.log("5-2market balance : ", address(market).balance);
@@ -243,7 +243,7 @@ contract nativeGoodPay is Test, BaseSetup {
         vm.stopPrank();
     }
 
-    function goodInfo(uint256 _good1) public view {
+    function goodInfo(address _good1) public view {
         console2.log(_good1, "************************");
         console2.log(
             "price good1's value",
@@ -315,7 +315,7 @@ contract nativeGoodPay is Test, BaseSetup {
         );
     }
 
-    function getcompareprice(uint256 good1, uint256 good2) public view {
+    function getcompareprice(address good1, address good2) public view {
         console2.log(
             market.getGoodState(good1).currentState.amount0() *
                 market.getGoodState(good2).currentState.amount1(),

@@ -21,9 +21,9 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodnativeETH;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodnativeeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -51,7 +51,7 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -76,10 +76,10 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
         market.initGood{value: 1 * 10 ** 8}(
             metagood,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
-            address(0),
+            address(1),
             normalgoodconfig
         );
-        normalgoodnativeETH = S_GoodKey(users[1], address(0)).toId();
+        normalgoodnativeeth = address(1);
         vm.stopPrank();
     }
 
@@ -91,7 +91,7 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
         usdt.approve(address(market), 800000 * 10 ** 6 + 1);
         btc.approve(address(market), 10 * 10 ** 8 + 1);
         market.investGood{value: 1 * 10 ** 8}(
-            normalgoodnativeETH,
+            normalgoodnativeeth,
             metagood,
             1 * 10 ** 8
         );
@@ -102,7 +102,7 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
         vm.startPrank(users[2]);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodnativeETH, metagood).toKey()
+            S_ProofKey(users[2], normalgoodnativeeth, metagood).toKey()
         );
         S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(
@@ -133,73 +133,73 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
             "before collect:proof  valueinvest contruct error"
         );
 
-        S_GoodTmpState memory good_ = market.getGoodState(normalgoodnativeETH);
+        S_GoodTmpState memory good_ = market.getGoodState(normalgoodnativeeth);
         assertEq(
             good_.currentState.amount0(),
             125981100630,
-            "before collect nativeeth good:normalgoodnativeETH currentState amount0 error"
+            "before collect nativeeth good:normalgoodnativeeth currentState amount0 error"
         );
         assertEq(
             good_.currentState.amount1(),
             199990000,
-            "before collect nativeeth good:normalgoodnativeETH currentState amount1 error"
+            "before collect nativeeth good:normalgoodnativeeth currentState amount1 error"
         );
         assertEq(
             good_.investState.amount0(),
             125981100630,
-            "before collect nativeeth good:normalgoodnativeETH investState amount0 error"
+            "before collect nativeeth good:normalgoodnativeeth investState amount0 error"
         );
         assertEq(
             good_.investState.amount1(),
             199990000,
-            "before collect nativeeth good:normalgoodnativeETH investState amount1 error"
+            "before collect nativeeth good:normalgoodnativeeth investState amount1 error"
         );
         assertEq(
             good_.feeQuantityState.amount0(),
             10000,
-            "before collect nativeeth good:normalgoodnativeETH feeQuantityState amount0 error"
+            "before collect nativeeth good:normalgoodnativeeth feeQuantityState amount0 error"
         );
         assertEq(
             good_.feeQuantityState.amount1(),
             0,
-            "before collect nativeeth good:normalgoodnativeETH feeQuantityState amount1 error"
+            "before collect nativeeth good:normalgoodnativeeth feeQuantityState amount1 error"
         );
         normalproof = market.proofmapping(
-            S_ProofKey(users[2], normalgoodnativeETH, metagood).toKey()
+            S_ProofKey(users[2], normalgoodnativeeth, metagood).toKey()
         );
 
         market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_nativeeth_normalgood_first");
-        good_ = market.getGoodState(normalgoodnativeETH);
+        good_ = market.getGoodState(normalgoodnativeeth);
         assertEq(
             good_.currentState.amount0(),
             125981100630,
-            "after collect nativeeth good:normalgoodnativeETH currentState amount0 error"
+            "after collect nativeeth good:normalgoodnativeeth currentState amount0 error"
         );
         assertEq(
             good_.currentState.amount1(),
             199990000,
-            "after collect nativeeth good:normalgoodnativeETH currentState amount1 error"
+            "after collect nativeeth good:normalgoodnativeeth currentState amount1 error"
         );
         assertEq(
             good_.investState.amount0(),
             125981100630,
-            "after collect nativeeth good:normalgoodnativeETH investState amount0 error"
+            "after collect nativeeth good:normalgoodnativeeth investState amount0 error"
         );
         assertEq(
             good_.investState.amount1(),
             199990000,
-            "after collect nativeeth good:normalgoodnativeETH investState amount1 error"
+            "after collect nativeeth good:normalgoodnativeeth investState amount1 error"
         );
         assertEq(
             good_.feeQuantityState.amount0(),
             10000,
-            "after collect nativeeth good:normalgoodnativeETH feeQuantityState amount0 error"
+            "after collect nativeeth good:normalgoodnativeeth feeQuantityState amount0 error"
         );
         assertEq(
             good_.feeQuantityState.amount1(),
             4999,
-            "after collect nativeeth good:normalgoodnativeETH feeQuantityState amount1 error"
+            "after collect nativeeth good:normalgoodnativeeth feeQuantityState amount1 error"
         );
 
         _proof = market.getProofState(normalproof);
@@ -229,14 +229,14 @@ contract collectNativeETHOtherNormalGood is BaseSetup {
             "after collect:proof contruct error"
         );
         market.investGood{value: 1 * 10 ** 8}(
-            normalgoodnativeETH,
+            normalgoodnativeeth,
             metagood,
             1 * 10 ** 8
         );
         market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_nativeeth_normalgood_second");
         market.investGood{value: 1 * 10 ** 8}(
-            normalgoodnativeETH,
+            normalgoodnativeeth,
             metagood,
             1 * 10 ** 8
         );

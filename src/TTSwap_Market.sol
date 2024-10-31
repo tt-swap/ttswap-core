@@ -14,12 +14,19 @@ import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
 import {I_TTSwap_NFT} from "./interfaces/I_TTSwap_NFT.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice, toInt128} from "./libraries/L_TTSwapUINT256.sol";
 
+import {IERC3156FlashBorrower} from "@openzeppelin/contracts/interfaces/IERC3156FlashBorrower.sol";
+import {IERC3156FlashLender} from "@openzeppelin/contracts/interfaces/IERC3156FlashLender.sol";
+
 /**
  * @title TTSwap_Market
  * @dev Manages the market operations for goods and proofs.
  * @notice This contract handles initialization, buying, selling, investing, and disinvesting of goods and proofs.
  */
-contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
+contract TTSwap_Market is
+    I_TTSwap_Market,
+    I_TTSwap_LimitOrderTaker,
+    IERC3156FlashLender
+{
     using L_GoodConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
@@ -30,13 +37,32 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
     using L_CurrencyLibrary for address;
     using L_MarketConfigLibrary for uint256;
     using L_TakeLimitPriceOrder for L_TakeLimitPriceOrder.S_takeGoodCache;
+    /**
+     * @dev The loan token is not valid.
+     */
+    error ERC3156UnsupportedToken(address token);
 
+    /**
+     * @dev The requested loan exceeds the max loan value for `token`.
+     */
+    error ERC3156ExceededMaxLoan(uint256 maxLoan);
+
+    /**
+     * @dev The receiver of a flashloan is not a valid {IERC3156FlashBorrower-onFlashLoan} implementer.
+     */
+    error ERC3156InvalidReceiver(address receiver);
+
+    bytes32 private constant RETURN_VALUE =
+        keccak256("ERC3156FlashBorrower.onFlashLoan");
     uint256 public override marketconfig;
 
     mapping(address goodid => S_GoodState) internal goods;
     mapping(uint256 proofkey => uint256 proofid) public proofmapping;
     mapping(uint256 proofid => S_ProofState) internal proofs;
     mapping(address => uint256) public banlist;
+    mapping(address => mapping(address => uint256)) public loanproofs;
+    mapping(address => uint256) auths;
+    address public marketcreator;
 
     address internal immutable officialTokenContract;
     address internal immutable officialNFTContract;
@@ -51,24 +77,38 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
         uint256 _marketconfig,
         address _officialTokenContract,
         address _officialNFTContract,
-        address _officelimitorder
+        address _officelimitorder,
+        address _marketcreator
     ) {
         officialTokenContract = _officialTokenContract;
         officialNFTContract = _officialNFTContract;
         marketconfig = _marketconfig;
         officelimitorder = _officelimitorder;
+        marketcreator = _marketcreator;
     }
+
     modifier onlyDAOadmin() {
-        require(
-            I_TTSwap_Token(officialTokenContract).dao_admin() == msg.sender
-        );
+        require(marketcreator == msg.sender);
         _;
     }
     modifier onlyMarketor() {
-        require(I_TTSwap_Token(officialTokenContract).auths(msg.sender) == 3);
+        require(auths[msg.sender] == 1);
         _;
     }
+    function changemarketor(address _newmarketor) external {
+        require(msg.sender == marketcreator);
+        marketcreator = _newmarketor;
+    }
 
+    function addauths(address _newmarketor, uint256 _auths) external {
+        require(msg.sender == marketcreator);
+        auths[_newmarketor] = _auths;
+    }
+
+    function removeauths(address _newmarketor) external {
+        require(msg.sender == marketcreator);
+        delete auths[_newmarketor];
+    }
     modifier noReentrant() {
         require(L_Lock.get() == address(0));
         L_Lock.set(msg.sender);
@@ -142,10 +182,7 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
                 goods[_valuegood].goodConfig.isvaluegood()
         );
         _erc20address.transferFrom(msg.sender, _initial.amount0());
-        goods[_valuegood].erc20address.transferFrom(
-            msg.sender,
-            _initial.amount1()
-        );
+        _valuegood.transferFrom(msg.sender, _initial.amount1());
         L_Good.S_GoodInvestReturn memory investResult;
         goods[_valuegood].investGood(_initial.amount1(), investResult);
         goods[_erc20address].init(
@@ -252,12 +289,12 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
             swapcache.good2currentState,
             goodid2FeeQuantity_
         );
-        goods[_goodid1].erc20address.transferFrom(
+        _goodid1.transferFrom(
             msg.sender,
             _swapQuantity - swapcache.remainQuantity
         );
 
-        goods[_goodid2].erc20address.safeTransfer(msg.sender, goodid2Quantity_);
+        _goodid2.safeTransfer(msg.sender, goodid2Quantity_);
 
         emit e_buyGood(
             _goodid1,
@@ -301,16 +338,13 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
         if (takeCache.goodid2Quantity_ <= _inputParams._swapQuantity.amount1())
             revert noEnoughOutputError();
 
-        goods[_inputParams._goodid2].erc20address.safeTransfer(
+        _inputParams._goodid2.safeTransfer(
             _inputParams._orderowner,
             _inputParams._swapQuantity.amount1()
         );
         uint128 profit = takeCache.goodid2Quantity_ -
             _inputParams._swapQuantity.amount1();
-        goods[_inputParams._goodid2].erc20address.safeTransfer(
-            _takecaller,
-            profit / 2
-        );
+        _inputParams._goodid2.safeTransfer(_takecaller, profit / 2);
         takeCache.goodid2FeeQuantity_ =
             takeCache.goodid2FeeQuantity_ +
             profit /
@@ -403,11 +437,11 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
             swapcache.good1currentState,
             goodid1FeeQuantity_
         );
-        goods[_goodid2].erc20address.safeTransfer(
+        _goodid2.safeTransfer(
             _recipient,
             _swapQuantity - swapcache.feeQuantity
         );
-        goods[_goodid1].erc20address.transferFrom(msg.sender, goodid1Quantity_);
+        _goodid1.transferFrom(msg.sender, goodid1Quantity_);
         emit e_buyGoodForPay(
             _goodid1,
             _goodid2,
@@ -418,7 +452,7 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
             toTTSwapUINT256(goodid1Quantity_, goodid1FeeQuantity_)
         );
     }
-
+    event debuggg(bool, bool);
     /**
      * @dev Invests in a good
      * @param _togood The ID of the good to invest in
@@ -434,6 +468,10 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
     ) external payable override noReentrant returns (bool) {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
+        emit debuggg(
+            goods[_togood].goodConfig.isvaluegood(),
+            goods[_valuegood].goodConfig.isvaluegood()
+        );
         require(
             goods[_togood].currentState.amount1() + _quantity <= 2 ** 109 &&
                 _togood != _valuegood &&
@@ -441,7 +479,7 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
                     goods[_valuegood].goodConfig.isvaluegood())
         );
         goods[_togood].investGood(_quantity, normalInvest_);
-        goods[_togood].erc20address.transferFrom(msg.sender, _quantity);
+        _togood.transferFrom(msg.sender, _quantity);
         if (_valuegood != address(0)) {
             valueInvest_.actualInvestQuantity = goods[_valuegood]
                 .currentState
@@ -451,7 +489,7 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
                 .goodConfig
                 .getInvestFullFee(valueInvest_.actualInvestQuantity);
 
-            goods[_valuegood].erc20address.transferFrom(
+            _valuegood.transferFrom(
                 msg.sender,
                 valueInvest_.actualInvestQuantity
             );
@@ -551,9 +589,18 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
                     dao_admin
                 )
             );
+        uint256 tranferamount = goods[normalgood].commission[msg.sender];
 
+        if (tranferamount > 1) {
+            goods[normalgood].commission[msg.sender] = 1;
+            normalgood.safeTransfer(msg.sender, tranferamount - 1);
+        }
         if (valuegood != address(0)) {
-            divestvalue = divestvalue * 2;
+            tranferamount = goods[valuegood].commission[msg.sender];
+            if (tranferamount > 1) {
+                goods[valuegood].commission[msg.sender] = 1;
+                valuegood.safeTransfer(msg.sender, tranferamount - 1);
+            }
         }
         L_Proof.unstake(officialTokenContract, msg.sender, divestvalue);
 
@@ -611,6 +658,19 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
             marketconfig,
             dao_admin
         );
+        uint256 tranferamount = goods[currentgood].commission[msg.sender];
+
+        if (tranferamount > 1) {
+            goods[currentgood].commission[msg.sender] = 1;
+            currentgood.safeTransfer(msg.sender, tranferamount - 1);
+        }
+        if (valuegood != address(0)) {
+            tranferamount = goods[valuegood].commission[msg.sender];
+            if (tranferamount > 1) {
+                goods[valuegood].commission[msg.sender] = 1;
+                valuegood.safeTransfer(msg.sender, tranferamount - 1);
+            }
+        }
         emit e_collectProof(_proofid, currentgood, valuegood, profit_);
     }
 
@@ -643,7 +703,6 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
             S_GoodTmpState(
                 goods[goodkey].goodConfig,
                 goods[goodkey].owner,
-                goods[goodkey].erc20address,
                 goods[goodkey].currentState,
                 goods[goodkey].investState,
                 goods[goodkey].feeQuantityState
@@ -677,14 +736,10 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
         uint256 _payquanity,
         address _recipent
     ) external payable override returns (bool) {
-        if (goods[_goodid].erc20address == address(0)) {
-            goods[_goodid].erc20address.safeTransfer(_recipent, _payquanity);
+        if (_goodid == address(1)) {
+            _goodid.safeTransfer(_recipent, _payquanity);
         } else {
-            goods[_goodid].erc20address.transferFrom(
-                msg.sender,
-                _recipent,
-                _payquanity
-            );
+            _goodid.transferFrom(msg.sender, _recipent, _payquanity);
         }
         return true;
     }
@@ -708,10 +763,7 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
             } else {
                 commissionamount[i] = commissionamount[i] - 1;
                 goods[_goodid[i]].commission[msg.sender] = 1;
-                goods[_goodid[i]].erc20address.safeTransfer(
-                    msg.sender,
-                    commissionamount[i]
-                );
+                _goodid[i].safeTransfer(msg.sender, commissionamount[i]);
             }
         }
         emit e_collectcommission(_goodid, commissionamount);
@@ -736,7 +788,7 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
         uint128 welfare
     ) external payable override noReentrant {
         require(goods[goodid].feeQuantityState.amount0() + welfare <= 2 ** 109);
-        goods[goodid].erc20address.transferFrom(msg.sender, welfare);
+        goodid.transferFrom(msg.sender, welfare);
         goods[goodid].feeQuantityState = add(
             goods[goodid].feeQuantityState,
             toTTSwapUINT256(uint128(welfare), 0)
@@ -811,5 +863,42 @@ contract TTSwap_Market is I_TTSwap_Market, I_TTSwap_LimitOrderTaker {
             emit e_transferdel(proofid, existingProofId);
         }
         delete proofmapping[proofKey1];
+    }
+
+    /// @inheritdoc IERC3156FlashLender
+    function maxFlashLoan(address good) public view override returns (uint256) {
+        return good.balanceof(address(this));
+    }
+
+    /// @inheritdoc IERC3156FlashLender
+    function flashFee(
+        address token,
+        uint256 amount
+    ) public view override returns (uint256) {
+        return goods[token].goodConfig.getFlashFee(amount);
+    }
+
+    /// @inheritdoc IERC3156FlashLender
+    function flashLoan(
+        IERC3156FlashBorrower receiver,
+        address token,
+        uint256 amount,
+        bytes calldata data
+    ) external override returns (bool) {
+        uint256 maxLoan = maxFlashLoan(token);
+        if (amount > maxLoan) {
+            revert ERC3156ExceededMaxLoan(maxLoan);
+        }
+        uint256 fee = flashFee(token, amount);
+        token.safeTransfer(address(receiver), amount);
+        if (
+            receiver.onFlashLoan(msg.sender, token, amount, fee, data) !=
+            RETURN_VALUE
+        ) {
+            revert ERC3156InvalidReceiver(address(receiver));
+        }
+        token.transferFrom(address(receiver), address(this), amount + fee);
+        goods[token].fillFee(fee);
+        return true;
     }
 }

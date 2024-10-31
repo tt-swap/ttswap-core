@@ -20,9 +20,9 @@ contract investNativeETHNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 nativeeth;
+    address metagood;
+    address normalgoodusdt;
+    address nativeeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -49,7 +49,7 @@ contract investNativeETHNormalGood is BaseSetup {
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -74,10 +74,10 @@ contract investNativeETHNormalGood is BaseSetup {
         market.initGood{value: 100000000}(
             metagood,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
-            address(0),
+            address(1),
             normalgoodconfig
         );
-        nativeeth = S_GoodKey(users[1], address(0)).toId();
+        nativeeth = address(1);
         vm.stopPrank();
     }
 
@@ -203,11 +203,6 @@ contract investNativeETHNormalGood is BaseSetup {
             "after invest nativeeth_normalgood:metagood marketcreator error"
         );
 
-        assertEq(
-            good_.erc20address,
-            address(usdt),
-            "after invest nativeeth_normalgood:metagood erc20 error"
-        );
         normalproof = market.proofmapping(
             S_ProofKey(users[1], nativeeth, metagood).toKey()
         );
@@ -366,11 +361,6 @@ contract investNativeETHNormalGood is BaseSetup {
             "after invest nativeeth_normalgood:metagood marketcreator error"
         );
 
-        assertEq(
-            good_.erc20address,
-            address(usdt),
-            "after invest nativeeth_normalgood:metagood erc20 error"
-        );
         normalproof = market.proofmapping(
             S_ProofKey(users[4], nativeeth, metagood).toKey()
         );

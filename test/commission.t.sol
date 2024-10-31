@@ -20,9 +20,9 @@ contract commission is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodbtc;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -50,7 +50,7 @@ contract commission is BaseSetup {
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -73,13 +73,14 @@ contract commission is BaseSetup {
             2 ** 204 +
             7 *
             2 ** 197;
+        console2.log("btc address", address(btc));
         market.initGood(
             metagood,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
             normalgoodconfig
         );
-        normalgoodbtc = S_GoodKey(users[1], address(btc)).toId();
+        normalgoodbtc = address(btc);
         vm.stopPrank();
     }
 
@@ -141,7 +142,7 @@ contract commission is BaseSetup {
     }
 
     function testQueryCommission() public {
-        uint256[] memory goodid = new uint256[](2);
+        address[] memory goodid = new address[](2);
 
         emit log("1");
         goodid[0] = metagood;

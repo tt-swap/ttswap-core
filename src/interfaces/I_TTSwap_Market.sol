@@ -395,11 +395,10 @@ struct S_ProofState {
 struct S_GoodState {
     uint256 goodConfig; // Configuration of the good
     address owner; // Creator of the good
-    address erc20address; // ERC20 token address associated with the good
     uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
     uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
     uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
-    mapping(address => uint128) commission; // Mapping to store commission amounts for each address
+    mapping(address => uint256) commission;
 }
 /**
  * @dev Struct representing a temporary state of a good
@@ -407,7 +406,6 @@ struct S_GoodState {
 struct S_GoodTmpState {
     uint256 goodConfig; // Configuration of the good
     address owner; // Creator of the good
-    address erc20address; // ERC20 token address associated with the good
     uint256 currentState; // Current state: amount0 (first 128 bits) represents total value, amount1 (last 128 bits) represents quantity
     uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
     uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
@@ -421,4 +419,7 @@ struct S_ProofKey {
     address owner;
     address currentgood;
     address valuegood;
+}
+struct S_LoanProof {
+    uint256 amount; //first 128 bit amount ,last 128 bit store feerate
 }

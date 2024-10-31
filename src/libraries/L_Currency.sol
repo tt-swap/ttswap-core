@@ -15,7 +15,7 @@ library L_CurrencyLibrary {
     /// @notice Thrown when an ERC20 transfer fails
     error ERC20TransferFailed();
 
-    address public constant NATIVE = address(0);
+    address public constant NATIVE = address(1);
 
     function balanceof(
         address token,
@@ -136,6 +136,6 @@ library L_CurrencyLibrary {
     }
 
     function isNative(address currency) internal pure returns (bool) {
-        return currency == address(0);
+        return currency == address(1);
     }
 }

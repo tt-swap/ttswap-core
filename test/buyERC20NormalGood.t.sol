@@ -22,9 +22,9 @@ contract buyERC20NormalGood is BaseSetup {
     using L_ProofKeyLibrary for S_ProofKey;
     using L_TTSwapUINT256Library for uint256;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodbtc;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -51,7 +51,7 @@ contract buyERC20NormalGood is BaseSetup {
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
             _goodconfig
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -80,7 +80,7 @@ contract buyERC20NormalGood is BaseSetup {
             address(btc),
             normalgoodconfig
         );
-        normalgoodbtc = S_GoodKey(users[1], address(btc)).toId();
+        normalgoodbtc = address(btc);
         vm.stopPrank();
     }
 

@@ -29,7 +29,7 @@ library L_GoodConfigLibrary {
     ) internal pure returns (uint256 a) {
         unchecked {
             assembly {
-                config := shr(250, shl(28, config))
+                config := shr(250, shl(27, config))
                 config := mul(config, amount)
                 a := div(config, 10000)
             }

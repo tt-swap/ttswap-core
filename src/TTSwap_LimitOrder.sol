@@ -19,13 +19,14 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
     uint256 public orderpointer;
     mapping(uint256 => uint256) public orderstatus;
     mapping(uint256 => S_orderDetails) public orders;
-    mapping(address => uint256) auths;
+    mapping(address => uint256) public auths;
     address public marketcreator;
     uint96 public maxfreeremain;
 
     constructor(address _marketor) {
         marketcreator = _marketor;
         maxfreeremain = 40425200;
+        maxslot = 10;
     }
     //180天
     function setMaxfreeRemain(uint96 times) external {
@@ -50,46 +51,6 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         delete auths[_marketor];
         emit e_removeauths(_marketor);
     }
-
-    function cleandeadorder(uint256[] memory ids, bool smallorder) internal {
-        require(auths[msg.sender] == 1);
-        uint256 computetimes;
-        uint256 amount;
-        if (smallorder) {
-            for (uint256 i = 0; i < ids.length; i++) {
-                if (orderstatus.get(i)) {
-                    orderstatus.unset(ids[i]);
-                }
-            }
-            emit e_deletedeadorders(ids);
-        } else {
-            for (uint256 i = 0; i < ids.length; i++) {
-                computetimes = block.timestamp - uint256(orders[i].timestamp);
-                if (
-                    orderstatus.get(i) && computetimes > uint256(maxfreeremain)
-                ) {
-                    computetimes = computetimes > uint256(maxfreeremain)
-                        ? computetimes - uint256(maxfreeremain)
-                        : 0;
-                    computetimes = computetimes == 0 ? 0 : computetimes / 86400;
-                    computetimes = computetimes > 0 ? computetimes + 10 : 0;
-                    computetimes = computetimes > 100 ? 100 : computetimes;
-                    if (computetimes > 0) {
-                        amount =
-                            (orders[i].amount.amount0() * computetimes) /
-                            1000;
-                        orders[i].fromerc20.transferFrom(
-                            orders[i].sender,
-                            msg.sender,
-                            amount
-                        );
-                        emit e_deletedeadorder(ids[i], amount, msg.sender);
-                    }
-                }
-            }
-        }
-    }
-
     function addLimitOrder(S_orderDetails[] memory _orders) external override {
         for (uint256 i; i < _orders.length; i++) {
             orderpointer = orderstatus.getValidOrderId(orderpointer, maxslot);
@@ -97,7 +58,7 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             orders[orderpointer] = _orders[i];
             emit e_addLimitOrder(
                 orderpointer,
-                msg.sender,
+                _orders[i].sender,
                 _orders[i].fromerc20,
                 _orders[i].toerc20,
                 _orders[i].amount
@@ -112,8 +73,6 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         require(
             orders[orderid].sender == msg.sender && orderstatus.get(orderid)
         );
-        if (orders[orderid].sender != _order.sender)
-            orders[orderid].sender = _order.sender;
         if (orders[orderid].fromerc20 != _order.fromerc20)
             orders[orderid].fromerc20 = _order.fromerc20;
         if (orders[orderid].toerc20 != _order.toerc20)
@@ -122,7 +81,7 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             orders[orderid].amount = _order.amount;
         orders[orderid].timestamp = uint96(block.timestamp);
         emit e_updateLimitOrder(
-            _order.sender,
+            orderid,
             _order.fromerc20,
             _order.toerc20,
             _order.amount
@@ -137,18 +96,20 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
 
     function takeLimitOrderNormal(uint256[] memory orderids) external override {
         for (uint256 i; i <= orderids.length; i++) {
-            orders[orderids[i]].fromerc20.transferFrom(
-                orders[orderids[i]].sender,
-                msg.sender,
-                orders[orderids[i]].amount.amount0()
-            );
-            orders[orderids[i]].toerc20.transferFrom(
-                msg.sender,
-                orders[orderids[i]].sender,
-                orders[orderids[i]].amount.amount1()
-            );
-            orderstatus.unset(orderids[i]);
-            emit e_takeOrder(orderids[i]);
+            if (orderstatus.get(i)) {
+                orders[orderids[i]].fromerc20.transferFrom(
+                    orders[orderids[i]].sender,
+                    msg.sender,
+                    orders[orderids[i]].amount.amount0()
+                );
+                orders[orderids[i]].toerc20.transferFrom(
+                    msg.sender,
+                    orders[orderids[i]].sender,
+                    orders[orderids[i]].amount.amount1()
+                );
+                orderstatus.unset(orderids[i]);
+                emit e_takeOrder(orderids[i]);
+            }
         }
     }
 
@@ -164,19 +125,21 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             beforeamount[i] = orders[orderids[i]].toerc20.balanceof(
                 orders[orderids[i]].sender
             );
-            orders[orderids[i]].fromerc20.transferFrom(
-                orders[orderids[i]].sender,
-                msg.sender,
-                orders[orderids[i]].amount.amount0()
-            );
-            _inputParams[i] = abi.encode(
-                S_takeGoodInputPrams(
-                    orders[orderids[i]].fromerc20,
-                    orders[orderids[i]].toerc20,
-                    orders[orderids[i]].amount,
-                    orders[orderids[i]].sender
-                )
-            );
+            if (orderstatus.get(i)) {
+                orders[orderids[i]].fromerc20.transferFrom(
+                    orders[orderids[i]].sender,
+                    msg.sender,
+                    orders[orderids[i]].amount.amount0()
+                );
+                _inputParams[i] = abi.encode(
+                    S_takeGoodInputPrams(
+                        orders[orderids[i]].fromerc20,
+                        orders[orderids[i]].toerc20,
+                        orders[orderids[i]].amount,
+                        orders[orderids[i]].sender
+                    )
+                );
+            }
         }
         I_TTSwap_LimitOrderTaker(_taker).batchTakelimitOrder(
             _inputParams,
@@ -198,12 +161,59 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         }
         return true;
     }
-
+    function cleandeadorder(uint256[] memory ids, bool smallorder) public {
+        require(auths[msg.sender] == 1);
+        uint256 computetimes;
+        uint256 amount;
+        if (smallorder) {
+            for (uint256 i = 0; i < ids.length; i++) {
+                if (orderstatus.get(i)) {
+                    orderstatus.unset(ids[i]);
+                }
+            }
+            emit e_deletedeadorders(ids);
+        } else {
+            for (uint256 i = 0; i < ids.length; i++) {
+                computetimes = block.timestamp - uint256(orders[i].timestamp);
+                if (
+                    orderstatus.get(i) && computetimes > uint256(maxfreeremain)
+                ) {
+                    computetimes = computetimes > uint256(maxfreeremain)
+                        ? computetimes - uint256(maxfreeremain)
+                        : 0;
+                    computetimes = computetimes == 0
+                        ? 0
+                        : computetimes / 864000;
+                    computetimes = computetimes > 0 ? (computetimes + 10) : 0;
+                    computetimes = computetimes > 100 ? 100 : computetimes;
+                    if (computetimes > 0) {
+                        amount =
+                            (orders[i].amount.amount0() * computetimes) /
+                            1000;
+                        orders[i].fromerc20.transferFrom(
+                            orders[i].sender,
+                            msg.sender,
+                            amount
+                        );
+                        emit e_deletedeadorder(ids[i], amount, msg.sender);
+                    }
+                }
+            }
+        }
+    }
     function queryLimitOrder(
         uint256[] memory _ordersids
-    ) external view override returns (S_orderDetails[] memory _orderdetail) {
-        for (uint256 i; i <= _ordersids.length; i++) {
-            _orderdetail[i] = orders[_ordersids[i]];
+    ) external view override returns (S_orderDetails[] memory) {
+        S_orderDetails[] memory _orderdetail = new S_orderDetails[](
+            _ordersids.length
+        );
+        for (uint256 i; i < _ordersids.length; i++) {
+            _orderdetail[i].timestamp = orders[_ordersids[i]].timestamp;
+            _orderdetail[i].sender = orders[_ordersids[i]].sender;
+            _orderdetail[i].fromerc20 = orders[_ordersids[i]].fromerc20;
+            _orderdetail[i].toerc20 = orders[_ordersids[i]].toerc20;
+            _orderdetail[i].amount = orders[_ordersids[i]].amount;
         }
+        return _orderdetail;
     }
 }

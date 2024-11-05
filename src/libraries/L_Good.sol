@@ -31,10 +31,10 @@ library L_Good {
     ) internal {
         // Clear the top 33 bits of the new config
         assembly {
-            _goodConfig := shr(33, shl(33, _goodConfig))
+            _goodConfig := shr(27, shl(27, _goodConfig))
         }
         // Preserve the top 33 bits of the existing config and add the new config
-        _self.goodConfig = ((_self.goodConfig >> 223) << 223) + _goodConfig;
+        _self.goodConfig = ((_self.goodConfig >> 229) << 229) + _goodConfig;
     }
 
     /**
@@ -51,7 +51,7 @@ library L_Good {
     ) internal {
         self.currentState = _init;
         self.investState = _init;
-        self.goodConfig = (_goodConfig << 33) >> 33;
+        self.goodConfig = (_goodConfig << 27) >> 27;
         self.owner = msg.sender;
     }
 
@@ -690,7 +690,7 @@ library L_Good {
     }
     // function addloanliq(
     //     S_GoodState storage _good,
-    //     uint256 _loanproof,
+    //     uint256 _loanproof,d
     //     uint128 amount
     // ) internal {
     //     _good.loanstate = _good.loanstate + toTTSwapUINT256(amount, 0);

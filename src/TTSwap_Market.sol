@@ -8,6 +8,7 @@ import {L_TakeLimitPriceOrder} from "./libraries/L_TakeLimitPriceOrder.sol";
 import {L_Lock} from "./libraries/L_Lock.sol";
 import {L_Proof, L_ProofIdLibrary, L_ProofKeyLibrary} from "./libraries/L_Proof.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
+import {L_UserConfigLibrary} from "./libraries/L_UserConfig.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
@@ -27,6 +28,7 @@ contract TTSwap_Market is
     IERC3156FlashLender
 {
     using L_GoodConfigLibrary for uint256;
+    using L_UserConfigLibrary for uint256;
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
     using L_ProofIdLibrary for uint256;
@@ -56,11 +58,9 @@ contract TTSwap_Market is
     uint256 public override marketconfig;
 
     mapping(address goodid => S_GoodState) internal goods;
-    mapping(uint256 proofkey => uint256 proofid) public proofmapping;
+    mapping(uint256 proofkey => uint256 proofid) public override proofmapping;
     mapping(uint256 proofid => S_ProofState) internal proofs;
-    mapping(address => uint256) public banlist;
-    mapping(address => mapping(address => uint256)) public loanproofs;
-    mapping(address => uint256) auths;
+    mapping(address => uint256) public override userConfig;
     address public marketcreator;
 
     address internal immutable officialTokenContract;
@@ -91,22 +91,43 @@ contract TTSwap_Market is
         _;
     }
     modifier onlyMarketor() {
-        require(auths[msg.sender] == 1);
+        require(userConfig[msg.sender].isMarketor());
         _;
     }
-    function changemarketor(address _newmarketor) external {
+    function changemarketcreator(address _newmarketor) external {
         require(msg.sender == marketcreator);
         marketcreator = _newmarketor;
+        emit e_changemarketcreator(_newmarketor);
     }
 
-    function addauths(address _newmarketor, uint256 _auths) external {
+    function setMarketor(address _newmarketor) external override {
         require(msg.sender == marketcreator);
-        auths[_newmarketor] = _auths;
+        userConfig[_newmarketor] = userConfig[_newmarketor] | 2;
+        emit e_modifiedUserConfig(_newmarketor, userConfig[_newmarketor]);
     }
 
-    function removeauths(address _newmarketor) external {
+    function removeMarketor(address _user) external override {
         require(msg.sender == marketcreator);
-        delete auths[_newmarketor];
+        userConfig[_user] = userConfig[_user] & ~uint256(2);
+        emit e_modifiedUserConfig(_user, userConfig[_user]);
+    }
+
+    /// @inheritdoc I_TTSwap_Market
+    function addbanlist(
+        address _user
+    ) external override onlyMarketor returns (bool) {
+        userConfig[_user] = userConfig[_user] | 1;
+        emit e_modifiedUserConfig(_user, userConfig[_user]);
+        return true;
+    }
+
+    /// @inheritdoc I_TTSwap_Market
+    function removebanlist(
+        address _user
+    ) external override onlyMarketor returns (bool) {
+        userConfig[_user] = userConfig[_user] & ~uint256(1);
+        emit e_modifiedUserConfig(_user, userConfig[_user]);
+        return true;
     }
     modifier noReentrant() {
         require(L_Lock.get() == address(0));
@@ -191,7 +212,6 @@ contract TTSwap_Market is
 
         uint256 proofKey = S_ProofKey(msg.sender, _erc20address, _valuegood)
             .toKey();
-        //   uint256 proofid = proofKey.toId();
         proofmapping[proofKey] = proofKey.toId();
         I_TTSwap_NFT(officialNFTContract).mint(
             msg.sender,
@@ -307,12 +327,13 @@ contract TTSwap_Market is
             toTTSwapUINT256(goodid2Quantity_, goodid2FeeQuantity_)
         );
     }
-
+    event debuggg(uint256, uint256);
     function takeLimitOrder(
         bytes calldata _inputData,
         uint96 _tolerance,
         address _takecaller
     ) public payable override noReentrant returns (bool _isSuccess) {
+        require(_tolerance <= 5000);
         S_takeGoodInputPrams memory _inputParams = abi.decode(
             _inputData,
             (S_takeGoodInputPrams)
@@ -327,6 +348,7 @@ contract TTSwap_Market is
             _tolerance
         );
         takeCache.takeGoodCompute();
+
         require(
             msg.sender == officelimitorder &&
                 _inputParams._swapQuantity.amount0() > 0 &&
@@ -334,13 +356,15 @@ contract TTSwap_Market is
                 _inputParams._goodid1 != _inputParams._goodid2
         );
 
-        if (takeCache.goodid2Quantity_ <= _inputParams._swapQuantity.amount1())
+        if (takeCache.goodid2Quantity_ < _inputParams._swapQuantity.amount1())
             revert noEnoughOutputError();
 
         _inputParams._goodid2.safeTransfer(
             _inputParams._orderowner,
             _inputParams._swapQuantity.amount1()
         );
+
+        emit debuggg(takeCache.goodid2Quantity_, takeCache.goodid2FeeQuantity_);
         uint128 profit = takeCache.goodid2Quantity_ -
             _inputParams._swapQuantity.amount1();
         _inputParams._goodid2.safeTransfer(_takecaller, profit / 2);
@@ -370,6 +394,7 @@ contract TTSwap_Market is
                 takeCache.goodid2FeeQuantity_
             )
         );
+
         return true;
     }
 
@@ -377,10 +402,12 @@ contract TTSwap_Market is
         bytes[] calldata _inputData,
         uint96 _tolerance,
         address _takecaller
-    ) external payable returns (bool[] memory result) {
+    ) external payable returns (bool[] memory) {
+        bool[] memory result = new bool[](_inputData.length);
         for (uint256 i = 0; i < _inputData.length; i++) {
             result[i] = takeLimitOrder(_inputData[i], _tolerance, _takecaller);
         }
+        return result;
     }
     /**
      * @dev Buys a good for pay
@@ -451,7 +478,6 @@ contract TTSwap_Market is
             toTTSwapUINT256(goodid1Quantity_, goodid1FeeQuantity_)
         );
     }
-    event debuggg(bool, bool);
     /**
      * @dev Invests in a good
      * @param _togood The ID of the good to invest in
@@ -467,10 +493,6 @@ contract TTSwap_Market is
     ) external payable override noReentrant returns (bool) {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
-        emit debuggg(
-            goods[_togood].goodConfig.isvaluegood(),
-            goods[_valuegood].goodConfig.isvaluegood()
-        );
         require(
             goods[_togood].currentState.amount1() + _quantity <= 2 ** 109 &&
                 _togood != _valuegood &&
@@ -572,9 +594,9 @@ contract TTSwap_Market is
         (address dao_admin, address referal) = I_TTSwap_Token(
             officialTokenContract
         ).getreferralanddaoadmin(msg.sender);
-        _gater = banlist[_gater] == 1 ? _gater : dao_admin;
+        _gater = userConfig[_gater].isBan() ? _gater : dao_admin;
         referal = _gater == referal ? dao_admin : referal;
-        referal = banlist[referal] == 1 ? referal : dao_admin;
+        referal = userConfig[referal].isBan() ? referal : dao_admin;
         (disinvestNormalResult1_, disinvestValueResult2_, divestvalue) = goods[
             normalgood
         ].disinvestGood(
@@ -646,9 +668,9 @@ contract TTSwap_Market is
         (address dao_admin, address referal) = I_TTSwap_Token(
             officialTokenContract
         ).getreferralanddaoadmin(msg.sender);
-        _gater = banlist[_gater] == 1 ? dao_admin : _gater;
+        _gater = userConfig[_gater].isBan() ? dao_admin : _gater;
         referal = _gater == referal ? dao_admin : referal;
-        referal = banlist[referal] == 1 ? referal : dao_admin;
+        referal = userConfig[referal].isBan() ? referal : dao_admin;
         profit_ = goods[currentgood].collectGoodFee(
             goods[valuegood],
             proofs[_proofid],
@@ -793,24 +815,6 @@ contract TTSwap_Market is
             toTTSwapUINT256(uint128(welfare), 0)
         );
         emit e_goodWelfare(goodid, welfare);
-    }
-
-    /// @inheritdoc I_TTSwap_Market
-    function addbanlist(
-        address _user
-    ) external override onlyMarketor returns (bool) {
-        banlist[_user] = 1;
-        emit e_addbanlist(_user);
-        return true;
-    }
-
-    /// @inheritdoc I_TTSwap_Market
-    function removebanlist(
-        address _user
-    ) external override onlyMarketor returns (bool) {
-        banlist[_user] = 0;
-        emit e_removebanlist(_user);
-        return true;
     }
 
     /// @inheritdoc I_TTSwap_Market

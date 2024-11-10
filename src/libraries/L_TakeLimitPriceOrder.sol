@@ -46,18 +46,21 @@ library L_TakeLimitPriceOrder {
         _stepCache.good1config = _good1config;
         _stepCache.good2currentState = _good2curstate;
         _stepCache.good2config = _good2config;
-        uint256 a = _stepCache.good1currentState.amount1() *
-            _stepCache.good2currentState.amount0();
-        uint256 b = _stepCache.good1currentState.amount1() *
-            _stepCache.good2currentState.amount0();
-        a = a + a * _tolerance;
+        uint256 a = _stepCache.good1currentState.amount0() *
+            _stepCache.good2currentState.amount1();
+        uint256 b = _stepCache.good2currentState.amount0() *
+            _stepCache.good1currentState.amount1();
         if (a >= b) {
-            _stepCache.limitPrice = ((a * 10000) / b) << (128 + 10000);
+            _stepCache.limitPrice =
+                (((a * (10000 + _tolerance)) / b) << 128) +
+                10000;
+            //_stepCache.limitPrice = (((a * 10000) / b) << 128) + 10000;
         } else {
-            _stepCache.limitPrice = (10000 << (128 + b / a));
+            _stepCache.limitPrice = ((10000 << 128) +
+                (b * (10000 - _tolerance)) /
+                a);
         }
     }
-
     /**
      * @notice Compute the swap result from good1 to good2
      * @dev Implements a complex swap algorithm considering price limits, fees, and minimum swap amounts
@@ -167,7 +170,6 @@ library L_TakeLimitPriceOrder {
             _stepCache.outputQuantity -
             _stepCache.goodid2FeeQuantity_;
     }
-
     function isOverPrice(
         S_takeGoodCache memory _stepCache
     ) internal pure returns (bool) {
@@ -175,7 +177,7 @@ library L_TakeLimitPriceOrder {
             (
                 uint256(_stepCache.good1currentState.amount0()) *
                     uint256(_stepCache.good2currentState.amount1()) *
-                    uint256(_stepCache.limitPrice.amount1()) >
+                    uint256(_stepCache.limitPrice.amount1()) <=
                     uint256(_stepCache.good1currentState.amount1()) *
                         uint256(_stepCache.good2currentState.amount0()) *
                         uint256(_stepCache.limitPrice.amount0())

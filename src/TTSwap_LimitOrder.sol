@@ -17,7 +17,7 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
     using L_TTSwapUINT256Library for uint256;
     uint256 public maxslot;
     uint256 public orderpointer;
-    mapping(uint256 => uint256) public orderstatus;
+    mapping(uint256 => uint256) internal orderstatus;
     mapping(uint256 => S_orderDetails) public orders;
     mapping(address => uint256) public auths;
     address public marketcreator;
@@ -56,6 +56,7 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             orderpointer = orderstatus.getValidOrderId(orderpointer, maxslot);
             _orders[i].timestamp = uint96(block.timestamp);
             orders[orderpointer] = _orders[i];
+            orderstatus.set(orderpointer);
             emit e_addLimitOrder(
                 orderpointer,
                 _orders[i].sender,
@@ -93,10 +94,9 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         orderstatus.unset(orderid);
         emit e_removeLimitOrder(orderid);
     }
-
     function takeLimitOrderNormal(uint256[] memory orderids) external override {
-        for (uint256 i; i <= orderids.length; i++) {
-            if (orderstatus.get(i)) {
+        for (uint256 i; i < orderids.length; i++) {
+            if (orderstatus.get(orderids[i])) {
                 orders[orderids[i]].fromerc20.transferFrom(
                     orders[orderids[i]].sender,
                     msg.sender,
@@ -108,27 +108,66 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
                     orders[orderids[i]].amount.amount1()
                 );
                 orderstatus.unset(orderids[i]);
-                emit e_takeOrder(orderids[i]);
             }
         }
     }
+    function takeLimitOrderAMM(
+        uint256 orderid,
+        uint96 _tolerance,
+        address _takecontract,
+        address _takecaller
+    ) external override {
+        bytes memory _inputParams;
+        uint256 beforeamount = orders[orderid].toerc20.balanceof(
+            orders[orderid].sender
+        );
+        orders[orderid].fromerc20.transferFrom(
+            orders[orderid].sender,
+            _takecontract,
+            orders[orderid].amount.amount0()
+        );
+        _inputParams = abi.encode(
+            S_takeGoodInputPrams(
+                orders[orderid].fromerc20,
+                orders[orderid].toerc20,
+                orders[orderid].amount,
+                orders[orderid].sender
+            )
+        );
 
-    function takeLimitOrdersAMM(
+        I_TTSwap_LimitOrderTaker(_takecontract).takeLimitOrder(
+            _inputParams,
+            _tolerance,
+            _takecaller
+        );
+
+        uint256 afteramount = orders[orderid].toerc20.balanceof(
+            orders[orderid].sender
+        );
+        if (afteramount - beforeamount < orders[orderid].amount.amount1()) {
+            revert lessAmountError(orderid);
+        }
+        orderstatus.unset(orderid);
+        emit e_takeOrder(orderid);
+    }
+
+    function takeBatchLimitOrdersAMM(
         uint256[] memory orderids,
         uint96 _tolerance,
-        address _taker
+        address _takecontract,
+        address _takecaller
     ) external override returns (bool) {
-        uint256[] memory beforeamount;
-        uint256[] memory afteramount;
-        bytes[] memory _inputParams;
-        for (uint256 i; i <= orderids.length; i++) {
+        uint256[] memory beforeamount = new uint256[](orderids.length);
+        uint256[] memory afteramount = new uint256[](orderids.length);
+        bytes[] memory _inputParams = new bytes[](orderids.length);
+        for (uint256 i; i < orderids.length; i++) {
             beforeamount[i] = orders[orderids[i]].toerc20.balanceof(
                 orders[orderids[i]].sender
             );
-            if (orderstatus.get(i)) {
+            if (orderstatus.get(orderids[i])) {
                 orders[orderids[i]].fromerc20.transferFrom(
                     orders[orderids[i]].sender,
-                    msg.sender,
+                    _takecontract,
                     orders[orderids[i]].amount.amount0()
                 );
                 _inputParams[i] = abi.encode(
@@ -141,12 +180,12 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
                 );
             }
         }
-        I_TTSwap_LimitOrderTaker(_taker).batchTakelimitOrder(
+        I_TTSwap_LimitOrderTaker(_takecontract).batchTakelimitOrder(
             _inputParams,
             _tolerance,
-            msg.sender
+            _takecaller
         );
-        for (uint256 i; i <= orderids.length; i++) {
+        for (uint256 i; i < orderids.length; i++) {
             afteramount[i] = orders[orderids[i]].toerc20.balanceof(
                 orders[orderids[i]].sender
             );
@@ -215,5 +254,19 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             _orderdetail[i].amount = orders[_ordersids[i]].amount;
         }
         return _orderdetail;
+    }
+
+    function queryOrdersStatus(
+        uint256[] memory _ordersids
+    ) external view returns (bool[] memory) {
+        bool[] memory query = new bool[](_ordersids.length);
+        for (uint256 i; i < _ordersids.length; i++) {
+            query[i] = orderstatus.get(_ordersids[i]);
+        }
+        return query;
+    }
+
+    function queryOrderStatus(uint256 _ordersid) external view returns (bool) {
+        return orderstatus.get(_ordersid);
     }
 }

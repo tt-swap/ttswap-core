@@ -33,7 +33,6 @@ contract buyERC20NormalGood is BaseSetup {
     }
 
     function initmetagood() public {
-        BaseSetup.setUp();
         vm.startPrank(marketcreator);
         deal(address(usdt), marketcreator, 1000000 * 10 ** 6, false);
         usdt.approve(address(market), 50000 * 10 ** 6 + 1);

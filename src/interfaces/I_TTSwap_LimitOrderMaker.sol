@@ -82,13 +82,27 @@ interface I_TTSwap_LimitOrderMaker {
     function takeLimitOrderNormal(uint256[] memory _orderids) external;
 
     /// @notice amm take the limit order
+    /// @param _orderid order's id
+    /// @param _tolerance the caller's tolerance config
+    /// @param _takecontract  the amm's address
+    /// @param _takecaller  the caller address
+    function takeLimitOrderAMM(
+        uint256 _orderid,
+        uint96 _tolerance,
+        address _takecontract,
+        address _takecaller
+    ) external;
+
+    /// @notice amm take the limit order
     /// @param _orderids orders' id
     /// @param _tolerance the caller's tolerance config
-    /// @param _taker  the amm's address
-    function takeLimitOrdersAMM(
+    /// @param _takecontract  the amm's address
+    /// @param _takecaller  the caller address
+    function takeBatchLimitOrdersAMM(
         uint256[] memory _orderids,
         uint96 _tolerance,
-        address _taker
+        address _takecontract,
+        address _takecaller
     ) external returns (bool);
 
     /// @notice get limit order's infor

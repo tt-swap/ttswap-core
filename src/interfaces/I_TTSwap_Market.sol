@@ -7,12 +7,10 @@ import {toTTSwapUINT256, addsub, subadd} from "../libraries/L_TTSwapUINT256.sol"
 /// @notice Defines the interface for managing market operations
 interface I_TTSwap_Market {
     error noEnoughOutputError();
-    /// @notice Emitted when a good's ownership is transferred
-    /// @param _goodid The ID of the good
-    /// @param _owner The previous owner
-    /// @param _to The new owner
-    event e_changeOwner(uint256 indexed _goodid, address _owner, address _to);
 
+    /// @notice Emitted when market configuration is set
+    /// @param _newmarketor The marketcreator
+    event e_changemarketcreator(address _newmarketor);
     /// @notice Emitted when market configuration is set
     /// @param _marketconfig The market configuration
     event e_setMarketConfig(uint256 _marketconfig);
@@ -39,11 +37,7 @@ interface I_TTSwap_Market {
 
     /// @notice Emitted when an address is added to the ban list
     /// @param _user The banned user's address
-    event e_addbanlist(address _user);
-
-    /// @notice Emitted when an address is removed from the ban list
-    /// @param _user The unbanned user's address
-    event e_removebanlist(address _user);
+    event e_modifiedUserConfig(address _user, uint256 config);
 
     /// @notice Emitted when welfare is delivered to investors
     /// @param goodid The ID of the good
@@ -179,6 +173,11 @@ interface I_TTSwap_Market {
     event e_enpower(uint256 _goodid, uint256 _valuegood, uint256 _quantity);
 
     // Function declarations
+
+    function proofmapping(uint256) external view returns (uint256);
+    function userConfig(address) external view returns (uint256);
+    function setMarketor(address _newmarketor) external;
+    function removeMarketor(address _user) external;
 
     /// @notice Initialize the first good in the market
     /// @param _erc20address The contract address of the good

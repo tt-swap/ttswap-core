@@ -19,7 +19,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     using L_TTSTokenConfigLibrary for uint256;
     uint256 public ttstokenconfig;
 
-    mapping(uint32 => s_share) shares; // all share's mapping
+    mapping(uint32 => s_share) public shares; // all share's mapping
 
     uint256 public stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
     uint256 public poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
@@ -514,9 +514,9 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         if (profit > 0) _mint(_staker, profit);
         emit e_unstake(
             _staker,
-            toTTSwapUINT256(proofvalue, stakestate.amount1()),
-            toTTSwapUINT256(construct, profit),
             stakeproof[restakeid].proofstate,
+            toTTSwapUINT256(construct, profit),
+            stakestate,
             poolstate
         );
     }

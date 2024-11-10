@@ -72,7 +72,7 @@ interface I_TTSwap_Token {
 
     /// @notice Emitted when unstaking occurs
     /// @param recipient The address receiving the unstaked tokens
-    /// @param proofvalue //first 128 bit proofvalue,last 128 bit poolvalue
+    /// @param proofvalue first 128 bit proofvalue,last 128 bit poolcontruct
     /// @param unstakestate The state after unstaking
     /// @param stakestate The state of the stake
     /// @param poolstate The state of the pool
@@ -264,5 +264,5 @@ struct s_chain {
 }
 struct s_proof {
     address fromcontract; // from which contract
-    uint256 proofstate; // stake's state
+    uint256 proofstate; // stake's state  amount0 value 128 construct asset
 }

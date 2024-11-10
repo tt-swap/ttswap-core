@@ -54,6 +54,10 @@ contract normallimitorder is Test, GasSnapshot, BaseSetup {
         vm.stopPrank();
     }
     function testaddlimitorder1() public {
+        vm.startPrank(marketcreator);
+        tts_limitorder.addauths(users[1], 1);
+        vm.stopPrank();
+
         console2.log(1, 1);
         vm.startPrank(users[1]);
         console2.log(2, 1);
@@ -98,6 +102,8 @@ contract normallimitorder is Test, GasSnapshot, BaseSetup {
             _order_output[0].amount,
             "order toerc20 eroor"
         );
+        vm.warp(block.timestamp + 40525200);
+        tts_limitorder.cleandeadorder(orderid, false);
         vm.stopPrank();
     }
     function testaddlimitorder2() public {
@@ -225,7 +231,7 @@ contract normallimitorder is Test, GasSnapshot, BaseSetup {
         vm.startPrank(marketcreator);
         vm.warp(block.timestamp + 40525200);
         tts_limitorder.addauths(marketcreator, 1);
-        tts_limitorder.cleandeadorder(orderid, true);
+        tts_limitorder.cleandeadorder(orderid, false);
         vm.stopPrank();
     }
 

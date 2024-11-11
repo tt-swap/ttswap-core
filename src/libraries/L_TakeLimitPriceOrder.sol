@@ -41,7 +41,7 @@ library L_TakeLimitPriceOrder {
         uint256 _good2config,
         uint96 _tolerance
     ) internal pure {
-        _stepCache.remainQuantity = inputdata._swapQuantity.amount0();
+        _stepCache.remainQuantity = inputdata.swapQuantity.amount0();
         _stepCache.good1currentState = _good1curstate;
         _stepCache.good1config = _good1config;
         _stepCache.good2currentState = _good2curstate;
@@ -54,7 +54,6 @@ library L_TakeLimitPriceOrder {
             _stepCache.limitPrice =
                 (((a * (10000 + _tolerance)) / b) << 128) +
                 10000;
-            //_stepCache.limitPrice = (((a * 10000) / b) << 128) + 10000;
         } else {
             _stepCache.limitPrice = ((10000 << 128) +
                 (b * (10000 - _tolerance)) /

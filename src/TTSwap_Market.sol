@@ -327,85 +327,97 @@ contract TTSwap_Market is
             toTTSwapUINT256(goodid2Quantity_, goodid2FeeQuantity_)
         );
     }
-    event debuggg(uint256, uint256);
+
+    /// @inheritdoc I_TTSwap_LimitOrderTaker
     function takeLimitOrder(
-        bytes calldata _inputData,
+        S_takeGoodInputPrams memory _inputParams,
         uint96 _tolerance,
         address _takecaller
-    ) public payable override noReentrant returns (bool _isSuccess) {
+    ) external payable override noReentrant returns (bool _isSuccess) {
+        _isSuccess = _takeLimitOrder(_inputParams, _tolerance, _takecaller);
+    }
+
+    function _takeLimitOrder(
+        S_takeGoodInputPrams memory _inputParams,
+        uint96 _tolerance,
+        address _takecaller
+    ) internal returns (bool _isSuccess) {
         require(_tolerance <= 5000);
-        S_takeGoodInputPrams memory _inputParams = abi.decode(
-            _inputData,
-            (S_takeGoodInputPrams)
-        );
         L_TakeLimitPriceOrder.S_takeGoodCache memory takeCache;
         takeCache.init_takeGoodCache(
             _inputParams,
-            goods[_inputParams._goodid1].currentState,
-            goods[_inputParams._goodid1].goodConfig,
-            goods[_inputParams._goodid2].currentState,
-            goods[_inputParams._goodid2].goodConfig,
+            goods[_inputParams.fromerc20].currentState,
+            goods[_inputParams.fromerc20].goodConfig,
+            goods[_inputParams.toerc20].currentState,
+            goods[_inputParams.toerc20].goodConfig,
             _tolerance
         );
         takeCache.takeGoodCompute();
-
-        require(
+        if (
             msg.sender == officelimitorder &&
-                _inputParams._swapQuantity.amount0() > 0 &&
-                takeCache.remainQuantity == 0 &&
-                _inputParams._goodid1 != _inputParams._goodid2
-        );
+            _inputParams.swapQuantity.amount0() > 0 &&
+            takeCache.remainQuantity == 0 &&
+            _inputParams.fromerc20 != _inputParams.toerc20
+        ) _isSuccess = true;
+        if (takeCache.goodid2Quantity_ < _inputParams.swapQuantity.amount1())
+            _isSuccess = false;
+        if (_isSuccess) {
+            _inputParams.toerc20.safeTransfer(
+                _inputParams.sender,
+                _inputParams.swapQuantity.amount1()
+            );
 
-        if (takeCache.goodid2Quantity_ < _inputParams._swapQuantity.amount1())
-            revert noEnoughOutputError();
-
-        _inputParams._goodid2.safeTransfer(
-            _inputParams._orderowner,
-            _inputParams._swapQuantity.amount1()
-        );
-
-        emit debuggg(takeCache.goodid2Quantity_, takeCache.goodid2FeeQuantity_);
-        uint128 profit = takeCache.goodid2Quantity_ -
-            _inputParams._swapQuantity.amount1();
-        _inputParams._goodid2.safeTransfer(_takecaller, profit / 2);
-        takeCache.goodid2FeeQuantity_ =
-            takeCache.goodid2FeeQuantity_ +
-            profit /
-            2;
-        goods[_inputParams._goodid1].swapCommit(
-            takeCache.good1currentState,
-            takeCache.feeQuantity
-        );
-        goods[_inputParams._goodid2].swapCommit(
-            takeCache.good2currentState,
-            takeCache.goodid2FeeQuantity_
-        );
-        emit e_buyGood(
-            _inputParams._goodid1,
-            _inputParams._goodid2,
-            _inputParams._orderowner,
-            takeCache.swapvalue,
-            toTTSwapUINT256(
-                _inputParams._swapQuantity.amount0(),
+            uint128 profit = takeCache.goodid2Quantity_ -
+                _inputParams.swapQuantity.amount1();
+            _inputParams.toerc20.safeTransfer(_takecaller, profit / 2);
+            takeCache.goodid2FeeQuantity_ =
+                takeCache.goodid2FeeQuantity_ +
+                profit /
+                2;
+            goods[_inputParams.fromerc20].swapCommit(
+                takeCache.good1currentState,
                 takeCache.feeQuantity
-            ),
-            toTTSwapUINT256(
-                takeCache.goodid2Quantity_,
+            );
+            goods[_inputParams.toerc20].swapCommit(
+                takeCache.good2currentState,
                 takeCache.goodid2FeeQuantity_
-            )
-        );
+            );
 
-        return true;
+            emit e_buyGood(
+                _inputParams.fromerc20,
+                _inputParams.toerc20,
+                _inputParams.sender,
+                takeCache.swapvalue,
+                toTTSwapUINT256(
+                    _inputParams.swapQuantity.amount0(),
+                    takeCache.feeQuantity
+                ),
+                toTTSwapUINT256(
+                    takeCache.goodid2Quantity_,
+                    takeCache.goodid2FeeQuantity_
+                )
+            );
+        }
     }
 
+    /// @inheritdoc I_TTSwap_LimitOrderTaker
     function batchTakelimitOrder(
-        bytes[] calldata _inputData,
+        bytes calldata _inputData,
         uint96 _tolerance,
-        address _takecaller
-    ) external payable returns (bool[] memory) {
-        bool[] memory result = new bool[](_inputData.length);
-        for (uint256 i = 0; i < _inputData.length; i++) {
-            result[i] = takeLimitOrder(_inputData[i], _tolerance, _takecaller);
+        address _takecaller,
+        uint8 ordernum
+    ) external payable override noReentrant returns (bool[] memory) {
+        S_takeGoodInputPrams[] memory _inputdatas = new S_takeGoodInputPrams[](
+            ordernum
+        );
+        _inputdatas = abi.decode(_inputData, (S_takeGoodInputPrams[]));
+        bool[] memory result = new bool[](ordernum);
+        for (uint256 i = 0; i < _inputdatas.length; i++) {
+            result[i] = _takeLimitOrder(
+                _inputdatas[i],
+                _tolerance,
+                _takecaller
+            );
         }
         return result;
     }

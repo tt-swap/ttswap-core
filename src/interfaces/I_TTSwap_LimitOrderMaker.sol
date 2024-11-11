@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
-
+import {I_TTSwap_LimitOrderTaker} from "./I_TTSwap_LimitOrderTaker.sol";
 interface I_TTSwap_LimitOrderMaker {
     /// @notice Emitted when User add limit order
     /// @param _orderid the limit order id
@@ -89,21 +89,23 @@ interface I_TTSwap_LimitOrderMaker {
     function takeLimitOrderAMM(
         uint256 _orderid,
         uint96 _tolerance,
-        address _takecontract,
+        I_TTSwap_LimitOrderTaker _takecontract,
         address _takecaller
-    ) external;
+    ) external returns (bool _isSuccess);
 
     /// @notice amm take the limit order
     /// @param _orderids orders' id
     /// @param _tolerance the caller's tolerance config
     /// @param _takecontract  the amm's address
     /// @param _takecaller  the caller address
+    /// @param _isall   true:must all be deal
     function takeBatchLimitOrdersAMM(
         uint256[] memory _orderids,
         uint96 _tolerance,
-        address _takecontract,
-        address _takecaller
-    ) external returns (bool);
+        I_TTSwap_LimitOrderTaker _takecontract,
+        address _takecaller,
+        bool _isall
+    ) external returns (bool[] memory);
 
     /// @notice get limit order's infor
     /// @param _ordersids orders' id

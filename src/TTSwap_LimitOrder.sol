@@ -28,7 +28,6 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         maxfreeremain = 40425200;
         maxslot = 10;
     }
-    //180天
     function setMaxfreeRemain(uint96 times) external {
         require(times > 40425200 && msg.sender == marketcreator);
         maxfreeremain = times;
@@ -108,97 +107,104 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
                     orders[orderids[i]].amount.amount1()
                 );
                 orderstatus.unset(orderids[i]);
+                emit e_takeOrder(orderids[i]);
             }
         }
     }
     function takeLimitOrderAMM(
         uint256 orderid,
         uint96 _tolerance,
-        address _takecontract,
+        I_TTSwap_LimitOrderTaker _takecontract,
         address _takecaller
-    ) external override {
-        bytes memory _inputParams;
+    ) external override returns (bool _isSuccess) {
+        S_takeGoodInputPrams memory _inputParams;
         uint256 beforeamount = orders[orderid].toerc20.balanceof(
             orders[orderid].sender
         );
-        orders[orderid].fromerc20.transferFrom(
-            orders[orderid].sender,
-            _takecontract,
-            orders[orderid].amount.amount0()
-        );
-        _inputParams = abi.encode(
-            S_takeGoodInputPrams(
-                orders[orderid].fromerc20,
-                orders[orderid].toerc20,
-                orders[orderid].amount,
-                orders[orderid].sender
-            )
+        _inputParams = S_takeGoodInputPrams(
+            orders[orderid].fromerc20,
+            orders[orderid].toerc20,
+            orders[orderid].amount,
+            orders[orderid].sender
         );
 
-        I_TTSwap_LimitOrderTaker(_takecontract).takeLimitOrder(
-            _inputParams,
-            _tolerance,
-            _takecaller
-        );
+        _takecontract.takeLimitOrder(_inputParams, _tolerance, _takecaller);
 
         uint256 afteramount = orders[orderid].toerc20.balanceof(
             orders[orderid].sender
         );
         if (afteramount - beforeamount < orders[orderid].amount.amount1()) {
             revert lessAmountError(orderid);
+        } else {
+            orders[orderid].fromerc20.transferFrom(
+                orders[orderid].sender,
+                address(_takecontract),
+                orders[orderid].amount.amount0()
+            );
+            orderstatus.unset(orderid);
+            emit e_takeOrder(orderid);
+            _isSuccess = true;
         }
-        orderstatus.unset(orderid);
-        emit e_takeOrder(orderid);
     }
-
     function takeBatchLimitOrdersAMM(
         uint256[] memory orderids,
         uint96 _tolerance,
-        address _takecontract,
-        address _takecaller
-    ) external override returns (bool) {
+        I_TTSwap_LimitOrderTaker _takecontract,
+        address _takecaller,
+        bool _isall
+    ) external override returns (bool[] memory) {
         uint256[] memory beforeamount = new uint256[](orderids.length);
-        uint256[] memory afteramount = new uint256[](orderids.length);
-        bytes[] memory _inputParams = new bytes[](orderids.length);
-        for (uint256 i; i < orderids.length; i++) {
+        S_takeGoodInputPrams[] memory _inputParams = new S_takeGoodInputPrams[](
+            orderids.length
+        );
+        bool[] memory result_ = new bool[](orderids.length);
+        uint256 afteramount;
+        uint256 i;
+        for (i; i < orderids.length; i++) {
             beforeamount[i] = orders[orderids[i]].toerc20.balanceof(
                 orders[orderids[i]].sender
             );
             if (orderstatus.get(orderids[i])) {
-                orders[orderids[i]].fromerc20.transferFrom(
-                    orders[orderids[i]].sender,
-                    _takecontract,
-                    orders[orderids[i]].amount.amount0()
-                );
-                _inputParams[i] = abi.encode(
-                    S_takeGoodInputPrams(
-                        orders[orderids[i]].fromerc20,
-                        orders[orderids[i]].toerc20,
-                        orders[orderids[i]].amount,
-                        orders[orderids[i]].sender
-                    )
+                _inputParams[i] = S_takeGoodInputPrams(
+                    orders[orderids[i]].fromerc20,
+                    orders[orderids[i]].toerc20,
+                    orders[orderids[i]].amount,
+                    orders[orderids[i]].sender
                 );
             }
         }
-        I_TTSwap_LimitOrderTaker(_takecontract).batchTakelimitOrder(
-            _inputParams,
+        result_ = _takecontract.batchTakelimitOrder(
+            abi.encode(_inputParams),
             _tolerance,
-            _takecaller
+            _takecaller,
+            uint8(orderids.length)
         );
-        for (uint256 i; i < orderids.length; i++) {
-            afteramount[i] = orders[orderids[i]].toerc20.balanceof(
-                orders[orderids[i]].sender
+        i = 0;
+        for (i; i < orderids.length; i++) {
+            afteramount = _inputParams[i].toerc20.balanceof(
+                _inputParams[i].sender
             );
             if (
-                afteramount[i] - beforeamount[i] <
-                orders[orderids[i]].amount.amount1()
+                _inputParams[i].swapQuantity.amount1() + beforeamount[i] <
+                afteramount
             ) {
-                revert lessAmountError(orderids[i]);
+                if (_isall) {
+                    revert lessAmountError(orderids[i]);
+                } else {
+                    result_[i] = false;
+                }
+            } else {
+                _inputParams[i].fromerc20.transferFrom(
+                    _inputParams[i].sender,
+                    address(_takecontract),
+                    _inputParams[i].swapQuantity.amount0()
+                );
+                orderstatus.unset(orderids[i]);
+                emit e_takeOrder(orderids[i]);
+                result_[i] = true;
             }
-            orderstatus.unset(orderids[i]);
-            emit e_takeOrder(orderids[i]);
         }
-        return true;
+        return result_;
     }
     function cleandeadorder(uint256[] memory ids, bool smallorder) public {
         require(auths[msg.sender] == 1);

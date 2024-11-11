@@ -86,7 +86,6 @@ contract limitOrderNormalAmm1 is Test, GasSnapshot, BaseSetup {
     }
 
     function testAMMBatchTakeLimitOrder() public {
-        console2.log("adf", tts_limitorder.queryOrderStatus(1));
         vm.startPrank(users[5]);
         deal(address(usdt), users[5], 64000 * 10 ** 6, false);
         usdt.approve(address(tts_limitorder), 63000 * 10 ** 6);
@@ -130,20 +129,21 @@ contract limitOrderNormalAmm1 is Test, GasSnapshot, BaseSetup {
         tts_limitorder.takeBatchLimitOrdersAMM(
             orderids,
             1000,
-            address(market),
-            users[5]
+            market,
+            users[5],
+            true
         );
 
         assertEq(
             btc.balanceOf(users[4]),
             199999900,
-            'after take,users[1]"btc balanceof '
+            'after take,users[4]"btc balanceof '
         );
 
         assertEq(
             usdt.balanceOf(users[4]),
             62000,
-            'after take,users[1]"usdt balanceof '
+            'after take,users[4]"usdt balanceof '
         );
 
         assertEq(
@@ -213,7 +213,7 @@ contract limitOrderNormalAmm1 is Test, GasSnapshot, BaseSetup {
             'before take,address(market)"btc balanceof '
         );
 
-        tts_limitorder.takeLimitOrderAMM(1, 1000, address(market), users[5]);
+        tts_limitorder.takeLimitOrderAMM(1, 1000, market, users[5]);
 
         assertEq(
             btc.balanceOf(users[4]),

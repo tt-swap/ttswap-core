@@ -26,13 +26,16 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
     constructor(address _marketor) {
         marketcreator = _marketor;
         maxfreeremain = 40425200;
-        maxslot = 10;
+        maxslot = 1000;
+        emit e_deploy(marketcreator, maxfreeremain, maxslot);
     }
+
     function setMaxfreeRemain(uint96 times) external {
         require(times > 40425200 && msg.sender == marketcreator);
         maxfreeremain = times;
         emit e_setmaxfreeremain(times);
     }
+
     function changemarketcreator(address _newmarketor) external {
         require(msg.sender == marketcreator);
         marketcreator = _newmarketor;
@@ -50,6 +53,13 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         delete auths[_marketor];
         emit e_removeauths(_marketor);
     }
+
+    function addmaxslot(uint256 _maxslot) external {
+        require(auths[msg.sender] == 1 && _maxslot > maxslot);
+        maxslot = _maxslot;
+        emit e_addmaxslot(_maxslot);
+    }
+
     function addLimitOrder(S_orderDetails[] memory _orders) external override {
         for (uint256 i; i < _orders.length; i++) {
             orderpointer = orderstatus.getValidOrderId(orderpointer, maxslot);
@@ -216,12 +226,15 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
                     orderstatus.unset(ids[i]);
                 }
             }
-            emit e_deletedeadorders(ids);
+            emit e_cleandeadorders(ids);
         } else {
             for (uint256 i = 0; i < ids.length; i++) {
-                computetimes = block.timestamp - uint256(orders[i].timestamp);
+                computetimes =
+                    block.timestamp -
+                    uint256(orders[ids[i]].timestamp);
                 if (
-                    orderstatus.get(i) && computetimes > uint256(maxfreeremain)
+                    orderstatus.get(ids[i]) &&
+                    computetimes > uint256(maxfreeremain)
                 ) {
                     computetimes = computetimes > uint256(maxfreeremain)
                         ? computetimes - uint256(maxfreeremain)
@@ -233,19 +246,21 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
                     computetimes = computetimes > 100 ? 100 : computetimes;
                     if (computetimes > 0) {
                         amount =
-                            (orders[i].amount.amount0() * computetimes) /
+                            (orders[ids[i]].amount.amount0() * computetimes) /
                             1000;
-                        orders[i].fromerc20.transferFrom(
-                            orders[i].sender,
+                        orders[ids[i]].fromerc20.transferFrom(
+                            orders[ids[i]].sender,
                             msg.sender,
                             amount
                         );
-                        emit e_deletedeadorder(ids[i], amount, msg.sender);
+                        orderstatus.setTo(ids[i], false);
+                        emit e_cleandeadorder(ids[i], amount, msg.sender);
                     }
                 }
             }
         }
     }
+
     function queryLimitOrder(
         uint256[] memory _ordersids
     ) external view override returns (S_orderDetails[] memory) {

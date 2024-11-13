@@ -33,12 +33,12 @@ interface I_TTSwap_LimitOrderMaker {
     event e_takeOrder(uint256 _orderid);
     /// @notice Emitted when limitorder is removed by marketor when order unvalid over time
     /// @param _orderids the ids of the limit order
-    event e_deletedeadorders(uint256[] _orderids);
+    event e_cleandeadorders(uint256[] _orderids);
     /// @notice Emitted when limitorder is removed by marketor when order unvalid over time
     /// @param _orderid the ids of the limit order
     /// @param _feeamount fee amount
     /// @param _reciver the recieve of fee
-    event e_deletedeadorder(
+    event e_cleandeadorder(
         uint256 _orderid,
         uint256 _feeamount,
         address _reciver
@@ -57,7 +57,8 @@ interface I_TTSwap_LimitOrderMaker {
         address _toerc20,
         uint256 _amount
     );
-
+    event e_deploy(address marketcreator, uint256 maxfreeremain, uint256);
+    event e_addmaxslot(uint256);
     /// @notice Emitted actual mount under the pridicate amount
     /// @param _orderid orderid
     error lessAmountError(uint256 _orderid);

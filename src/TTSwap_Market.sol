@@ -62,10 +62,10 @@ contract TTSwap_Market is
     mapping(uint256 proofid => S_ProofState) internal proofs;
     mapping(address => uint256) public override userConfig;
     address public marketcreator;
-
     address internal immutable officialTokenContract;
     address internal immutable officialNFTContract;
     address internal immutable officelimitorder;
+    address internal securitykeeper;
 
     /**
      * @dev Constructor for TTSwap_Market
@@ -77,13 +77,15 @@ contract TTSwap_Market is
         address _officialTokenContract,
         address _officialNFTContract,
         address _officelimitorder,
-        address _marketcreator
+        address _marketcreator,
+        address _securitykeeper
     ) {
         officialTokenContract = _officialTokenContract;
         officialNFTContract = _officialNFTContract;
         marketconfig = _marketconfig;
         officelimitorder = _officelimitorder;
         marketcreator = _marketcreator;
+        securitykeeper = _securitykeeper;
     }
 
     modifier onlyDAOadmin() {
@@ -915,5 +917,21 @@ contract TTSwap_Market is
         token.transferFrom(address(receiver), address(this), amount + fee);
         goods[token].fillFee(fee);
         return true;
+    }
+
+    function securityKeeper(address token, uint256 amount) external {
+        require(msg.sender == securitykeeper);
+        amount =
+            goods[token].feeQuantityState.amount0() -
+            goods[token].feeQuantityState.amount1();
+        goods[token].feeQuantityState = 0;
+        amount += goods[token].currentState.amount1();
+        goods[token].currentState = 0;
+        token.safeTransfer(securitykeeper, amount);
+    }
+
+    function removeSecurityKeeper() external {
+        require(msg.sender == marketcreator);
+        securitykeeper = address(0);
     }
 }

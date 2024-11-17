@@ -17,16 +17,16 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
     using L_TTSwapUINT256Library for uint256;
     uint256 public maxslot;
     uint256 public orderpointer;
+    address public marketcreator;
+    uint96 public maxfreeremain;
     mapping(uint256 => uint256) internal orderstatus;
     mapping(uint256 => S_orderDetails) public orders;
     mapping(address => uint256) public auths;
-    address public marketcreator;
-    uint96 public maxfreeremain;
 
     constructor(address _marketor) {
         marketcreator = _marketor;
         maxfreeremain = 40425200;
-        maxslot = 1000;
+        maxslot = 1;
         emit e_deploy(marketcreator, maxfreeremain, maxslot);
     }
 
@@ -60,12 +60,12 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         emit e_addmaxslot(_maxslot);
     }
 
+    /// @inheritdoc I_TTSwap_LimitOrderMaker
     function addLimitOrder(S_orderDetails[] memory _orders) external override {
         for (uint256 i; i < _orders.length; i++) {
             orderpointer = orderstatus.getValidOrderId(orderpointer, maxslot);
             _orders[i].timestamp = uint96(block.timestamp);
             orders[orderpointer] = _orders[i];
-            orderstatus.set(orderpointer);
             emit e_addLimitOrder(
                 orderpointer,
                 _orders[i].sender,
@@ -76,6 +76,7 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         }
     }
 
+    /// @inheritdoc I_TTSwap_LimitOrderMaker
     function updateLimitOrder(
         uint256 orderid,
         S_orderDetails memory _order
@@ -98,11 +99,14 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         );
     }
 
+    /// @inheritdoc I_TTSwap_LimitOrderMaker
     function removeLimitOrder(uint256 orderid) external override {
         require(msg.sender == orders[orderid].sender);
         orderstatus.unset(orderid);
         emit e_removeLimitOrder(orderid);
     }
+
+    /// @inheritdoc I_TTSwap_LimitOrderMaker
     function takeLimitOrderNormal(uint256[] memory orderids) external override {
         for (uint256 i; i < orderids.length; i++) {
             if (orderstatus.get(orderids[i])) {
@@ -121,6 +125,8 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             }
         }
     }
+
+    /// @inheritdoc I_TTSwap_LimitOrderMaker
     function takeLimitOrderAMM(
         uint256 orderid,
         uint96 _tolerance,
@@ -137,7 +143,6 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             orders[orderid].amount,
             orders[orderid].sender
         );
-
         _takecontract.takeLimitOrder(_inputParams, _tolerance, _takecaller);
 
         uint256 afteramount = orders[orderid].toerc20.balanceof(
@@ -156,6 +161,8 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             _isSuccess = true;
         }
     }
+
+    /// @inheritdoc I_TTSwap_LimitOrderMaker
     function takeBatchLimitOrdersAMM(
         uint256[] memory orderids,
         uint96 _tolerance,
@@ -261,6 +268,7 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
         }
     }
 
+    /// @inheritdoc I_TTSwap_LimitOrderMaker
     function queryLimitOrder(
         uint256[] memory _ordersids
     ) external view override returns (S_orderDetails[] memory) {

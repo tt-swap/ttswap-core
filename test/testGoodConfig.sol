@@ -69,9 +69,9 @@ contract testGoodConfig is Test {
         // assertEq(a_min.getSwapChips(), 1 * 2 ** 6);
         // assertEq(a_mid.getSwapChips(), 2 * 2 ** 6);
         // assertEq(a_max.getSwapChips(), 1023 * 2 ** 6);
-        assertEq(a_min.getSwapChips(10000), 156);
-        assertEq(a_mid.getSwapChips(10000), 78);
-        assertEq(a_max.getSwapChips(10000), 0);
+        assertEq(a_min.getSwapChips(10000), 1000);
+        assertEq(a_mid.getSwapChips(10000), 500);
+        assertEq(a_max.getSwapChips(1000000), 97);
     }
 
     function test_getDisinvestChips() public pure {

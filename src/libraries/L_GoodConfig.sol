@@ -130,7 +130,7 @@ library L_GoodConfigLibrary {
             a := shr(246, shl(59, config))
         }
         if (a == 0) return amount;
-        return (amount / (a * 64));
+        return (amount / (a * 10));
     }
 
     /// @notice Get the disinvestment chips for a given amount

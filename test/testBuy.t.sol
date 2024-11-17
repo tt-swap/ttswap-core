@@ -58,6 +58,7 @@ contract testBuy1 is Test {
             address(tts_token),
             address(tts_nft),
             address(tts_trigger),
+            marketcreator,
             marketcreator
         );
         tts_token.addauths(address(market), 1);

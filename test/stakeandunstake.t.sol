@@ -51,6 +51,7 @@ contract stakeandunstake is Test, GasSnapshot {
             address(tts_token),
             address(tts_nft),
             address(tts_trigger),
+            marketcreator,
             marketcreator
         );
         snapEnd();

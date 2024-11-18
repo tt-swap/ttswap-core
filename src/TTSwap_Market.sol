@@ -149,10 +149,11 @@ contract TTSwap_Market is
     function initMetaGood(
         address _erc20address,
         uint256 _initial,
-        uint256 _goodConfig
-    ) external payable override onlyDAOadmin returns (bool) {
+        uint256 _goodConfig,
+        bytes memory data
+    ) external payable onlyDAOadmin returns (bool) {
         require(_goodConfig.isvaluegood());
-        _erc20address.transferFrom(msg.sender, _initial.amount1());
+        _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
         goods[_erc20address].init(_initial, _goodConfig);
         goods[_erc20address].modifyGoodConfig(4294967296); //2**32
 
@@ -197,14 +198,16 @@ contract TTSwap_Market is
         address _valuegood,
         uint256 _initial,
         address _erc20address,
-        uint256 _goodConfig
+        uint256 _goodConfig,
+        bytes memory data1,
+        bytes memory data2
     ) external payable override noReentrant returns (bool) {
         require(
             goods[_erc20address].owner == address(0) &&
                 goods[_valuegood].goodConfig.isvaluegood()
         );
-        _erc20address.transferFrom(msg.sender, _initial.amount0());
-        _valuegood.transferFrom(msg.sender, _initial.amount1());
+        _erc20address.transferFrom(msg.sender, _initial.amount0(), data1);
+        _valuegood.transferFrom(msg.sender, _initial.amount1(), data2);
         L_Good.S_GoodInvestReturn memory investResult;
         goods[_valuegood].investGood(_initial.amount1(), investResult);
         goods[_erc20address].init(
@@ -267,11 +270,11 @@ contract TTSwap_Market is
         uint128 _swapQuantity,
         uint256 _limitPrice,
         bool _istotal,
-        address _referal
+        address _referal,
+        bytes memory data
     )
         external
         payable
-        override
         noReentrant
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_)
     {
@@ -312,7 +315,8 @@ contract TTSwap_Market is
         );
         _goodid1.transferFrom(
             msg.sender,
-            _swapQuantity - swapcache.remainQuantity
+            _swapQuantity - swapcache.remainQuantity,
+            data
         );
 
         _goodid2.safeTransfer(msg.sender, goodid2Quantity_);
@@ -439,7 +443,8 @@ contract TTSwap_Market is
         address _goodid2,
         uint128 _swapQuantity,
         uint256 _limitPrice,
-        address _recipient
+        address _recipient,
+        bytes memory data
     )
         external
         payable
@@ -481,7 +486,7 @@ contract TTSwap_Market is
             _recipient,
             _swapQuantity - swapcache.feeQuantity
         );
-        _goodid1.transferFrom(msg.sender, goodid1Quantity_);
+        _goodid1.transferFrom(msg.sender, goodid1Quantity_, data);
         emit e_buyGoodForPay(
             _goodid1,
             _goodid2,
@@ -503,7 +508,9 @@ contract TTSwap_Market is
     function investGood(
         address _togood,
         address _valuegood,
-        uint128 _quantity
+        uint128 _quantity,
+        bytes memory data1,
+        bytes memory data2
     ) external payable override noReentrant returns (bool) {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
@@ -514,7 +521,7 @@ contract TTSwap_Market is
                     goods[_valuegood].goodConfig.isvaluegood())
         );
         goods[_togood].investGood(_quantity, normalInvest_);
-        _togood.transferFrom(msg.sender, _quantity);
+        _togood.transferFrom(msg.sender, _quantity, data1);
         if (_valuegood != address(0)) {
             valueInvest_.actualInvestQuantity = goods[_valuegood]
                 .currentState
@@ -526,7 +533,8 @@ contract TTSwap_Market is
 
             _valuegood.transferFrom(
                 msg.sender,
-                valueInvest_.actualInvestQuantity
+                valueInvest_.actualInvestQuantity,
+                data2
             );
             goods[_valuegood].investGood(
                 valueInvest_.actualInvestQuantity,
@@ -820,10 +828,11 @@ contract TTSwap_Market is
     /// @inheritdoc I_TTSwap_Market
     function goodWelfare(
         address goodid,
-        uint128 welfare
+        uint128 welfare,
+        bytes memory data
     ) external payable override noReentrant {
         require(goods[goodid].feeQuantityState.amount0() + welfare <= 2 ** 109);
-        goodid.transferFrom(msg.sender, welfare);
+        goodid.transferFrom(msg.sender, welfare, data);
         goods[goodid].feeQuantityState = add(
             goods[goodid].feeQuantityState,
             toTTSwapUINT256(uint128(welfare), 0)

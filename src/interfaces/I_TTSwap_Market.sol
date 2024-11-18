@@ -183,11 +183,13 @@ interface I_TTSwap_Market {
     /// @param _erc20address The contract address of the good
     /// @param _initial Initial parameters for the good (amount0: value, amount1: quantity)
     /// @param _goodconfig Configuration of the good
+    /// @param data Configuration of the good
     /// @return Success status
     function initMetaGood(
         address _erc20address,
         uint256 _initial,
-        uint256 _goodconfig
+        uint256 _goodconfig,
+        bytes memory data
     ) external payable returns (bool);
 
     /// @notice Initialize a normal good in the market
@@ -195,12 +197,16 @@ interface I_TTSwap_Market {
     /// @param _initial Initial parameters (amount0: normal good quantity, amount1: value good quantity)
     /// @param _erc20address The contract address of the good
     /// @param _goodConfig Configuration of the good
+    /// @param data1 Configuration of the good
+    /// @param data2 Configuration of the good
     /// @return Success status
     function initGood(
         address _valuegood,
         uint256 _initial,
         address _erc20address,
-        uint256 _goodConfig
+        uint256 _goodConfig,
+        bytes memory data1,
+        bytes memory data2
     ) external payable returns (bool);
 
     /// @notice Sell one good to buy another
@@ -218,7 +224,8 @@ interface I_TTSwap_Market {
         uint128 _swapQuantity,
         uint256 _limitprice,
         bool _istotal,
-        address _referal
+        address _referal,
+        bytes memory data1
     )
         external
         payable
@@ -237,7 +244,8 @@ interface I_TTSwap_Market {
         address _goodid2,
         uint128 _swapQuantity,
         uint256 _limitprice,
-        address _recipent
+        address _recipent,
+        bytes memory data1
     )
         external
         payable
@@ -251,7 +259,9 @@ interface I_TTSwap_Market {
     function investGood(
         address _togood,
         address _valuegood,
-        uint128 _quantity
+        uint128 _quantity,
+        bytes memory data1,
+        bytes memory data2
     ) external payable returns (bool);
 
     /// @notice Disinvest from a normal good
@@ -363,7 +373,11 @@ interface I_TTSwap_Market {
     /// @notice Delivers welfare to investors
     /// @param goodid The ID of the good
     /// @param welfare The amount of welfare
-    function goodWelfare(address goodid, uint128 welfare) external payable;
+    function goodWelfare(
+        address goodid,
+        uint128 welfare,
+        bytes memory data1
+    ) external payable;
 
     /**
      * @dev Internal function to handle proof data deletion and updates during transfer.

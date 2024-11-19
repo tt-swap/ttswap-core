@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.26;
 
-import {I_TTSwap_LimitOrderMaker, S_orderDetails} from "./interfaces/I_TTSwap_LimitOrderMaker.sol";
+import {I_TTSwap_LimitOrderMaker} from "./interfaces/I_TTSwap_LimitOrderMaker.sol";
 import {I_TTSwap_LimitOrderTaker, S_takeGoodInputPrams} from "./interfaces/I_TTSwap_LimitOrderTaker.sol";
 import {L_OrderStatus} from "./libraries/L_OrderStatus.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
-import {L_TTSwapUINT256Library} from "./libraries/L_TTSwapUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256} from "./libraries/L_TTSwapUINT256.sol";
 
 /**
  * @title TTS Token Contract
@@ -23,6 +23,8 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
     mapping(uint256 => S_orderDetails) public orders;
     mapping(address => uint256) public auths;
 
+    bytes internal constant defaultdata =
+        abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
     constructor(address _marketor) {
         marketcreator = _marketor;
         maxfreeremain = 40425200;
@@ -107,21 +109,74 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
     }
 
     /// @inheritdoc I_TTSwap_LimitOrderMaker
-    function takeLimitOrderNormal(uint256[] memory orderids) external override {
+    function takeLimitOrderNormal(
+        S_TakeParams[] memory orderids
+    ) external override {
         for (uint256 i; i < orderids.length; i++) {
-            if (orderstatus.get(orderids[i])) {
-                orders[orderids[i]].fromerc20.transferFrom(
-                    orders[orderids[i]].sender,
+            if (orderstatus.get(orderids[i].orderid)) {
+                orders[orderids[i].orderid].fromerc20.transferFrom(
+                    orders[orderids[i].orderid].sender,
                     msg.sender,
-                    orders[orderids[i]].amount.amount0()
+                    orders[orderids[i].orderid].amount.amount0(),
+                    defaultdata
                 );
-                orders[orderids[i]].toerc20.transferFrom(
+
+                orders[orderids[i].orderid].toerc20.transferFrom(
                     msg.sender,
-                    orders[orderids[i]].sender,
-                    orders[orderids[i]].amount.amount1()
+                    orders[orderids[i].orderid].sender,
+                    orders[orderids[i].orderid].amount.amount1(),
+                    orderids[i].transdata
                 );
-                orderstatus.unset(orderids[i]);
-                emit e_takeOrder(orderids[i]);
+                orderstatus.unset(orderids[i].orderid);
+                emit e_takeOrder(orderids[i].orderid);
+            }
+        }
+    }
+
+    /// @inheritdoc I_TTSwap_LimitOrderMaker
+    function takeLimitOrderChips(
+        S_OrderChip[] memory _orderChips
+    ) external override {
+        for (uint256 i; i < _orderChips.length; i++) {
+            if (orderstatus.get(_orderChips[i].orderid)) {
+                _orderChips[i].takeamount = _orderChips[i].takeamount >=
+                    orders[_orderChips[i].orderid].amount.amount0()
+                    ? orders[_orderChips[i].orderid].amount.amount0()
+                    : _orderChips[i].takeamount;
+                orders[_orderChips[i].orderid].fromerc20.transferFrom(
+                    orders[_orderChips[i].orderid].sender,
+                    msg.sender,
+                    _orderChips[i].takeamount,
+                    defaultdata
+                );
+                uint128 getamount = orders[_orderChips[i].orderid]
+                    .amount
+                    .getamount1fromamount0(_orderChips[i].takeamount);
+                getamount = getamount >=
+                    orders[_orderChips[i].orderid].amount.amount1()
+                    ? orders[_orderChips[i].orderid].amount.amount1()
+                    : getamount;
+                orders[_orderChips[i].orderid].toerc20.transferFrom(
+                    msg.sender,
+                    orders[_orderChips[i].orderid].sender,
+                    getamount,
+                    _orderChips[i].transdata
+                );
+                if (
+                    _orderChips[i].takeamount >=
+                    orders[_orderChips[i].orderid].amount.amount0()
+                ) {
+                    orderstatus.unset(_orderChips[i].orderid);
+                    emit e_takeOrder(_orderChips[i].orderid);
+                } else {
+                    orders[_orderChips[i].orderid].amount =
+                        orders[_orderChips[i].orderid].amount -
+                        toTTSwapUINT256(_orderChips[i].takeamount, getamount);
+                    emit e_takeOrderChips(
+                        _orderChips[i].orderid,
+                        orders[_orderChips[i].orderid].amount
+                    );
+                }
             }
         }
     }
@@ -154,7 +209,8 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
             orders[orderid].fromerc20.transferFrom(
                 orders[orderid].sender,
                 address(_takecontract),
-                orders[orderid].amount.amount0()
+                orders[orderid].amount.amount0(),
+                defaultdata
             );
             orderstatus.unset(orderid);
             emit e_takeOrder(orderid);
@@ -214,7 +270,8 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
                 _inputParams[i].fromerc20.transferFrom(
                     _inputParams[i].sender,
                     address(_takecontract),
-                    _inputParams[i].swapQuantity.amount0()
+                    _inputParams[i].swapQuantity.amount0(),
+                    defaultdata
                 );
                 orderstatus.unset(orderids[i]);
                 emit e_takeOrder(orderids[i]);
@@ -258,7 +315,8 @@ contract TTSwap_LimitOrder is I_TTSwap_LimitOrderMaker {
                         orders[ids[i]].fromerc20.transferFrom(
                             orders[ids[i]].sender,
                             msg.sender,
-                            amount
+                            uint128(amount),
+                            defaultdata
                         );
                         orderstatus.setTo(ids[i], false);
                         emit e_cleandeadorder(ids[i], amount, msg.sender);

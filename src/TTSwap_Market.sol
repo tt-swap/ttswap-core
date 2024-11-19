@@ -52,7 +52,8 @@ contract TTSwap_Market is
      * @dev The receiver of a flashloan is not a valid {IERC3156FlashBorrower-onFlashLoan} implementer.
      */
     error ERC3156InvalidReceiver(address receiver);
-
+    bytes private constant defaultdata =
+        abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
     bytes32 private constant RETURN_VALUE =
         keccak256("ERC3156FlashBorrower.onFlashLoan");
     uint256 public override marketconfig;
@@ -776,13 +777,14 @@ contract TTSwap_Market is
     /// @inheritdoc I_TTSwap_Market
     function payGood(
         address _goodid,
-        uint256 _payquanity,
-        address _recipent
+        uint128 _payquanity,
+        address _recipent,
+        bytes memory transdata
     ) external payable override returns (bool) {
         if (_goodid == address(1)) {
             _goodid.safeTransfer(_recipent, _payquanity);
         } else {
-            _goodid.transferFrom(msg.sender, _recipent, _payquanity);
+            _goodid.transferFrom(msg.sender, _recipent, _payquanity, transdata);
         }
         return true;
     }
@@ -904,13 +906,22 @@ contract TTSwap_Market is
         return goods[token].goodConfig.getFlashFee(amount);
     }
 
-    /// @inheritdoc IERC3156FlashLender
     function flashLoan(
         IERC3156FlashBorrower receiver,
         address token,
         uint256 amount,
         bytes calldata data
-    ) external override returns (bool) {
+    ) public override returns (bool) {
+        return flashLoan1(receiver, token, amount, data, defaultdata);
+    }
+    /// @inheritdoc I_TTSwap_Market
+    function flashLoan1(
+        IERC3156FlashBorrower receiver,
+        address token,
+        uint256 amount,
+        bytes calldata data,
+        bytes memory transdata
+    ) public override returns (bool) {
         uint256 maxLoan = maxFlashLoan(token);
         if (amount > maxLoan) {
             revert ERC3156ExceededMaxLoan(maxLoan);
@@ -923,7 +934,12 @@ contract TTSwap_Market is
         ) {
             revert ERC3156InvalidReceiver(address(receiver));
         }
-        token.transferFrom(address(receiver), address(this), amount + fee);
+        token.transferFrom(
+            address(receiver),
+            address(this),
+            uint128(amount + fee),
+            transdata
+        );
         goods[token].fillFee(fee);
         return true;
     }

@@ -21,10 +21,6 @@ interface I_SimplePermit {
         uint128 amount,
         bytes memory detail
     ) external;
-    struct SimplePermit {
-        uint8 transfertype;
-        bytes detail;
-    }
 
     struct S_PackedAllowance {
         uint128 amount;
@@ -32,7 +28,7 @@ interface I_SimplePermit {
         uint48 deadline;
         uint48 nonce;
     }
-    struct s_permit {
+    struct S_Permit {
         address owner;
         address spender;
         uint256 value;

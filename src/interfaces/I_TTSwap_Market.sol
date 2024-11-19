@@ -2,6 +2,7 @@
 pragma solidity 0.8.26;
 
 import {toTTSwapUINT256, addsub, subadd} from "../libraries/L_TTSwapUINT256.sol";
+import {IERC3156FlashBorrower} from "@openzeppelin/contracts/interfaces/IERC3156FlashBorrower.sol";
 
 /// @title Market Management Interface
 /// @notice Defines the interface for managing market operations
@@ -335,11 +336,13 @@ interface I_TTSwap_Market {
     /// @param _goodid The ID of the good
     /// @param _payquanity The quantity to transfer
     /// @param _recipent The recipient's address
+    /// @param transdata The recipient's address
     /// @return Success status
     function payGood(
         address _goodid,
-        uint256 _payquanity,
-        address _recipent
+        uint128 _payquanity,
+        address _recipent,
+        bytes memory transdata
     ) external payable returns (bool);
 
     /// @notice Changes the owner of a good
@@ -386,6 +389,14 @@ interface I_TTSwap_Market {
      * @param to The address receiving the proof.
      */
     function delproofdata(uint256 proofid, address from, address to) external;
+
+    function flashLoan1(
+        IERC3156FlashBorrower receiver,
+        address token,
+        uint256 amount,
+        bytes calldata data,
+        bytes memory transdata
+    ) external returns (bool);
 }
 /**
  * @dev Represents the state of a proof

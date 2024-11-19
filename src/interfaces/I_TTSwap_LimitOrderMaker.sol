@@ -31,6 +31,11 @@ interface I_TTSwap_LimitOrderMaker {
     /// @notice Emitted when limitorder is dealed
     /// @param _orderid the id of the limit order
     event e_takeOrder(uint256 _orderid);
+
+    /// @notice Emitted when limitorder is dealed
+    /// @param _orderid the id of the limit order
+    /// @param amount the id of the limit order
+    event e_takeOrderChips(uint256 _orderid, uint256 amount);
     /// @notice Emitted when limitorder is removed by marketor when order unvalid over time
     /// @param _orderids the ids of the limit order
     event e_cleandeadorders(uint256[] _orderids);
@@ -77,10 +82,10 @@ interface I_TTSwap_LimitOrderMaker {
     /// @notice owner remove his limit order
     /// @param _orderid order'sid
     function removeLimitOrder(uint256 _orderid) external;
-
+    function takeLimitOrderChips(S_OrderChip[] memory _orderChips) external;
     /// @notice normally take the limit order
     /// @param _orderids orders' id
-    function takeLimitOrderNormal(uint256[] memory _orderids) external;
+    function takeLimitOrderNormal(S_TakeParams[] memory _orderids) external;
 
     /// @notice amm take the limit order
     /// @param _orderid order's id
@@ -113,11 +118,21 @@ interface I_TTSwap_LimitOrderMaker {
     function queryLimitOrder(
         uint256[] memory _ordersids
     ) external view returns (S_orderDetails[] memory _orderdetail);
-}
-struct S_orderDetails {
-    uint96 timestamp;
-    address sender;
-    address fromerc20;
-    address toerc20;
-    uint256 amount; //first 128bit is amount0(),last 128bit is amount.amount1()
+    struct S_TakeParams {
+        uint256 orderid;
+        bytes transdata;
+    }
+    struct S_orderDetails {
+        uint96 timestamp;
+        address sender;
+        address fromerc20;
+        address toerc20;
+        uint256 amount; //first 128bit is amount0(),last 128bit is amount.amount1()
+    }
+
+    struct S_OrderChip {
+        uint256 orderid;
+        uint128 takeamount;
+        bytes transdata;
+    }
 }

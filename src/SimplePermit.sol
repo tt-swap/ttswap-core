@@ -2,7 +2,8 @@
 pragma solidity 0.8.26;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {EIP712} from "./EIP712.sol";
-contract PermitTransfer is EIP712 {
+import {I_SimplePermit} from "./interfaces/I_SimplePermit.sol";
+abstract contract PermitTransfer is EIP712, I_SimplePermit {
     mapping(address owner => mapping(address token => mapping(address spender => S_PackedAllowance data)))
         public allowance;
     function approve(
@@ -22,10 +23,7 @@ contract PermitTransfer is EIP712 {
         address to,
         uint128 amount
     ) external {
-        S_PackedAllowance storage allowed = allowance[msg.sender][token][
-            spender
-        ];
-        allowed = 1;
+        S_PackedAllowance storage allowed = allowance[msg.sender][token][to];
         IERC20(token).transferFrom(owner, to, amount);
     }
 
@@ -36,16 +34,6 @@ contract PermitTransfer is EIP712 {
         uint128 amount,
         bytes calldata data
     ) external {
-        IERC20(token).transferFrom(owner, to, amount);
-    }
-
-    function PermitAllanceTransferFrom(
-        address token,
-        address owner,
-        address spender,
-        uint128 amount,
-        bytes calldata data
-    ) external {
-        IERC20(token).transferFrom(owner, to, amount);
+        IERC20(token).transferFrom(owner, spender, amount);
     }
 }

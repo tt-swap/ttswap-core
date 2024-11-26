@@ -16,7 +16,6 @@ library GoodUtil {
     function showGood(S_GoodTmpState memory p_) public pure {
         console2.log("good owner:", p_.owner);
         //showconfig(p_.goodConfig);
-        console2.log("good erc20address:", p_.erc20address);
         console2.log("good currentState:", uint256(p_.currentState.amount0()));
         console2.log("good currentState:", uint256(p_.currentState.amount1()));
         console2.log("good investState:", uint256(p_.investState.amount0()));

@@ -16,7 +16,7 @@ contract testInitMetaGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_TTSwapUINT256Library for uint256;
 
-    uint256 metagood;
+    address metagood;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -41,10 +41,11 @@ contract testInitMetaGood is BaseSetup {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            goodconfig
+            goodconfig,
+            defaultdata
         );
         snapLastCall("init_erc20_metagood");
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         assertEq(
             usdt.balanceOf(marketcreator),
             100000 * 10 ** 6 - 50000 * 10 ** 6,
@@ -85,7 +86,7 @@ contract testInitMetaGood is BaseSetup {
         );
 
         uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, 0).toKey()
+            S_ProofKey(marketcreator, metagood, address(0)).toKey()
         );
         S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
@@ -138,10 +139,11 @@ contract testInitMetaGood is BaseSetup {
         market.initMetaGood{value: 50000 * 10 ** 6}(
             nativeCurrency,
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            goodconfig
+            goodconfig,
+            defaultdata
         );
         snapLastCall("init_nativeerc20_metagood");
-        metagood = S_GoodKey(marketcreator, nativeCurrency).toId();
+        metagood = nativeCurrency;
         assertEq(
             marketcreator.balance,
             100000 * 10 ** 6 - 50000 * 10 ** 6,
@@ -183,7 +185,7 @@ contract testInitMetaGood is BaseSetup {
         );
 
         uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, 0).toKey()
+            S_ProofKey(marketcreator, metagood, address(0)).toKey()
         );
         S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(

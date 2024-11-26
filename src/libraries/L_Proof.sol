@@ -34,18 +34,19 @@ library L_Proof {
      */
     function updateInvest(
         S_ProofState storage _self,
-        uint256 _currenctgood,
-        uint256 _valuegood,
+        address _currenctgood,
+        address _valuegood,
         uint256 _state,
         uint256 _invest,
         uint256 _valueinvest
     ) internal {
         if (_self.invest.amount1() == 0) _self.currentgood = _currenctgood;
-        if (_valuegood != 0) _self.valuegood = _valuegood;
         _self.state = add(_self.state, _state);
         _self.invest = add(_self.invest, _invest);
-        if (_valuegood != 0)
+        if (_valuegood != address(0)) {
+            _self.valuegood = _valuegood;
             _self.valueinvest = add(_self.valueinvest, _valueinvest);
+        }
     }
 
     /**
@@ -61,7 +62,7 @@ library L_Proof {
         );
 
         // If there's a value good, calculate and burn the corresponding amount of value investment
-        if (_self.valuegood != 0) {
+        if (_self.valuegood != address(0)) {
             uint256 burnResult2_ = toTTSwapUINT256(
                 mulDiv(
                     _self.valueinvest.amount0(),
@@ -95,7 +96,7 @@ library L_Proof {
         uint256 profit
     ) internal {
         _self.invest = add(_self.invest, toTTSwapUINT256(profit.amount0(), 0));
-        if (_self.valuegood != 0) {
+        if (_self.valuegood != address(0)) {
             _self.valueinvest = add(
                 _self.valueinvest,
                 toTTSwapUINT256(profit.amount1(), 0)

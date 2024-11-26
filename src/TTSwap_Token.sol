@@ -7,10 +7,8 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 import {I_TTSwap_Token, s_share, s_chain, s_proof} from "./interfaces/I_TTSwap_Token.sol";
-import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
-import {I_TTSwap_MainTrigger} from "./interfaces/I_TTSwap_MainTrigger.sol";
 
 /**
  * @title TTS Token Contract
@@ -21,7 +19,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     using L_TTSTokenConfigLibrary for uint256;
     uint256 public ttstokenconfig;
 
-    mapping(uint32 => s_share) shares; // all share's mapping
+    mapping(uint32 => s_share) public shares; // all share's mapping
 
     uint256 public stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
     uint256 public poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
@@ -31,9 +29,9 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     mapping(uint32 => s_chain) public chains;
 
     /// @inheritdoc I_TTSwap_Token
-    uint256 public override normalgoodid;
+    address public override normalgoodid;
     /// @inheritdoc I_TTSwap_Token
-    uint256 public override valuegoodid;
+    address public override valuegoodid;
     /// @inheritdoc I_TTSwap_Token
     address public override dao_admin;
     /// @inheritdoc I_TTSwap_Token
@@ -95,8 +93,8 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     /// @inheritdoc I_TTSwap_Token
     function setEnv(
-        uint256 _normalgoodid,
-        uint256 _valuegoodid,
+        address _normalgoodid,
+        address _valuegoodid,
         address _marketcontract
     ) external override {
         require(_msgSender() == dao_admin);
@@ -516,9 +514,9 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         if (profit > 0) _mint(_staker, profit);
         emit e_unstake(
             _staker,
-            toTTSwapUINT256(proofvalue, stakestate.amount1()),
-            toTTSwapUINT256(construct, profit),
             stakeproof[restakeid].proofstate,
+            toTTSwapUINT256(construct, profit),
+            stakestate,
             poolstate
         );
     }
@@ -547,13 +545,5 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     /// @inheritdoc I_TTSwap_Token
     function burn(address account, uint256 value) external override {
         _burn(account, value);
-    }
-    /// @inheritdoc I_TTSwap_Token
-    function setMainTriggerMarket(
-        address Maintriggeradd,
-        address marketadd
-    ) external override {
-        require(msg.sender == dao_admin);
-        I_TTSwap_MainTrigger(Maintriggeradd).setofficialMarket(marketadd);
     }
 }

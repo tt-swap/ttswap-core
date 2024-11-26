@@ -6,7 +6,7 @@ import {MyToken} from "../src/ERC20.sol";
 import {TTSwap_Market} from "../src/TTSwap_Market.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";
 import {TTSwap_NFT} from "../src/TTSwap_NFT.sol";
-import {TTSwap_MainTrigger} from "../src/TTSwap_MainTrigger.sol";
+import {TTSwap_LimitOrder} from "../src/TTSwap_LimitOrder.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
@@ -28,22 +28,23 @@ contract testBuy1 is Test {
     using L_CurrencyLibrary for address;
     using L_TTSwapUINT256Library for uint256;
 
-    uint256 usdtgood;
-    uint256 nativenormalgood;
-    uint256 btcgood;
-    uint256 ethgood;
-    uint256 normalgoodusdt;
+    address usdtgood;
+    address nativenormalgood;
+    address btcgood;
+    address ethgood;
+    address normalgoodusdt;
     uint256 metaproofid;
     address marketcreator;
 
     TTSwap_Market market;
     TTSwap_Token tts_token;
     TTSwap_NFT tts_nft;
-    TTSwap_MainTrigger tts_trigger;
+    TTSwap_LimitOrder tts_trigger;
     MyToken usdt;
     MyToken eth;
     MyToken wbtc;
-
+    bytes internal constant defaultdata =
+        abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
     function setUp() public {
         marketcreator = address(1);
         vm.startPrank(marketcreator);
@@ -52,12 +53,14 @@ contract testBuy1 is Test {
         eth = new MyToken("ETH", "ETH", 18);
         tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
         tts_nft = new TTSwap_NFT(address(tts_token));
-        tts_trigger = new TTSwap_MainTrigger(address(tts_token));
+        tts_trigger = new TTSwap_LimitOrder(marketcreator);
         market = new TTSwap_Market(
             81562183917421901855786361352751156561780156203962646020495653018153967943680,
             address(tts_token),
             address(tts_nft),
-            address(tts_trigger)
+            address(tts_trigger),
+            marketcreator,
+            marketcreator
         );
         tts_token.addauths(address(market), 1);
         tts_token.addauths(marketcreator, 3);
@@ -74,10 +77,11 @@ contract testBuy1 is Test {
                 2 *
                 2 ** 216 +
                 10 *
-                2 ** 206
+                2 ** 206,
+            defaultdata
         );
         console2.log(1, 1);
-        usdtgood = S_GoodKey(marketcreator, address(usdt)).toId();
+        usdtgood = address(usdt);
         //58014493144340224047723362035128774673999617126840714024924520715586495315968 ((2 ** 255) + 1 * 2 ** 246 + 3 * 2 ** 240 + 5 * 2 ** 233 + 7 * 2 ** 226)
         //34028236692093846346337460743176821145700000000000(100000000000*2**128+100000000000)
 
@@ -88,9 +92,11 @@ contract testBuy1 is Test {
             usdtgood,
             toTTSwapUINT256(10 * 10 ** 18, 33000 * 10 ** 6),
             address(eth),
-            574294852927029179450682055812555939397509459020590716783642472657759240192
+            574294852927029179450682055812555939397509459020590716783642472657759240192,
+            defaultdata,
+            defaultdata
         );
-        ethgood = S_GoodKey(marketcreator, address(eth)).toId();
+        ethgood = address(eth);
 
         deal(address(wbtc), marketcreator, 10 ** 5 * 10 ** 18, false);
         wbtc.approve(address(market), 100 * 10 ** 8);
@@ -98,10 +104,12 @@ contract testBuy1 is Test {
             usdtgood,
             toTTSwapUINT256(2 * 10 ** 8, 128000 * 10 ** 6),
             address(wbtc),
-            574294852927029179450682055812555939397509459020590716783642472657759240192
+            574294852927029179450682055812555939397509459020590716783642472657759240192,
+            defaultdata,
+            defaultdata
         );
 
-        btcgood = S_GoodKey(marketcreator, address(wbtc)).toId();
+        btcgood = address(wbtc);
         vm.stopPrank();
     }
     function testBuyfromethtobtc() public {
@@ -117,7 +125,8 @@ contract testBuy1 is Test {
                 10 * 10 ** 18 * 128000 * 10 ** 6
             ),
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         console2.log("after balance of eth", eth.balanceOf(marketcreator));
         console2.log("after balance of wbtc", wbtc.balanceOf(marketcreator));

@@ -28,9 +28,9 @@ contract collectERC20OtherNormalGood is BaseSetup {
     using L_ProofKeyLibrary for S_ProofKey;
 
     // State variables
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodbtc;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodbtc;
 
     /**
      * @dev Setup function to initialize the test environment
@@ -62,9 +62,10 @@ contract collectERC20OtherNormalGood is BaseSetup {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            _goodconfig
+            _goodconfig,
+            defaultdata
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -94,9 +95,11 @@ contract collectERC20OtherNormalGood is BaseSetup {
             metagood,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
-            normalgoodconfig
+            normalgoodconfig,
+            defaultdata,
+            defaultdata
         );
-        normalgoodbtc = S_GoodKey(users[1], address(btc)).toId();
+        normalgoodbtc = address(btc);
         vm.stopPrank();
     }
 
@@ -109,7 +112,13 @@ contract collectERC20OtherNormalGood is BaseSetup {
         deal(address(usdt), users[2], 50000000 * 10 ** 6, false);
         usdt.approve(address(market), 800000 * 10 ** 6 + 1);
         btc.approve(address(market), 10 * 10 ** 8 + 1);
-        market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
+        market.investGood(
+            normalgoodbtc,
+            metagood,
+            1 * 10 ** 8,
+            defaultdata,
+            defaultdata
+        );
         vm.stopPrank();
     }
 
@@ -253,12 +262,24 @@ contract collectERC20OtherNormalGood is BaseSetup {
         );
 
         // Invest and collect proof second time
-        market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
+        market.investGood(
+            normalgoodbtc,
+            metagood,
+            1 * 10 ** 8,
+            defaultdata,
+            defaultdata
+        );
         market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_erc20_normalgood_second");
 
         // Invest and collect proof third time
-        market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
+        market.investGood(
+            normalgoodbtc,
+            metagood,
+            1 * 10 ** 8,
+            defaultdata,
+            defaultdata
+        );
         market.collectProof(normalproof, address(0));
         snapLastCall("collect_other_erc20_normalgood_three");
         vm.stopPrank();

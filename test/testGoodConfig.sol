@@ -14,23 +14,6 @@ contract testGoodConfig is Test {
         assertEq(a_min.isvaluegood(), false);
     }
 
-    function test_swaptake() public pure {
-        uint256 a_min = 1 * 2 ** 226;
-        assertEq(a_min.swaptake(), true);
-    }
-    function test_swapmake() public pure {
-        uint256 a_min = 1 * 2 ** 225;
-        assertEq(a_min.swapmake(), true);
-    }
-    function test_invest() public pure {
-        uint256 a_min = 1 * 2 ** 224;
-        assertEq(a_min.invest(), true);
-    }
-    function test_divest() public pure {
-        uint256 a_min = 1 * 2 ** 223;
-        assertEq(a_min.divest(), true);
-    }
-
     function test_getInvestFee() public pure {
         uint256 a_min = 1 * 2 ** 217;
         uint256 a_mid = 32 * 2 ** 217;
@@ -86,9 +69,9 @@ contract testGoodConfig is Test {
         // assertEq(a_min.getSwapChips(), 1 * 2 ** 6);
         // assertEq(a_mid.getSwapChips(), 2 * 2 ** 6);
         // assertEq(a_max.getSwapChips(), 1023 * 2 ** 6);
-        assertEq(a_min.getSwapChips(10000), 156);
-        assertEq(a_mid.getSwapChips(10000), 78);
-        assertEq(a_max.getSwapChips(10000), 0);
+        assertEq(a_min.getSwapChips(10000), 1000);
+        assertEq(a_mid.getSwapChips(10000), 500);
+        assertEq(a_max.getSwapChips(1000000), 97);
     }
 
     function test_getDisinvestChips() public pure {

@@ -4,10 +4,8 @@ pragma solidity 0.8.26;
 import {L_Proof} from "./L_Proof.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
-import {L_CurrencyLibrary} from "./L_Currency.sol";
 
-import {I_TTSwap_MainTrigger} from "../interfaces/I_TTSwap_MainTrigger.sol";
-import {S_GoodState, S_GoodKey, S_ProofState} from "../interfaces/I_TTSwap_Market.sol";
+import {S_GoodState, S_GoodKey, S_ProofState, S_LoanProof} from "../interfaces/I_TTSwap_Market.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice} from "./L_TTSwapUINT256.sol";
 
 /**
@@ -20,7 +18,6 @@ library L_Good {
     using L_MarketConfigLibrary for uint256;
     using L_TTSwapUINT256Library for uint256;
     using L_Proof for S_ProofState;
-    using L_CurrencyLibrary for address;
 
     /**
      * @notice Update the good configuration
@@ -34,10 +31,10 @@ library L_Good {
     ) internal {
         // Clear the top 33 bits of the new config
         assembly {
-            _goodConfig := shr(33, shl(33, _goodConfig))
+            _goodConfig := shr(27, shl(27, _goodConfig))
         }
         // Preserve the top 33 bits of the existing config and add the new config
-        _self.goodConfig = ((_self.goodConfig >> 223) << 223) + _goodConfig;
+        _self.goodConfig = ((_self.goodConfig >> 229) << 229) + _goodConfig;
     }
 
     /**
@@ -45,19 +42,16 @@ library L_Good {
      * @dev Sets up the initial state, configuration, and owner of the good
      * @param self Storage pointer to the good state
      * @param _init Initial balance state
-     * @param _erc20address Address of the ERC20 token associated with the good
      * @param _goodConfig Configuration of the good
      */
     function init(
         S_GoodState storage self,
         uint256 _init,
-        address _erc20address,
         uint256 _goodConfig
     ) internal {
         self.currentState = _init;
         self.investState = _init;
-        self.goodConfig = (_goodConfig << 33) >> 33;
-        self.erc20address = _erc20address;
+        self.goodConfig = (_goodConfig << 27) >> 27;
         self.owner = msg.sender;
     }
 
@@ -202,7 +196,6 @@ library L_Good {
      * @dev Implements a complex swap algorithm considering price limits, fees, and minimum swap amounts
      * @param _stepCache A cache structure containing swap state and configurations
      * @param _limitPrice The price limit for the swap
-    
      */
     function swapCompute2(
         swapCache memory _stepCache,
@@ -533,7 +526,7 @@ library L_Good {
         }
 
         // Handle value good disinvestment if applicable
-        if (_investProof.valuegood != 0) {
+        if (_investProof.valuegood != address(0)) {
             // Calculate disinvestment results for value good
             valueGoodResult2_ = S_GoodDisinvestReturn(
                 toTTSwapUINT256(
@@ -695,6 +688,37 @@ library L_Good {
         // Update the investment proof with collected fees
         _investProof.collectProofFee(profit);
     }
+    // function addloanliq(
+    //     S_GoodState storage _good,
+    //     uint256 _loanproof,d
+    //     uint128 amount
+    // ) internal {
+    //     _good.loanstate = _good.loanstate + toTTSwapUINT256(amount, 0);
+    //     if (_loanproof == 0) {
+    //         _loanproof = toTTSwapUINT256(amount, _good.feerate.amount1());
+    //     } else {
+    //         uint128 feerate = (_good.feerate.amount1() *
+    //             amount +
+    //             _loanproof.amount0() *
+    //             _loanproof.amount1()) / (amount + _loanproof.amount0());
+    //         _loanproof = toTTSwapUINT256(
+    //             amount + _loanproof.amount0(),
+    //             feerate
+    //         );
+    //     }
+    // }
+
+    // function removeliq(
+    //     S_GoodState storage _good,
+    //     uint256 amount
+    // ) internal returns (uint256 fee) {
+    //     _good.loanstate =
+    //         _good.loanstate -
+    //         toTTSwapUINT256(amount.amount0(), 0);
+    //     fee = loanextend.get - amount.amount0() * amount.amount1();
+    // }
+
+    // function updatefeerate(S_GoodState storage _good) internal {}
 
     /**
      * @notice Allocate fees to various parties
@@ -729,10 +753,7 @@ library L_Good {
 
         if (_referral == address(0)) {
             // If no referrer, distribute fees differently
-            _self.erc20address.safeTransfer(
-                msg.sender,
-                liquidFee + _divestQuantity
-            );
+            _self.commission[msg.sender] += (liquidFee + _divestQuantity);
             _self.commission[_gater] += sellerFee + customerFee;
             _self.commission[_marketcreator] += (_profit -
                 liquidFee -
@@ -760,10 +781,9 @@ library L_Good {
             }
 
             _self.commission[_marketcreator] += marketfee;
-            _self.erc20address.safeTransfer(
-                msg.sender,
-                liquidFee + customerFee + _divestQuantity
-            );
+            _self.commission[msg.sender] = (liquidFee +
+                customerFee +
+                _divestQuantity);
         }
     }
 
@@ -782,80 +802,16 @@ library L_Good {
             (_goodconfig << 223);
     }
 
-    function swaptake(
-        S_GoodState storage _self,
-        address officialadd,
-        uint256 opgood,
-        uint256 _tradestate,
-        uint256 opstate,
-        address recipent
-    ) internal {
-        if (_self.goodConfig.swaptake())
-            if (
-                I_TTSwap_MainTrigger(officialadd).main_swaptake(
-                    _self.trigger,
-                    opgood,
-                    _tradestate,
-                    _self.currentState,
-                    opstate,
-                    recipent
-                )
-            ) revert();
-    }
-
-    function swapmake(
-        S_GoodState storage _self,
-        address officialadd,
-        uint256 opgood,
-        uint256 _tradestate,
-        uint256 opstate,
-        address recipent
-    ) internal {
-        if (_self.goodConfig.swapmake())
-            if (
-                I_TTSwap_MainTrigger(officialadd).main_swapmake(
-                    _self.trigger,
-                    opgood,
-                    _tradestate,
-                    _self.currentState,
-                    opstate,
-                    recipent
-                )
-            ) revert();
-    }
-
-    function invest(
-        S_GoodState storage _self,
-        address officialadd,
-        uint256 investquantity,
-        address recipent
-    ) internal {
-        if (_self.goodConfig.invest())
-            if (
-                I_TTSwap_MainTrigger(officialadd).main_invest(
-                    _self.trigger,
-                    investquantity,
-                    _self.currentState,
-                    recipent
-                )
-            ) revert();
-    }
-
-    function divest(
-        S_GoodState storage _self,
-        address officialadd,
-        uint256 divestquanity,
-        address recipent
-    ) internal {
-        if (_self.goodConfig.divest())
-            if (
-                I_TTSwap_MainTrigger(officialadd).main_divest(
-                    _self.trigger,
-                    divestquanity,
-                    _self.currentState,
-                    recipent
-                )
-            ) revert();
+    /**
+     * @notice fill good
+     * @dev Preserves the top 33 bits of the existing config and updates the rest
+     * @param _self Storage pointer to the good state
+     * @param _fee New configuration value to be applied
+     */
+    function fillFee(S_GoodState storage _self, uint256 _fee) internal {
+        _self.feeQuantityState =
+            (_self.feeQuantityState + (_fee % 2 ** 128)) <<
+            (2 ** 128);
     }
 }
 

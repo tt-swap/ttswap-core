@@ -21,9 +21,9 @@ contract buyNativeETHNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodbtc;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -48,9 +48,10 @@ contract buyNativeETHNormalGood is BaseSetup {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            _goodconfig
+            _goodconfig,
+            defaultdata
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -75,10 +76,12 @@ contract buyNativeETHNormalGood is BaseSetup {
         market.initGood{value: 100000000}(
             metagood,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
-            address(0),
-            normalgoodconfig
+            address(1),
+            normalgoodconfig,
+            defaultdata,
+            defaultdata
         );
-        normalgoodbtc = S_GoodKey(users[1], address(0)).toId();
+        normalgoodbtc = address(1);
         vm.stopPrank();
     }
 
@@ -113,7 +116,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             6300 * 10 ** 6,
             65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_nativeeth_normal_good_without_chips_first");
         assertEq(
@@ -175,7 +179,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             6300 * 10 ** 6,
             120000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_nativeeth_normal_good_without_chips_second");
 
@@ -185,7 +190,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             6300 * 10 ** 6,
             180000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_nativeeth_normal_good_without_chips_three");
 
@@ -237,7 +243,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             6300,
             65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_nativeeth_normal_good_chips_first_1chips");
 
@@ -247,7 +254,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             6300,
             80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_nativeeth_normal_good_chips_second_1chips");
 
@@ -257,7 +265,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             6300 * 10 ** 6,
             80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_nativeeth_normal_good_chips_second_12chips");
 
@@ -267,7 +276,8 @@ contract buyNativeETHNormalGood is BaseSetup {
             6300 * 10 ** 6,
             100000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_nativeeth_normal_good_chips_second_10chips");
         vm.stopPrank();

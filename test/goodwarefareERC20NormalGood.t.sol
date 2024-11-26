@@ -20,9 +20,9 @@ contract goodwarefareERC20NormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodbtc;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -47,9 +47,10 @@ contract goodwarefareERC20NormalGood is BaseSetup {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            _goodconfig
+            _goodconfig,
+            defaultdata
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -76,9 +77,11 @@ contract goodwarefareERC20NormalGood is BaseSetup {
             metagood,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
-            normalgoodconfig
+            normalgoodconfig,
+            defaultdata,
+            defaultdata
         );
-        normalgoodbtc = S_GoodKey(users[1], address(btc)).toId();
+        normalgoodbtc = address(btc);
         vm.stopPrank();
     }
 
@@ -118,7 +121,7 @@ contract goodwarefareERC20NormalGood is BaseSetup {
             "before collect erc20 good:normalgoodbtc feeQuantityState amount1 error"
         );
 
-        market.goodWelfare(normalgoodbtc, 10 ** 8);
+        market.goodWelfare(normalgoodbtc, 10 ** 8, defaultdata);
         snapLastCall("goodwarefare_own_erc20_normalgood_first");
         good_ = market.getGoodState(normalgoodbtc);
         assertEq(
@@ -152,10 +155,10 @@ contract goodwarefareERC20NormalGood is BaseSetup {
             "after collect erc20 good:normalgoodbtc feeQuantityState amount1 error"
         );
 
-        market.goodWelfare(normalgoodbtc, 10 ** 8);
+        market.goodWelfare(normalgoodbtc, 10 ** 8, defaultdata);
         snapLastCall("goodwarefare_own_erc20_normalgood_second");
 
-        market.goodWelfare(normalgoodbtc, 10 ** 8);
+        market.goodWelfare(normalgoodbtc, 10 ** 8, defaultdata);
         snapLastCall("goodwarefare_own_erc20_normalgood_three");
         vm.stopPrank();
     }

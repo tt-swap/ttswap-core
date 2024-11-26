@@ -22,9 +22,9 @@ contract buyERC20NormalGood is BaseSetup {
     using L_ProofKeyLibrary for S_ProofKey;
     using L_TTSwapUINT256Library for uint256;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodbtc;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -33,7 +33,6 @@ contract buyERC20NormalGood is BaseSetup {
     }
 
     function initmetagood() public {
-        BaseSetup.setUp();
         vm.startPrank(marketcreator);
         deal(address(usdt), marketcreator, 1000000 * 10 ** 6, false);
         usdt.approve(address(market), 50000 * 10 ** 6 + 1);
@@ -49,9 +48,10 @@ contract buyERC20NormalGood is BaseSetup {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            _goodconfig
+            _goodconfig,
+            defaultdata
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -78,9 +78,11 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
-            normalgoodconfig
+            normalgoodconfig,
+            defaultdata,
+            defaultdata
         );
-        normalgoodbtc = S_GoodKey(users[1], address(btc)).toId();
+        normalgoodbtc = address(btc);
         vm.stopPrank();
     }
 
@@ -115,7 +117,8 @@ contract buyERC20NormalGood is BaseSetup {
             6300 * 10 ** 6,
             65000 * 10 ** 6 + 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_erc20_normal_good_without_chips_first");
         assertEq(
@@ -168,7 +171,8 @@ contract buyERC20NormalGood is BaseSetup {
             6300 * 10 ** 6,
             180000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_erc20_normal_good_without_chips_second");
         market.buyGood(
@@ -177,7 +181,8 @@ contract buyERC20NormalGood is BaseSetup {
             6300 * 10 ** 6,
             180000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_erc20_normal_good_without_chips_three");
         vm.stopPrank();
@@ -232,7 +237,8 @@ contract buyERC20NormalGood is BaseSetup {
             6300,
             65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_erc20_normal_good_chips_first_1chips");
 
@@ -242,7 +248,8 @@ contract buyERC20NormalGood is BaseSetup {
             6300,
             80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_erc20_normal_good_chips_second_1chips");
 
@@ -252,7 +259,8 @@ contract buyERC20NormalGood is BaseSetup {
             6300 * 10 ** 6,
             80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_erc20_normal_good_chips_second_12chips");
 
@@ -262,7 +270,8 @@ contract buyERC20NormalGood is BaseSetup {
             1000000000,
             90000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
             false,
-            address(0)
+            address(0),
+            defaultdata
         );
         snapLastCall("buy_erc20_normal_good_chips_second_2chips");
         vm.stopPrank();

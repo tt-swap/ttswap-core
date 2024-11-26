@@ -21,9 +21,9 @@ contract collectERC20OwnValueGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodeth;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -48,16 +48,23 @@ contract collectERC20OwnValueGood is BaseSetup {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            _goodconfig
+            _goodconfig,
+            defaultdata
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
     function investOwnERC20ValueGood() public {
         vm.startPrank(marketcreator);
         usdt.approve(address(market), 200000 * 10 ** 6 + 1);
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
+        market.investGood(
+            metagood,
+            address(0),
+            50000 * 10 ** 6,
+            defaultdata,
+            defaultdata
+        );
         vm.stopPrank();
     }
 
@@ -65,7 +72,7 @@ contract collectERC20OwnValueGood is BaseSetup {
         vm.startPrank(marketcreator);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, 0).toKey()
+            S_ProofKey(marketcreator, metagood, address(0)).toKey()
         );
         S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(
@@ -168,12 +175,24 @@ contract collectERC20OwnValueGood is BaseSetup {
             "after collect:proof contruct error"
         );
         usdt.approve(address(market), 200000 * 10 ** 6 + 1);
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
+        market.investGood(
+            metagood,
+            address(0),
+            50000 * 10 ** 6,
+            defaultdata,
+            defaultdata
+        );
         market.collectProof(normalproof, address(0));
         snapLastCall("collectProof_own_erc20_valuegood_second");
 
         usdt.approve(address(market), 200000 * 10 ** 6 + 1);
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
+        market.investGood(
+            metagood,
+            address(0),
+            50000 * 10 ** 6,
+            defaultdata,
+            defaultdata
+        );
         market.collectProof(normalproof, address(0));
         snapLastCall("collectProof_own_erc20_valuegood_three");
         vm.stopPrank();

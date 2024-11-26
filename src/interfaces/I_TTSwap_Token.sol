@@ -14,8 +14,8 @@ interface I_TTSwap_Token {
     /// @param valuegoodid The ID of the value good
     /// @param marketcontract The address of the market contract
     event e_setenv(
-        uint256 normalgoodid,
-        uint256 valuegoodid,
+        address normalgoodid,
+        address valuegoodid,
         address marketcontract
     );
 
@@ -72,7 +72,7 @@ interface I_TTSwap_Token {
 
     /// @notice Emitted when unstaking occurs
     /// @param recipient The address receiving the unstaked tokens
-    /// @param proofvalue //first 128 bit proofvalue,last 128 bit poolvalue
+    /// @param proofvalue first 128 bit proofvalue,last 128 bit poolcontruct
     /// @param unstakestate The state after unstaking
     /// @param stakestate The state of the stake
     /// @param poolstate The state of the pool
@@ -100,12 +100,12 @@ interface I_TTSwap_Token {
      * @dev   Returns the ID of the normal good
      * @return _normalgoodid Returns the id of normalgood
      */
-    function normalgoodid() external view returns (uint256 _normalgoodid);
+    function normalgoodid() external view returns (address _normalgoodid);
     /**
      * @dev   Returns the ID of the value good
      * @return _valuegoodid Returns the id of the valuegoodid
      */
-    function valuegoodid() external view returns (uint256 _valuegoodid);
+    function valuegoodid() external view returns (address _valuegoodid);
     /**
      * @dev  Returns the amount of TTS available for public sale
      * @return _publicsell Returns the amount of TTS available for public sale
@@ -126,8 +126,8 @@ interface I_TTSwap_Token {
      */
     function auths(address recipent) external view returns (uint256 _auth);
     function setEnv(
-        uint256 _normalgoodid,
-        uint256 _valuegoodid,
+        address _normalgoodid,
+        address _valuegoodid,
         address _marketcontract
     ) external; // Sets the environment variables for normal good ID, value good ID, and market contract address
     /**
@@ -249,13 +249,6 @@ interface I_TTSwap_Token {
     function getreferralanddaoadmin(
         address _customer
     ) external view returns (address dba_admin, address referral);
-    /// @notice set Maintrigger's market address
-    /// @param Maintriggeradd The address of the customer
-    /// @param marketadd The address of the DAO admin
-    function setMainTriggerMarket(
-        address Maintriggeradd,
-        address marketadd
-    ) external;
 }
 struct s_share {
     address recipient; //owner
@@ -271,5 +264,5 @@ struct s_chain {
 }
 struct s_proof {
     address fromcontract; // from which contract
-    uint256 proofstate; // stake's state
+    uint256 proofstate; // stake's state  amount0 value 128 construct asset
 }

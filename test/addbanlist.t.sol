@@ -20,9 +20,9 @@ contract addbanlist is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodbtc;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -30,12 +30,12 @@ contract addbanlist is BaseSetup {
 
     function testaddbanlist() public {
         vm.startPrank(marketcreator);
-        tts_token.addauths(marketcreator, 3);
+        market.setMarketor(marketcreator);
         market.addbanlist(users[4]);
-        assertEq(market.banlist(users[4]), 1, "banlist error");
+        assertEq(market.userConfig(users[4]), 1, "banlist error");
 
         market.removebanlist(users[4]);
-        assertEq(market.banlist(users[4]), 0, "banlist error");
+        assertEq(market.userConfig(users[4]), 0, "banlist error");
         vm.stopPrank();
     }
 }

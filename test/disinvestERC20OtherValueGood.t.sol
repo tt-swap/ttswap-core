@@ -20,9 +20,9 @@ contract disinvestERC20OtherValueGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodeth;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -47,9 +47,10 @@ contract disinvestERC20OtherValueGood is BaseSetup {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            _goodconfig
+            _goodconfig,
+            defaultdata
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -57,7 +58,13 @@ contract disinvestERC20OtherValueGood is BaseSetup {
         vm.startPrank(users[1]);
         deal(address(usdt), users[1], 1000000 * 10 ** 6, false);
         usdt.approve(address(market), 200000 * 10 ** 6 + 1);
-        market.investGood(metagood, 0, 50000 * 10 ** 6);
+        market.investGood(
+            metagood,
+            address(0),
+            50000 * 10 ** 6,
+            defaultdata,
+            defaultdata
+        );
         vm.stopPrank();
     }
 
@@ -65,7 +72,7 @@ contract disinvestERC20OtherValueGood is BaseSetup {
         vm.startPrank(users[1]);
         uint256 normalproof;
         normalproof = market.proofmapping(
-            S_ProofKey(users[1], metagood, 0).toKey()
+            S_ProofKey(users[1], metagood, address(0)).toKey()
         );
         S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(

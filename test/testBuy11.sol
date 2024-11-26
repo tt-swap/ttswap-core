@@ -24,12 +24,13 @@ contract testBuy11 is Test {
     using L_CurrencyLibrary for address;
     using L_TTSwapUINT256Library for uint256;
     using L_Good for S_GoodState;
-
-    uint256 usdtgood;
-    uint256 nativenormalgood;
-    uint256 btcgood;
-    uint256 ethgood;
-    uint256 normalgoodusdt;
+    bytes internal constant defaultdata =
+        abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
+    address usdtgood;
+    address nativenormalgood;
+    address btcgood;
+    address ethgood;
+    address normalgoodusdt;
     uint256 metaproofid;
     address marketcreator;
 
@@ -48,13 +49,11 @@ contract testBuy11 is Test {
         eth = new MyToken("ETH", "ETH", 18);
         ethstate.init(
             toTTSwapUINT256(3991740104749, 830576621067531951132),
-            address(eth),
             574294852927029179450682055812555939397509459020590716783642472657759240192
         );
 
         btcstate.init(
             toTTSwapUINT256(2549265184202, 6171481752),
-            address(wbtc),
             574294852927029179450682055812555939397509459020590716783642472657759240192
         );
         vm.stopPrank();

@@ -20,9 +20,9 @@ contract commissionNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodbtc;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodbtc;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -49,9 +49,10 @@ contract commissionNormalGood is BaseSetup {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            _goodconfig
+            _goodconfig,
+            defaultdata
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -78,9 +79,11 @@ contract commissionNormalGood is BaseSetup {
             metagood,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
             address(btc),
-            normalgoodconfig
+            normalgoodconfig,
+            defaultdata,
+            defaultdata
         );
-        normalgoodbtc = S_GoodKey(users[1], address(btc)).toId();
+        normalgoodbtc = address(btc);
         vm.stopPrank();
     }
 
@@ -88,7 +91,13 @@ contract commissionNormalGood is BaseSetup {
         vm.startPrank(users[1]);
         usdt.approve(address(market), 800000 * 10 ** 6 + 1);
         btc.approve(address(market), 10 * 10 ** 8 + 1);
-        market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
+        market.investGood(
+            normalgoodbtc,
+            metagood,
+            1 * 10 ** 8,
+            defaultdata,
+            defaultdata
+        );
         vm.stopPrank();
     }
 
@@ -223,18 +232,30 @@ contract commissionNormalGood is BaseSetup {
             "after collect:proof contruct error"
         );
 
-        market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
+        market.investGood(
+            normalgoodbtc,
+            metagood,
+            1 * 10 ** 8,
+            defaultdata,
+            defaultdata
+        );
         market.collectProof(normalproof, address(0));
         snapLastCall("collect_own_erc20_normalgood_second");
 
-        market.investGood(normalgoodbtc, metagood, 1 * 10 ** 8);
+        market.investGood(
+            normalgoodbtc,
+            metagood,
+            1 * 10 ** 8,
+            defaultdata,
+            defaultdata
+        );
         market.collectProof(normalproof, address(0));
         snapLastCall("collect_own_erc20_normalgood_three");
         vm.stopPrank();
     }
 
     function testQueryCommission1() public {
-        uint256[] memory goodid = new uint256[](2);
+        address[] memory goodid = new address[](2);
 
         emit log("1");
         goodid[0] = metagood;
@@ -251,7 +272,7 @@ contract commissionNormalGood is BaseSetup {
 
     function testCollectCommission1() public {
         vm.startPrank(marketcreator);
-        uint256[] memory goodid = new uint256[](2);
+        address[] memory goodid = new address[](2);
 
         emit log("1");
         goodid[0] = metagood;

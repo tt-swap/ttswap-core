@@ -20,9 +20,9 @@ contract collectNativeETHOwnNormalGood is BaseSetup {
     using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
 
-    uint256 metagood;
-    uint256 normalgoodusdt;
-    uint256 normalgoodnativeeth;
+    address metagood;
+    address normalgoodusdt;
+    address normalgoodnativeeth;
 
     function setUp() public override {
         BaseSetup.setUp();
@@ -48,9 +48,10 @@ contract collectNativeETHOwnNormalGood is BaseSetup {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            _goodconfig
+            _goodconfig,
+            defaultdata
         );
-        metagood = S_GoodKey(marketcreator, address(usdt)).toId();
+        metagood = address(usdt);
         vm.stopPrank();
     }
 
@@ -77,10 +78,12 @@ contract collectNativeETHOwnNormalGood is BaseSetup {
         market.initGood{value: 100000000}(
             metagood,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
-            address(0),
-            normalgoodconfig
+            address(1),
+            normalgoodconfig,
+            defaultdata,
+            defaultdata
         );
-        normalgoodnativeeth = S_GoodKey(users[1], address(0)).toId();
+        normalgoodnativeeth = address(1);
         vm.stopPrank();
     }
 
@@ -90,7 +93,9 @@ contract collectNativeETHOwnNormalGood is BaseSetup {
         market.investGood{value: 1 * 10 ** 8}(
             normalgoodnativeeth,
             metagood,
-            1 * 10 ** 8
+            1 * 10 ** 8,
+            defaultdata,
+            defaultdata
         );
         vm.stopPrank();
     }

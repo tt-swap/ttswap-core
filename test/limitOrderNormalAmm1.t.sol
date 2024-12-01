@@ -172,11 +172,9 @@ contract limitOrderNormalAmm1 is Test, GasSnapshot, BaseSetup {
             'after take,address(this)"btc balanceof '
         );
         vm.stopPrank();
-        console2.log("adf", tts_limitorder.queryOrderStatus(1));
     }
 
     function testAMMTakeLimitOrder() public {
-        console2.log("adf", tts_limitorder.queryOrderStatus(1));
         vm.startPrank(users[5]);
         deal(address(usdt), users[5], 64000 * 10 ** 6, false);
         usdt.approve(address(tts_limitorder), 63000 * 10 ** 6);
@@ -253,6 +251,5 @@ contract limitOrderNormalAmm1 is Test, GasSnapshot, BaseSetup {
             'after take,address(this)"btc balanceof '
         );
         vm.stopPrank();
-        console2.log("adf", tts_limitorder.queryOrderStatus(1));
     }
 }

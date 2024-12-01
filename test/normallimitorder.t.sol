@@ -3,6 +3,7 @@ pragma solidity 0.8.26;
 
 import "forge-gas-snapshot/GasSnapshot.sol";
 import {Test} from "forge-std/Test.sol";
+import {console2} from "forge-std/console2.sol";
 import {TTSwap_LimitOrder} from "../src/TTSwap_LimitOrder.sol";
 import {I_TTSwap_LimitOrderMaker} from "../src/interfaces/I_TTSwap_LimitOrderMaker.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";

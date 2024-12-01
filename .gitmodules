@@ -13,4 +13,7 @@
 	path = lib/erc721-permit
 	url = https://github.com/soliditylabs/erc721-permit
 	branch = master
-
+[submodule "lib/solmate"]
+	path = lib/solmate
+	url = https://github.com/transmissions11/solmate.git
+	branch = v7

@@ -58,15 +58,15 @@ contract TTSwap_Market is
         keccak256("ERC3156FlashBorrower.onFlashLoan");
     uint256 public override marketconfig;
 
-    mapping(address goodid => S_GoodState) internal goods;
+    mapping(address goodid => S_GoodState) private goods;
     mapping(uint256 proofkey => uint256 proofid) public override proofmapping;
-    mapping(uint256 proofid => S_ProofState) internal proofs;
+    mapping(uint256 proofid => S_ProofState) private proofs;
     mapping(address => uint256) public override userConfig;
     address public marketcreator;
-    address internal immutable officialTokenContract;
-    address internal immutable officialNFTContract;
-    address internal immutable officelimitorder;
-    address internal securitykeeper;
+    address private immutable officialTokenContract;
+    address private immutable officialNFTContract;
+    address private immutable officelimitorder;
+    address private securitykeeper;
 
     /**
      * @dev Constructor for TTSwap_Market
@@ -156,7 +156,7 @@ contract TTSwap_Market is
         require(_goodConfig.isvaluegood());
         _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
         goods[_erc20address].init(_initial, _goodConfig);
-        goods[_erc20address].modifyGoodConfig(4294967296); //2**32
+        goods[_erc20address].modifyGoodConfig(67108864); //2**26
 
         uint256 proofKey = S_ProofKey(msg.sender, _erc20address, address(0))
             .toKey();

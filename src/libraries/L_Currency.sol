@@ -16,7 +16,7 @@ library L_CurrencyLibrary {
 
     struct S_Permit {
         address owner;
-        address spender;
+        //address spender;
         uint256 value;
         uint256 deadline;
         uint8 v;
@@ -30,8 +30,9 @@ library L_CurrencyLibrary {
     /// @notice Thrown when an ERC20 transfer fails
     error ERC20TransferFailed();
 
-    address public constant NATIVE = address(1);
-    address public constant simplepermit = address(2);
+    address internal constant NATIVE = address(1);
+    address internal constant Dai = address(100);
+    address internal constant simplepermit = address(2);
 
     struct S_transferData {
         uint8 transfertype;
@@ -47,7 +48,6 @@ library L_CurrencyLibrary {
             amount = IERC20(token).balanceOf(_sender);
         }
     }
-
     function transferFrom(
         address token,
         address from,
@@ -64,57 +64,86 @@ library L_CurrencyLibrary {
             if (msg.value != amount) revert NativeTransferFailed();
             success = true;
         } else if (_simplePermit.transfertype == 1) {
-            /// @solidity memory-safe-assembly
-            assembly {
-                // Get a pointer to some free memory.
-                let freeMemoryPointer := mload(0x40)
+            transferFrom(token, from, to, amount);
 
-                // Write the abi-encoded calldata into memory, beginning with the function selector.
-                mstore(
-                    freeMemoryPointer,
-                    0x23b872dd00000000000000000000000000000000000000000000000000000000
-                )
-                mstore(
-                    add(freeMemoryPointer, 4),
-                    and(from, 0xffffffffffffffffffffffffffffffffffffffff)
-                ) // Append and mask the "from" argument.
-                mstore(
-                    add(freeMemoryPointer, 36),
-                    and(to, 0xffffffffffffffffffffffffffffffffffffffff)
-                ) // Append and mask the "to" argument.
-                mstore(add(freeMemoryPointer, 68), amount) // Append the "amount" argument. Masking not required as it's a full 32 byte type.
-
-                success := and(
-                    // Set success to whether the call reverted, if not we check it either
-                    // returned exactly 1 (can't just be non-zero data), or had no return data.
-                    or(
-                        and(eq(mload(0), 1), gt(returndatasize(), 31)),
-                        iszero(returndatasize())
-                    ),
-                    // We use 100 because the length of our calldata totals up like so: 4 + 32 * 3.
-                    // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
-                    // Counterintuitively, this call must be positioned second to the or() call in the
-                    // surrounding and() call or else returndatasize() will be zero during the computation.
-                    call(gas(), token, 0, freeMemoryPointer, 100, 0, 32)
-                )
-            }
-            if (!success) revert ERC20TransferFailed();
+            // /// @solidity memory-safe-assembly
+            // assembly {
+            //     // Get a pointer to some free memory.
+            //     let freeMemoryPointer := mload(0x40)
+            //     // Write the abi-encoded calldata into memory, beginning with the function selector.
+            //     mstore(
+            //         freeMemoryPointer,
+            //         0x23b872dd00000000000000000000000000000000000000000000000000000000
+            //     )
+            //     mstore(
+            //         add(freeMemoryPointer, 4),
+            //         and(from, 0xffffffffffffffffffffffffffffffffffffffff)
+            //     ) // Append and mask the "from" argument.
+            //     mstore(
+            //         add(freeMemoryPointer, 36),
+            //         and(to, 0xffffffffffffffffffffffffffffffffffffffff)
+            //     ) // Append and mask the "to" argument.
+            //     mstore(add(freeMemoryPointer, 68), amount) // Append the "amount" argument. Masking not required as it's a full 32 byte type.
+            //     success := and(
+            //         // Set success to whether the call reverted, if not we check it either
+            //         // returned exactly 1 (can't just be non-zero data), or had no return data.
+            //         or(
+            //             and(eq(mload(0), 1), gt(returndatasize(), 31)),
+            //             iszero(returndatasize())
+            //         ),
+            //         // We use 100 because the length of our calldata totals up like so: 4 + 32 * 3.
+            //         // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
+            //         // Counterintuitively, this call must be positioned second to the or() call in the
+            //         // surrounding and() call or else returndatasize() will be zero during the computation.
+            //         call(gas(), token, 0, freeMemoryPointer, 100, 0, 32)
+            //     )
+            // }
+            // if (!success) revert ERC20TransferFailed();
         } else if (_simplePermit.transfertype == 2) {
             S_Permit memory _permit = abi.decode(
                 _simplePermit.transdata,
                 (S_Permit)
             );
-            IERC20Permit(token).permit(
-                _permit.owner,
-                address(this),
-                _permit.value,
-                _permit.deadline,
-                _permit.v,
-                _permit.r,
-                _permit.s
-            );
-            IERC20(token).transferFrom(from, to, amount);
-            success = true;
+            //emit debugg100(address(this), address(_permit.spender));
+            inputdata = token == dai
+                ? abi.encodeCall(
+                    IDAIPermit.permit,
+                    (
+                        _permit.owner,
+                        address(this),
+                        token.nonces(_permit.owner),
+                        _permit.deadline,
+                        true,
+                        _permit.v,
+                        _permit.r,
+                        _permit.s
+                    )
+                )
+                : abi.encodeCall(
+                    ERC20.permit,
+                    (
+                        _permit.owner,
+                        address(this),
+                        _permit.amount,
+                        _permit.deadline,
+                        _permit.v,
+                        _permit.r,
+                        _permit.s
+                    )
+                );
+
+            assembly {
+                success := call(
+                    gas(),
+                    token,
+                    0,
+                    add(inputData, 32),
+                    mload(inputData),
+                    0,
+                    0
+                )
+            }
+            if (success) transferFrom(token, from, to, amount);
         }
         //  else if (_simplePermit.transfertype == 3) {
         //     //这需要修改
@@ -143,53 +172,50 @@ library L_CurrencyLibrary {
             success = false;
         }
     }
-    // function transferFrom(
-    //     address token,
-    //     address from,
-    //     address to,
-    //     uint256 amount
-    // ) internal {
-    //     bool success;
-    //     if (token.isNative()) {
-    //         if (msg.value != amount) revert NativeTransferFailed();
-    //     } else {
-    //         /// @solidity memory-safe-assembly
-    //         assembly {
-    //             // Get a pointer to some free memory.
-    //             let freeMemoryPointer := mload(0x40)
+    function transferFrom(
+        address token,
+        address from,
+        address to,
+        uint256 amount
+    ) internal {
+        bool success;
 
-    //             // Write the abi-encoded calldata into memory, beginning with the function selector.
-    //             mstore(
-    //                 freeMemoryPointer,
-    //                 0x23b872dd00000000000000000000000000000000000000000000000000000000
-    //             )
-    //             mstore(
-    //                 add(freeMemoryPointer, 4),
-    //                 and(from, 0xffffffffffffffffffffffffffffffffffffffff)
-    //             ) // Append and mask the "from" argument.
-    //             mstore(
-    //                 add(freeMemoryPointer, 36),
-    //                 and(to, 0xffffffffffffffffffffffffffffffffffffffff)
-    //             ) // Append and mask the "to" argument.
-    //             mstore(add(freeMemoryPointer, 68), amount) // Append the "amount" argument. Masking not required as it's a full 32 byte type.
+        /// @solidity memory-safe-assembly
+        assembly {
+            // Get a pointer to some free memory.
+            let freeMemoryPointer := mload(0x40)
 
-    //             success := and(
-    //                 // Set success to whether the call reverted, if not we check it either
-    //                 // returned exactly 1 (can't just be non-zero data), or had no return data.
-    //                 or(
-    //                     and(eq(mload(0), 1), gt(returndatasize(), 31)),
-    //                     iszero(returndatasize())
-    //                 ),
-    //                 // We use 100 because the length of our calldata totals up like so: 4 + 32 * 3.
-    //                 // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
-    //                 // Counterintuitively, this call must be positioned second to the or() call in the
-    //                 // surrounding and() call or else returndatasize() will be zero during the computation.
-    //                 call(gas(), token, 0, freeMemoryPointer, 100, 0, 32)
-    //             )
-    //         }
-    //         if (!success) revert ERC20TransferFailed();
-    //     }
-    // }
+            // Write the abi-encoded calldata into memory, beginning with the function selector.
+            mstore(
+                freeMemoryPointer,
+                0x23b872dd00000000000000000000000000000000000000000000000000000000
+            )
+            mstore(
+                add(freeMemoryPointer, 4),
+                and(from, 0xffffffffffffffffffffffffffffffffffffffff)
+            ) // Append and mask the "from" argument.
+            mstore(
+                add(freeMemoryPointer, 36),
+                and(to, 0xffffffffffffffffffffffffffffffffffffffff)
+            ) // Append and mask the "to" argument.
+            mstore(add(freeMemoryPointer, 68), amount) // Append the "amount" argument. Masking not required as it's a full 32 byte type.
+
+            success := and(
+                // Set success to whether the call reverted, if not we check it either
+                // returned exactly 1 (can't just be non-zero data), or had no return data.
+                or(
+                    and(eq(mload(0), 1), gt(returndatasize(), 31)),
+                    iszero(returndatasize())
+                ),
+                // We use 100 because the length of our calldata totals up like so: 4 + 32 * 3.
+                // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
+                // Counterintuitively, this call must be positioned second to the or() call in the
+                // surrounding and() call or else returndatasize() will be zero during the computation.
+                call(gas(), token, 0, freeMemoryPointer, 100, 0, 32)
+            )
+        }
+        if (!success) revert ERC20TransferFailed();
+    }
 
     function transferFrom(
         address token,

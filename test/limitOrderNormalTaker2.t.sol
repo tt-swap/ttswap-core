@@ -29,7 +29,6 @@ contract limitOrderNormalTaker2 is Test, GasSnapshot, BaseSetup {
     }
 
     function testNormalTakeLimitOrder() public {
-        console2.log("adf", tts_limitorder.queryOrderStatus(1));
         vm.startPrank(users[2]);
         deal(address(usdt), users[2], 64000 * 10 ** 6, false);
         deal(address(usdt), users[1], 64000 * 10 ** 6, false);
@@ -84,6 +83,5 @@ contract limitOrderNormalTaker2 is Test, GasSnapshot, BaseSetup {
             'after take,users[2]"usdt balanceof '
         );
         vm.stopPrank();
-        console2.log("adf", tts_limitorder.queryOrderStatus(1));
     }
 }

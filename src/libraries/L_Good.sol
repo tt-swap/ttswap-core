@@ -688,37 +688,6 @@ library L_Good {
         // Update the investment proof with collected fees
         _investProof.collectProofFee(profit);
     }
-    // function addloanliq(
-    //     S_GoodState storage _good,
-    //     uint256 _loanproof,d
-    //     uint128 amount
-    // ) internal {
-    //     _good.loanstate = _good.loanstate + toTTSwapUINT256(amount, 0);
-    //     if (_loanproof == 0) {
-    //         _loanproof = toTTSwapUINT256(amount, _good.feerate.amount1());
-    //     } else {
-    //         uint128 feerate = (_good.feerate.amount1() *
-    //             amount +
-    //             _loanproof.amount0() *
-    //             _loanproof.amount1()) / (amount + _loanproof.amount0());
-    //         _loanproof = toTTSwapUINT256(
-    //             amount + _loanproof.amount0(),
-    //             feerate
-    //         );
-    //     }
-    // }
-
-    // function removeliq(
-    //     S_GoodState storage _good,
-    //     uint256 amount
-    // ) internal returns (uint256 fee) {
-    //     _good.loanstate =
-    //         _good.loanstate -
-    //         toTTSwapUINT256(amount.amount0(), 0);
-    //     fee = loanextend.get - amount.amount0() * amount.amount1();
-    // }
-
-    // function updatefeerate(S_GoodState storage _good) internal {}
 
     /**
      * @notice Allocate fees to various parties
@@ -798,8 +767,8 @@ library L_Good {
         uint256 _goodconfig
     ) internal {
         _self.goodConfig =
-            (_self.goodConfig % (2 ** 223)) +
-            (_goodconfig << 223);
+            (_self.goodConfig % (2 ** 229)) +
+            (_goodconfig << 229);
     }
 
     /**

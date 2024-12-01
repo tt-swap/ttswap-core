@@ -156,7 +156,7 @@ contract TTSwap_Market is
         require(_goodConfig.isvaluegood());
         _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
         goods[_erc20address].init(_initial, _goodConfig);
-        goods[_erc20address].modifyGoodConfig(4294967296); //2**32
+        goods[_erc20address].modifyGoodConfig(67108864); //2**26
 
         uint256 proofKey = S_ProofKey(msg.sender, _erc20address, address(0))
             .toKey();

@@ -15,9 +15,7 @@ import {TTSwap_LimitOrder} from "../src/TTSwap_LimitOrder.sol";
 import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
-
 import "forge-gas-snapshot/GasSnapshot.sol";
-import {ERC20PermitTest} from "../src/ERC20PermitTest.sol";
 contract testInitMetaGood_address1 is Test, GasSnapshot {
     using L_ProofKeyLibrary for S_ProofKey;
     using L_GoodIdLibrary for S_GoodKey;
@@ -25,7 +23,7 @@ contract testInitMetaGood_address1 is Test, GasSnapshot {
     using ECDSA for bytes32;
     address metagood;
 
-    ERC20PermitTest internal kkkk;
+    MyToken internal kkkk;
 
     uint256 internal ownerPrivateKey;
     uint256 internal spenderPrivateKey;
@@ -88,7 +86,7 @@ contract testInitMetaGood_address1 is Test, GasSnapshot {
         snapEnd();
         tts_token.addauths(address(market), 1);
         tts_token.addauths(marketcreator, 3);
-        kkkk = new ERC20PermitTest("USDT", "USDT");
+        kkkk = new MyToken("USDT", "USDT", 6);
 
         ownerPrivateKey = 0xA11CE;
         spenderPrivateKey = 0xB0B;
@@ -96,7 +94,10 @@ contract testInitMetaGood_address1 is Test, GasSnapshot {
         owner = vm.addr(ownerPrivateKey);
         spender = vm.addr(spenderPrivateKey);
     }
-
+    struct SimplePermit {
+        uint8 transfertype;
+        bytes detail;
+    }
     function testinitNativeMetaGoodaddress1() public {
         vm.startPrank(marketcreator);
         address nativeCurrency = address(1);
@@ -293,7 +294,7 @@ contract testInitMetaGood_address1 is Test, GasSnapshot {
         vm.stopPrank();
     }
 
-    function testpermit() public {
+    function testERC20permit() public {
         deal(address(kkkk), owner, 100000, false);
         uint256 bltim = block.timestamp;
 
@@ -318,7 +319,7 @@ contract testInitMetaGood_address1 is Test, GasSnapshot {
         vm.stopPrank();
     }
 
-    function testpermitinitmetagood() public {
+    function testERC20permitinitmetagood() public {
         deal(address(kkkk), marketcreator, 50000 * 10 ** 7, false);
         uint256 bltim = block.timestamp + 10000;
         bytes32 structHash = keccak256(
@@ -356,15 +357,6 @@ contract testInitMetaGood_address1 is Test, GasSnapshot {
         );
         vm.stopPrank();
     }
-    struct S_Permit {
-        address owner;
-        address spender;
-        uint256 value;
-        uint256 deadline;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
-    }
 
     struct S_Permit2 {
         address owner;
@@ -375,11 +367,4 @@ contract testInitMetaGood_address1 is Test, GasSnapshot {
         bytes32 r;
         bytes32 s;
     }
-
-    struct SimplePermit {
-        uint8 transfertype;
-        bytes detail;
-    }
-
-    function testinitmetagoodpermit() public {}
 }

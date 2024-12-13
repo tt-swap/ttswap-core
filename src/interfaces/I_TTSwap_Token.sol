@@ -158,7 +158,7 @@ interface I_TTSwap_Token {
      * @dev how much cost to buy tts
      * @param usdtamount usdt amount
      */
-    function public_Sell(uint256 usdtamount) external;
+    function public_Sell(uint256 usdtamount, bytes memory data) external;
     /**
      * @dev  Withdraws the specified amount from the public sale to the recipient
      * @param amount admin tranfer public sell to another address

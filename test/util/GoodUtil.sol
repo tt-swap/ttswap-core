@@ -6,7 +6,7 @@ import {L_Good} from "../../src/libraries/L_Good.sol";
 import {S_GoodTmpState, S_GoodState, S_ProofState} from "../../src/interfaces/I_TTSwap_Market.sol";
 import {L_CurrencyLibrary} from "../../src/libraries/L_Currency.sol";
 import {L_GoodConfigLibrary} from "../../src/libraries/L_GoodConfig.sol";
-import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../../src/libraries/L_TTSwapUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../../src/libraries/L_TTSwapUINT256.sol";
 
 library GoodUtil {
     using L_GoodConfigLibrary for uint256;

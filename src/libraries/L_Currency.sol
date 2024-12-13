@@ -2,7 +2,7 @@
 pragma solidity 0.8.26;
 import {IAllowanceTransfer} from "../interfaces/IAllowanceTransfer.sol";
 import {ISignatureTransfer} from "../interfaces/ISignatureTransfer.sol";
-import {ERC20} from "solmate/tokens/ERC20.sol";
+import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import {IDAIPermit} from "../interfaces/IDAIPermit.sol";
 
 /// @title L_CurrencyLibrary
@@ -11,7 +11,6 @@ library L_CurrencyLibrary {
     using L_CurrencyLibrary for address;
 
     struct S_Permit {
-        address owner;
         uint256 value;
         uint256 deadline;
         uint8 v;
@@ -20,7 +19,6 @@ library L_CurrencyLibrary {
     }
 
     struct S_Permit2 {
-        address owner;
         uint256 value;
         uint256 deadline;
         uint256 nonce;
@@ -36,12 +34,13 @@ library L_CurrencyLibrary {
     error ERC20TransferFailed();
 
     address internal constant NATIVE = address(1);
-    address internal constant dai = address(55);
-    address internal constant _permit2 = address(2);
+    address internal constant dai = 0x898118E029Aa17Ed4763f432c1Bdc1085d166cDe;
+    address internal constant _permit2 =
+        0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
 
     struct S_transferData {
         uint8 transfertype;
-        bytes transdata;
+        bytes sigdata;
     }
     function balanceof(
         address token,
@@ -67,22 +66,20 @@ library L_CurrencyLibrary {
         );
         if (token.isNative()) {
             if (msg.value != amount) revert NativeTransferFailed();
-            success = true;
         } else if (_simplePermit.transfertype == 1) {
             transferFrom(token, from, to, amount);
         } else if (_simplePermit.transfertype == 2) {
             S_Permit memory _permit = abi.decode(
-                _simplePermit.transdata,
+                _simplePermit.sigdata,
                 (S_Permit)
             );
-            //emit debugg100(address(this), address(_permit.spender));
             bytes memory inputdata = token == dai
                 ? abi.encodeCall(
                     IDAIPermit.permit,
                     (
-                        _permit.owner,
+                        from,
                         address(this),
-                        ERC20(token).nonces(_permit.owner),
+                        ERC20(token).nonces(from),
                         _permit.deadline,
                         true,
                         _permit.v,
@@ -93,7 +90,7 @@ library L_CurrencyLibrary {
                 : abi.encodeCall(
                     ERC20.permit,
                     (
-                        _permit.owner,
+                        from,
                         to,
                         _permit.value,
                         _permit.deadline,
@@ -116,13 +113,21 @@ library L_CurrencyLibrary {
             }
             if (success) transferFrom(token, from, to, amount);
         } else if (_simplePermit.transfertype == 3) {
+            IAllowanceTransfer(_permit2).transferFrom(
+                from,
+                to,
+                to_uint160(amount),
+                token
+            );
+        } else if (_simplePermit.transfertype == 4) {
             S_Permit memory _permit = abi.decode(
-                _simplePermit.transdata,
+                _simplePermit.sigdata,
                 (S_Permit)
             );
             permit2allowace(
                 ERC20(token),
-                _permit.owner,
+                from,
+                to,
                 _permit.value,
                 _permit.deadline,
                 _permit.v,
@@ -135,10 +140,9 @@ library L_CurrencyLibrary {
                 to_uint160(amount),
                 token
             );
-            success = true;
-        } else if (_simplePermit.transfertype == 4) {
+        } else if (_simplePermit.transfertype == 5) {
             S_Permit2 memory _permit = abi.decode(
-                _simplePermit.transdata,
+                _simplePermit.sigdata,
                 (S_Permit2)
             );
             ISignatureTransfer(_permit2).permitTransferFrom(
@@ -151,21 +155,18 @@ library L_CurrencyLibrary {
                     _permit.deadline
                 ),
                 ISignatureTransfer.SignatureTransferDetails({
-                    to: address(to),
+                    to: to,
                     requestedAmount: amount
                 }),
-                _permit.owner,
+                from,
                 bytes.concat(_permit.r, _permit.s, bytes1(_permit.v))
             );
-            success = true;
-        } else {
-            success = false;
         }
     }
-
     function permit2allowace(
         ERC20 token,
         address owner,
+        address spender,
         uint256 amount,
         uint256 deadline,
         uint8 v,
@@ -175,7 +176,7 @@ library L_CurrencyLibrary {
         (, , uint48 nonce) = IAllowanceTransfer(_permit2).allowance(
             owner,
             address(token),
-            address(this)
+            spender
         );
         IAllowanceTransfer(_permit2).permit(
             owner,
@@ -188,7 +189,7 @@ library L_CurrencyLibrary {
                     expiration: type(uint48).max,
                     nonce: nonce
                 }),
-                spender: address(this),
+                spender: spender,
                 sigDeadline: deadline
             }),
             bytes.concat(r, s, bytes1(v))

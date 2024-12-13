@@ -15,5 +15,8 @@
 	branch = master
 [submodule "lib/solmate"]
 	path = lib/solmate
-	url = https://github.com/transmissions11/solmate.git
+	url = https://github.com/transmissions11/solmate
 	branch = v7
+[submodule "lib/lib/permit2"]
+	path = lib/lib/permit2
+	url = https://github.com/Uniswap/permit2

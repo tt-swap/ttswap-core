@@ -13,7 +13,7 @@ import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
 import {I_TTSwap_NFT} from "./interfaces/I_TTSwap_NFT.sol";
-import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice, toInt128} from "./libraries/L_TTSwapUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice} from "./libraries/L_TTSwapUINT256.sol";
 import {IERC3156FlashBorrower} from "@openzeppelin/contracts/interfaces/IERC3156FlashBorrower.sol";
 import {IERC3156FlashLender} from "@openzeppelin/contracts/interfaces/IERC3156FlashLender.sol";
 
@@ -138,7 +138,6 @@ contract TTSwap_Market is
         _;
         L_Lock.set(address(0));
     }
-
     /**
      * @dev Initializes a meta good
      * @param _erc20address The address of the ERC20 token
@@ -157,7 +156,6 @@ contract TTSwap_Market is
         _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
         goods[_erc20address].init(_initial, _goodConfig);
         goods[_erc20address].modifyGoodConfig(67108864); //2**26
-
         uint256 proofKey = S_ProofKey(msg.sender, _erc20address, address(0))
             .toKey();
 
@@ -200,15 +198,15 @@ contract TTSwap_Market is
         uint256 _initial,
         address _erc20address,
         uint256 _goodConfig,
-        bytes memory data1, //'adf'
-        bytes memory data2
+        bytes memory _normaldata, //'adf'
+        bytes memory _valuedata
     ) external payable override noReentrant returns (bool) {
         require(
             goods[_erc20address].owner == address(0) &&
                 goods[_valuegood].goodConfig.isvaluegood()
         );
-        _erc20address.transferFrom(msg.sender, _initial.amount0(), data1);
-        _valuegood.transferFrom(msg.sender, _initial.amount1(), data2);
+        _erc20address.transferFrom(msg.sender, _initial.amount0(), _normaldata);
+        _valuegood.transferFrom(msg.sender, _initial.amount1(), _valuedata);
         L_Good.S_GoodInvestReturn memory investResult;
         goods[_valuegood].investGood(_initial.amount1(), investResult);
         goods[_erc20address].init(

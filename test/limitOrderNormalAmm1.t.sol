@@ -6,7 +6,7 @@ import {Test} from "forge-std/Test.sol";
 import {TTSwap_LimitOrder} from "../src/TTSwap_LimitOrder.sol";
 import {I_TTSwap_LimitOrderMaker} from "../src/interfaces/I_TTSwap_LimitOrderMaker.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
-import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toInt128} from "../src/libraries/L_TTSwapUINT256.sol";
+import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
 
 contract limitOrderNormalAmm1 is Test, GasSnapshot, BaseSetup {
     address metagood;

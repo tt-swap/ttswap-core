@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.26;
 
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 import {I_TTSwap_Token, s_share, s_chain, s_proof} from "./interfaces/I_TTSwap_Token.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
+import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
 
 /**
@@ -17,6 +17,7 @@ import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libra
 contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     using L_TTSwapUINT256Library for uint256;
     using L_TTSTokenConfigLibrary for uint256;
+    using  L_CurrencyLibrary for address;
     uint256 public ttstokenconfig;
 
     mapping(uint32 => s_share) public shares; // all share's mapping
@@ -251,10 +252,11 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @param usdtamount Amount of USDT to spend on token purchase
      */
     /// @inheritdoc I_TTSwap_Token
-    function public_Sell(uint256 usdtamount) external onlymain {
+    function public_Sell(uint256 usdtamount,
+        bytes memory data) external onlymain {
         publicsell += uint128(usdtamount);
         require(publicsell <= 5000000 * decimals());
-        if (IERC20(usdt).transferFrom(msg.sender, address(this), usdtamount)) {
+        usdt.transferFrom(msg.sender, address(this), usdtamount,data);
             uint256 ttsamount;
             if (publicsell <= 1750000 * decimals()) {
                 ttsamount = (usdtamount / 5) * 6;
@@ -268,7 +270,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             }
             emit e_publicsell(usdtamount, ttsamount);
         }
-    }
+    
 
     /**
      * @dev Withdraws funds from public token sale
@@ -283,7 +285,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         address recipient
     ) external onlymain {
         require(_msgSender() == dao_admin);
-        IERC20(usdt).transfer(recipient, amount);
+        usdt.safeTransfer(recipient, amount);
     }
 
     /**

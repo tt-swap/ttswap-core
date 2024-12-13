@@ -43,7 +43,7 @@ function add(uint256 a, uint256 b) pure returns (uint256) {
         res0 := add(a0, b0)
         res1 := add(a1, b1)
     }
-    return toTTSwapUINT256(toInt128(res0), toInt128(res1));
+    return toTTSwapUINT256(toUint128(res0), toUint128(res1));
 }
 
 /// @notice Subtracts two T_BalanceUINT256 values
@@ -67,7 +67,7 @@ function sub(uint256 a, uint256 b) pure returns (uint256) {
         res0 := sub(a0, b0)
         res1 := sub(a1, b1)
     }
-    return toTTSwapUINT256(toInt128(res0), toInt128(res1));
+    return toTTSwapUINT256(toUint128(res0), toUint128(res1));
 }
 
 /// @notice Adds the first components and subtracts the second components of two T_BalanceUINT256 values
@@ -91,7 +91,7 @@ function addsub(uint256 a, uint256 b) pure returns (uint256) {
         res0 := add(a0, b0)
         res1 := sub(a1, b1)
     }
-    return toTTSwapUINT256(toInt128(res0), toInt128(res1));
+    return toTTSwapUINT256(toUint128(res0), toUint128(res1));
 }
 
 /// @notice Subtracts the first components and adds the second components of two T_BalanceUINT256 values
@@ -115,13 +115,13 @@ function subadd(uint256 a, uint256 b) pure returns (uint256) {
         res0 := sub(a0, b0)
         res1 := add(a1, b1)
     }
-    return toTTSwapUINT256(toInt128(res0), toInt128(res1));
+    return toTTSwapUINT256(toUint128(res0), toUint128(res1));
 }
 
 /// @notice Safely converts a uint256 to a uint128
 /// @param a The uint256 value to convert
 /// @return The converted uint128 value, or 0 if overflow
-function toInt128(uint256 a) pure returns (uint128) {
+function toUint128(uint256 a) pure returns (uint128) {
     return a <= type(uint128).max ? uint128(a) : 0;
 }
 
@@ -155,7 +155,7 @@ function mulDiv(
             result := div(config, domitor)
         }
     }
-    return toInt128(result);
+    return toUint128(result);
 }
 
 /// @title L_TTSwapUINT256Library

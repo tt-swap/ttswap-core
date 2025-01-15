@@ -37,7 +37,7 @@ library L_TTSTokenConfigLibrary {
         unchecked {
             assembly {
                 ttsconfig := shl(16, shr(16, ttsconfig))
-                config := and(config, 0xf)
+                config := and(config, 0xffff)
                 b := add(ttsconfig, config)
             }
         }

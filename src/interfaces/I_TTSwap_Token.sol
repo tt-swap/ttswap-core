@@ -86,6 +86,10 @@ interface I_TTSwap_Token {
     /// @notice Emitted when the pool state is updated
     /// @param poolstate The new state of the pool
     event e_updatepool(uint256 poolstate);
+    /// @notice Emitted when the pool state is updated
+    /// @param ttsconfig The new state of the pool
+    event e_updatettsconfig(uint256 ttsconfig);
+    function setRatio(uint256 _ratio) external;
     /**
      * @dev  Returns the address of the DAO admin
      * @return _dao_admin Returns the address of the DAO admin
@@ -158,51 +162,14 @@ interface I_TTSwap_Token {
      * @dev how much cost to buy tts
      * @param usdtamount usdt amount
      */
-    function public_Sell(uint256 usdtamount, bytes memory data) external;
+    function publicSell(uint256 usdtamount, bytes memory data) external;
     /**
      * @dev  Withdraws the specified amount from the public sale to the recipient
      * @param amount admin tranfer public sell to another address
      * @param recipent user's address
      */
     function withdrawPublicSell(uint256 amount, address recipent) external;
-    /**
-     * @dev  Synchronizes the chain stake and returns the pool asset value
-     * @param chainid  the chain's id
-     * @param chainvalue the chain's stake value
-     */
-    function syncChainStake(
-        uint32 chainid,
-        uint128 chainvalue
-    ) external returns (uint128 poolasset); //
-    /**
-     * @dev Synchronizes the pool asset with the specified amount to the subchain in stakepool
-     * @param amount the  amount will be Synchronizes
-     */
-    function syncPoolAsset(uint128 amount) external; // Synchronizes the pool asset with the specified amount
-    /**
-     * @dev Withdraws the specified asset from the subchain to the recipient
-     * @param chainid the subchain id
-     * @param asset the asset amount will be withdraw
-     */
-    function chain_withdraw(uint32 chainid, uint128 asset) external; // Withdraws the specified asset from the given chain
-    /**
-     * @dev Deposit the specified asset from the subchain to the recipient
-     * @param chainid the subchain id
-     * @param asset the asset amount will be deposit
-     */
-    function chain_deposit(uint32 chainid, uint128 asset) external; // Deposits the specified asset to the given chain
-    /**
-     * @dev Withdraws the specified asset from the subchain to the recipient
-     * @param asset the asset amount will be withdraw
-     * @param recipient the asset owner
-     */
-    function subchainWithdraw(uint128 asset, address recipient) external;
-    /**
-     * @dev Deposits the specified asset to the subchain for the recipient
-     * @param asset the asset amount will be deposit
-     * @param recipient the receiver
-     */
-    function subchainDeposit(uint128 asset, address recipient) external; //
+
     /**
      * @dev Burns the specified value of tokens from the given account
      * @param account the given account
@@ -257,11 +224,6 @@ struct s_share {
     uint8 chips; // define the share's chips, and every time unlock one chips
 }
 
-struct s_chain {
-    uint256 asset; //128 shareasset&poolasset 128 poolasset
-    uint256 proofstate; //128 value 128 constructasset
-    address recipient;
-}
 struct s_proof {
     address fromcontract; // from which contract
     uint256 proofstate; // stake's state  amount0 value 128 construct asset

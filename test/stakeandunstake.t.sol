@@ -43,7 +43,11 @@ contract stakeandunstake is Test, GasSnapshot {
         usdt = new MyToken("USDT", "USDT", 6);
         eth = new MyToken("ETH", "ETH", 18);
         vm.startPrank(marketcreator);
-        tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
+        tts_token = new TTSwap_Token(
+            address(usdt),
+            marketcreator,
+            2 ** 255 + 10000
+        );
         tts_nft = new TTSwap_NFT(address(tts_token));
         tts_trigger = new TTSwap_LimitOrder(address(tts_token));
         snapStart("depoly Market Manager");

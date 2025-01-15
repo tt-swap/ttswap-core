@@ -5,7 +5,7 @@ import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20P
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
-import {I_TTSwap_Token, s_share, s_chain, s_proof} from "./interfaces/I_TTSwap_Token.sol";
+import {I_TTSwap_Token, s_share, s_proof} from "./interfaces/I_TTSwap_Token.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
@@ -17,7 +17,7 @@ import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libra
 contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     using L_TTSwapUINT256Library for uint256;
     using L_TTSTokenConfigLibrary for uint256;
-    using  L_CurrencyLibrary for address;
+    using L_CurrencyLibrary for address;
     uint256 public ttstokenconfig;
 
     mapping(uint32 => s_share) public shares; // all share's mapping
@@ -27,7 +27,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
 
     mapping(uint256 => s_proof) public stakeproof;
 
-    mapping(uint32 => s_chain) public chains;
+    // mapping(uint32 => s_chain) public chains;
 
     /// @inheritdoc I_TTSwap_Token
     address public override normalgoodid;
@@ -38,7 +38,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     /// @inheritdoc I_TTSwap_Token
     address public override marketcontract;
     uint32 public shares_index;
-    uint32 public chainindex;
+    //uint32 public chainindex;
     uint128 public left_share = 5 * 10 ** 8 * 10 ** 6;
     /// @inheritdoc I_TTSwap_Token
     uint128 public override publicsell;
@@ -68,6 +68,12 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         stakestate = toTTSwapUINT256(uint128(block.timestamp), 0);
         dao_admin = _dao_admin;
         ttstokenconfig = _ttsconfig;
+    }
+
+    function setRatio(uint256 _ratio) external {
+        require(_ratio <= 10000 && auths[msg.sender] == 2);
+        ttstokenconfig = _ratio.setratio(ttstokenconfig);
+        emit e_updatettsconfig(ttstokenconfig);
     }
 
     /**
@@ -138,7 +144,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     /// @inheritdoc I_TTSwap_Token
     function rmauths(address _auths) external override {
         require(_msgSender() == dao_admin);
-        auths[_auths] = 0;
+        delete auths[_auths];
         emit e_rmauths(_auths);
     }
 
@@ -252,25 +258,26 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @param usdtamount Amount of USDT to spend on token purchase
      */
     /// @inheritdoc I_TTSwap_Token
-    function public_Sell(uint256 usdtamount,
-        bytes memory data) external onlymain {
+    function publicSell(
+        uint256 usdtamount,
+        bytes memory data
+    ) external onlymain {
         publicsell += uint128(usdtamount);
         require(publicsell <= 5000000 * decimals());
-        usdt.transferFrom(msg.sender, address(this), usdtamount,data);
-            uint256 ttsamount;
-            if (publicsell <= 1750000 * decimals()) {
-                ttsamount = (usdtamount / 5) * 6;
-                _mint(msg.sender, ttsamount);
-            } else if (publicsell <= 3250000 * decimals()) {
-                ttsamount = usdtamount;
-                _mint(msg.sender, ttsamount);
-            } else if (publicsell <= 5000000 * decimals()) {
-                ttsamount = (usdtamount / 5) * 4;
-                _mint(msg.sender, ttsamount);
-            }
-            emit e_publicsell(usdtamount, ttsamount);
+        usdt.transferFrom(msg.sender, address(this), usdtamount, data);
+        uint256 ttsamount;
+        if (publicsell <= 1750000 * decimals()) {
+            ttsamount = (usdtamount / 5) * 6;
+            _mint(msg.sender, ttsamount);
+        } else if (publicsell <= 3250000 * decimals()) {
+            ttsamount = usdtamount;
+            _mint(msg.sender, ttsamount);
+        } else if (publicsell <= 5000000 * decimals()) {
+            ttsamount = (usdtamount / 5) * 4;
+            _mint(msg.sender, ttsamount);
         }
-    
+        emit e_publicsell(usdtamount, ttsamount);
+    }
 
     /**
      * @dev Withdraws funds from public token sale
@@ -286,175 +293,6 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     ) external onlymain {
         require(_msgSender() == dao_admin);
         usdt.safeTransfer(recipient, amount);
-    }
-
-    /**
-     * @dev Synchronize stake across chains
-     * @param chainid ID of the chain
-     * @param chainvalue Value to synchronize
-     * @return poolasset Amount of pool asset
-     */
-    /// @inheritdoc I_TTSwap_Token
-    function syncChainStake(
-        uint32 chainid,
-        uint128 chainvalue
-    ) external override onlymain returns (uint128 poolasset) {
-        require(
-            auths[msg.sender] == 6 &&
-                (chains[chainid].recipient == msg.sender ||
-                    chains[chainid].recipient == address(0))
-        );
-        uint128 chainconstruct;
-        if (chainid == 0) {
-            chainindex += 1;
-            chainid = chainindex;
-            chainconstruct = mulDiv(
-                poolstate.amount0(),
-                chainvalue,
-                stakestate.amount1()
-            );
-            poolstate = add(
-                poolstate,
-                toTTSwapUINT256(chainconstruct, chainconstruct)
-            );
-            stakestate = add(stakestate, toTTSwapUINT256(0, chainvalue));
-            chains[chainid].proofstate = toTTSwapUINT256(
-                chainvalue,
-                chainconstruct
-            );
-            chains[chainid].recipient = msg.sender;
-        } else {
-            poolasset = mulDiv(
-                poolstate.amount0(),
-                chains[chainid].proofstate.amount0(),
-                stakestate.amount1()
-            );
-
-            poolstate = sub(
-                poolstate,
-                toTTSwapUINT256(poolasset, chains[chainid].proofstate.amount1())
-            );
-            stakestate = sub(
-                stakestate,
-                toTTSwapUINT256(0, chains[chainid].proofstate.amount0())
-            );
-            poolasset = poolasset - chains[chainid].proofstate.amount0();
-            chainconstruct = mulDiv(
-                poolstate.amount0(),
-                chainvalue,
-                stakestate.amount1()
-            );
-            poolstate = add(
-                poolstate,
-                toTTSwapUINT256(chainconstruct, chainconstruct)
-            );
-            stakestate = add(stakestate, toTTSwapUINT256(0, chainvalue));
-
-            chains[chainid].proofstate = toTTSwapUINT256(
-                chainvalue,
-                chainconstruct
-            );
-            chains[chainid].asset = add(
-                chains[chainid].asset,
-                toTTSwapUINT256(poolasset, poolasset)
-            );
-            _mint(chains[chainid].recipient, poolasset);
-        }
-        emit e_syncChainStake(chainid, poolasset, chains[chainid].proofstate);
-    }
-
-    /**
-     * @dev Synchronizes the pool asset on sub-chains
-     * @param amount The amount to add to the pool state
-     * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 5)
-     */
-    /// @inheritdoc I_TTSwap_Token
-    function syncPoolAsset(uint128 amount) external override onlysub {
-        require(auths[msg.sender] == 5);
-        poolstate = add(poolstate, toTTSwapUINT256(amount, 0));
-    }
-
-    /**
-     * @dev Withdraws assets from a specific chain
-     * @param chainid The ID of the chain to withdraw from
-     * @param asset The amount of assets to withdraw
-     * @notice Only callable on the main chain by authorized addresses (auths[msg.sender] == 6)
-     * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
-     * @notice Updates the chain's asset balance and checks if the caller has sufficient balance
-     */
-    /// @inheritdoc I_TTSwap_Token
-    function chain_withdraw(
-        uint32 chainid,
-        uint128 asset
-    ) external override onlymain {
-        require(
-            auths[msg.sender] == 6 &&
-                (chains[chainid].recipient == msg.sender ||
-                    chains[chainid].recipient == address(0))
-        );
-        chains[chainid].asset = add(
-            chains[chainid].asset,
-            toTTSwapUINT256(asset, 0)
-        );
-        require(balanceOf(msg.sender) >= chains[chainid].asset.amount0());
-    }
-
-    /**
-     * @dev Deposits assets to a specific chain
-     * @param chainid The ID of the chain to deposit to
-     * @param asset The amount of assets to deposit
-     * @notice Only callable on the main chain by authorized addresses (auths[msg.sender] == 6)
-     * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
-     * @notice Updates the chain's asset balance
-     */
-    /// @inheritdoc I_TTSwap_Token
-    function chain_deposit(
-        uint32 chainid,
-        uint128 asset
-    ) external override onlymain {
-        require(
-            auths[msg.sender] == 6 &&
-                (chains[chainid].recipient == msg.sender ||
-                    chains[chainid].recipient == address(0))
-        );
-        chains[chainid].asset = sub(
-            chains[chainid].asset,
-            toTTSwapUINT256(asset, 0)
-        );
-    }
-
-    /**
-     * @dev Withdraws assets on a sub-chain
-     * @param asset The amount of assets to withdraw
-     * @param recipient The address to receive the withdrawn assets
-     * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 6)
-     * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
-     * @notice Updates the chain's asset balance and burns the withdrawn amount from the recipient
-     */
-    /// @inheritdoc I_TTSwap_Token
-    function subchainWithdraw(
-        uint128 asset,
-        address recipient
-    ) external override onlysub {
-        require(auths[msg.sender] == 6);
-        _burn(recipient, asset);
-    }
-
-    /**
-     * @dev Deposits assets on a sub-chain
-     * @param asset The amount of assets to deposit
-     * @param recipient The address to receive the deposited assets
-     * @notice Only callable on sub-chains by authorized addresses (auths[msg.sender] == 6)
-     * @notice Requires the caller to be the recipient of the chain or the chain to have no recipient
-     * @notice Updates the chain's asset balance and mints the deposited amount to the recipient
-     */
-    /// @inheritdoc I_TTSwap_Token
-    function subchainDeposit(
-        uint128 asset,
-        address recipient
-    ) external onlysub {
-        require(auths[msg.sender] == 6);
-        _mint(recipient, asset);
     }
 
     /**
@@ -522,7 +360,6 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             poolstate
         );
     }
-
     /**
      * @dev Internal function to handle staking fees
      */
@@ -532,7 +369,8 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             uint256 mintamount = totalSupply() > 50000000 * decimals()
                 ? totalSupply() / 18300
                 : 2739726027; //2739726027=(50000000 * decimals) / 18300
-            poolstate = add(poolstate, toTTSwapUINT256(uint128(mintamount), 0));
+            poolstate = add(poolstate, ttstokenconfig.getratio(mintamount));
+
             emit e_updatepool(
                 toTTSwapUINT256(stakestate.amount0(), poolstate.amount0())
             );

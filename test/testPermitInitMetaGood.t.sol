@@ -10,10 +10,9 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";
 import {TTSwap_Market} from "../src/TTSwap_Market.sol";
 import {TTSwap_NFT} from "../src/TTSwap_NFT.sol";
-import {TTSwap_LimitOrder} from "../src/TTSwap_LimitOrder.sol";
 
 import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
-import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
+import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
 
 import {Permit2} from "permit2/src/Permit2.sol";
@@ -22,7 +21,7 @@ import {ISignatureTransfer} from "../src/interfaces/ISignatureTransfer.sol";
 import "forge-gas-snapshot/GasSnapshot.sol";
 contract testPermitInitMetaGood is Test, GasSnapshot {
     using L_ProofKeyLibrary for S_ProofKey;
-    using L_GoodIdLibrary for S_GoodKey;
+
     using L_TTSwapUINT256Library for uint256;
     using ECDSA for bytes32;
     address metagood;
@@ -49,7 +48,6 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
     TTSwap_Market market;
     TTSwap_Token tts_token;
     TTSwap_NFT tts_nft;
-    TTSwap_LimitOrder tts_limitorder;
     bytes internal constant defaultdata =
         abi.encode(L_CurrencyLibrary.S_transferData(1, ""));
     event debuggdata(bytes);
@@ -80,13 +78,11 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         vm.startPrank(marketcreator);
         tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
         tts_nft = new TTSwap_NFT(address(tts_token));
-        tts_limitorder = new TTSwap_LimitOrder(marketcreator);
         snapStart("depoly Market Manager");
         market = new TTSwap_Market(
             m_marketconfig,
             address(tts_token),
             address(tts_nft),
-            address(tts_limitorder),
             marketcreator,
             marketcreator
         );

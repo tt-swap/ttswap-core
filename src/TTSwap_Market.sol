@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.26;
 
-import {I_TTSwap_Market, S_ProofState, S_GoodState, S_ProofKey, S_GoodKey, S_GoodTmpState} from "./interfaces/I_TTSwap_Market.sol";
-import {I_TTSwap_LimitOrderTaker, S_takeGoodInputPrams} from "./interfaces/I_TTSwap_LimitOrderTaker.sol";
-import {L_Good, L_GoodIdLibrary} from "./libraries/L_Good.sol";
-import {L_TakeLimitPriceOrder} from "./libraries/L_TakeLimitPriceOrder.sol";
+import {I_TTSwap_Market, S_ProofState, S_GoodState, S_ProofKey, S_GoodTmpState} from "./interfaces/I_TTSwap_Market.sol";
+import {L_Good} from "./libraries/L_Good.sol";
 import {L_Lock} from "./libraries/L_Lock.sol";
 import {L_Proof, L_ProofIdLibrary, L_ProofKeyLibrary} from "./libraries/L_Proof.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
@@ -22,14 +20,9 @@ import {IERC3156FlashLender} from "@openzeppelin/contracts/interfaces/IERC3156Fl
  * @dev Manages the market operations for goods and proofs.
  * @notice This contract handles initialization, buying, selling, investing, and disinvesting of goods and proofs.
  */
-contract TTSwap_Market is
-    I_TTSwap_Market,
-    I_TTSwap_LimitOrderTaker,
-    IERC3156FlashLender
-{
+contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     using L_GoodConfigLibrary for uint256;
     using L_UserConfigLibrary for uint256;
-    using L_GoodIdLibrary for S_GoodKey;
     using L_ProofKeyLibrary for S_ProofKey;
     using L_ProofIdLibrary for uint256;
     using L_TTSwapUINT256Library for uint256;
@@ -37,7 +30,6 @@ contract TTSwap_Market is
     using L_Proof for S_ProofState;
     using L_CurrencyLibrary for address;
     using L_MarketConfigLibrary for uint256;
-    using L_TakeLimitPriceOrder for L_TakeLimitPriceOrder.S_takeGoodCache;
     /**
      * @dev The loan token is not valid.
      */
@@ -52,10 +44,17 @@ contract TTSwap_Market is
      * @dev The receiver of a flashloan is not a valid {IERC3156FlashBorrower-onFlashLoan} implementer.
      */
     error ERC3156InvalidReceiver(address receiver);
+    //bytes private constant defaultdata =abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
     bytes private constant defaultdata =
-        abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
+        bytes(
+            "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000"
+        );
+    //keccak256("ERC3156FlashBorrower.onFlashLoan");
     bytes32 private constant RETURN_VALUE =
-        keccak256("ERC3156FlashBorrower.onFlashLoan");
+        bytes32(
+            0x439148f0bbc682ca079e46d6e2c2f0c1e3b820f1a291b069d8882abf8cf18dd9
+        );
+
     uint256 public override marketconfig;
 
     mapping(address goodid => S_GoodState) private goods;
@@ -65,7 +64,6 @@ contract TTSwap_Market is
     address public marketcreator;
     address private immutable officialTokenContract;
     address private immutable officialNFTContract;
-    address private immutable officelimitorder;
     address private securitykeeper;
 
     /**
@@ -77,14 +75,12 @@ contract TTSwap_Market is
         uint256 _marketconfig,
         address _officialTokenContract,
         address _officialNFTContract,
-        address _officelimitorder,
         address _marketcreator,
         address _securitykeeper
     ) {
         officialTokenContract = _officialTokenContract;
         officialNFTContract = _officialNFTContract;
         marketconfig = _marketconfig;
-        officelimitorder = _officelimitorder;
         marketcreator = _marketcreator;
         securitykeeper = _securitykeeper;
     }
@@ -97,18 +93,27 @@ contract TTSwap_Market is
         require(userConfig[msg.sender].isMarketor());
         _;
     }
+    modifier noReentrant() {
+        require(L_Lock.get() == address(0));
+        L_Lock.set(msg.sender);
+        _;
+        L_Lock.set(address(0));
+    }
+
     function changemarketcreator(address _newmarketor) external {
         require(msg.sender == marketcreator);
         marketcreator = _newmarketor;
         emit e_changemarketcreator(_newmarketor);
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function setMarketor(address _newmarketor) external override {
         require(msg.sender == marketcreator);
         userConfig[_newmarketor] = userConfig[_newmarketor] | 2;
         emit e_modifiedUserConfig(_newmarketor, userConfig[_newmarketor]);
     }
 
+    /// @inheritdoc I_TTSwap_Market
     function removeMarketor(address _user) external override {
         require(msg.sender == marketcreator);
         userConfig[_user] = userConfig[_user] & ~uint256(2);
@@ -132,12 +137,7 @@ contract TTSwap_Market is
         emit e_modifiedUserConfig(_user, userConfig[_user]);
         return true;
     }
-    modifier noReentrant() {
-        require(L_Lock.get() == address(0));
-        L_Lock.set(msg.sender);
-        _;
-        L_Lock.set(address(0));
-    }
+
     /**
      * @dev Initializes a meta good
      * @param _erc20address The address of the ERC20 token
@@ -187,7 +187,7 @@ contract TTSwap_Market is
     /**
      * @dev Initializes a good
      * @param _valuegood The value good ID
-     * @param _initial The initial balance
+     * @param _initial The initial balance,amount0 is the amount of the normal good,amount1 is the amount of the value good
      * @param _erc20address The address of the ERC20 token
      * @param _goodConfig The good configuration
      * @return bool Returns true if successful
@@ -198,7 +198,7 @@ contract TTSwap_Market is
         uint256 _initial,
         address _erc20address,
         uint256 _goodConfig,
-        bytes memory _normaldata, //'adf'
+        bytes memory _normaldata,
         bytes memory _valuedata
     ) external payable override noReentrant returns (bool) {
         require(
@@ -333,99 +333,6 @@ contract TTSwap_Market is
         );
     }
 
-    /// @inheritdoc I_TTSwap_LimitOrderTaker
-    function takeLimitOrder(
-        S_takeGoodInputPrams memory _inputParams,
-        uint96 _tolerance,
-        address _takecaller
-    ) external payable override noReentrant returns (bool _isSuccess) {
-        _isSuccess = _takeLimitOrder(_inputParams, _tolerance, _takecaller);
-    }
-
-    function _takeLimitOrder(
-        S_takeGoodInputPrams memory _inputParams,
-        uint96 _tolerance,
-        address _takecaller
-    ) internal returns (bool _isSuccess) {
-        require(_tolerance <= 5000);
-        L_TakeLimitPriceOrder.S_takeGoodCache memory takeCache;
-        takeCache.init_takeGoodCache(
-            _inputParams,
-            goods[_inputParams.fromerc20].currentState,
-            goods[_inputParams.fromerc20].goodConfig,
-            goods[_inputParams.toerc20].currentState,
-            goods[_inputParams.toerc20].goodConfig,
-            _tolerance
-        );
-        takeCache.takeGoodCompute();
-        if (
-            msg.sender == officelimitorder &&
-            _inputParams.swapQuantity.amount0() > 0 &&
-            takeCache.remainQuantity == 0 &&
-            _inputParams.fromerc20 != _inputParams.toerc20
-        ) _isSuccess = true;
-        if (takeCache.goodid2Quantity_ < _inputParams.swapQuantity.amount1())
-            _isSuccess = false;
-        if (_isSuccess) {
-            _inputParams.toerc20.safeTransfer(
-                _inputParams.sender,
-                _inputParams.swapQuantity.amount1()
-            );
-
-            uint128 profit = takeCache.goodid2Quantity_ -
-                _inputParams.swapQuantity.amount1();
-            _inputParams.toerc20.safeTransfer(_takecaller, profit / 2);
-            takeCache.goodid2FeeQuantity_ =
-                takeCache.goodid2FeeQuantity_ +
-                profit /
-                2;
-            goods[_inputParams.fromerc20].swapCommit(
-                takeCache.good1currentState,
-                takeCache.feeQuantity
-            );
-            goods[_inputParams.toerc20].swapCommit(
-                takeCache.good2currentState,
-                takeCache.goodid2FeeQuantity_
-            );
-
-            emit e_buyGood(
-                _inputParams.fromerc20,
-                _inputParams.toerc20,
-                _inputParams.sender,
-                takeCache.swapvalue,
-                toTTSwapUINT256(
-                    _inputParams.swapQuantity.amount0(),
-                    takeCache.feeQuantity
-                ),
-                toTTSwapUINT256(
-                    takeCache.goodid2Quantity_,
-                    takeCache.goodid2FeeQuantity_
-                )
-            );
-        }
-    }
-
-    /// @inheritdoc I_TTSwap_LimitOrderTaker
-    function batchTakelimitOrder(
-        bytes calldata _inputData,
-        uint96 _tolerance,
-        address _takecaller,
-        uint8 ordernum
-    ) external payable override noReentrant returns (bool[] memory) {
-        S_takeGoodInputPrams[] memory _inputdatas = new S_takeGoodInputPrams[](
-            ordernum
-        );
-        _inputdatas = abi.decode(_inputData, (S_takeGoodInputPrams[]));
-        bool[] memory result = new bool[](ordernum);
-        for (uint256 i = 0; i < _inputdatas.length; i++) {
-            result[i] = _takeLimitOrder(
-                _inputdatas[i],
-                _tolerance,
-                _takecaller
-            );
-        }
-        return result;
-    }
     /**
      * @dev Buys a good for pay
      * @param _goodid1 The ID of the first good

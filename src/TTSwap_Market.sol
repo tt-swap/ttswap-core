@@ -609,13 +609,13 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         );
         uint256 tranferamount = goods[currentgood].commission[msg.sender];
 
-        if (tranferamount > 1) {
+        if (tranferamount > 2) {
             goods[currentgood].commission[msg.sender] = 1;
             currentgood.safeTransfer(msg.sender, tranferamount - 1);
         }
         if (valuegood != address(0)) {
             tranferamount = goods[valuegood].commission[msg.sender];
-            if (tranferamount > 1) {
+            if (tranferamount > 2) {
                 goods[valuegood].commission[msg.sender] = 1;
                 valuegood.safeTransfer(msg.sender, tranferamount - 1);
             }
@@ -817,16 +817,6 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint256 amount,
         bytes calldata data
     ) public override returns (bool) {
-        return flashLoan1(receiver, token, amount, data, defaultdata);
-    }
-    /// @inheritdoc I_TTSwap_Market
-    function flashLoan1(
-        IERC3156FlashBorrower receiver,
-        address token,
-        uint256 amount,
-        bytes calldata data,
-        bytes memory transdata
-    ) public override returns (bool) {
         uint256 maxLoan = maxFlashLoan(token);
         if (amount > maxLoan) {
             revert ERC3156ExceededMaxLoan(maxLoan);
@@ -843,7 +833,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
             address(receiver),
             address(this),
             uint128(amount + fee),
-            transdata
+            defaultdata
         );
         goods[token].fillFee(fee);
         return true;

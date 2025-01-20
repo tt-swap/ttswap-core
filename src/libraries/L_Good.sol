@@ -778,8 +778,8 @@ library L_Good {
      * @param _fee New configuration value to be applied
      */
     function fillFee(S_GoodState storage _self, uint256 _fee) internal {
-        _self.feeQuantityState =
-            (_self.feeQuantityState + (_fee % 2 ** 128)) <<
-            (2 ** 128);
+        unchecked {
+            _self.feeQuantityState = _self.feeQuantityState + (_fee << 128);
+        }
     }
 }

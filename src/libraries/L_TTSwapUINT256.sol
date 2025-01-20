@@ -11,7 +11,7 @@ function toTTSwapUINT256(
     uint128 _amount1
 ) pure returns (uint256 balanceDelta) {
     /// @solidity memory-safe-assembly
-    assembly {
+    assembly ("memory-safe") {
         balanceDelta := or(
             shl(128, _amount0),
             and(

@@ -281,4 +281,89 @@ contract buyNativeETHNormalGood is BaseSetup {
         snapLastCall("buy_nativeeth_normal_good_chips_second_10chips");
         vm.stopPrank();
     }
+
+    function testBuyNativeETHGoodWithChipswithRefere() public {
+        vm.startPrank(users[1]);
+        uint256 goodconfig = 1 *
+            2 ** 217 +
+            3 *
+            2 ** 211 +
+            5 *
+            2 ** 204 +
+            7 *
+            2 ** 197 +
+            2 *
+            2 ** 216 +
+            3 *
+            2 ** 206;
+        market.updateGoodConfig(normalgoodbtc, goodconfig);
+
+        usdt.approve(address(market), 800000 * 10 ** 6 + 1);
+        btc.approve(address(market), 10 * 10 ** 8 + 1);
+        assertEq(
+            users[1].balance,
+            900000000,
+            "before buy nativeeth_normalgood:btc users[1] account  balance error"
+        );
+        assertEq(
+            usdt.balanceOf(users[1]),
+            49937000000000,
+            "before buy nativeeth_normalgood:usdt users[1] account  balance error"
+        );
+        assertEq(
+            usdt.balanceOf(address(market)),
+            113000000000,
+            "before buy nativeeth_normalgood:usdt address(market) account  balance error"
+        );
+        assertEq(
+            address(market).balance,
+            100000000,
+            "before buy nativeeth_normalgood:btc address(market) account  balance error"
+        );
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            6300,
+            65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
+            false,
+            users[3],
+            defaultdata
+        );
+        snapLastCall("buy_nativeeth_normal_good_chips_first_1chips_refere");
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            6300,
+            80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
+            false,
+            users[3],
+            defaultdata
+        );
+        snapLastCall("buy_nativeeth_normal_good_chips_second_1chips_refere");
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            6300 * 10 ** 6,
+            80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
+            false,
+            users[3],
+            defaultdata
+        );
+        snapLastCall("buy_nativeeth_normal_good_chips_second_12chips_refere");
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            6300 * 10 ** 6,
+            100000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
+            false,
+            users[3],
+            defaultdata
+        );
+        snapLastCall("buy_nativeeth_normal_good_chips_second_10chips_refere");
+        vm.stopPrank();
+    }
 }

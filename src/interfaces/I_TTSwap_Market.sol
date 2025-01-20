@@ -389,14 +389,6 @@ interface I_TTSwap_Market {
      * @param to The address receiving the proof.
      */
     function delproofdata(uint256 proofid, address from, address to) external;
-
-    function flashLoan1(
-        IERC3156FlashBorrower receiver,
-        address token,
-        uint256 amount,
-        bytes calldata data,
-        bytes memory transdata
-    ) external returns (bool);
 }
 /**
  * @dev Represents the state of a proof

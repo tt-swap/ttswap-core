@@ -29,6 +29,7 @@ function toTTSwapUINT256(
 function add(uint256 a, uint256 b) pure returns (uint256) {
     uint256 res0;
     uint256 res1;
+    /// @solidity memory-safe-assembly
     assembly ("memory-safe") {
         let a0 := sar(128, a)
         let a1 := and(

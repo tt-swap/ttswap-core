@@ -403,7 +403,6 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         uint256 blt = block.timestamp;
 
         console2.log(1, 1);
-        address ex = address(this);
         Permit2(targetAddr).approve(
             address(kkkk),
             users[4],

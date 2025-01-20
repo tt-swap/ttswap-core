@@ -778,20 +778,8 @@ library L_Good {
      * @param _fee New configuration value to be applied
      */
     function fillFee(S_GoodState storage _self, uint256 _fee) internal {
-        _self.feeQuantityState =
-            (_self.feeQuantityState + (_fee % 2 ** 128)) <<
-            (2 ** 128);
-    }
-}
-
-library L_GoodIdLibrary {
-    /**
-     * @notice Convert a good key to an ID
-     * @dev This function converts a good key to a unique ID using keccak256 hashing
-     * @param goodKey The good key to be converted
-     * @return The unique ID of the good
-     */
-    function toId(S_GoodKey memory goodKey) internal pure returns (uint256) {
-        return uint256(keccak256(abi.encode(goodKey)));
+        unchecked {
+            _self.feeQuantityState = _self.feeQuantityState + (_fee << 128);
+        }
     }
 }

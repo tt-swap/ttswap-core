@@ -70,12 +70,6 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         ttstokenconfig = _ttsconfig;
     }
 
-    function setRatio(uint256 _ratio) external {
-        require(_ratio <= 10000 && auths[msg.sender] == 2);
-        ttstokenconfig = _ratio.setratio(ttstokenconfig);
-        emit e_updatettsconfig(ttstokenconfig);
-    }
-
     /**
      * @dev Modifier to ensure function is only called on the main chain
      */
@@ -90,6 +84,12 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     modifier onlysub() {
         require(!ttstokenconfig.ismain());
         _;
+    }
+
+    function setRatio(uint256 _ratio) external {
+        require(_ratio <= 10000 && auths[msg.sender] == 2);
+        ttstokenconfig = _ratio.setratio(ttstokenconfig);
+        emit e_updatettsconfig(ttstokenconfig);
     }
 
     /**

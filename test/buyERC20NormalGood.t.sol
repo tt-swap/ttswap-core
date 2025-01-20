@@ -7,7 +7,7 @@ import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
-import {L_GoodIdLibrary, L_Good} from "../src/libraries/L_Good.sol";
+import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
 
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
@@ -18,7 +18,7 @@ contract buyERC20NormalGood is BaseSetup {
     using L_MarketConfigLibrary for uint256;
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
-    using L_GoodIdLibrary for S_GoodKey;
+
     using L_ProofKeyLibrary for S_ProofKey;
     using L_TTSwapUINT256Library for uint256;
 
@@ -274,6 +274,95 @@ contract buyERC20NormalGood is BaseSetup {
             defaultdata
         );
         snapLastCall("buy_erc20_normal_good_chips_second_2chips");
+        vm.stopPrank();
+    }
+
+    function testBuyERC20GoodWithChipswithRefere() public {
+        vm.startPrank(users[1]);
+        uint256 goodconfig = 1 *
+            2 ** 217 +
+            3 *
+            2 ** 211 +
+            5 *
+            2 ** 204 +
+            7 *
+            2 ** 197 +
+            2 *
+            2 ** 216 +
+            3 *
+            2 ** 206;
+        market.updateGoodConfig(normalgoodbtc, goodconfig);
+
+        usdt.approve(address(market), 800000 * 10 ** 6 + 1);
+        btc.approve(address(market), 10 * 10 ** 8 + 1);
+
+        assertEq(
+            btc.balanceOf(users[1]),
+            900000000,
+            "before buy erc20_normalgood:btc users[1] account  balance error"
+        );
+
+        assertEq(
+            usdt.balanceOf(users[1]),
+            49937000000000,
+            "before buy erc20_normalgood:usdt users[1] account  balance error"
+        );
+
+        assertEq(
+            usdt.balanceOf(address(market)),
+            113000000000,
+            "before buy erc20_normalgood:usdt address(market) account  balance error"
+        );
+
+        assertEq(
+            btc.balanceOf(address(market)),
+            100000000,
+            "before buy erc20_normalgood:btc address(market) account  balance error"
+        );
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            6300,
+            65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
+            false,
+            users[3],
+            defaultdata
+        );
+        snapLastCall("buy_erc20_normal_good_chips_first_1chips_refere");
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            6300,
+            80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
+            false,
+            users[3],
+            defaultdata
+        );
+        snapLastCall("buy_erc20_normal_good_chips_second_1chips_refere");
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            6300 * 10 ** 6,
+            80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
+            false,
+            users[3],
+            defaultdata
+        );
+        snapLastCall("buy_erc20_normal_good_chips_second_12chips_refere");
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            1000000000,
+            90000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
+            false,
+            users[3],
+            defaultdata
+        );
+        snapLastCall("buy_erc20_normal_good_chips_second_2chips_refere");
         vm.stopPrank();
     }
 }

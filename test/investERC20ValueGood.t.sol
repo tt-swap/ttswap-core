@@ -6,7 +6,7 @@ import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
-import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
 
@@ -18,7 +18,7 @@ contract investERC20ValueGood is BaseSetup {
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
 
-    using L_ProofKeyLibrary for S_ProofKey;
+    using L_ProofIdLibrary for S_ProofKey;
 
     address metagood;
     address normalgoodusdt;
@@ -57,9 +57,7 @@ contract investERC20ValueGood is BaseSetup {
         usdt.approve(address(market), 200000 * 10 ** 6 + 1);
 
         uint256 normalproof;
-        normalproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, address(0)).toKey()
-        );
+        normalproof = S_ProofKey(marketcreator, metagood, address(0)).toId();
         S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
@@ -195,9 +193,7 @@ contract investERC20ValueGood is BaseSetup {
         deal(address(usdt), users[2], 300000 * 10 ** 6, false);
         usdt.approve(address(market), 300000 * 10 ** 6 + 1);
 
-        uint256 normalproof = market.proofmapping(
-            S_ProofKey(users[2], metagood, address(0)).toKey()
-        );
+        uint256 normalproof = S_ProofKey(users[2], metagood, address(0)).toId();
         console2.log("1111111", normalproof);
         S_ProofState memory _proof1 = market.getProofState(normalproof);
 
@@ -291,9 +287,7 @@ contract investERC20ValueGood is BaseSetup {
             "after invest metagood:metagood marketcreator error"
         );
 
-        normalproof = market.proofmapping(
-            S_ProofKey(users[2], metagood, address(0)).toKey()
-        );
+        normalproof = S_ProofKey(users[2], metagood, address(0)).toId();
         _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),

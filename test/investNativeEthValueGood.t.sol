@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
-import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
 
@@ -17,7 +17,7 @@ contract investNativeETHValueGood is BaseSetup {
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
 
-    using L_ProofKeyLibrary for S_ProofKey;
+    using L_ProofIdLibrary for S_ProofKey;
 
     address metagood;
     address normalgoodusdt;
@@ -55,9 +55,7 @@ contract investNativeETHValueGood is BaseSetup {
         vm.startPrank(marketcreator);
 
         uint256 normalproof;
-        normalproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, address(0)).toKey()
-        );
+        normalproof = S_ProofKey(marketcreator, metagood, address(0)).toId();
         S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
@@ -152,9 +150,7 @@ contract investNativeETHValueGood is BaseSetup {
             "after invest metagood:metagood marketcreator error"
         );
 
-        normalproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, address(0)).toKey()
-        );
+        normalproof = S_ProofKey(marketcreator, metagood, address(0)).toId();
         _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
@@ -196,9 +192,7 @@ contract investNativeETHValueGood is BaseSetup {
         deal(users[2], 300000 * 10 ** 6);
 
         uint256 normalproof;
-        normalproof = market.proofmapping(
-            S_ProofKey(users[2], metagood, address(0)).toKey()
-        );
+        normalproof = S_ProofKey(users[2], metagood, address(0)).toId();
         S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
@@ -291,9 +285,7 @@ contract investNativeETHValueGood is BaseSetup {
             "after invest metagood:metagood marketcreator error"
         );
 
-        normalproof = market.proofmapping(
-            S_ProofKey(users[2], metagood, address(0)).toKey()
-        );
+        normalproof = S_ProofKey(users[2], metagood, address(0)).toId();
         _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),

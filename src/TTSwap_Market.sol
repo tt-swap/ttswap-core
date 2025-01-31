@@ -4,13 +4,12 @@ pragma solidity 0.8.26;
 import {I_TTSwap_Market, S_ProofState, S_GoodState, S_ProofKey, S_GoodTmpState} from "./interfaces/I_TTSwap_Market.sol";
 import {L_Good} from "./libraries/L_Good.sol";
 import {L_Lock} from "./libraries/L_Lock.sol";
-import {L_Proof, L_ProofIdLibrary, L_ProofKeyLibrary} from "./libraries/L_Proof.sol";
+import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
 import {L_UserConfigLibrary} from "./libraries/L_UserConfig.sol";
 import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
-import {I_TTSwap_NFT} from "./interfaces/I_TTSwap_NFT.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice} from "./libraries/L_TTSwapUINT256.sol";
 import {IERC3156FlashBorrower} from "@openzeppelin/contracts/interfaces/IERC3156FlashBorrower.sol";
 import {IERC3156FlashLender} from "@openzeppelin/contracts/interfaces/IERC3156FlashLender.sol";
@@ -23,8 +22,7 @@ import {IERC3156FlashLender} from "@openzeppelin/contracts/interfaces/IERC3156Fl
 contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     using L_GoodConfigLibrary for uint256;
     using L_UserConfigLibrary for uint256;
-    using L_ProofKeyLibrary for S_ProofKey;
-    using L_ProofIdLibrary for uint256;
+    using L_ProofIdLibrary for S_ProofKey;
     using L_TTSwapUINT256Library for uint256;
     using L_Good for S_GoodState;
     using L_Proof for S_ProofState;
@@ -58,12 +56,10 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     uint256 public override marketconfig;
 
     mapping(address goodid => S_GoodState) private goods;
-    mapping(uint256 proofkey => uint256 proofid) public override proofmapping;
     mapping(uint256 proofid => S_ProofState) private proofs;
     mapping(address => uint256) public override userConfig;
     address public marketcreator;
     address private immutable officialTokenContract;
-    address private immutable officialNFTContract;
     address private securitykeeper;
 
     /**
@@ -74,12 +70,10 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     constructor(
         uint256 _marketconfig,
         address _officialTokenContract,
-        address _officialNFTContract,
         address _marketcreator,
         address _securitykeeper
     ) {
         officialTokenContract = _officialTokenContract;
-        officialNFTContract = _officialNFTContract;
         marketconfig = _marketconfig;
         marketcreator = _marketcreator;
         securitykeeper = _securitykeeper;
@@ -156,12 +150,9 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
         goods[_erc20address].init(_initial, _goodConfig);
         goods[_erc20address].modifyGoodConfig(67108864); //2**26
-        uint256 proofKey = S_ProofKey(msg.sender, _erc20address, address(0))
-            .toKey();
+        uint256 proofid = S_ProofKey(msg.sender, _erc20address, address(0))
+            .toId();
 
-        uint256 proofid = proofKey.toId();
-        proofmapping[proofKey] = proofid;
-        I_TTSwap_NFT(officialNFTContract).mint(msg.sender, proofid);
         proofs[proofid].updateInvest(
             _erc20address,
             address(0),
@@ -214,14 +205,10 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
             _goodConfig
         );
 
-        uint256 proofKey = S_ProofKey(msg.sender, _erc20address, _valuegood)
-            .toKey();
-        proofmapping[proofKey] = proofKey.toId();
-        I_TTSwap_NFT(officialNFTContract).mint(
-            msg.sender,
-            proofmapping[proofKey]
-        );
-        proofs[proofmapping[proofKey]] = S_ProofState(
+        uint256 proofId = S_ProofKey(msg.sender, _erc20address, _valuegood)
+            .toId();
+
+        proofs[proofId] = S_ProofState(
             _erc20address,
             _valuegood,
             toTTSwapUINT256(investResult.actualInvestValue, 0),
@@ -233,7 +220,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         );
 
         emit e_initGood(
-            proofmapping[proofKey],
+            proofId,
             _erc20address,
             _valuegood,
             _goodConfig,
@@ -334,76 +321,6 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     }
 
     /**
-     * @dev Buys a good for pay
-     * @param _goodid1 The ID of the first good
-     * @param _goodid2 The ID of the second good
-     * @param _swapQuantity The quantity to swap
-     * @param _limitPrice The limit price
-     * @param _recipient The recipient address
-     * @return goodid1Quantity_ The quantity of the first good received
-     * @return goodid1FeeQuantity_ The fee quantity for the first good
-     */
-    /// @inheritdoc I_TTSwap_Market
-    function buyGoodForPay(
-        address _goodid1,
-        address _goodid2,
-        uint128 _swapQuantity,
-        uint256 _limitPrice,
-        address _recipient,
-        bytes memory data
-    )
-        external
-        payable
-        override
-        noReentrant
-        returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_)
-    {
-        L_Good.swapCache memory swapcache = L_Good.swapCache({
-            remainQuantity: _swapQuantity,
-            outputQuantity: 0,
-            feeQuantity: 0,
-            swapvalue: 0,
-            good1currentState: goods[_goodid1].currentState,
-            good1config: goods[_goodid1].goodConfig,
-            good2currentState: goods[_goodid2].currentState,
-            good2config: goods[_goodid2].goodConfig
-        });
-        L_Good.swapCompute2(swapcache, _limitPrice);
-        require(
-            _swapQuantity >= 0 &&
-                _goodid1 != _goodid2 &&
-                swapcache.remainQuantity == 0
-        );
-
-        goodid1FeeQuantity_ = swapcache.good1config.getSellFee(
-            swapcache.outputQuantity
-        );
-        goodid1Quantity_ = swapcache.outputQuantity + goodid1FeeQuantity_;
-
-        goods[_goodid2].swapCommit(
-            swapcache.good2currentState,
-            swapcache.feeQuantity
-        );
-        goods[_goodid1].swapCommit(
-            swapcache.good1currentState,
-            goodid1FeeQuantity_
-        );
-        _goodid2.safeTransfer(
-            _recipient,
-            _swapQuantity - swapcache.feeQuantity
-        );
-        _goodid1.transferFrom(msg.sender, goodid1Quantity_, data);
-        emit e_buyGoodForPay(
-            _goodid1,
-            _goodid2,
-            msg.sender,
-            _recipient,
-            swapcache.swapvalue,
-            toTTSwapUINT256(_swapQuantity, swapcache.feeQuantity),
-            toTTSwapUINT256(goodid1Quantity_, goodid1FeeQuantity_)
-        );
-    }
-    /**
      * @dev Invests in a good
      * @param _togood The ID of the good to invest in
      * @param _valuegood The ID of the value good
@@ -448,14 +365,8 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
             );
         }
 
-        uint256 proofKey = S_ProofKey(msg.sender, _togood, _valuegood).toKey();
-        uint256 proofNo = proofmapping[proofKey];
+        uint256 proofNo = S_ProofKey(msg.sender, _togood, _valuegood).toId();
 
-        if (proofNo == 0) {
-            proofNo = proofKey.toId();
-            I_TTSwap_NFT(officialNFTContract).mint(msg.sender, proofNo);
-            proofmapping[proofKey] = proofNo;
-        }
         proofs[proofNo].updateInvest(
             _togood,
             _valuegood,
@@ -508,10 +419,11 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         address _gater
     ) public override noReentrant returns (bool) {
         require(
-            I_TTSwap_NFT(officialNFTContract).isApprovedOrOwner(
+            S_ProofKey(
                 msg.sender,
-                _proofid
-            )
+                proofs[_proofid].currentgood,
+                proofs[_proofid].valuegood
+            ).toId() == _proofid
         );
         L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_;
         L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_;
@@ -586,10 +498,11 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         address _gater
     ) external override noReentrant returns (uint256 profit_) {
         require(
-            I_TTSwap_NFT(officialNFTContract).isApprovedOrOwner(
+            S_ProofKey(
                 msg.sender,
-                _proofid
-            )
+                proofs[_proofid].currentgood,
+                proofs[_proofid].valuegood
+            ).toId() == _proofid
         );
         address valuegood = proofs[_proofid].valuegood;
         address currentgood = proofs[_proofid].currentgood;
@@ -754,48 +667,6 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         marketconfig = _marketconfig;
         emit e_setMarketConfig(_marketconfig);
         return true;
-    }
-
-    /**
-     * @dev Internal function to handle proof data deletion and updates during transfer.
-     * @param proofid The ID of the proof being transferred.
-     * @param from The address transferring the proof.
-     * @param to The address receiving the proof.
-     */
-    /// @inheritdoc I_TTSwap_Market
-    function delproofdata(
-        uint256 proofid,
-        address from,
-        address to
-    ) external override {
-        require(msg.sender == officialNFTContract);
-        L_Proof.unstake(
-            officialTokenContract,
-            from,
-            proofs[proofid].state.amount0()
-        );
-        S_ProofState memory proofState = proofs[proofid];
-        uint256 proofKey1 = S_ProofKey(
-            from,
-            proofState.currentgood,
-            proofState.valuegood
-        ).toKey();
-        uint256 proofKey2 = S_ProofKey(
-            to,
-            proofState.currentgood,
-            proofState.valuegood
-        ).toKey();
-        L_Proof.stake(officialTokenContract, to, proofState.state.amount0());
-        uint256 existingProofId = proofmapping[proofKey2];
-        if (existingProofId == 0) {
-            proofmapping[proofKey2] = proofmapping[proofKey1];
-        } else {
-            proofs[existingProofId].conbine(proofs[proofid]);
-            delete proofs[proofid];
-            I_TTSwap_NFT(officialNFTContract).burn(proofid);
-            emit e_transferdel(proofid, existingProofId);
-        }
-        delete proofmapping[proofKey1];
     }
 
     /// @inheritdoc IERC3156FlashLender

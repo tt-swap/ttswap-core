@@ -9,9 +9,8 @@ import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";
 import {TTSwap_Market} from "../src/TTSwap_Market.sol";
-import {TTSwap_NFT} from "../src/TTSwap_NFT.sol";
 
-import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
 
@@ -20,7 +19,7 @@ import {IAllowanceTransfer} from "../src/interfaces/IAllowanceTransfer.sol";
 import {ISignatureTransfer} from "../src/interfaces/ISignatureTransfer.sol";
 import "forge-gas-snapshot/GasSnapshot.sol";
 contract testPermitInitMetaGood is Test, GasSnapshot {
-    using L_ProofKeyLibrary for S_ProofKey;
+    using L_ProofIdLibrary for S_ProofKey;
 
     using L_TTSwapUINT256Library for uint256;
     using ECDSA for bytes32;
@@ -47,7 +46,6 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
     address marketcreator;
     TTSwap_Market market;
     TTSwap_Token tts_token;
-    TTSwap_NFT tts_nft;
     bytes internal constant defaultdata =
         abi.encode(L_CurrencyLibrary.S_transferData(1, ""));
     event debuggdata(bytes);
@@ -77,12 +75,10 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         eth = new MyToken("ETH", "ETH", 18);
         vm.startPrank(marketcreator);
         tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
-        tts_nft = new TTSwap_NFT(address(tts_token));
         snapStart("depoly Market Manager");
         market = new TTSwap_Market(
             m_marketconfig,
             address(tts_token),
-            address(tts_nft),
             marketcreator,
             marketcreator
         );
@@ -165,9 +161,8 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
             "after initial metagood:metagood marketcreator error"
         );
 
-        uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, address(0)).toKey()
-        );
+        uint256 metaproof = S_ProofKey(marketcreator, metagood, address(0))
+            .toId();
         S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
             _proof1.state.amount0(),
@@ -184,17 +179,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
             0,
             "after initial:proof quantity error"
         );
-        assertEq(
-            tts_nft.balanceOf(marketcreator),
-            1,
-            "erc721 market balance error"
-        );
 
-        assertEq(
-            tts_nft.ownerOf(metaproof),
-            marketcreator,
-            "erc721 proof owner error"
-        );
         vm.stopPrank();
     }
 
@@ -262,9 +247,8 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
             "after initial metagood:metagood marketcreator error"
         );
 
-        uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, address(0)).toKey()
-        );
+        uint256 metaproof = S_ProofKey(marketcreator, metagood, address(0))
+            .toId();
         S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
             _proof1.state.amount0(),
@@ -280,18 +264,6 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
             _proof1.valueinvest.amount1(),
             0,
             "after initial:proof quantity error"
-        );
-
-        assertEq(
-            tts_nft.balanceOf(marketcreator),
-            1,
-            "erc721 market balance error"
-        );
-
-        assertEq(
-            tts_nft.ownerOf(metaproof),
-            marketcreator,
-            "erc721 proof owner error"
         );
 
         vm.stopPrank();

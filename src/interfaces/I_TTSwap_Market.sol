@@ -175,7 +175,6 @@ interface I_TTSwap_Market {
 
     // Function declarations
 
-    function proofmapping(uint256) external view returns (uint256);
     function userConfig(address) external view returns (uint256);
     function setMarketor(address _newmarketor) external;
     function removeMarketor(address _user) external;
@@ -231,26 +230,6 @@ interface I_TTSwap_Market {
         external
         payable
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
-
-    /// @notice Buy a good, sell another, and send to a recipient
-    /// @param _goodid1 ID of the good to buy
-    /// @param _goodid2 ID of the good to sell
-    /// @param _swapQuantity Quantity of _goodid2 to buy
-    /// @param _limitprice Price limit for the trade
-    /// @param _recipent Address of the recipient
-    /// @return goodid1Quantity_ Actual quantity of good1 received
-    /// @return goodid1FeeQuantity_ Fee quantity for good1
-    function buyGoodForPay(
-        address _goodid1,
-        address _goodid2,
-        uint128 _swapQuantity,
-        uint256 _limitprice,
-        address _recipent,
-        bytes memory data1
-    )
-        external
-        payable
-        returns (uint128 goodid1Quantity_, uint128 goodid1FeeQuantity_);
 
     /// @notice Invest in a normal good
     /// @param _togood ID of the normal good to invest in
@@ -381,14 +360,6 @@ interface I_TTSwap_Market {
         uint128 welfare,
         bytes memory data1
     ) external payable;
-
-    /**
-     * @dev Internal function to handle proof data deletion and updates during transfer.
-     * @param proofid The ID of the proof being transferred.
-     * @param from The address transferring the proof.
-     * @param to The address receiving the proof.
-     */
-    function delproofdata(uint256 proofid, address from, address to) external;
 }
 /**
  * @dev Represents the state of a proof

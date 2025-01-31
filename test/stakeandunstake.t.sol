@@ -7,7 +7,6 @@ import {console2} from "forge-std/console2.sol";
 import {MyToken} from "../src/ERC20.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";
 import {TTSwap_Market} from "../src/TTSwap_Market.sol";
-import {TTSwap_NFT} from "../src/TTSwap_NFT.sol";
 
 contract stakeandunstake is Test, GasSnapshot {
     address payable[8] internal users;
@@ -17,7 +16,6 @@ contract stakeandunstake is Test, GasSnapshot {
     address marketcreator;
     TTSwap_Market market;
     TTSwap_Token tts_token;
-    TTSwap_NFT tts_nft;
 
     function setUp() public virtual {
         vm.warp(1728111156);
@@ -46,12 +44,10 @@ contract stakeandunstake is Test, GasSnapshot {
             marketcreator,
             2 ** 255 + 10000
         );
-        tts_nft = new TTSwap_NFT(address(tts_token));
         snapStart("depoly Market Manager");
         market = new TTSwap_Market(
             m_marketconfig,
             address(tts_token),
-            address(tts_nft),
             marketcreator,
             marketcreator
         );

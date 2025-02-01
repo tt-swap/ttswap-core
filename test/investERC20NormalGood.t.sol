@@ -6,7 +6,7 @@ import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
-import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
 
@@ -17,7 +17,7 @@ contract investERC20NormalGood is BaseSetup {
     using L_MarketConfigLibrary for uint256;
     using L_GoodConfigLibrary for uint256;
 
-    using L_ProofKeyLibrary for S_ProofKey;
+    using L_ProofIdLibrary for S_ProofKey;
     using L_TTSwapUINT256Library for uint256;
 
     address metagood;
@@ -91,9 +91,7 @@ contract investERC20NormalGood is BaseSetup {
         btc.approve(address(market), 10 * 10 ** 8 + 1);
 
         uint256 normalproof;
-        normalproof = market.proofmapping(
-            S_ProofKey(users[1], normalgoodbtc, metagood).toKey()
-        );
+        normalproof = S_ProofKey(users[1], normalgoodbtc, metagood).toId();
         S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
@@ -268,9 +266,8 @@ contract investERC20NormalGood is BaseSetup {
         usdt.approve(address(market), 800000 * 10 ** 6);
         btc.approve(address(market), 10 * 10 ** 8);
 
-        uint256 normalproof = market.proofmapping(
-            S_ProofKey(users[4], normalgoodbtc, metagood).toKey()
-        );
+        uint256 normalproof = S_ProofKey(users[4], normalgoodbtc, metagood)
+            .toId();
         S_ProofState memory _proof1 = market.getProofState(normalproof);
 
         assertEq(
@@ -388,9 +385,7 @@ contract investERC20NormalGood is BaseSetup {
             "after invest erc20_normalgood:metagood marketcreator error"
         );
 
-        normalproof = market.proofmapping(
-            S_ProofKey(users[4], normalgoodbtc, metagood).toKey()
-        );
+        normalproof = S_ProofKey(users[4], normalgoodbtc, metagood).toId();
         console2.log("111111", normalproof);
         _proof1 = market.getProofState(normalproof);
         assertEq(

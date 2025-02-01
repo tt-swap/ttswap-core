@@ -5,13 +5,12 @@ import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/ERC20.sol";
 import {TTSwap_Market} from "../src/TTSwap_Market.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";
-import {TTSwap_NFT} from "../src/TTSwap_NFT.sol";
 
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
 
-import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_CurrencyLibrary} from "../src/libraries/L_Currency.sol";
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
@@ -24,7 +23,7 @@ contract testBuy1 is Test {
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
 
-    using L_ProofKeyLibrary for S_ProofKey;
+    using L_ProofIdLibrary for S_ProofKey;
     using L_CurrencyLibrary for address;
     using L_TTSwapUINT256Library for uint256;
 
@@ -38,7 +37,6 @@ contract testBuy1 is Test {
 
     TTSwap_Market market;
     TTSwap_Token tts_token;
-    TTSwap_NFT tts_nft;
     MyToken usdt;
     MyToken eth;
     MyToken wbtc;
@@ -51,11 +49,9 @@ contract testBuy1 is Test {
         wbtc = new MyToken("BTC", "BTC", 8);
         eth = new MyToken("ETH", "ETH", 18);
         tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
-        tts_nft = new TTSwap_NFT(address(tts_token));
         market = new TTSwap_Market(
             81562183917421901855786361352751156561780156203962646020495653018153967943680,
             address(tts_token),
-            address(tts_nft),
             marketcreator,
             marketcreator
         );

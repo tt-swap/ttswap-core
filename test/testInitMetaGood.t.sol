@@ -7,12 +7,12 @@ import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 
-import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwapUINT256.sol";
 
 contract testInitMetaGood is BaseSetup {
-    using L_ProofKeyLibrary for S_ProofKey;
+    using L_ProofIdLibrary for S_ProofKey;
 
     using L_TTSwapUINT256Library for uint256;
 
@@ -85,9 +85,8 @@ contract testInitMetaGood is BaseSetup {
             "after initial metagood:metagood marketcreator error"
         );
 
-        uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, address(0)).toKey()
-        );
+        uint256 metaproof = S_ProofKey(marketcreator, metagood, address(0))
+            .toId();
         S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
             _proof1.state.amount0(),
@@ -103,18 +102,6 @@ contract testInitMetaGood is BaseSetup {
             _proof1.valueinvest.amount1(),
             0,
             "after initial:proof quantity error"
-        );
-
-        assertEq(
-            tts_nft.balanceOf(marketcreator),
-            1,
-            "erc721 market balance error"
-        );
-
-        assertEq(
-            tts_nft.ownerOf(metaproof),
-            marketcreator,
-            "erc721 proof owner error"
         );
 
         vm.stopPrank();
@@ -184,9 +171,8 @@ contract testInitMetaGood is BaseSetup {
             "after initial metagood:metagood marketcreator error"
         );
 
-        uint256 metaproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, address(0)).toKey()
-        );
+        uint256 metaproof = S_ProofKey(marketcreator, metagood, address(0))
+            .toId();
         S_ProofState memory _proof1 = market.getProofState(metaproof);
         assertEq(
             _proof1.state.amount0(),
@@ -203,17 +189,7 @@ contract testInitMetaGood is BaseSetup {
             0,
             "after initial:proof quantity error"
         );
-        assertEq(
-            tts_nft.balanceOf(marketcreator),
-            1,
-            "erc721 market balance error"
-        );
 
-        assertEq(
-            tts_nft.ownerOf(metaproof),
-            marketcreator,
-            "erc721 proof owner error"
-        );
         vm.stopPrank();
     }
 }

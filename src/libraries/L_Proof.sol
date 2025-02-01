@@ -148,16 +148,16 @@ library L_Proof {
     }
 }
 
-library L_ProofKeyLibrary {
-    function toKey(S_ProofKey memory proofKey) internal pure returns (uint256) {
+library L_ProofIdLibrary {
+    function toId(S_ProofKey memory proofKey) internal pure returns (uint256) {
         return uint256(keccak256(abi.encode(proofKey)));
     }
 }
-library L_ProofIdLibrary {
-    function toId(uint256 proofkey) internal view returns (uint256) {
-        return
-            uint256(
-                keccak256(abi.encode(proofkey, address(this), block.timestamp))
-            );
-    }
-}
+// library L_ProofIdLibrary {
+//     function toId(uint256 proofkey) internal view returns (uint256) {
+//         return
+//             uint256(
+//                 keccak256(abi.encode(proofkey, address(this), block.timestamp))
+//             );
+//     }
+// }

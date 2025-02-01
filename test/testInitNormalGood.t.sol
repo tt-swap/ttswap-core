@@ -7,11 +7,11 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
-import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
 
 contract testInitNormalGood is BaseSetup {
-    using L_ProofKeyLibrary for S_ProofKey;
+    using L_ProofIdLibrary for S_ProofKey;
     using L_TTSwapUINT256Library for uint256;
     address metagoodkey;
 
@@ -180,9 +180,8 @@ contract testInitNormalGood is BaseSetup {
         );
 
         ///////////////////////////
-        uint256 normalproof = market.proofmapping(
-            S_ProofKey(users[1], normalgoodkey, metagoodkey).toKey()
-        );
+        uint256 normalproof = S_ProofKey(users[1], normalgoodkey, metagoodkey)
+            .toId();
         S_ProofState memory _proof1 = market.getProofState(normalproof);
         assertEq(
             _proof1.state.amount0(),
@@ -194,17 +193,7 @@ contract testInitNormalGood is BaseSetup {
             1 * 10 ** 8,
             "after initial:proof quantity error"
         );
-        assertEq(
-            tts_nft.balanceOf(users[1]),
-            1,
-            "erc721 users[1] balance error"
-        );
 
-        assertEq(
-            tts_nft.ownerOf(normalproof),
-            users[1],
-            "erc721 proof owner error"
-        );
         vm.stopPrank();
     }
 
@@ -348,9 +337,8 @@ contract testInitNormalGood is BaseSetup {
 
         ///////////////////////////
 
-        uint256 normalproof = market.proofmapping(
-            S_ProofKey(users[1], normalgoodkey, metagoodkey).toKey()
-        );
+        uint256 normalproof = S_ProofKey(users[1], normalgoodkey, metagoodkey)
+            .toId();
 
         S_ProofState memory _proof1 = market.getProofState(normalproof);
         assertEq(
@@ -367,17 +355,6 @@ contract testInitNormalGood is BaseSetup {
             _proof1.valueinvest.amount1(),
             63000 * 10 ** 6 - 63000 * 10 ** 2,
             "after initial:proof value quantity error"
-        );
-        assertEq(
-            tts_nft.balanceOf(users[1]),
-            1,
-            "erc721 users[1] balance error"
-        );
-
-        assertEq(
-            tts_nft.ownerOf(normalproof),
-            users[1],
-            "erc721 proof owner error"
         );
     }
 }

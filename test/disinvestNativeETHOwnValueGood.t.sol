@@ -6,7 +6,7 @@ import {MyToken} from "../src/ERC20.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
-import {L_ProofKeyLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
+import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
 
@@ -18,7 +18,7 @@ contract disinvestNativeETHOwnValueGood is BaseSetup {
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
 
-    using L_ProofKeyLibrary for S_ProofKey;
+    using L_ProofIdLibrary for S_ProofKey;
 
     address metagood;
     address normalgoodusdt;
@@ -67,9 +67,7 @@ contract disinvestNativeETHOwnValueGood is BaseSetup {
     function testDistinvestProof() public {
         vm.startPrank(marketcreator);
         uint256 normalproof;
-        normalproof = market.proofmapping(
-            S_ProofKey(marketcreator, metagood, address(0)).toKey()
-        );
+        normalproof = S_ProofKey(marketcreator, metagood, address(0)).toId();
         S_ProofState memory _proof = market.getProofState(normalproof);
         assertEq(
             _proof.state.amount0(),

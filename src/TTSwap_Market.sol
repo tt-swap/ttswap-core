@@ -58,6 +58,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     mapping(address goodid => S_GoodState) private goods;
     mapping(uint256 proofid => S_ProofState) private proofs;
     mapping(address => uint256) public override userConfig;
+
     address public marketcreator;
     address private immutable officialTokenContract;
     address private securitykeeper;

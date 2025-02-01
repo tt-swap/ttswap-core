@@ -104,24 +104,6 @@ interface I_TTSwap_Market {
         uint256 forgoodstate
     );
 
-    /// @notice Emitted when a user buys a good and pays the seller
-    /// @param buygood The ID of the good being bought
-    /// @param usegood The ID of the good being used for payment
-    /// @param fromer The address of the buyer
-    /// @param receipt The address of the recipient (seller)
-    /// @param swapvalue The trade value
-    /// @param buygoodstate The status of the bought good (amount0: fee, amount1: quantity)
-    /// @param usegoodstate The status of the used good (amount0: fee, amount1: quantity)
-    event e_buyGoodForPay(
-        address indexed buygood,
-        address indexed usegood,
-        address fromer,
-        address receipt,
-        uint128 swapvalue,
-        uint256 buygoodstate,
-        uint256 usegoodstate
-    );
-
     /// @notice Emitted when a user invests in a normal good
     /// @param _proofNo The ID of the investment proof
     /// @param _normalgoodid Packed data: first 128 bits for good's ID, last 128 bits for stake construct

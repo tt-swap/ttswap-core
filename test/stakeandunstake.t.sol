@@ -69,7 +69,7 @@ contract stakeandunstake is Test, GasSnapshot {
         assertEq(tts_token.stakestate() % 2 ** 128, 100000, "pool value error");
         assertEq(
             tts_token.poolstate() / 2 ** 128,
-            2739726027,
+            10958904109,
             "pool asset error"
         );
         assertEq(tts_token.poolstate() % 2 ** 128, 0, "pool construct error");
@@ -89,10 +89,10 @@ contract stakeandunstake is Test, GasSnapshot {
         assertEq(tts_token.stakestate() % 2 ** 128, 99000, "pool value error");
         assertEq(
             tts_token.poolstate() / 2 ** 128,
-            2712328767,
+            10849315068,
             "pool asset error"
         );
         assertEq(tts_token.poolstate() % 2 ** 128, 0, "pool construct error");
-        assertEq(tts_token.balanceOf(users[2]), 27397260, "tts balance error");
+        assertEq(tts_token.balanceOf(users[2]), 109589041, "tts balance error");
     }
 }

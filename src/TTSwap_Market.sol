@@ -42,11 +42,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
      * @dev The receiver of a flashloan is not a valid {IERC3156FlashBorrower-onFlashLoan} implementer.
      */
     error ERC3156InvalidReceiver(address receiver);
-    //bytes private constant defaultdata =abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
-    bytes private constant defaultdata =
-        bytes(
-            "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000"
-        );
+
     //keccak256("ERC3156FlashBorrower.onFlashLoan");
     bytes32 private constant RETURN_VALUE =
         bytes32(
@@ -145,7 +141,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         address _erc20address,
         uint256 _initial,
         uint256 _goodConfig,
-        bytes memory data
+        bytes calldata data
     ) external payable onlyDAOadmin returns (bool) {
         require(_goodConfig.isvaluegood());
         _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
@@ -190,8 +186,8 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint256 _initial,
         address _erc20address,
         uint256 _goodConfig,
-        bytes memory _normaldata,
-        bytes memory _valuedata
+        bytes calldata _normaldata,
+        bytes calldata _valuedata
     ) external payable override noReentrant returns (bool) {
         require(
             goods[_erc20address].owner == address(0) &&
@@ -258,7 +254,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint256 _limitPrice,
         bool _istotal,
         address _referal,
-        bytes memory data
+        bytes calldata data
     )
         external
         payable
@@ -333,8 +329,8 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         address _togood,
         address _valuegood,
         uint128 _quantity,
-        bytes memory data1,
-        bytes memory data2
+        bytes calldata data1,
+        bytes calldata data2
     ) external payable override noReentrant returns (bool) {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
@@ -598,7 +594,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         address _goodid,
         uint128 _payquanity,
         address _recipent,
-        bytes memory transdata
+        bytes calldata transdata
     ) external payable override returns (bool) {
         if (_goodid == address(1)) {
             _goodid.safeTransfer(_recipent, _payquanity);
@@ -650,7 +646,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     function goodWelfare(
         address goodid,
         uint128 welfare,
-        bytes memory data
+        bytes calldata data
     ) external payable override noReentrant {
         require(goods[goodid].feeQuantityState.amount0() + welfare <= 2 ** 109);
         goodid.transferFrom(msg.sender, welfare, data);
@@ -701,12 +697,13 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         ) {
             revert ERC3156InvalidReceiver(address(receiver));
         }
-        token.transferFrom(
-            address(receiver),
-            address(this),
-            uint128(amount + fee),
-            defaultdata
-        );
+        token.isNative()
+            ? token.nativeAmountCheck(amount + fee)
+            : token.transferFrom(
+                address(receiver),
+                address(this),
+                uint128(amount + fee)
+            );
         goods[token].fillFee(fee);
         return true;
     }

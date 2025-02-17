@@ -58,7 +58,7 @@ library L_CurrencyLibrary {
         address from,
         address to,
         uint256 amount,
-        bytes memory detail
+        bytes calldata detail
     ) internal {
         bool success;
         S_transferData memory _simplePermit = abi.decode(
@@ -225,10 +225,15 @@ library L_CurrencyLibrary {
         address token,
         address from,
         uint256 amount,
-        bytes memory trandata
+        bytes calldata trandata
     ) internal {
         address to = address(this);
         transferFrom(token, from, to, uint128(amount), trandata);
+    }
+
+    function nativeAmountCheck(address token, uint256 amount) internal {
+        if (msg.value != amount || !token.isNative())
+            revert NativeTransferFailed();
     }
 
     function safeTransfer(

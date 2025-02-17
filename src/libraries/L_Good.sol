@@ -329,20 +329,6 @@ library L_Good {
             _investProof.state.amount0(),
             _investProof.invest.amount1()
         ).getamount0fromamount1(_params._goodQuantity);
-
-        // Calculate initial disinvestment results for the main good
-        normalGoodResult1_ = S_GoodDisinvestReturn(
-            toTTSwapUINT256(
-                _self.feeQuantityState.amount0(),
-                _self.investState.amount1()
-            ).getamount0fromamount1(_params._goodQuantity),
-            toTTSwapUINT256(
-                _investProof.invest.amount0(),
-                _investProof.invest.amount1()
-            ).getamount0fromamount1(_params._goodQuantity),
-            _params._goodQuantity
-        );
-
         // Ensure disinvestment conditions are met
         require(
             (_self.goodConfig.isvaluegood() ||
@@ -356,6 +342,18 @@ library L_Good {
                     _self.currentState.amount1()
                 ),
             "G011"
+        );
+        // Calculate initial disinvestment results for the main good
+        normalGoodResult1_ = S_GoodDisinvestReturn(
+            toTTSwapUINT256(
+                _self.feeQuantityState.amount0(),
+                _self.investState.amount1()
+            ).getamount0fromamount1(_params._goodQuantity),
+            toTTSwapUINT256(
+                _investProof.invest.amount0(),
+                _investProof.invest.amount1()
+            ).getamount0fromamount1(_params._goodQuantity),
+            _params._goodQuantity
         );
 
         // Update main good states

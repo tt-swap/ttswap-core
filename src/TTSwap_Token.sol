@@ -39,7 +39,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     address public override marketcontract;
     uint32 public shares_index;
     //uint32 public chainindex;
-    uint128 public left_share = 5 * 10 ** 8 * 10 ** 6;
+    uint128 public left_share = 45_000_000_000_000;
     /// @inheritdoc I_TTSwap_Token
     uint128 public override publicsell;
 
@@ -202,9 +202,9 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             I_TTSwap_Market(marketcontract).ishigher(
                 normalgoodid,
                 valuegoodid,
-                2 ** shares[index].metric * 2 ** 128 + 10
+                2 ** shares[index].metric * 2 ** 128 + 20
             ) ==
-                false &&
+                true &&
                 _msgSender() == shares[index].recipient
         );
         uint128 mintamount = shares[index].leftamount / shares[index].chips;
@@ -260,20 +260,20 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     /// @inheritdoc I_TTSwap_Token
     function publicSell(
         uint256 usdtamount,
-        bytes memory data
+        bytes calldata data
     ) external onlymain {
         publicsell += uint128(usdtamount);
-        require(publicsell <= 5000000 * decimals());
+        require(publicsell <= 500_000_000_000);
         usdt.transferFrom(msg.sender, address(this), usdtamount, data);
         uint256 ttsamount;
-        if (publicsell <= 1750000 * decimals()) {
-            ttsamount = (usdtamount / 5) * 6;
+        if (publicsell <= 175_000_000_000) {
+            ttsamount = (usdtamount * 24);
             _mint(msg.sender, ttsamount);
-        } else if (publicsell <= 3250000 * decimals()) {
-            ttsamount = usdtamount;
+        } else if (publicsell <= 325_000_000_000) {
+            ttsamount = usdtamount * 20;
             _mint(msg.sender, ttsamount);
-        } else if (publicsell <= 5000000 * decimals()) {
-            ttsamount = (usdtamount / 5) * 4;
+        } else if (publicsell <= 500_000_000_000) {
+            ttsamount = (usdtamount * 16);
             _mint(msg.sender, ttsamount);
         }
         emit e_publicsell(usdtamount, ttsamount);
@@ -366,9 +366,10 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     function _stakeFee() internal {
         if (stakestate.amount0() + 86400 < block.timestamp) {
             stakestate = add(stakestate, toTTSwapUINT256(86400, 0));
-            uint256 mintamount = totalSupply() > 50000000 * decimals()
-                ? totalSupply() / 18300
-                : 2739726027; //2739726027=(50000000 * decimals) / 18300
+            uint256 leftamount = 200_000_000_000_000 - totalSupply();
+            uint256 mintamount = leftamount < 1000000
+                ? 1000000
+                : leftamount / 18250; //leftamount /50 /365
             poolstate = add(poolstate, ttstokenconfig.getratio(mintamount));
 
             emit e_updatepool(

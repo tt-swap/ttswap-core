@@ -171,7 +171,7 @@ interface I_TTSwap_Market {
         address _erc20address,
         uint256 _initial,
         uint256 _goodconfig,
-        bytes memory data
+        bytes calldata data
     ) external payable returns (bool);
 
     /// @notice Initialize a normal good in the market
@@ -187,8 +187,8 @@ interface I_TTSwap_Market {
         uint256 _initial,
         address _erc20address,
         uint256 _goodConfig,
-        bytes memory data1,
-        bytes memory data2
+        bytes calldata data1,
+        bytes calldata data2
     ) external payable returns (bool);
 
     /// @notice Sell one good to buy another
@@ -207,7 +207,7 @@ interface I_TTSwap_Market {
         uint256 _limitprice,
         bool _istotal,
         address _referal,
-        bytes memory data1
+        bytes calldata data1
     )
         external
         payable
@@ -222,8 +222,8 @@ interface I_TTSwap_Market {
         address _togood,
         address _valuegood,
         uint128 _quantity,
-        bytes memory data1,
-        bytes memory data2
+        bytes calldata data1,
+        bytes calldata data2
     ) external payable returns (bool);
 
     /// @notice Disinvest from a normal good
@@ -303,7 +303,7 @@ interface I_TTSwap_Market {
         address _goodid,
         uint128 _payquanity,
         address _recipent,
-        bytes memory transdata
+        bytes calldata transdata
     ) external payable returns (bool);
 
     /// @notice Changes the owner of a good
@@ -340,7 +340,7 @@ interface I_TTSwap_Market {
     function goodWelfare(
         address goodid,
         uint128 welfare,
-        bytes memory data1
+        bytes calldata data1
     ) external payable;
 }
 /**

@@ -76,7 +76,7 @@ interface I_TTSwap_Token {
     /// @param unstakestate The state after unstaking
     /// @param stakestate The state of the stake
     /// @param poolstate The state of the pool
-    event e_unstake(
+    event e_stakeinfo(
         address recipient,
         uint256 proofvalue,
         uint256 unstakestate,

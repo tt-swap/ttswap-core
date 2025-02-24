@@ -319,6 +319,13 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
             stakeproof[restakeid].proofstate,
             toTTSwapUINT256(proofvalue, netconstruct)
         );
+        emit e_stakeinfo(
+            _staker,
+            stakeproof[restakeid].proofstate,
+            toTTSwapUINT256(0, netconstruct),
+            stakestate,
+            poolstate
+        );
     }
 
     /**
@@ -352,7 +359,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         poolstate = sub(poolstate, toTTSwapUINT256(profit, construct));
         profit = profit - construct;
         if (profit > 0) _mint(_staker, profit);
-        emit e_unstake(
+        emit e_stakeinfo(
             _staker,
             stakeproof[restakeid].proofstate,
             toTTSwapUINT256(construct, profit),

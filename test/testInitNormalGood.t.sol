@@ -223,7 +223,7 @@ contract testInitNormalGood is BaseSetup {
         market.initGood{value: 1 * 10 ** 8}(
             metagoodkey,
             toTTSwapUINT256(1 * 10 ** 8, 63000 * 10 ** 6),
-            address(0),
+            address(1),
             normalgoodconfig,
             defaultdata,
             defaultdata
@@ -300,7 +300,7 @@ contract testInitNormalGood is BaseSetup {
             "after initial normalgood:metagoodkey marketcreator error"
         );
 
-        address normalgoodkey = address(0);
+        address normalgoodkey = address(1);
 
         ////////////////////////////////////////
         S_GoodTmpState memory normalgoodstate = market.getGoodState(

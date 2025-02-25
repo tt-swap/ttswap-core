@@ -58,7 +58,7 @@ library L_CurrencyLibrary {
         address from,
         address to,
         uint256 amount,
-        bytes calldata detail
+        bytes memory detail
     ) internal {
         bool success;
         S_transferData memory _simplePermit = abi.decode(
@@ -66,7 +66,17 @@ library L_CurrencyLibrary {
             (S_transferData)
         );
         if (token.isNative()) {
-            if (msg.value != amount) revert NativeTransferFailed();
+            uint256 overamount;
+            if (msg.value < amount) revert NativeTransferFailed();
+            if (msg.value > amount) overamount = msg.value - amount;
+
+            if (overamount > 0) {
+                assembly ("memory-safe") {
+                    // Transfer the ETH and revert if it fails.
+                    success := call(gas(), from, overamount, 0, 0, 0, 0)
+                }
+                if (!success) revert NativeTransferFailed();
+            }
         } else if (_simplePermit.transfertype == 1) {
             transferFrom(token, from, to, amount);
         } else if (_simplePermit.transfertype == 2) {
@@ -189,7 +199,7 @@ library L_CurrencyLibrary {
             // Get a pointer to some free memory.
             let freeMemoryPointer := mload(0x40)
 
-            // Write the abi-encoded calldata into memory, beginning with the function selector.
+            // Write the abi-encoded memory into memory, beginning with the function selector.
             mstore(
                 freeMemoryPointer,
                 0x23b872dd00000000000000000000000000000000000000000000000000000000
@@ -211,7 +221,7 @@ library L_CurrencyLibrary {
                     and(eq(mload(0), 1), gt(returndatasize(), 31)),
                     iszero(returndatasize())
                 ),
-                // We use 100 because the length of our calldata totals up like so: 4 + 32 * 3.
+                // We use 100 because the length of our memory totals up like so: 4 + 32 * 3.
                 // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
                 // Counterintuitively, this call must be positioned second to the or() call in the
                 // surrounding and() call or else returndatasize() will be zero during the computation.
@@ -225,7 +235,7 @@ library L_CurrencyLibrary {
         address token,
         address from,
         uint256 amount,
-        bytes calldata trandata
+        bytes memory trandata
     ) internal {
         address to = address(this);
         transferFrom(token, from, to, uint128(amount), trandata);
@@ -254,10 +264,10 @@ library L_CurrencyLibrary {
             if (!success) revert NativeTransferFailed();
         } else {
             assembly {
-                // We'll write our calldata to this slot below, but restore it later.
+                // We'll write our memory to this slot below, but restore it later.
                 let memPointer := mload(0x40)
 
-                // Write the abi-encoded calldata into memory, beginning with the function selector.
+                // Write the abi-encoded memory into memory, beginning with the function selector.
                 mstore(
                     0,
                     0xa9059cbb00000000000000000000000000000000000000000000000000000000
@@ -272,7 +282,7 @@ library L_CurrencyLibrary {
                         and(eq(mload(0), 1), gt(returndatasize(), 31)),
                         iszero(returndatasize())
                     ),
-                    // We use 68 because that's the total length of our calldata (4 + 32 * 2)
+                    // We use 68 because that's the total length of our memory (4 + 32 * 2)
                     // Counterintuitively, this call() must be positioned after the or() in the
                     // surrounding and() because and() evaluates its arguments from right to left.
                     call(gas(), currency, 0, 0, 68, 0, 32)

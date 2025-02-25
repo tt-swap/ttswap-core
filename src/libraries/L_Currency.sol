@@ -66,7 +66,17 @@ library L_CurrencyLibrary {
             (S_transferData)
         );
         if (token.isNative()) {
-            if (msg.value != amount) revert NativeTransferFailed();
+            uint256 overamount;
+            if (msg.value < amount) revert NativeTransferFailed();
+            if (msg.value > amount) overamount = msg.value - amount;
+
+            if (overamount > 0) {
+                assembly ("memory-safe") {
+                    // Transfer the ETH and revert if it fails.
+                    success := call(gas(), from, overamount, 0, 0, 0, 0)
+                }
+                if (!success) revert NativeTransferFailed();
+            }
         } else if (_simplePermit.transfertype == 1) {
             transferFrom(token, from, to, amount);
         } else if (_simplePermit.transfertype == 2) {

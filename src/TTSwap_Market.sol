@@ -234,7 +234,6 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         );
         return true;
     }
-
     /**
      * @dev Buys a good
      * @param _goodid1 The ID of the first good
@@ -266,6 +265,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
                 msg.sender,
                 _referal
             );
+
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
             outputQuantity: 0,
@@ -276,10 +276,13 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
             good2currentState: goods[_goodid2].currentState,
             good2config: goods[_goodid2].goodConfig
         });
+
         L_Good.swapCompute1(swapcache, _limitPrice);
+
         require(
             _swapQuantity > 0 &&
-                swapcache.remainQuantity != _swapQuantity &&
+                (swapcache.remainQuantity + swapcache.feeQuantity) <
+                _swapQuantity &&
                 _goodid1 != _goodid2 &&
                 !(_istotal == true && swapcache.remainQuantity > 0)
         );
@@ -287,7 +290,9 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         goodid2FeeQuantity_ = swapcache.good2config.getBuyFee(
             swapcache.outputQuantity
         );
+
         goodid2Quantity_ = swapcache.outputQuantity - goodid2FeeQuantity_;
+
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
             swapcache.feeQuantity

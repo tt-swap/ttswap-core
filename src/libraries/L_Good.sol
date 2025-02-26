@@ -2,6 +2,7 @@
 pragma solidity 0.8.26;
 
 import {L_Proof} from "./L_Proof.sol";
+import {TTSwapError} from "./L_Error.sol";
 import {L_MarketConfigLibrary} from "./L_MarketConfig.sol";
 import {L_GoodConfigLibrary} from "./L_GoodConfig.sol";
 
@@ -330,19 +331,12 @@ library L_Good {
             _investProof.invest.amount1()
         ).getamount0fromamount1(_params._goodQuantity);
         // Ensure disinvestment conditions are met
-        require(
-            (_self.goodConfig.isvaluegood() ||
-                _valueGoodState.goodConfig.isvaluegood()) &&
-                disinvestvalue <
-                _self.goodConfig.getDisinvestChips(
-                    _self.currentState.amount0()
-                ) &&
-                _params._goodQuantity <
-                _self.goodConfig.getDisinvestChips(
-                    _self.currentState.amount1()
-                ),
-            "G011"
-        );
+        if (
+            disinvestvalue >
+            _self.goodConfig.getDisinvestChips(_self.currentState.amount0()) ||
+            _params._goodQuantity >
+            _self.goodConfig.getDisinvestChips(_self.currentState.amount1())
+        ) revert TTSwapError(14);
         // Calculate initial disinvestment results for the main good
         normalGoodResult1_ = S_GoodDisinvestReturn(
             toTTSwapUINT256(
@@ -432,17 +426,16 @@ library L_Good {
             );
 
             // Ensure value good disinvestment conditions are met
-            require(
-                disinvestvalue <
-                    _valueGoodState.goodConfig.getDisinvestChips(
-                        _valueGoodState.currentState.amount0()
-                    ) &&
-                    valueGoodResult2_.actualDisinvestQuantity <
-                    _valueGoodState.goodConfig.getDisinvestChips(
-                        _valueGoodState.currentState.amount1()
-                    ),
-                "G012"
-            );
+            if (
+                disinvestvalue >
+                _valueGoodState.goodConfig.getDisinvestChips(
+                    _valueGoodState.currentState.amount0()
+                ) ||
+                valueGoodResult2_.actualDisinvestQuantity >
+                _valueGoodState.goodConfig.getDisinvestChips(
+                    _valueGoodState.currentState.amount1()
+                )
+            ) revert TTSwapError(15);
 
             // Update value good states
             _valueGoodState.currentState = sub(

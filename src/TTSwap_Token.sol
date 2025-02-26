@@ -8,6 +8,7 @@ import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 import {I_TTSwap_Token, s_share, s_proof} from "./interfaces/I_TTSwap_Token.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
+import {TTSwapError} from "./libraries/L_Error.sol";
 import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
 
 /**
@@ -70,7 +71,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @dev Modifier to ensure function is only called on the main chain
      */
     modifier onlymain() {
-        require(ttstokenconfig.ismain());
+        if (!ttstokenconfig.ismain()) revert TTSwapError(15);
         _;
     }
 
@@ -78,12 +79,12 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @dev Modifier to ensure function is only called on sub-chains
      */
     modifier onlysub() {
-        require(!ttstokenconfig.ismain());
+        if (ttstokenconfig.ismain()) revert TTSwapError(16);
         _;
     }
 
     function setRatio(uint256 _ratio) external {
-        require(_ratio <= 10000 && auths[msg.sender] == 2);
+        if (_ratio > 10000 || auths[msg.sender] != 2) revert TTSwapError(17);
         ttstokenconfig = _ratio.setratio(ttstokenconfig);
         emit e_updatettsconfig(ttstokenconfig);
     }
@@ -93,8 +94,10 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      * @param _marketcontract Address of the market contract
      */
     /// @inheritdoc I_TTSwap_Token
+
     function setEnv(address _marketcontract) external override {
         require(_msgSender() == dao_admin);
+
         marketcontract = _marketcontract;
         emit e_setenv(marketcontract);
     }
@@ -106,7 +109,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     /// @inheritdoc I_TTSwap_Token
     function changeDAOAdmin(address _recipient) external override {
-        require(_msgSender() == dao_admin);
+        if (_msgSender() != dao_admin) revert TTSwapError(19);
         dao_admin = _recipient;
         emit e_setdaoadmin(dao_admin);
     }
@@ -119,7 +122,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     /// @inheritdoc I_TTSwap_Token
     function addauths(address _auths, uint256 _priv) external override {
-        require(_msgSender() == dao_admin);
+        if (_msgSender() != dao_admin) revert TTSwapError(20);
         auths[_auths] = _priv;
         emit e_addauths(_auths, _priv);
     }
@@ -131,7 +134,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     /// @inheritdoc I_TTSwap_Token
     function rmauths(address _auths) external override {
-        require(_msgSender() == dao_admin);
+        if (_msgSender() != dao_admin) revert TTSwapError(21);
         delete auths[_auths];
         emit e_rmauths(_auths);
     }
@@ -146,9 +149,8 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     /// @inheritdoc I_TTSwap_Token
     function addShare(s_share calldata _share) external override onlymain {
-        require(
-            left_share - _share.leftamount >= 0 && _msgSender() == dao_admin
-        );
+        if (left_share < _share.leftamount || _msgSender() != dao_admin)
+            revert TTSwapError(22);
         left_share -= uint64(_share.leftamount);
         shares_index += 1;
         shares[shares_index] = _share;
@@ -170,7 +172,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     /// @inheritdoc I_TTSwap_Token
     function burnShare(uint8 index) external override onlymain {
-        require(_msgSender() == dao_admin);
+        if (_msgSender() != dao_admin) revert TTSwapError(22);
         left_share += uint64(shares[index].leftamount);
         emit e_burnShare(index);
         delete shares[index];
@@ -186,15 +188,13 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     /// @inheritdoc I_TTSwap_Token
     function shareMint(uint8 index) external override onlymain {
-        require(
+        if (
             I_TTSwap_Market(marketcontract).ishigher(
                 address(this),
                 usdt,
                 2 ** shares[index].metric * 2 ** 128 + 20
-            ) ==
-                true &&
-                _msgSender() == shares[index].recipient
-        );
+            ) || _msgSender() != shares[index].recipient
+        ) revert TTSwapError(23);
         uint128 mintamount = shares[index].leftamount / shares[index].chips;
         shares[index].leftamount -= mintamount;
         shares[index].metric += 1;
@@ -251,7 +251,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         bytes calldata data
     ) external onlymain {
         publicsell += uint128(usdtamount);
-        require(publicsell <= 500_000_000_000);
+        if (publicsell > 500_000_000_000) revert TTSwapError(24);
         usdt.transferFrom(msg.sender, address(this), usdtamount, data);
         uint256 ttsamount;
         if (publicsell <= 175_000_000_000) {
@@ -279,7 +279,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         uint256 amount,
         address recipient
     ) external onlymain {
-        require(_msgSender() == dao_admin);
+        if (_msgSender() != dao_admin) revert TTSwapError(25);
         usdt.safeTransfer(recipient, amount);
     }
 
@@ -294,7 +294,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
         address _staker,
         uint128 proofvalue
     ) external override returns (uint128 netconstruct) {
-        require(auths[msg.sender] == 1);
+        if (auths[msg.sender] != 1) revert TTSwapError(26);
         _stakeFee();
         uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
         netconstruct = poolstate.amount1() == 0
@@ -323,7 +323,7 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
      */
     /// @inheritdoc I_TTSwap_Token
     function unstake(address _staker, uint128 proofvalue) external override {
-        require(auths[msg.sender] == 1);
+        if (auths[msg.sender] != 1) revert TTSwapError(27);
         _stakeFee();
         uint128 profit;
         uint128 construct;

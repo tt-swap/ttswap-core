@@ -4,6 +4,7 @@ pragma solidity 0.8.26;
 import {I_TTSwap_Market, S_ProofState, S_GoodState, S_ProofKey, S_GoodTmpState} from "./interfaces/I_TTSwap_Market.sol";
 import {L_Good} from "./libraries/L_Good.sol";
 import {L_Lock} from "./libraries/L_Lock.sol";
+import {TTSwapError} from "./libraries/L_Error.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
 import {L_UserConfigLibrary} from "./libraries/L_UserConfig.sol";
@@ -77,36 +78,33 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     }
 
     modifier onlyDAOadmin() {
-        require(marketcreator == msg.sender);
+        if (marketcreator != msg.sender) revert TTSwapError(1);
         _;
     }
     modifier onlyMarketor() {
-        require(userConfig[msg.sender].isMarketor());
+        if (!userConfig[msg.sender].isMarketor()) revert TTSwapError(2);
         _;
     }
     modifier noReentrant() {
-        require(L_Lock.get() == address(0));
+        if (L_Lock.get() != address(0)) revert TTSwapError(3);
         L_Lock.set(msg.sender);
         _;
         L_Lock.set(address(0));
     }
 
-    function changemarketcreator(address _newmarketor) external {
-        require(msg.sender == marketcreator);
+    function changemarketcreator(address _newmarketor) external onlyDAOadmin {
         marketcreator = _newmarketor;
         emit e_changemarketcreator(_newmarketor);
     }
 
     /// @inheritdoc I_TTSwap_Market
-    function setMarketor(address _newmarketor) external override {
-        require(msg.sender == marketcreator);
+    function setMarketor(address _newmarketor) external override onlyDAOadmin {
         userConfig[_newmarketor] = userConfig[_newmarketor] | 2;
         emit e_modifiedUserConfig(_newmarketor, userConfig[_newmarketor]);
     }
 
     /// @inheritdoc I_TTSwap_Market
-    function removeMarketor(address _user) external override {
-        require(msg.sender == marketcreator);
+    function removeMarketor(address _user) external override onlyDAOadmin {
         userConfig[_user] = userConfig[_user] & ~uint256(2);
         emit e_modifiedUserConfig(_user, userConfig[_user]);
     }
@@ -143,7 +141,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint256 _goodConfig,
         bytes calldata data
     ) external payable onlyDAOadmin returns (bool) {
-        require(_goodConfig.isvaluegood());
+        if (!_goodConfig.isvaluegood()) revert TTSwapError(4);
         _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
         goods[_erc20address].init(_initial, _goodConfig);
         goods[_erc20address].modifyGoodConfig(67108864); //2**26
@@ -189,10 +187,10 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         bytes calldata _normaldata,
         bytes calldata _valuedata
     ) external payable override noReentrant returns (bool) {
-        require(
-            goods[_erc20address].owner == address(0) &&
-                goods[_valuegood].goodConfig.isvaluegood()
-        );
+        if (
+            goods[_erc20address].owner != address(0) ||
+            !goods[_valuegood].goodConfig.isvaluegood()
+        ) revert TTSwapError(5);
         _erc20address.transferFrom(msg.sender, _initial.amount0(), _normaldata);
         _valuegood.transferFrom(msg.sender, _initial.amount1(), _valuedata);
         L_Good.S_GoodInvestReturn memory investResult;
@@ -279,13 +277,13 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
 
         L_Good.swapCompute1(swapcache, _limitPrice);
 
-        require(
-            _swapQuantity > 0 &&
-                (swapcache.remainQuantity + swapcache.feeQuantity) <
-                _swapQuantity &&
-                _goodid1 != _goodid2 &&
-                !(_istotal == true && swapcache.remainQuantity > 0)
-        );
+        if (
+            _swapQuantity == 0 ||
+            (swapcache.remainQuantity + swapcache.feeQuantity) >=
+            _swapQuantity ||
+            _goodid1 == _goodid2 ||
+            (_istotal == true && swapcache.remainQuantity > 0)
+        ) revert TTSwapError(6);
 
         goodid2FeeQuantity_ = swapcache.good2config.getBuyFee(
             swapcache.outputQuantity
@@ -339,12 +337,13 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     ) external payable override noReentrant returns (bool) {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
-        require(
-            goods[_togood].currentState.amount1() + _quantity <= 2 ** 109 &&
-                _togood != _valuegood &&
-                (goods[_togood].goodConfig.isvaluegood() ||
-                    goods[_valuegood].goodConfig.isvaluegood())
-        );
+        if (
+            goods[_togood].currentState.amount1() + _quantity >= 2 ** 109 ||
+            _togood == _valuegood ||
+            !(goods[_togood].goodConfig.isvaluegood() ||
+                goods[_valuegood].goodConfig.isvaluegood())
+        ) revert TTSwapError(7);
+
         goods[_togood].investGood(_quantity, normalInvest_);
         _togood.transferFrom(msg.sender, _quantity, data1);
         if (_valuegood != address(0)) {
@@ -420,13 +419,13 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint128 _goodQuantity,
         address _gater
     ) public override noReentrant returns (bool) {
-        require(
+        if (
             S_ProofKey(
                 msg.sender,
                 proofs[_proofid].currentgood,
                 proofs[_proofid].valuegood
-            ).toId() == _proofid
-        );
+            ).toId() != _proofid
+        ) revert TTSwapError(8);
         L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_;
         L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_;
         address normalgood = proofs[_proofid].currentgood;
@@ -499,13 +498,13 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint256 _proofid,
         address _gater
     ) external override noReentrant returns (uint256 profit_) {
-        require(
+        if (
             S_ProofKey(
                 msg.sender,
                 proofs[_proofid].currentgood,
                 proofs[_proofid].valuegood
-            ).toId() == _proofid
-        );
+            ).toId() != _proofid
+        ) revert TTSwapError(9);
         address valuegood = proofs[_proofid].valuegood;
         address currentgood = proofs[_proofid].currentgood;
         (address dao_admin, address referal) = I_TTSwap_Token(
@@ -578,7 +577,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         address _goodid,
         uint256 _goodConfig
     ) external override returns (bool) {
-        require(msg.sender == goods[_goodid].owner);
+        if (msg.sender != goods[_goodid].owner) revert TTSwapError(10);
         goods[_goodid].updateGoodConfig(_goodConfig);
         emit e_updateGoodConfig(_goodid, _goodConfig);
         return true;
@@ -618,7 +617,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     }
     /// @inheritdoc I_TTSwap_Market
     function collectCommission(address[] memory _goodid) external override {
-        require(_goodid.length < 100);
+        if (_goodid.length > 100) revert TTSwapError(11);
         uint256[] memory commissionamount = new uint256[](_goodid.length);
         for (uint i = 0; i < _goodid.length; i++) {
             commissionamount[i] = goods[_goodid[i]].commission[msg.sender];
@@ -639,7 +638,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         address[] memory _goodid,
         address _recipent
     ) external view override returns (uint256[] memory) {
-        require(_goodid.length < 100);
+        if (_goodid.length >= 100) revert TTSwapError(11);
         uint256[] memory feeamount = new uint256[](_goodid.length);
         for (uint i = 0; i < _goodid.length; i++) {
             feeamount[i] = goods[_goodid[i]].commission[_recipent];
@@ -653,7 +652,8 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint128 welfare,
         bytes calldata data
     ) external payable override noReentrant {
-        require(goods[goodid].feeQuantityState.amount0() + welfare <= 2 ** 109);
+        if (goods[goodid].feeQuantityState.amount0() + welfare >= 2 ** 109)
+            revert TTSwapError(12);
         goodid.transferFrom(msg.sender, welfare, data);
         goods[goodid].feeQuantityState = add(
             goods[goodid].feeQuantityState,
@@ -714,7 +714,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     }
 
     function securityKeeper(address token, uint256 amount) external {
-        require(msg.sender == securitykeeper);
+        if (msg.sender != securitykeeper) revert TTSwapError(13);
         amount =
             goods[token].feeQuantityState.amount0() -
             goods[token].feeQuantityState.amount1();
@@ -725,7 +725,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     }
 
     function removeSecurityKeeper() external {
-        require(msg.sender == marketcreator);
+        if (msg.sender != marketcreator) revert TTSwapError(14);
         securitykeeper = address(0);
     }
 }

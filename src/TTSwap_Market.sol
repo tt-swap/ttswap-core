@@ -712,11 +712,10 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         goods[token].fillFee(fee);
         return true;
     }
+    function securityKeeper(address token) external {
+        require(msg.sender == securitykeeper);
+        uint256 amount = goods[token].feeQuantityState.amount0() -
 
-    function securityKeeper(address token, uint256 amount) external {
-        if (msg.sender != securitykeeper) revert TTSwapError(13);
-        amount =
-            goods[token].feeQuantityState.amount0() -
             goods[token].feeQuantityState.amount1();
         goods[token].feeQuantityState = 0;
         amount += goods[token].currentState.amount1();

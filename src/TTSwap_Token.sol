@@ -31,10 +31,6 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     // mapping(uint32 => s_chain) public chains;
 
     /// @inheritdoc I_TTSwap_Token
-    address public override normalgoodid;
-    /// @inheritdoc I_TTSwap_Token
-    address public override valuegoodid;
-    /// @inheritdoc I_TTSwap_Token
     address public override dao_admin;
     /// @inheritdoc I_TTSwap_Token
     address public override marketcontract;
@@ -95,21 +91,15 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
 
     /**
      * @dev Set environment variables for the contract
-     * @param _normalgoodid ID for normal goods
-     * @param _valuegoodid ID for value goods
      * @param _marketcontract Address of the market contract
      */
     /// @inheritdoc I_TTSwap_Token
-    function setEnv(
-        address _normalgoodid,
-        address _valuegoodid,
-        address _marketcontract
-    ) external override {
-        if (_msgSender() != dao_admin) revert TTSwapError(18);
-        normalgoodid = _normalgoodid;
-        valuegoodid = _valuegoodid;
+
+    function setEnv(address _marketcontract) external override {
+        require(_msgSender() == dao_admin);
+
         marketcontract = _marketcontract;
-        emit e_setenv(normalgoodid, valuegoodid, marketcontract);
+        emit e_setenv(marketcontract);
     }
 
     /**
@@ -200,8 +190,8 @@ contract TTSwap_Token is ERC20Permit, I_TTSwap_Token {
     function shareMint(uint8 index) external override onlymain {
         if (
             I_TTSwap_Market(marketcontract).ishigher(
-                normalgoodid,
-                valuegoodid,
+                address(this),
+                usdt,
                 2 ** shares[index].metric * 2 ** 128 + 20
             ) || _msgSender() != shares[index].recipient
         ) revert TTSwapError(23);

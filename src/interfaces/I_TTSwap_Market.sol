@@ -235,7 +235,7 @@ interface I_TTSwap_Market {
         uint256 _proofid,
         uint128 _goodQuantity,
         address _gater
-    ) external returns (bool);
+    ) external payable returns (bool);
 
     /// @notice Collect profit from an investment proof
     /// @param _proofid ID of the investment proof
@@ -244,7 +244,7 @@ interface I_TTSwap_Market {
     function collectProof(
         uint256 _proofid,
         address _gater
-    ) external returns (uint256 profit_);
+    ) external payable returns (uint256 profit_);
 
     /// @notice Check if the price of a good is higher than a comparison price
     /// @param goodid ID of the good to check
@@ -293,19 +293,6 @@ interface I_TTSwap_Market {
         uint256 _goodConfig
     ) external returns (bool);
 
-    /// @notice Transfers a good to another address
-    /// @param _goodid The ID of the good
-    /// @param _payquanity The quantity to transfer
-    /// @param _recipent The recipient's address
-    /// @param transdata The recipient's address
-    /// @return Success status
-    function payGood(
-        address _goodid,
-        uint128 _payquanity,
-        address _recipent,
-        bytes calldata transdata
-    ) external payable returns (bool);
-
     /// @notice Changes the owner of a good
     /// @param _goodid The ID of the good
     /// @param _to The new owner's address
@@ -313,7 +300,7 @@ interface I_TTSwap_Market {
 
     /// @notice Collects commission for specified goods
     /// @param _goodid Array of good IDs
-    function collectCommission(address[] memory _goodid) external;
+    function collectCommission(address[] memory _goodid) external payable;
 
     /// @notice Queries commission for specified goods and recipient
     /// @param _goodid Array of good IDs

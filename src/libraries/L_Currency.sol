@@ -4,6 +4,7 @@ import {IAllowanceTransfer} from "../interfaces/IAllowanceTransfer.sol";
 import {ISignatureTransfer} from "../interfaces/ISignatureTransfer.sol";
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import {IDAIPermit} from "../interfaces/IDAIPermit.sol";
+import {L_Transient} from "./L_Transient.sol";
 
 /// @title L_CurrencyLibrary
 /// @dev This library allows for transferring and holding native tokens and ERC20 tokens
@@ -26,9 +27,6 @@ library L_CurrencyLibrary {
         bytes32 r;
         bytes32 s;
     }
-    /// @notice Thrown when a native transfer fails
-
-    error NativeTransferFailed();
 
     /// @notice Thrown when an ERC20 transfer fails
     error ERC20TransferFailed();
@@ -66,17 +64,7 @@ library L_CurrencyLibrary {
             (S_transferData)
         );
         if (token.isNative()) {
-            uint256 overamount;
-            if (msg.value < amount) revert NativeTransferFailed();
-            if (msg.value > amount) overamount = msg.value - amount;
-
-            if (overamount > 0) {
-                assembly ("memory-safe") {
-                    // Transfer the ETH and revert if it fails.
-                    success := call(gas(), from, overamount, 0, 0, 0, 0)
-                }
-                if (!success) revert NativeTransferFailed();
-            }
+            L_Transient.decreaseValue(amount);
         } else if (_simplePermit.transfertype == 1) {
             transferFrom(token, from, to, amount);
         } else if (_simplePermit.transfertype == 2) {
@@ -241,11 +229,6 @@ library L_CurrencyLibrary {
         transferFrom(token, from, to, uint128(amount), trandata);
     }
 
-    function nativeAmountCheck(address token, uint256 amount) internal {
-        if (msg.value != amount || !token.isNative())
-            revert NativeTransferFailed();
-    }
-
     function safeTransfer(
         address currency,
         address to,
@@ -256,12 +239,7 @@ library L_CurrencyLibrary {
 
         bool success;
         if (currency.isNative()) {
-            assembly {
-                // Transfer the ETH and store if it succeeded or not.
-                success := call(gas(), to, amount, 0, 0, 0, 0)
-            }
-
-            if (!success) revert NativeTransferFailed();
+            L_Transient.increaseValue(amount);
         } else {
             assembly {
                 // We'll write our calldata to this slot below, but restore it later.

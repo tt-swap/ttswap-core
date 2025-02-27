@@ -109,7 +109,7 @@ contract testInitMetaGood is BaseSetup {
 
     function testinitNativeMetaGood() public {
         vm.startPrank(marketcreator);
-        address nativeCurrency = address(0);
+        address nativeCurrency = address(1);
         uint256 goodconfig = 2 ** 255;
         vm.deal(marketcreator, 100000 * 10 ** 6);
         assertEq(

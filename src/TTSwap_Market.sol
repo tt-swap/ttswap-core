@@ -3,7 +3,7 @@ pragma solidity 0.8.26;
 
 import {I_TTSwap_Market, S_ProofState, S_GoodState, S_ProofKey, S_GoodTmpState} from "./interfaces/I_TTSwap_Market.sol";
 import {L_Good} from "./libraries/L_Good.sol";
-import {L_Lock} from "./libraries/L_Lock.sol";
+import {L_Transient} from "./libraries/L_Transient.sol";
 import {TTSwapError} from "./libraries/L_Error.sol";
 import {L_Proof, L_ProofIdLibrary} from "./libraries/L_Proof.sol";
 import {L_GoodConfigLibrary} from "./libraries/L_GoodConfig.sol";
@@ -14,13 +14,14 @@ import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice} from "./libraries/L_TTSwapUINT256.sol";
 import {IERC3156FlashBorrower} from "@openzeppelin/contracts/interfaces/IERC3156FlashBorrower.sol";
 import {IERC3156FlashLender} from "@openzeppelin/contracts/interfaces/IERC3156FlashLender.sol";
+import {IMulticall_v4} from "./interfaces/IMulticall_v4.sol";
 
 /**
  * @title TTSwap_Market
  * @dev Manages the market operations for goods and proofs.
  * @notice This contract handles initialization, buying, selling, investing, and disinvesting of goods and proofs.
  */
-contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
+contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
     using L_GoodConfigLibrary for uint256;
     using L_UserConfigLibrary for uint256;
     using L_ProofIdLibrary for S_ProofKey;
@@ -85,11 +86,38 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         if (!userConfig[msg.sender].isMarketor()) revert TTSwapError(2);
         _;
     }
-    modifier noReentrant() {
-        if (L_Lock.get() != address(0)) revert TTSwapError(3);
-        L_Lock.set(msg.sender);
+
+    function multicall(
+        bytes[] calldata data
+    ) external payable msgValue returns (bytes[] memory results) {
+        results = new bytes[](data.length);
+        for (uint256 i = 0; i < data.length; i++) {
+            (bool success, bytes memory result) = address(this).delegatecall(
+                data[i]
+            );
+
+            if (!success) {
+                // bubble up the revert reason
+                assembly {
+                    revert(add(result, 0x20), mload(result))
+                }
+            }
+
+            results[i] = result;
+        }
+    }
+
+    modifier msgValue() {
+        L_Transient.checkbefore();
         _;
-        L_Lock.set(address(0));
+        L_Transient.checkafter();
+    }
+
+    modifier noReentrant() {
+        if (L_Transient.get() != address(0)) revert TTSwapError(3);
+        L_Transient.set(msg.sender);
+        _;
+        L_Transient.set(address(0));
     }
 
     function changemarketcreator(address _newmarketor) external onlyDAOadmin {
@@ -140,7 +168,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint256 _initial,
         uint256 _goodConfig,
         bytes calldata data
-    ) external payable onlyDAOadmin returns (bool) {
+    ) external payable onlyDAOadmin msgValue returns (bool) {
         if (!_goodConfig.isvaluegood()) revert TTSwapError(4);
         _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
         goods[_erc20address].init(_initial, _goodConfig);
@@ -186,7 +214,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint256 _goodConfig,
         bytes calldata _normaldata,
         bytes calldata _valuedata
-    ) external payable override noReentrant returns (bool) {
+    ) external payable override noReentrant msgValue returns (bool) {
         if (
             goods[_erc20address].owner != address(0) ||
             !goods[_valuegood].goodConfig.isvaluegood()
@@ -256,6 +284,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         external
         payable
         noReentrant
+        msgValue
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_)
     {
         if (_referal != address(0))
@@ -334,7 +363,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint128 _quantity,
         bytes calldata data1,
         bytes calldata data2
-    ) external payable override noReentrant returns (bool) {
+    ) external payable override noReentrant msgValue returns (bool) {
         L_Good.S_GoodInvestReturn memory normalInvest_;
         L_Good.S_GoodInvestReturn memory valueInvest_;
         if (
@@ -418,7 +447,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         uint256 _proofid,
         uint128 _goodQuantity,
         address _gater
-    ) public override noReentrant returns (bool) {
+    ) public payable override noReentrant msgValue returns (bool) {
         if (
             S_ProofKey(
                 msg.sender,
@@ -497,7 +526,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     function collectProof(
         uint256 _proofid,
         address _gater
-    ) external override noReentrant returns (uint256 profit_) {
+    ) external payable override noReentrant msgValue returns (uint256 profit_) {
         if (
             S_ProofKey(
                 msg.sender,
@@ -594,20 +623,6 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
     }
 
     /// @inheritdoc I_TTSwap_Market
-    function payGood(
-        address _goodid,
-        uint128 _payquanity,
-        address _recipent,
-        bytes calldata transdata
-    ) external payable override returns (bool) {
-        if (_goodid == address(1)) {
-            _goodid.safeTransfer(_recipent, _payquanity);
-        } else {
-            _goodid.transferFrom(msg.sender, _recipent, _payquanity, transdata);
-        }
-        return true;
-    }
-    /// @inheritdoc I_TTSwap_Market
     function changeGoodOwner(
         address _goodid,
         address _to
@@ -616,7 +631,9 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         emit e_changegoodowner(_goodid, _to);
     }
     /// @inheritdoc I_TTSwap_Market
-    function collectCommission(address[] memory _goodid) external override {
+    function collectCommission(
+        address[] memory _goodid
+    ) external payable override noReentrant msgValue {
         if (_goodid.length > 100) revert TTSwapError(11);
         uint256[] memory commissionamount = new uint256[](_goodid.length);
         for (uint i = 0; i < _goodid.length; i++) {
@@ -651,7 +668,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         address goodid,
         uint128 welfare,
         bytes calldata data
-    ) external payable override noReentrant {
+    ) external payable override noReentrant msgValue {
         if (goods[goodid].feeQuantityState.amount0() + welfare >= 2 ** 109)
             revert TTSwapError(12);
         goodid.transferFrom(msg.sender, welfare, data);
@@ -702,20 +719,17 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender {
         ) {
             revert ERC3156InvalidReceiver(address(receiver));
         }
-        token.isNative()
-            ? token.nativeAmountCheck(amount + fee)
-            : token.transferFrom(
-                address(receiver),
-                address(this),
-                uint128(amount + fee)
-            );
+        token.transferFrom(
+            address(receiver),
+            address(this),
+            uint128(amount + fee)
+        );
         goods[token].fillFee(fee);
         return true;
     }
-    function securityKeeper(address token) external {
+    function securityKeeper(address token) external payable msgValue {
         require(msg.sender == securitykeeper);
         uint256 amount = goods[token].feeQuantityState.amount0() -
-
             goods[token].feeQuantityState.amount1();
         goods[token].feeQuantityState = 0;
         amount += goods[token].currentState.amount1();

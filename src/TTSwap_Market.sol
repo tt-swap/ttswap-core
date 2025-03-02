@@ -707,6 +707,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
         uint256 amount,
         bytes calldata data
     ) public override returns (bool) {
+        if (token.isNative()) revert TTSwapError(29);
         uint256 maxLoan = maxFlashLoan(token);
         if (amount > maxLoan) {
             revert ERC3156ExceededMaxLoan(maxLoan);

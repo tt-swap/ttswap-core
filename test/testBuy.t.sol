@@ -2,7 +2,7 @@
 pragma solidity 0.8.26;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
+import {MyToken} from "../src/test/MyToken.sol";
 import {TTSwap_Market} from "../src/TTSwap_Market.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";
 

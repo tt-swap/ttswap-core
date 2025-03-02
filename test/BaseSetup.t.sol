@@ -3,7 +3,7 @@ pragma solidity 0.8.26;
 
 import "forge-gas-snapshot/GasSnapshot.sol";
 import {Test} from "forge-std/Test.sol";
-import {MyToken} from "../src/ERC20.sol";
+import {MyToken} from "../src/test/MyToken.sol";
 import {L_CurrencyLibrary} from "../src/libraries/L_Currency.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";
 import {TTSwap_Market} from "../src/TTSwap_Market.sol";

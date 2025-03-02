@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.26;
 
-import {ERC20} from "solmate/src/tokens/ERC20.sol";
+import {ERC20} from "./base/ERC20.sol";
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";
 import {I_TTSwap_Token, s_share, s_proof} from "./interfaces/I_TTSwap_Token.sol";
 import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";

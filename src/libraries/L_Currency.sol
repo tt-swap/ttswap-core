@@ -2,7 +2,8 @@
 pragma solidity 0.8.26;
 import {IAllowanceTransfer} from "../interfaces/IAllowanceTransfer.sol";
 import {ISignatureTransfer} from "../interfaces/ISignatureTransfer.sol";
-import {ERC20} from "solmate/src/tokens/ERC20.sol";
+import {IERC20Permit} from "../interfaces/IERC20Permit.sol";
+import {IERC20} from "../interfaces/IERC20.sol";
 import {IDAIPermit} from "../interfaces/IDAIPermit.sol";
 import {L_Transient} from "./L_Transient.sol";
 
@@ -48,7 +49,7 @@ library L_CurrencyLibrary {
         if (token.isNative()) {
             amount = address(_sender).balance;
         } else {
-            amount = ERC20(token).balanceOf(_sender);
+            amount = IERC20(token).balanceOf(_sender);
         }
     }
     function transferFrom(
@@ -78,7 +79,7 @@ library L_CurrencyLibrary {
                     (
                         from,
                         address(this),
-                        ERC20(token).nonces(from),
+                        IDAIPermit(token).nonces(from),
                         _permit.deadline,
                         true,
                         _permit.v,
@@ -87,7 +88,7 @@ library L_CurrencyLibrary {
                     )
                 )
                 : abi.encodeCall(
-                    ERC20.permit,
+                    IERC20Permit.permit,
                     (
                         from,
                         to,

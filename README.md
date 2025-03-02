@@ -61,25 +61,21 @@ Note  but all foundry tests are in the `ttswap-core/test` folder.
 ```markdown
 Contract
 ├── TTSwap_Market.sol(BUSL-1.1)  
-├── TTSwap_NFT.sol(BUSL-1.1)  
 ├── TTSwap_Token.sol(BUSL-1.1)
-├── TTSwap_MainTrigger.sol(BUSL-1.1)  
 ├── interfaces  
-│   ├── I_TTSwap_Market.sol(MIT)  
-│   ├── I_TTSwap_Token.sol(MIT)  
-│   ├── I_TTSwap_NFT.sol(MIT)  
-│   ├── I_TTSwap_MainTrigger.sol(MIT)  
-│   └── I_TTSwap_APP.sol(MIT)   
-└── libraries      
+│   ├── I_TTSwap_Market.sol(MIT)   
+│   └── I_TTSwap_Token.sol(MIT)    
+└── libraries           
+   ├── L_Currency.sol (MIT)    
+   ├── L_Error.sol (MIT)     
    ├── L_Good.sol(BUSL-1.1)    
    ├── L_GoodConfig.sol(MIT)     
    ├── L_MarketConfig.sol(MIT)    
    ├── L_Proof.sol(BUSL-1.1)   
+   ├── L_Transient.sol (MIT)  
+   ├── L_TTSTokenConfig.sol (MIT)     
    ├── L_TTSwapUINT256.sol (MIT)     
-   ├── L_Currency.sol (MIT)       
-   ├── L_Struct.sol (MIT)     
-   ├── L_Lock.sol (MIT)     
-   └── L_TTSTokenConfig.sol(MIT)    
+   └── L_UserConfig.sol(MIT)    
 docs
 ├── ebook
 ├── whitepaper-cn
@@ -121,53 +117,12 @@ contract MyPortal  {
 }
 ```
 
-# 8. Every goods'owner can design a good trigger
-
-## 8.1. Design the contract
-
-```solidity
-import {I_TTSwap_APP} from 'ttswap-core/contracts/interfaces/I_TTSwap_APP.sol';
-
-contract MygoodTrigger is  I_TTSwap_APP {
-    function swaptake(
-        uint256 opgood,
-        uint256 trade,
-        uint256 currentstate,
-        uint256 opstate,
-        address recipent
-    ) external override returns (bool) {}
-
-    function swapmake(
-        uint256 opgood,
-        uint256 trade,
-        uint256 currentstate,
-        uint256 opstate,
-        address recipent
-    ) external override returns (bool) {}
-
-    function invest(
-        uint256 investquanity,
-        uint256 currentstate,
-        address recipent
-    ) external override returns (bool) {}
-
-    function divest(
-        uint256 divestquanity,
-        uint256 currentstate,
-        address recipent
-    ) external override returns (bool) {}
-}
-```
-## 8.2. Update good config and add trigger to good
-go to the profile page in the website , update the goodconfig and add the triger to the goods;
-
-# 9. User deploy local instruction only can be for study 
+# 8. User deploy local instruction only can be for study 
 step 1:instrall forge  
-step 2:forge install OpenZeppelin/openzeppelin-contracts@v4.9.6  
-step 3:forge install marktoda/forge-gas-snapshot  
+step 2:forge install permit2  
 
 
-# 10. Socials / Contract
+# 9. Socials / Contract
 Twitter:[ttswap_exchange](https://x.com/ttswap_exchange)  
 Telegram:[@ttswap01](https://t.me/ttswap01)  
 Email:[ttswap.exchange@gmail.com](mailto:ttswap.exchange@gmail.com)  

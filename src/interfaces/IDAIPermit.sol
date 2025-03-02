@@ -20,4 +20,5 @@ interface IDAIPermit {
         bytes32 r,
         bytes32 s
     ) external;
+    function nonces(address owner) external view returns (uint256);
 }

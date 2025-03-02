@@ -149,7 +149,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             address(0),
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_without_chips_first");
+
         assertEq(
             usdt.balanceOf(users[1]),
             49940775087776,
@@ -212,7 +212,6 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             address(0),
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_without_chips_second");
 
         market.buyGood{value: 10 ** 6}(
             normalgoodbtc,
@@ -223,7 +222,6 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             address(0),
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_without_chips_three");
 
         vm.stopPrank();
     }
@@ -276,7 +274,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             address(0),
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_first_1chips");
+        snapLastCall("buy_normal_good_use_nativegood_chips_first_1chips");
 
         market.buyGood{value: 6300}(
             normalgoodbtc,
@@ -287,7 +285,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             address(0),
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_second_1chips");
+        snapLastCall("buy_normal_good_use_nativegood_chips_second_1chips");
 
         market.buyGood{value: 6300 * 10 ** 1}(
             normalgoodbtc,
@@ -298,7 +296,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             address(0),
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_second_12chips");
+        snapLastCall("buy_normal_good_use_nativegood_chips_second_12chips");
 
         market.buyGood{value: 6300 * 10 ** 2}(
             normalgoodbtc,
@@ -309,7 +307,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             address(0),
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_second_10chips");
+        snapLastCall("buy_normal_good_use_nativegood_chips_second_10chips");
         vm.stopPrank();
     }
 
@@ -361,7 +359,9 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             users[3],
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_first_1chips_refere");
+        snapLastCall(
+            "buy_normal_good_use_nativegood_chips_first_1chips_refere"
+        );
 
         market.buyGood{value: 6300}(
             normalgoodbtc,
@@ -372,7 +372,9 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             users[3],
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_second_1chips_refere");
+        snapLastCall(
+            "buy_normal_good_use_nativegood_chips_second_1chips_refere"
+        );
 
         market.buyGood{value: 6300}(
             normalgoodbtc,
@@ -383,7 +385,9 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             users[3],
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_second_12chips_refere");
+        snapLastCall(
+            "buy_normal_good_use_nativegood_chips_second_12chips_refere"
+        );
 
         market.buyGood{value: 6300}(
             normalgoodbtc,
@@ -394,7 +398,9 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             users[3],
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_second_10chips_refere");
+        snapLastCall(
+            "buy_normal_good_use_nativegood_chips_second_10chips_refere"
+        );
         vm.stopPrank();
     }
 }

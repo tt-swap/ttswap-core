@@ -12,8 +12,8 @@ import {L_MarketConfigLibrary} from "./libraries/L_MarketConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {I_TTSwap_Token} from "./interfaces/I_TTSwap_Token.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lowerprice} from "./libraries/L_TTSwapUINT256.sol";
-import {IERC3156FlashBorrower} from "@openzeppelin/contracts/interfaces/IERC3156FlashBorrower.sol";
-import {IERC3156FlashLender} from "@openzeppelin/contracts/interfaces/IERC3156FlashLender.sol";
+import {IERC3156FlashBorrower} from "./interfaces/IERC3156FlashBorrower.sol";
+import {IERC3156FlashLender} from "./interfaces/IERC3156FlashLender.sol";
 import {IMulticall_v4} from "./interfaces/IMulticall_v4.sol";
 
 /**
@@ -707,6 +707,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
         uint256 amount,
         bytes calldata data
     ) public override returns (bool) {
+        if (token.isNative()) revert TTSwapError(29);
         uint256 maxLoan = maxFlashLoan(token);
         if (amount > maxLoan) {
             revert ERC3156ExceededMaxLoan(maxLoan);

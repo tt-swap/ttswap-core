@@ -121,7 +121,6 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             address(0),
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_first_1chips");
 
         market.buyGood{value: 1000000000000000}(
             nativeeth,
@@ -133,7 +132,6 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             address(0),
             defaultdata
         );
-        snapLastCall("buy_nativeeth_normal_good_chips_first_4chips");
 
         assertEq(
             users[1].balance,

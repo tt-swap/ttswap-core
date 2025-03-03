@@ -336,7 +336,7 @@ library L_Good {
             _self.goodConfig.getDisinvestChips(_self.currentState.amount0()) ||
             _params._goodQuantity >
             _self.goodConfig.getDisinvestChips(_self.currentState.amount1())
-        ) revert TTSwapError(14);
+        ) revert TTSwapError(31);
         // Calculate initial disinvestment results for the main good
         normalGoodResult1_ = S_GoodDisinvestReturn(
             toTTSwapUINT256(
@@ -435,7 +435,7 @@ library L_Good {
                 _valueGoodState.goodConfig.getDisinvestChips(
                     _valueGoodState.currentState.amount1()
                 )
-            ) revert TTSwapError(15);
+            ) revert TTSwapError(32);
 
             // Update value good states
             _valueGoodState.currentState = sub(

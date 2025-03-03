@@ -73,14 +73,6 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
         _;
     }
 
-    /**
-     * @dev Modifier to ensure function is only called on sub-chains
-     */
-    modifier onlysub() {
-        if (ttstokenconfig.ismain()) revert TTSwapError(16);
-        _;
-    }
-
     function setRatio(uint256 _ratio) external {
         if (_ratio > 10000 || auths[msg.sender] != 2) revert TTSwapError(17);
         ttstokenconfig = _ratio.setratio(ttstokenconfig);
@@ -94,8 +86,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
     /// @inheritdoc I_TTSwap_Token
 
     function setEnv(address _marketcontract) external override {
-        require(msg.sender == dao_admin);
-
+        if (msg.sender != dao_admin) revert TTSwapError(16);
         marketcontract = _marketcontract;
         emit e_setenv(marketcontract);
     }
@@ -148,7 +139,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
     /// @inheritdoc I_TTSwap_Token
     function addShare(s_share calldata _share) external override onlymain {
         if (left_share < _share.leftamount || msg.sender != dao_admin)
-            revert TTSwapError(22);
+            revert TTSwapError(18);
         left_share -= uint64(_share.leftamount);
         shares_index += 1;
         shares[shares_index] = _share;

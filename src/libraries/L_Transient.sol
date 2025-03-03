@@ -34,9 +34,9 @@ library L_Transient {
         }
     }
 
-    function getValue() internal view returns (uint256 step) {
+    function getValue() internal view returns (uint256 value) {
         assembly {
-            step := tload(VALUE_SLOT)
+            value := tload(VALUE_SLOT)
         }
     }
 
@@ -83,7 +83,7 @@ library L_Transient {
     }
     function checkafter() internal {
         subDepth();
-        if (getDepth() == 0) {
+        if (getDepth() == 0 && getValue() >= 0) {
             uint256 amount = getValue();
             setValue(0);
             bool success;
@@ -92,7 +92,7 @@ library L_Transient {
                 // Transfer the ETH and store if it succeeded or not.
                 success := call(gas(), to, amount, 0, 0, 0, 0)
             }
-            if (!success) revert TTSwapError(29);
+            if (!success) revert TTSwapError(30);
         }
     }
 }

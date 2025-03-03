@@ -51,20 +51,24 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
             0x439148f0bbc682ca079e46d6e2c2f0c1e3b820f1a291b069d8882abf8cf18dd9
         );
 
-    uint256 public override marketconfig;
-
     mapping(address goodid => S_GoodState) private goods;
     mapping(uint256 proofid => S_ProofState) private proofs;
     mapping(address => uint256) public override userConfig;
 
+    /// @notice recording the config of commision allocate
+    uint256 public override marketconfig;
+    /// @notice the deploy of contract
     address public marketcreator;
+    /// @notice when  invest, customer can mint tts token
     address private immutable officialTokenContract;
+    /// @notice the address will be change to address0 when contract is safe
     address private securitykeeper;
 
     /**
      * @dev Constructor for TTSwap_Market
      * @param _marketconfig The market configuration
-     * @param _officialTokenContract The address of the official contract
+     * @param _officialTokenContract The address of the official token contract
+     * @param _marketcreator The address of the official contract
      */
     constructor(
         uint256 _marketconfig,
@@ -78,15 +82,35 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
         securitykeeper = _securitykeeper;
     }
 
+    /// onlydao admin can execute
     modifier onlyDAOadmin() {
         if (marketcreator != msg.sender) revert TTSwapError(1);
         _;
     }
+    /// onlydao manager can execute
     modifier onlyMarketor() {
         if (!userConfig[msg.sender].isMarketor()) revert TTSwapError(2);
         _;
     }
 
+    /// run when eth token
+    modifier msgValue() {
+        L_Transient.checkbefore();
+        _;
+        L_Transient.checkafter();
+    }
+
+    /// @notice This will revert if the contract is locked
+    modifier noReentrant() {
+        if (L_Transient.get() != address(0)) revert TTSwapError(3);
+        L_Transient.set(msg.sender);
+        _;
+        L_Transient.set(address(0));
+    }
+
+    /// @title Multicall_v4
+    /// @notice Enables calling multiple methods in a single call to the contract
+    /// @inheritdoc IMulticall_v4
     function multicall(
         bytes[] calldata data
     ) external payable msgValue returns (bytes[] memory results) {
@@ -106,20 +130,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
             results[i] = result;
         }
     }
-
-    modifier msgValue() {
-        L_Transient.checkbefore();
-        _;
-        L_Transient.checkafter();
-    }
-
-    modifier noReentrant() {
-        if (L_Transient.get() != address(0)) revert TTSwapError(3);
-        L_Transient.set(msg.sender);
-        _;
-        L_Transient.set(address(0));
-    }
-
+    /// change daoadmin
     function changemarketcreator(address _newmarketor) external onlyDAOadmin {
         marketcreator = _newmarketor;
         emit e_changemarketcreator(_newmarketor);
@@ -172,6 +183,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
         if (!_goodConfig.isvaluegood()) revert TTSwapError(4);
         _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
         goods[_erc20address].init(_initial, _goodConfig);
+        /// update good to value good
         goods[_erc20address].modifyGoodConfig(67108864); //2**26
         uint256 proofid = S_ProofKey(msg.sender, _erc20address, address(0))
             .toId();
@@ -701,6 +713,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
         return goods[token].goodConfig.getFlashFee(amount);
     }
 
+    /// @inheritdoc IERC3156FlashLender
     function flashLoan(
         IERC3156FlashBorrower receiver,
         address token,
@@ -709,6 +722,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
     ) public override returns (bool) {
         if (token.isNative()) revert TTSwapError(29);
         uint256 maxLoan = maxFlashLoan(token);
+        maxLoan = maxLoan / 2;
         if (amount > maxLoan) {
             revert ERC3156ExceededMaxLoan(maxLoan);
         }
@@ -728,6 +742,8 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
         goods[token].fillFee(fee);
         return true;
     }
+
+    /// For protect user asset when bug happen
     function securityKeeper(address token) external payable msgValue {
         require(msg.sender == securitykeeper);
         uint256 amount = goods[token].feeQuantityState.amount0() -
@@ -737,7 +753,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
         goods[token].currentState = 0;
         token.safeTransfer(securitykeeper, amount);
     }
-
+    /// will be remove when contract excute for one year
     function removeSecurityKeeper() external {
         if (msg.sender != marketcreator) revert TTSwapError(14);
         securitykeeper = address(0);

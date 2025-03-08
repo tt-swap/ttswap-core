@@ -282,4 +282,8 @@ library L_CurrencyLibrary {
     function to_uint160(uint256 amount) internal pure returns (uint160) {
         return amount == uint160(amount) ? uint160(amount) : 0;
     }
+
+    function to_uint256(address amount) internal pure returns (uint256 a) {
+        return uint256(uint160(amount));
+    }
 }

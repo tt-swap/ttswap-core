@@ -105,20 +105,6 @@ library L_Proof {
     }
 
     /**
-     * @dev Combines two proof states
-     * @param _self The proof state to update
-     * @param _get The proof state to combine with
-     */
-    function conbine(
-        S_ProofState storage _self,
-        S_ProofState storage _get
-    ) internal {
-        _self.state = add(_self.state, _get.state);
-        _self.invest = add(_self.invest, _get.invest);
-        _self.valueinvest = add(_self.valueinvest, _get.valueinvest);
-    }
-
-    /**
      * @dev Stakes a certain amount of proof value
      * @param contractaddress The address of the staking contract
      * @param to The address to stake for
@@ -153,11 +139,3 @@ library L_ProofIdLibrary {
         return uint256(keccak256(abi.encode(proofKey)));
     }
 }
-// library L_ProofIdLibrary {
-//     function toId(uint256 proofkey) internal view returns (uint256) {
-//         return
-//             uint256(
-//                 keccak256(abi.encode(proofkey, address(this), block.timestamp))
-//             );
-//     }
-// }

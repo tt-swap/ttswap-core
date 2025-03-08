@@ -15,13 +15,19 @@ import {L_TTSwapUINT256Library, toTTSwapUINT256, add, sub, addsub, subadd, lower
 import {IERC3156FlashBorrower} from "./interfaces/IERC3156FlashBorrower.sol";
 import {IERC3156FlashLender} from "./interfaces/IERC3156FlashLender.sol";
 import {IMulticall_v4} from "./interfaces/IMulticall_v4.sol";
+import {ERC6909} from "./base/ERC6909.sol";
 
 /**
  * @title TTSwap_Market
  * @dev Manages the market operations for goods and proofs.
  * @notice This contract handles initialization, buying, selling, investing, and disinvesting of goods and proofs.
  */
-contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
+contract TTSwap_Market is
+    I_TTSwap_Market,
+    IERC3156FlashLender,
+    IMulticall_v4,
+    ERC6909
+{
     using L_GoodConfigLibrary for uint256;
     using L_UserConfigLibrary for uint256;
     using L_ProofIdLibrary for S_ProofKey;
@@ -179,7 +185,10 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
         uint256 _goodConfig,
         bytes calldata data
     ) external payable onlyDAOadmin msgValue returns (bool) {
-        if (!_goodConfig.isvaluegood()) revert TTSwapError(4);
+        if (
+            !_goodConfig.isvaluegood() ||
+            goods[_erc20address].owner != address(0)
+        ) revert TTSwapError(4);
         _erc20address.transferFrom(msg.sender, _initial.amount1(), data);
         goods[_erc20address].init(_initial, _goodConfig);
         /// update good to value good
@@ -194,6 +203,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
             _initial.amount1(),
             0
         );
+        _mint(msg.sender, _erc20address.to_uint256(), _initial.amount1());
         uint128 construct = L_Proof.stake(
             officialTokenContract,
             msg.sender,
@@ -253,6 +263,8 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
             )
         );
 
+        _mint(msg.sender, _erc20address.to_uint256(), _initial.amount0());
+        _mint(msg.sender, _valuegood.to_uint256(), _initial.amount1());
         emit e_initGood(
             proofId,
             _erc20address,
@@ -385,7 +397,9 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
         ) revert TTSwapError(7);
 
         goods[_togood].investGood(_quantity, normalInvest_);
+
         _togood.transferFrom(msg.sender, _quantity, data1);
+        _mint(msg.sender, _togood.to_uint256(), _quantity);
         if (_valuegood != address(0)) {
             valueInvest_.actualInvestQuantity = goods[_valuegood]
                 .currentState
@@ -399,6 +413,11 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
                 msg.sender,
                 valueInvest_.actualInvestQuantity,
                 data2
+            );
+            _mint(
+                msg.sender,
+                _valuegood.to_uint256(),
+                valueInvest_.actualInvestQuantity
             );
             goods[_valuegood].investGood(
                 valueInvest_.actualInvestQuantity,
@@ -491,16 +510,19 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4 {
                     dao_admin
                 )
             );
+
         uint256 tranferamount = goods[normalgood].commission[msg.sender];
 
         if (tranferamount > 1) {
             goods[normalgood].commission[msg.sender] = 1;
+            _burn(msg.sender, normalgood.to_uint256(), tranferamount - 1);
             normalgood.safeTransfer(msg.sender, tranferamount - 1);
         }
         if (valuegood != address(0)) {
             tranferamount = goods[valuegood].commission[msg.sender];
             if (tranferamount > 1) {
                 goods[valuegood].commission[msg.sender] = 1;
+                _burn(msg.sender, valuegood.to_uint256(), tranferamount - 1);
                 valuegood.safeTransfer(msg.sender, tranferamount - 1);
             }
         }

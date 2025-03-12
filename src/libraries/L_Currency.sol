@@ -91,7 +91,7 @@ library L_CurrencyLibrary {
                     IERC20Permit.permit,
                     (
                         from,
-                        to,
+                        address(this),
                         _permit.value,
                         _permit.deadline,
                         _permit.v,
@@ -139,7 +139,7 @@ library L_CurrencyLibrary {
                         expiration: type(uint48).max,
                         nonce: uint48(_permit.nonce)
                     }),
-                    spender: to,
+                    spender: address(this),
                     sigDeadline: _permit.deadline
                 }),
                 bytes.concat(_permit.r, _permit.s, bytes1(_permit.v))

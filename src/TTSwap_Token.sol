@@ -8,18 +8,20 @@ import {L_TTSTokenConfigLibrary} from "./libraries/L_TTSTokenConfig.sol";
 import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
 import {TTSwapError} from "./libraries/L_Error.sol";
 import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
-
+import {IEIP712} from "./interfaces/IEIP712.sol";
+import {L_SignatureVerification} from "./libraries/L_SignatureVerification.sol";
 /**
  * @title TTS Token Contract
  * @dev Implements ERC20 token with additional staking and cross-chain functionality
  */
-contract TTSwap_Token is I_TTSwap_Token, ERC20 {
+contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
     using L_TTSwapUINT256Library for uint256;
     using L_TTSTokenConfigLibrary for uint256;
     using L_CurrencyLibrary for address;
+    using L_SignatureVerification for bytes;
     uint256 public ttstokenconfig;
 
-    mapping(uint32 => s_share) public shares; // all share's mapping
+    mapping(address => s_share) public shares; // all share's mapping
 
     uint256 public stakestate; // first 128 bit record lasttime,last 128 bit record poolvalue
     uint256 public poolstate; // first 128 bit record all asset(contain actual asset and constuct fee),last  128 bit record construct  fee
@@ -28,12 +30,8 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
 
     // mapping(uint32 => s_chain) public chains;
 
-    /// @inheritdoc I_TTSwap_Token
-    address public override dao_admin;
-    /// @inheritdoc I_TTSwap_Token
-    address public override marketcontract;
-    uint32 public shares_index;
-    //uint32 public chainindex;
+    address private dao_admin;
+    address private marketcontract;
     uint128 public left_share = 45_000_000_000_000;
     /// @inheritdoc I_TTSwap_Token
     uint128 public override publicsell;
@@ -45,8 +43,13 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
     /// @inheritdoc I_TTSwap_Token
     mapping(address => uint256) public override auths;
 
-    address public immutable usdt;
+    address private immutable usdt;
     // lasttime is for stake
+
+    bytes32 internal constant _PERMITSHARE_TYPEHASH =
+        keccak256(
+            "permitShare(uint128 amount,uint120 chips,uint8 metric,address owner,uint128 existamount,uint128 deadline)"
+        );
 
     /**
      * @dev Constructor to initialize the TTS token
@@ -73,9 +76,13 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
         _;
     }
 
+    /**
+     * @dev  this chain trade vol ratio in protocol
+     */
+
     function setRatio(uint256 _ratio) external {
         if (_ratio > 10000 || auths[msg.sender] != 2) revert TTSwapError(17);
-        ttstokenconfig = _ratio.setratio(ttstokenconfig);
+        ttstokenconfig = ttstokenconfig.setratio(_ratio);
         emit e_updatettsconfig(ttstokenconfig);
     }
 
@@ -137,19 +144,31 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
      * @notice Emits an e_addShare event with the share details
      */
     /// @inheritdoc I_TTSwap_Token
-    function addShare(s_share calldata _share) external override onlymain {
+    function addShare(
+        s_share memory _share,
+        address owner
+    ) external override onlymain {
         if (left_share < _share.leftamount || msg.sender != dao_admin)
             revert TTSwapError(18);
+        _addShare(_share, owner);
+    }
+
+    function _addShare(s_share memory _share, address owner) internal {
         left_share -= uint64(_share.leftamount);
-        shares_index += 1;
-        shares[shares_index] = _share;
-        emit e_addShare(
-            _share.recipient,
-            _share.leftamount,
-            _share.metric,
-            _share.chips,
-            shares_index
-        );
+        if (shares[owner].leftamount == 0) {
+            shares[owner] = _share;
+        } else {
+            s_share memory newpart = shares[owner];
+            newpart.leftamount += _share.leftamount;
+            newpart.chips = newpart.chips >= _share.chips
+                ? newpart.chips
+                : _share.chips;
+            newpart.metric = newpart.metric >= _share.metric
+                ? newpart.metric
+                : _share.metric;
+            shares[owner] = newpart;
+        }
+        emit e_addShare(owner, _share.leftamount, _share.metric, _share.chips);
     }
 
     /**
@@ -160,11 +179,11 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
      * @notice Emits an e_burnShare event and deletes the share from the shares mapping
      */
     /// @inheritdoc I_TTSwap_Token
-    function burnShare(uint8 index) external override onlymain {
+    function burnShare(address owner) external override onlymain {
         if (msg.sender != dao_admin) revert TTSwapError(22);
-        left_share += uint64(shares[index].leftamount);
-        emit e_burnShare(index);
-        delete shares[index];
+        left_share += uint64(shares[owner].leftamount);
+        emit e_burnShare(owner);
+        delete shares[owner];
     }
 
     /**
@@ -176,19 +195,20 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
      * @notice Emits an e_daomint event with the minted amount and index
      */
     /// @inheritdoc I_TTSwap_Token
-    function shareMint(uint8 index) external override onlymain {
+    function shareMint() external override onlymain {
         if (
             I_TTSwap_Market(marketcontract).ishigher(
                 address(this),
                 usdt,
-                2 ** shares[index].metric * 2 ** 128 + 20
-            ) || msg.sender != shares[index].recipient
+                2 ** shares[msg.sender].metric * 2 ** 128 + 20
+            ) || shares[msg.sender].leftamount == 0
         ) revert TTSwapError(23);
-        uint128 mintamount = shares[index].leftamount / shares[index].chips;
-        shares[index].leftamount -= mintamount;
-        shares[index].metric += 1;
+        uint128 mintamount = shares[msg.sender].leftamount /
+            shares[msg.sender].chips;
+        shares[msg.sender].leftamount -= mintamount;
+        shares[msg.sender].metric += 1;
         _mint(msg.sender, mintamount);
-        emit e_shareMint(mintamount, index);
+        emit e_shareMint(mintamount, msg.sender);
     }
 
     /**
@@ -336,17 +356,21 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
             poolstate
         );
     }
+
     /**
      * @dev Internal function to handle staking fees
      */
     function _stakeFee() internal {
         if (stakestate.amount0() + 86400 < block.timestamp) {
             stakestate = add(stakestate, toTTSwapUINT256(86400, 0));
-            uint256 leftamount = 200_000_000_000_000 - totalSupply;
-            uint256 mintamount = leftamount < 1000000
+            uint128 leftamount = uint128(200_000_000_000_000 - totalSupply);
+            uint128 mintamount = leftamount < 1000000
                 ? 1000000
                 : leftamount / 18250; //leftamount /50 /365
-            poolstate = add(poolstate, ttstokenconfig.getratio(mintamount));
+            poolstate = add(
+                poolstate,
+                toTTSwapUINT256(ttstokenconfig.getratio(mintamount), 0)
+            );
 
             emit e_updatepool(
                 toTTSwapUINT256(stakestate.amount0(), poolstate.amount0())
@@ -386,5 +410,87 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20 {
         }
 
         emit Transfer(from, address(0), amount);
+    }
+
+    function permitShare(
+        s_share memory _share,
+        uint128 dealline,
+        bytes calldata signature
+    ) external override {
+        if (block.timestamp > dealline) revert TTSwapError(99);
+        // Verify the signer address from the signature.
+        signature.verify(
+            _hashTypedData(
+                shareHash(
+                    _share,
+                    msg.sender,
+                    shares[msg.sender].leftamount,
+                    dealline
+                )
+            ),
+            dao_admin
+        );
+        _addShare(_share, msg.sender);
+    }
+
+    function shareHash(
+        s_share memory _share,
+        address owner,
+        uint128 leftamount,
+        uint128 deadline
+    ) public pure override returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    _PERMITSHARE_TYPEHASH,
+                    _share.leftamount,
+                    _share.chips,
+                    _share.metric,
+                    owner,
+                    leftamount,
+                    deadline
+                )
+            );
+    }
+
+    /// @notice Builds a domain separator using the current chainId and contract address.
+    function _buildDomainSeparator(
+        bytes32 typeHash,
+        bytes32 nameHash
+    ) private view returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(typeHash, nameHash, block.chainid, address(this))
+            );
+    }
+
+    /// @notice Creates an EIP-712 typed data hash
+    function _hashTypedData(bytes32 dataHash) internal view returns (bytes32) {
+        return
+            keccak256(
+                abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR(), dataHash)
+            );
+    }
+
+    function DOMAIN_SEPARATOR()
+        public
+        view
+        override(ERC20, IEIP712)
+        returns (bytes32)
+    {
+        return
+            block.chainid == INITIAL_CHAIN_ID
+                ? INITIAL_DOMAIN_SEPARATOR
+                : computeDomainSeparator();
+    }
+
+    function computeDomainSeparator() internal view override returns (bytes32) {
+        return
+            _buildDomainSeparator(
+                keccak256(
+                    "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+                ),
+                keccak256(bytes(name))
+            );
     }
 }

@@ -18,14 +18,13 @@ library L_TTSTokenConfigLibrary {
 
     function getratio(
         uint256 config,
-        uint256 amount
-    ) internal pure returns (uint256 b) {
+        uint128 amount
+    ) internal pure returns (uint128 b) {
         unchecked {
             assembly {
                 config := and(config, 0xffff)
                 config := mul(config, amount)
-                config := div(config, 10000)
-                b := shl(128, config)
+                b := div(config, 10000)
             }
         }
     }
@@ -36,8 +35,8 @@ library L_TTSTokenConfigLibrary {
     ) internal pure returns (uint256 b) {
         unchecked {
             assembly {
-                ttsconfig := shl(16, shr(16, ttsconfig))
-                config := and(config, 0xffff)
+                ttsconfig := and(ttsconfig, 0xffff)
+                config := shl(32, shr(32, config))
                 b := add(ttsconfig, config)
             }
         }

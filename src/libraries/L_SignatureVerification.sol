@@ -22,7 +22,7 @@ library L_SignatureVerification {
         bytes calldata signature,
         bytes32 hash,
         address claimedSigner
-    ) internal view {
+    ) internal pure {
         bytes32 r;
         bytes32 s;
         uint8 v;

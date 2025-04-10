@@ -31,23 +31,21 @@ interface I_TTSwap_Token {
     /// @param leftamount The remaining amount to be minted
     /// @param metric The metric used for minting
     /// @param chips The number of chips
-    /// @param index The index of the minting operation
     event e_addShare(
         address recipient,
         uint256 leftamount,
         uint120 metric,
-        uint8 chips,
-        uint32 index
+        uint8 chips
     );
 
     /// @notice Emitted when minting is burned
-    /// @param index The index of the minting operation being burned
-    event e_burnShare(uint32 index);
+    /// @param owner The index of the minting operation being burned
+    event e_burnShare(address owner);
 
     /// @notice Emitted when DAO minting occurs
     /// @param mintamount The amount being minted
-    /// @param index The index of the minting operation
-    event e_shareMint(uint128 mintamount, uint32 index);
+    /// @param owner The index of the minting operation
+    event e_shareMint(uint128 mintamount, address owner);
 
     /// @notice Emitted during a public sale
     /// @param usdtamount The amount of USDT involved
@@ -84,16 +82,6 @@ interface I_TTSwap_Token {
     /// @param ttsconfig The new state of the pool
     event e_updatettsconfig(uint256 ttsconfig);
     function setRatio(uint256 _ratio) external;
-    /**
-     * @dev  Returns the address of the DAO admin
-     * @return _dao_admin Returns the address of the DAO admin
-     */
-    function dao_admin() external view returns (address _dao_admin);
-    /**
-     * @dev  Returns the address of the market contract
-     * @return _marketcontract Returns the address of marketcontract
-     */
-    function marketcontract() external view returns (address _marketcontract);
 
     /**
      * @dev  Returns the amount of TTS available for public sale
@@ -128,17 +116,16 @@ interface I_TTSwap_Token {
      * @notice Increments the shares_index and adds the new share to the shares mapping
      * @notice Emits an e_addShare event with the share details
      */
-    function addShare(s_share calldata _share) external;
+    function addShare(s_share calldata _share, address owner) external;
     /**
      * @dev  Burns the share at the specified index
-     * @param index index of share
+     * @param owner owner of share
      */
-    function burnShare(uint8 index) external;
+    function burnShare(address owner) external;
     /**
-     * @dev  Mints a share at the specified index
-     * @param index index of share
+     * @dev  Mints a share at the specified
      */
-    function shareMint(uint8 index) external;
+    function shareMint() external;
     /**
      * @dev how much cost to buy tts
      * @param usdtamount usdt amount
@@ -197,9 +184,21 @@ interface I_TTSwap_Token {
     function getreferralanddaoadmin(
         address _customer
     ) external view returns (address dba_admin, address referral);
+
+    function permitShare(
+        s_share memory _share,
+        uint128 dealline,
+        bytes calldata signature
+    ) external;
+
+    function shareHash(
+        s_share memory _share,
+        address owner,
+        uint128 leftamount,
+        uint128 deadline
+    ) external pure returns (bytes32);
 }
 struct s_share {
-    address recipient; //owner
     uint128 leftamount; // unlock amount
     uint120 metric; //last unlock's metric
     uint8 chips; // define the share's chips, and every time unlock one chips

@@ -1,11 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
+
 import {IAllowanceTransfer} from "../interfaces/IAllowanceTransfer.sol";
 import {ISignatureTransfer} from "../interfaces/ISignatureTransfer.sol";
 import {IERC20Permit} from "../interfaces/IERC20Permit.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 import {IDAIPermit} from "../interfaces/IDAIPermit.sol";
 import {L_Transient} from "./L_Transient.sol";
+import {IWETH9} from "../interfaces/IWETH9.sol";
+
+address constant NATIVE = address(1);
+address constant SETH = address(2);
+address constant WETH1 = address(3);
+address constant WETH9 = 0x898118E029Aa17Ed4763f432c1Bdc1085d166cDe;
+address constant dai = 0x898118E029Aa17Ed4763f432c1Bdc1085d166cDe;
+address constant _permit2 = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
 
 /// @title L_CurrencyLibrary
 /// @dev This library allows for transferring and holding native tokens and ERC20 tokens
@@ -33,15 +42,12 @@ library L_CurrencyLibrary {
     error ERC20TransferFailed();
     /// @notice Thrown when an ERC20Permit transfer fails
     error ERC20PermitFailed();
-    address internal constant NATIVE = address(1);
-    address internal constant dai = 0x898118E029Aa17Ed4763f432c1Bdc1085d166cDe;
-    address internal constant _permit2 =
-        0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
 
     struct S_transferData {
         uint8 transfertype;
         bytes sigdata;
     }
+
     function balanceof(
         address token,
         address _sender
@@ -52,6 +58,7 @@ library L_CurrencyLibrary {
             amount = IERC20(token).balanceOf(_sender);
         }
     }
+
     function transferFrom(
         address token,
         address from,
@@ -66,6 +73,8 @@ library L_CurrencyLibrary {
         );
         if (token.isNative()) {
             L_Transient.decreaseValue(amount);
+        } else if (token.isWETH()) {
+            transferFrom(WETH9, from, to, amount);
         } else if (_simplePermit.transfertype == 1) {
             transferFrom(token, from, to, amount);
         } else if (_simplePermit.transfertype == 2) {
@@ -241,6 +250,8 @@ library L_CurrencyLibrary {
         bool success;
         if (currency.isNative()) {
             L_Transient.increaseValue(amount);
+        } else if (currency.isWETH()) {
+            safeTransfer(WETH9, to, amount);
         } else {
             assembly {
                 // We'll write our calldata to this slot below, but restore it later.
@@ -276,7 +287,11 @@ library L_CurrencyLibrary {
     }
 
     function isNative(address currency) internal pure returns (bool) {
-        return currency == address(1);
+        return currency == address(1) || currency == SETH;
+    }
+
+    function isWETH(address currency) internal pure returns (bool) {
+        return currency == WETH1;
     }
 
     function to_uint160(uint256 amount) internal pure returns (uint160) {
@@ -285,5 +300,25 @@ library L_CurrencyLibrary {
 
     function to_uint256(address amount) internal pure returns (uint256 a) {
         return uint256(uint160(amount));
+    }
+
+    function deposit(address token, uint256 amount) internal {
+        if (token == WETH1) {
+            IWETH9(WETH9).deposit{value: amount}();
+        }
+    }
+
+    function withdraw(address token, uint256 amount) internal {
+        if (token == WETH1) {
+            IWETH9(WETH9).withdraw(amount);
+        }
+    }
+
+    function canRestake(address token) internal pure returns (bool a) {
+        return token == WETH1 || token == SETH;
+    }
+
+    function approve(address token, address to, uint128 amount) internal {
+        if (token == WETH9) IERC20(WETH9).approve(to, uint256(amount));
     }
 }

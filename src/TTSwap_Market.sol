@@ -16,6 +16,7 @@ import {IERC3156FlashBorrower} from "./interfaces/IERC3156FlashBorrower.sol";
 import {IERC3156FlashLender} from "./interfaces/IERC3156FlashLender.sol";
 import {IMulticall_v4} from "./interfaces/IMulticall_v4.sol";
 import {ERC6909} from "./base/ERC6909.sol";
+import {I_TTSwap_StakeETH} from "./interfaces/I_TTSwap_StakeETH.sol";
 
 /**
  * @title TTSwap_Market
@@ -60,6 +61,7 @@ contract TTSwap_Market is
     mapping(address goodid => S_GoodState) private goods;
     mapping(uint256 proofid => S_ProofState) private proofs;
     mapping(address => uint256) public override userConfig;
+    uint256 restakingamount;
 
     /// @notice recording the config of commision allocate
     uint256 public override marketconfig;
@@ -69,6 +71,8 @@ contract TTSwap_Market is
     address private immutable officialTokenContract;
     /// @notice the address will be change to address0 when contract is safe
     address private securitykeeper;
+
+    I_TTSwap_StakeETH private restakeContract;
 
     /**
      * @dev Constructor for TTSwap_Market
@@ -477,7 +481,7 @@ contract TTSwap_Market is
         uint256 _proofid,
         uint128 _goodQuantity,
         address _gater
-    ) public payable override noReentrant msgValue returns (bool) {
+    ) public payable override noReentrant msgValue returns (uint128, uint128) {
         if (
             S_ProofKey(
                 msg.sender,
@@ -546,7 +550,7 @@ contract TTSwap_Market is
                 disinvestValueResult2_.profit
             )
         );
-        return true;
+        return (disinvestNormalResult1_.profit, disinvestValueResult2_.profit);
     }
 
     /**
@@ -779,4 +783,40 @@ contract TTSwap_Market is
         if (msg.sender != marketcreator) revert TTSwapError(14);
         securitykeeper = address(0);
     }
+
+    function stakeETH(address token, uint128 amount) external {
+        require(goods[token].owner == msg.sender && token.canRestake());
+        if (token.isNative()) {
+            restakingamount = add(restakingamount, toTTSwapUINT256(0, amount));
+            restakeContract.stakeEth{value: amount}(token, amount);
+        } else {
+            restakingamount = add(restakingamount, toTTSwapUINT256(amount, 0));
+            token.approve(address(restakeContract), amount);
+            restakeContract.stakeEth(token, amount);
+        }
+    }
+
+    function unstakeETH(address token, uint128 amount) external {
+        require(goods[token].owner == msg.sender && token.canRestake());
+        uint128 fee = restakeContract.unstakeEthSome(token, amount);
+        if (token.isNative()) {
+            restakingamount = sub(restakingamount, toTTSwapUINT256(0, amount));
+        } else {
+            restakingamount = sub(restakingamount, toTTSwapUINT256(amount, 0));
+        }
+        goods[token].feeQuantityState = sub(
+            goods[token].feeQuantityState,
+            toTTSwapUINT256(fee, 0)
+        );
+    }
+
+    function syncReward(address token) external {
+        uint128 fee = restakeContract.syncReward(token);
+        goods[token].feeQuantityState = sub(
+            goods[token].feeQuantityState,
+            toTTSwapUINT256(fee, 0)
+        );
+    }
+
+    receive() external payable {}
 }

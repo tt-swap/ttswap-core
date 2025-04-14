@@ -229,12 +229,13 @@ interface I_TTSwap_Market {
     /// @param _proofid ID of the investment proof
     /// @param _goodQuantity Quantity to disinvest
     /// @param _gater Address of the gater
-    /// @return Success status
+    /// @return reward1 status
+    /// @return reward2 status
     function disinvestProof(
         uint256 _proofid,
         uint128 _goodQuantity,
         address _gater
-    ) external payable returns (bool);
+    ) external payable returns (uint128 reward1, uint128 reward2);
 
     /// @notice Collect profit from an investment proof
     /// @param _proofid ID of the investment proof

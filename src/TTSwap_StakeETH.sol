@@ -4,19 +4,26 @@ pragma solidity 0.8.26;
 import {TTSwapError} from "./libraries/L_Error.sol";
 import {toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, subadd, addsub, mulDiv} from "./libraries/L_TTSwapUINT256.sol";
 import {L_Strings} from "./libraries/L_Strings.sol";
-import {L_ETHLibrary} from "./libraries/L_ETH.sol";
-import {L_Transient} from "./libraries/L_Transient.sol";
+import {L_CurrencyLibrary} from "./libraries/L_Currency.sol";
+import {L_Transient} from "./libraries/L_Transient2.sol";
 import {IRocketDepositPool} from "./interfaces/IRocketDepositPool.sol";
 import {IRocketTokenRETH} from "./interfaces/IRocketTokenRETH.sol";
 import {IRocketDAOProtocolSettingsDeposit} from "./interfaces/IRocketDAOProtocolSettingsDeposit.sol";
-
-contract TTSwap_StakeETH {
+import {I_TTSwap_Market, S_ProofKey} from "./interfaces/I_TTSwap_Market.sol";
+import {I_TTSwap_StakeETH} from "./interfaces/I_TTSwap_StakeETH.sol";
+import {IERC20} from "./interfaces/IERC20.sol";
+import {L_ProofIdLibrary} from "./libraries/L_Proof.sol";
+contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     using L_TTSwapUINT256Library for uint256;
     using L_Strings for address;
+    using L_CurrencyLibrary for address;
+    using L_ProofIdLibrary for S_ProofKey;
 
     uint256 TotalState; //amount0:totalShare, amount1:totalETHQuantity
+    uint256 ethShare; // amount0:share amount1:quantity
+    uint256 wethShare; // amount0:share amount1:quantity
     uint256 TotalStake; // amount0:stakingAmount amount1:currentBalance
-    mapping(address => uint256) userStakeState; //amount0:share,amount1:stakeeth
+    uint256 reth_staking;
     address protocolCreator;
     address protocolManager;
     event e_stakeRocketPoolETH(uint128, uint256);
@@ -24,21 +31,29 @@ contract TTSwap_StakeETH {
     event e_rocketpoolUnstaked(uint256, uint256);
 
     // Rocket Pool 主网合约地址
-    address public constant ROCKET_DEPOSIT_POOL =
-        0x2cac916b2A963Bf162f076C0a8a4a8200BCFBfb4;
-    address public constant ROCKET_TOKEN_RETH =
-        0xae78736Cd615f374D3085123A210448E74Fc6393;
-    address public constant ROCKET_DAO_SETTINGS_DEPOSIT =
-        0xac2245BE4C2C1E9752499Bcd34861B761d62fC27;
+    IRocketDepositPool public constant ROCKET_DEPOSIT_POOL =
+        IRocketDepositPool(0x2cac916b2A963Bf162f076C0a8a4a8200BCFBfb4);
+    IRocketTokenRETH public constant ROCKET_TOKEN_RETH =
+        IRocketTokenRETH(0xae78736Cd615f374D3085123A210448E74Fc6393);
+    IRocketDAOProtocolSettingsDeposit
+        public constant ROCKET_DAO_SETTINGS_DEPOSIT =
+        IRocketDAOProtocolSettingsDeposit(
+            0xac2245BE4C2C1E9752499Bcd34861B761d62fC27
+        );
 
-    IRocketDepositPool public rocketDepositPool;
-    IRocketTokenRETH public rocketTokenRETH;
-    IRocketDAOProtocolSettingsDeposit public rocketDAOSettingsDeposit;
-
+    I_TTSwap_Market internal immutable TTSWAP_MARKET;
+    address internal immutable tts_token;
     address internal constant eth = address(2);
-    constructor(address _creator) {
+
+    constructor(
+        address _creator,
+        I_TTSwap_Market _ttswap_market,
+        address _ttswap_token
+    ) {
         protocolCreator = _creator;
         protocolManager = msg.sender;
+        TTSWAP_MARKET = _ttswap_market;
+        tts_token = _ttswap_token;
     }
 
     modifier onlyCreator() {
@@ -58,103 +73,128 @@ contract TTSwap_StakeETH {
         L_Transient.set(address(0));
     }
 
+    /// run when eth token
+    modifier msgValue() {
+        L_Transient.checkbefore();
+        _;
+        L_Transient.checkafter();
+    }
     function changeManager(address _manager) external onlyCreator {
         protocolManager = _manager;
     }
 
-    function stakeEth(uint128 _stakeamount) external payable noReentrant {
-        L_ETHLibrary.transferFrom(_stakeamount);
+    function stakeEth(
+        address token,
+        uint128 _stakeamount
+    ) external payable override noReentrant msgValue {
+        require(token.canRestake() && address(TTSWAP_MARKET) == msg.sender);
+        token.transferFrom(address(TTSWAP_MARKET), address(this), _stakeamount);
         TotalStake = add(TotalStake, toTTSwapUINT256(0, _stakeamount));
-        uint128 _stakeshare;
-        if (TotalState != 0) {
-            _stakeshare = TotalState.getamount0fromamount1(_stakeamount);
-            TotalState = add(
-                TotalState,
-                toTTSwapUINT256(_stakeshare, _stakeamount)
-            );
-            TotalStake = add(TotalStake, toTTSwapUINT256(0, _stakeamount));
-            userStakeState[msg.sender] = add(
-                userStakeState[msg.sender],
+        uint128 _stakeshare = TotalState != 0
+            ? TotalState.getamount0fromamount1(_stakeamount)
+            : _stakeamount;
+
+        TotalState = add(
+            TotalState,
+            toTTSwapUINT256(_stakeshare, _stakeamount)
+        );
+        TotalStake = add(TotalStake, toTTSwapUINT256(0, _stakeamount));
+        if (token == eth) {
+            ethShare = add(
+                ethShare,
                 toTTSwapUINT256(_stakeshare, _stakeamount)
             );
         } else {
-            TotalState = add(
-                TotalState,
-                toTTSwapUINT256(_stakeamount, _stakeamount)
+            wethShare = add(
+                wethShare,
+                toTTSwapUINT256(_stakeshare, _stakeamount)
             );
-            TotalStake = add(TotalStake, toTTSwapUINT256(0, _stakeamount));
-            userStakeState[msg.sender] = add(
-                userStakeState[msg.sender],
-                toTTSwapUINT256(_stakeamount, _stakeamount)
-            );
+            token.withdraw(_stakeamount);
         }
     }
 
     function unstakeEthSome(
+        address token,
         uint128 amount
-    ) external noReentrant returns (uint128 reward) {
+    ) external override noReentrant returns (uint128 reward) {
         internalReward();
-        require(TotalStake.amount1() >= amount);
-        uint128 unstakeshare = userStakeState[msg.sender].getamount0fromamount1(
-            amount
-        );
-        userStakeState[msg.sender] = sub(
-            userStakeState[msg.sender],
-            toTTSwapUINT256(unstakeshare, amount)
-        );
-        reward = TotalState.getamount1fromamount0(unstakeshare);
+        uint128 unstakeshare;
+        uint128 rewardshare;
+        if (token == eth) {
+            unstakeshare = ethShare.getamount0fromamount1(amount);
+            reward = TotalState.getamount1fromamount0(unstakeshare) - amount;
+            rewardshare = TotalState.getamount0fromamount1(reward);
+            ethShare = sub(ethShare, toTTSwapUINT256(rewardshare, 0));
+        } else {
+            unstakeshare = wethShare.getamount0fromamount1(amount);
+            reward = TotalState.getamount1fromamount0(unstakeshare) - amount;
+            rewardshare = TotalState.getamount0fromamount1(reward);
+            wethShare = sub(wethShare, toTTSwapUINT256(rewardshare, 0));
+        }
+        TotalState = sub(TotalState, toTTSwapUINT256(unstakeshare, reward));
+        TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward + amount));
+
+        token.safeTransfer(protocolManager, reward / 9);
+        reward = reward - reward / 9;
+        token.safeTransfer(msg.sender, reward + amount);
+    }
+
+    function unstakeETHAll(
+        address token
+    ) external override noReentrant returns (uint128 reward, uint128 amount) {
+        internalReward();
+        if (token == eth) {
+            reward =
+                TotalState.getamount1fromamount0(ethShare.amount0()) -
+                ethShare.amount1();
+        } else {
+            reward =
+                TotalState.getamount1fromamount0(wethShare.amount0()) -
+                wethShare.amount1();
+        }
+        uint128 unstakeshare = TotalState.getamount0fromamount1(reward);
         TotalState = sub(TotalState, toTTSwapUINT256(unstakeshare, reward));
         TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward));
         reward = reward - amount;
-        L_ETHLibrary.transfer(protocolManager, reward / 9);
+        token.safeTransfer(protocolManager, reward / 9);
         reward = reward - reward / 9;
-        L_ETHLibrary.transfer(msg.sender, amount + reward);
+        token.safeTransfer(msg.sender, reward + amount);
     }
 
-    function unstakeETHAll()
-        external
-        noReentrant
-        returns (uint128 reward, uint128 amount)
-    {
+    function syncReward(
+        address token
+    ) external override noReentrant returns (uint128 reward) {
         internalReward();
-        uint256 unstakeshare = userStakeState[msg.sender];
-        amount = unstakeshare.amount1();
-        delete userStakeState[msg.sender];
-        reward = TotalState.getamount1fromamount0(unstakeshare.amount0());
-        TotalState = sub(
-            TotalState,
-            toTTSwapUINT256(unstakeshare.amount0(), reward)
-        );
-        TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward));
-        reward = reward - amount;
-        L_ETHLibrary.transfer(protocolManager, reward / 9);
+        uint128 share;
+        if (token == eth) {
+            reward =
+                TotalState.getamount1fromamount0(ethShare.amount0()) -
+                ethShare.amount1();
+            share = TotalState.getamount0fromamount1(reward);
+            TotalState = sub(TotalState, toTTSwapUINT256(share, reward));
+            ethShare = sub(ethShare, toTTSwapUINT256(share, 0));
+            TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward));
+        } else {
+            reward =
+                TotalState.getamount1fromamount0(wethShare.amount0()) -
+                wethShare.amount1();
+            TotalState = sub(TotalState, toTTSwapUINT256(share, reward));
+            wethShare = sub(wethShare, toTTSwapUINT256(share, 0));
+            TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward));
+        }
+        token.safeTransfer(protocolManager, reward / 9);
         reward = reward - reward / 9;
-        L_ETHLibrary.transfer(msg.sender, amount + reward);
-    }
-
-    function syncReward() external noReentrant returns (uint128 reward) {
-        internalReward();
-        uint256 stakeState = userStakeState[msg.sender];
-        reward =
-            TotalState.getamount1fromamount0(stakeState.amount0()) -
-            stakeState.amount1();
-        uint128 share = TotalState.getamount0fromamount1(reward);
-        userStakeState[msg.sender] = sub(stakeState, toTTSwapUINT256(share, 0));
-        TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward));
-        TotalState = sub(TotalState, toTTSwapUINT256(share, reward));
-        L_ETHLibrary.transfer(protocolManager, reward / 9);
-        reward = reward - reward / 9;
-        L_ETHLibrary.transfer(msg.sender, reward);
+        token.safeTransfer(msg.sender, reward);
     }
 
     function internalReward() internal {
-        uint128 reth = uint128(rocketTokenRETH.balanceOf(msg.sender));
-        uint128 eth1 = uint128(rocketTokenRETH.getEthValue(reth));
+        uint128 reth = uint128(ROCKET_TOKEN_RETH.balanceOf(msg.sender));
+        uint128 eth1 = uint128(ROCKET_TOKEN_RETH.getEthValue(reth));
         uint128 reward = eth1 >= TotalStake.amount0()
             ? eth1 - TotalStake.amount0()
             : 0;
         TotalStake = add(TotalStake, toTTSwapUINT256(reward, 0));
-        TotalState = add(TotalStake, toTTSwapUINT256(0, reward));
+        TotalState = add(TotalState, toTTSwapUINT256(0, reward));
     }
 
     // 质押ETH，接收rETH
@@ -164,12 +204,12 @@ contract TTSwap_StakeETH {
             "Must send ETH to stake"
         );
         require(
-            rocketDAOSettingsDeposit.getDepositEnabled(),
+            ROCKET_DAO_SETTINGS_DEPOSIT.getDepositEnabled(),
             "Rocket Pool deposits are currently disabled"
         );
 
-        uint256 depositPoolBalance = rocketDepositPool.getBalance();
-        uint256 maxDepositPoolSize = rocketDAOSettingsDeposit
+        uint256 depositPoolBalance = ROCKET_DEPOSIT_POOL.getBalance();
+        uint256 maxDepositPoolSize = ROCKET_DAO_SETTINGS_DEPOSIT
             .getMaximumDepositPoolSize();
         require(
             depositPoolBalance + msg.value <= maxDepositPoolSize,
@@ -177,7 +217,7 @@ contract TTSwap_StakeETH {
         );
 
         // 质押ETH到Rocket Pool
-        rocketDepositPool.deposit{value: msg.value}();
+        ROCKET_DEPOSIT_POOL.deposit{value: msg.value}();
 
         TotalStake = addsub(
             TotalStake,
@@ -185,7 +225,7 @@ contract TTSwap_StakeETH {
         );
 
         // 计算获得的rETH数量
-        uint256 rethAmount = rocketTokenRETH.getRethValue(msg.value);
+        uint256 rethAmount = ROCKET_TOKEN_RETH.getRethValue(msg.value);
 
         emit e_stakeRocketPoolETH(stakeamount, rethAmount);
     }
@@ -194,38 +234,79 @@ contract TTSwap_StakeETH {
     function unstakeRocketPoolETH(uint256 rethAmount) external {
         require(rethAmount > 0, "Amount must be greater than 0");
         require(
-            rocketTokenRETH.balanceOf(msg.sender) >= rethAmount,
+            ROCKET_TOKEN_RETH.balanceOf(msg.sender) >= rethAmount,
             "Insufficient rETH balance"
         );
 
         // 计算将获得的ETH数量
-        uint128 ethAmount = uint128(rocketTokenRETH.getEthValue(rethAmount));
+        uint128 ethAmount = uint128(ROCKET_TOKEN_RETH.getEthValue(rethAmount));
 
         // 销毁rETH并取回ETH
-        rocketTokenRETH.burn(rethAmount);
+        ROCKET_TOKEN_RETH.burn(rethAmount);
 
         TotalStake = subadd(TotalStake, toTTSwapUINT256(ethAmount, ethAmount));
 
         emit e_rocketpoolUnstaked(rethAmount, ethAmount);
     }
 
-    // 查询用户的rETH余额
-    function getRETHBalance(address user) external view returns (uint256) {
-        return rocketTokenRETH.balanceOf(user);
-    }
-
-    // 查询rETH对应的ETH价值
-    function getETHValue(uint256 rethAmount) external view returns (uint256) {
-        return rocketTokenRETH.getEthValue(rethAmount);
-    }
-
-    // 检查存款是否启用
-    function isDepositEnabled() external view returns (bool) {
-        return rocketDAOSettingsDeposit.getDepositEnabled();
-    }
-
     // 接收ETH的回退函数
     receive() external payable {
         emit e_Received(msg.value);
+    }
+
+    // 投资rETH到流动性产生流动性收益
+    function invest(bytes calldata data1) external {
+        uint256 proofid = S_ProofKey(
+            address(this),
+            address(ROCKET_TOKEN_RETH),
+            address(0)
+        ).toId();
+        uint128 _goodQuantity;
+        require(
+            (_goodQuantity >=
+                (
+                    TTSWAP_MARKET.getProofState(proofid).invest.amount0() == 0
+                        ? 0
+                        : (TTSWAP_MARKET
+                            .getProofState(proofid)
+                            .invest
+                            .amount0() * 2) / 10
+                )) &&
+                (_goodQuantity <=
+                    (uint128(ROCKET_TOKEN_RETH.balanceOf(address(this))) * 8) /
+                        10)
+        );
+        TTSWAP_MARKET.investGood(
+            address(ROCKET_TOKEN_RETH),
+            address(0),
+            0,
+            data1,
+            "0x"
+        );
+    }
+    // 撤资rETH以供赎回
+    function divest(uint128 _goodQuantity) external {
+        uint256 proofid = S_ProofKey(
+            address(this),
+            address(ROCKET_TOKEN_RETH),
+            address(0)
+        ).toId();
+        require(
+            _goodQuantity <=
+                TTSWAP_MARKET.getProofState(proofid).invest.amount0()
+        );
+        (uint128 reward, ) = TTSWAP_MARKET.disinvestProof(
+            proofid,
+            _goodQuantity,
+            protocolManager
+        );
+        address(ROCKET_TOKEN_RETH).approve(address(TTSWAP_MARKET), reward);
+        TTSWAP_MARKET.goodWelfare(address(ROCKET_TOKEN_RETH), reward, "0x");
+    }
+
+    function collectTTS(uint256 amount) external {
+        require(msg.sender == protocolManager);
+        amount = tts_token.balanceof(address(this));
+        tts_token.safeTransfer(protocolCreator, amount);
     }
 }

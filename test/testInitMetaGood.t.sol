@@ -21,6 +21,7 @@ contract testInitMetaGood is BaseSetup {
     function setUp() public override {
         BaseSetup.setUp();
     }
+
     function testinitMetaGood() public {
         vm.startPrank(marketcreator);
         uint256 goodconfig = 2 ** 255;

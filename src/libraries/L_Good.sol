@@ -283,6 +283,7 @@ library L_Good {
      * @notice Struct to hold the return values of a disinvestment operation
      * @dev Used to store and return the results of disinvesting from a good
      */
+
     struct S_GoodDisinvestReturn {
         uint128 profit; // The profit earned from disinvestment
         uint128 actual_fee; // The actual fee charged for disinvestment

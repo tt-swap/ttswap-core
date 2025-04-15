@@ -329,6 +329,10 @@ interface I_TTSwap_Market {
         uint128 welfare,
         bytes calldata data1
     ) external payable;
+    function unstakeETH(address token, uint128 amount) external;
+    function stakeETH(address token, uint128 amount) external;
+    function syncReward(address token) external;
+    function changeReStakingContrat(address _target) external;
 }
 /**
  * @dev Represents the state of a proof
@@ -338,6 +342,7 @@ interface I_TTSwap_Market {
  * @member invest amount0 (first 128 bits) represents invest normal good quantity, amount1 (last 128 bits) represents normal good constuct fee when investing
  * @member valueinvest amount0 (first 128 bits) represents invest value good quantity, amount1 (last 128 bits) represents value good constuct fee when investing
  */
+
 struct S_ProofState {
     address currentgood;
     address valuegood;
@@ -348,6 +353,7 @@ struct S_ProofState {
 /**
  * @dev Struct representing the state of a good
  */
+
 struct S_GoodState {
     uint256 goodConfig; // Configuration of the good
     address owner; // Creator of the good
@@ -359,6 +365,7 @@ struct S_GoodState {
 /**
  * @dev Struct representing a temporary state of a good
  */
+
 struct S_GoodTmpState {
     uint256 goodConfig; // Configuration of the good
     address owner; // Creator of the good
@@ -366,6 +373,7 @@ struct S_GoodTmpState {
     uint256 investState; // Investment state: amount0 represents total invested value, amount1 represents total invested quantity
     uint256 feeQuantityState; // Fee state: amount0 represents total fees (including construction fees), amount1 represents total construction fees
 }
+
 struct S_GoodKey {
     address owner;
     address erc20address;
@@ -376,6 +384,7 @@ struct S_ProofKey {
     address currentgood;
     address valuegood;
 }
+
 struct S_LoanProof {
     uint256 amount; //first 128 bit amount ,last 128 bit store feerate
 }

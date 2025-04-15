@@ -18,11 +18,13 @@ import {Permit2} from "permit2/src/Permit2.sol";
 import {IAllowanceTransfer} from "../src/interfaces/IAllowanceTransfer.sol";
 import {ISignatureTransfer} from "../src/interfaces/ISignatureTransfer.sol";
 import "forge-gas-snapshot/GasSnapshot.sol";
+
 contract testPermitInitMetaGood is Test, GasSnapshot {
     using L_ProofIdLibrary for S_ProofKey;
 
     using L_TTSwapUINT256Library for uint256;
     using ECDSA for bytes32;
+
     address metagood;
 
     MyToken internal kkkk;
@@ -48,9 +50,11 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
     TTSwap_Token tts_token;
     bytes internal constant defaultdata =
         abi.encode(L_CurrencyLibrary.S_transferData(1, ""));
+
     event debuggdata(bytes);
 
     Permit2 aabbpermit;
+
     function setUp() public virtual {
         marketcreatorkey = 0xA121;
         marketcreator = vm.addr(marketcreatorkey);
@@ -93,10 +97,12 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         owner = vm.addr(ownerPrivateKey);
         spender = vm.addr(spenderPrivateKey);
     }
+
     struct SimplePermit {
         uint8 transfertype;
         bytes detail;
     }
+
     function testinitNativeMetaGoodaddress1() public {
         vm.startPrank(marketcreator);
         address nativeCurrency = address(1);
@@ -293,6 +299,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         assertEq(1000, kkkk.balanceOf(users[2]), "after trnasferform error");
         vm.stopPrank();
     }
+
     struct S_Permit2 {
         uint256 value;
         uint256 deadline;
@@ -300,6 +307,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         bytes32 r;
         bytes32 s;
     }
+
     function testERC20permitinitmetagood() public {
         deal(address(kkkk), marketcreator, 50000 * 10 ** 7, false);
         uint256 bltim = block.timestamp + 10000;
@@ -365,6 +373,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         console2.log(2, kkkk.allowance(marketcreator, address(market)));
         vm.stopPrank();
     }
+
     function testPermit2AllownanceApprove() public {
         bytes memory code = address(aabbpermit).code;
         address targetAddr = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
@@ -451,6 +460,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         vm.stopPrank();
     }
     /// @notice The permit data for a token
+
     struct PermitDetails {
         // ERC20 token address
         address token;
@@ -471,6 +481,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         // deadline on the permit signature
         uint256 sigDeadline;
     }
+
     function testPermit2AllownancePermitInitMetaGood() public {
         bytes memory code = address(aabbpermit).code;
         address targetAddr = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
@@ -558,6 +569,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
 
         vm.stopPrank();
     }
+
     struct S_Permit {
         uint256 value;
         uint256 deadline;
@@ -566,6 +578,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
         bytes32 r;
         bytes32 s;
     }
+
     function testPermit2Permit() public {
         // 获取permit2合约的代码复制到固定地址
         bytes memory code = address(aabbpermit).code;
@@ -762,6 +775,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
 
         vm.stopPrank();
     }
+
     function testPermit2PermitInitMetaGood() public {
         bytes memory code = address(aabbpermit).code;
         address targetAddr = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;

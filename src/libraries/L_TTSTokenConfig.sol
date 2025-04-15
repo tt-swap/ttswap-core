@@ -16,10 +16,7 @@ library L_TTSTokenConfigLibrary {
         return b == 1 ? true : false;
     }
 
-    function getratio(
-        uint256 config,
-        uint128 amount
-    ) internal pure returns (uint128 b) {
+    function getratio(uint256 config, uint128 amount) internal pure returns (uint128 b) {
         unchecked {
             assembly {
                 config := and(config, 0xffff)
@@ -29,10 +26,7 @@ library L_TTSTokenConfigLibrary {
         }
     }
 
-    function setratio(
-        uint256 config,
-        uint256 ttsconfig
-    ) internal pure returns (uint256 b) {
+    function setratio(uint256 config, uint256 ttsconfig) internal pure returns (uint256 b) {
         unchecked {
             assembly {
                 ttsconfig := and(ttsconfig, 0xffff)

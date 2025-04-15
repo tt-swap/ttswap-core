@@ -57,9 +57,10 @@ interface I_TTSwap_Token {
     /// @param poolasset The pool asset value
     /// @param proofstate  The value of the pool
     event e_syncChainStake(
+        //first 128 bit proofvalue,last 128 bit proofconstruct
         uint32 chain,
         uint128 poolasset,
-        uint256 proofstate //first 128 bit proofvalue,last 128 bit proofconstruct
+        uint256 proofstate
     );
 
     /// @notice Emitted when unstaking occurs
@@ -81,6 +82,7 @@ interface I_TTSwap_Token {
     /// @notice Emitted when the pool state is updated
     /// @param ttsconfig The new state of the pool
     event e_updatettsconfig(uint256 ttsconfig);
+
     function setRatio(uint256 _ratio) external;
 
     /**
@@ -198,6 +200,7 @@ interface I_TTSwap_Token {
         uint128 deadline
     ) external pure returns (bytes32);
 }
+
 struct s_share {
     uint128 leftamount; // unlock amount
     uint120 metric; //last unlock's metric

@@ -40,6 +40,7 @@ contract TTSwap_Market is
     /**
      * @dev The loan token is not valid.
      */
+
     error ERC3156UnsupportedToken(address token);
 
     /**
@@ -98,6 +99,7 @@ contract TTSwap_Market is
         _;
     }
     /// onlydao manager can execute
+
     modifier onlyMarketor() {
         if (!userConfig[msg.sender].isMarketor()) revert TTSwapError(2);
         _;
@@ -140,6 +142,7 @@ contract TTSwap_Market is
         }
     }
     /// change daoadmin
+
     function changemarketcreator(address _newmarketor) external onlyDAOadmin {
         marketcreator = _newmarketor;
         emit e_changemarketcreator(_newmarketor);
@@ -243,7 +246,9 @@ contract TTSwap_Market is
         if (
             goods[_erc20address].owner != address(0) ||
             !goods[_valuegood].goodConfig.isvaluegood()
-        ) revert TTSwapError(5);
+        ) {
+            revert TTSwapError(5);
+        }
         _erc20address.transferFrom(msg.sender, _initial.amount0(), _normaldata);
         _valuegood.transferFrom(msg.sender, _initial.amount1(), _valuedata);
         L_Good.S_GoodInvestReturn memory investResult;
@@ -299,6 +304,7 @@ contract TTSwap_Market is
      * @return goodid2FeeQuantity_ The fee quantity for the second good
      */
     /// @inheritdoc I_TTSwap_Market
+
     function buyGood(
         address _goodid1,
         address _goodid2,
@@ -314,11 +320,12 @@ contract TTSwap_Market is
         msgValue
         returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_)
     {
-        if (_referal != address(0))
+        if (_referal != address(0)) {
             I_TTSwap_Token(officialTokenContract).addreferral(
                 msg.sender,
                 _referal
             );
+        }
 
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
@@ -488,7 +495,9 @@ contract TTSwap_Market is
                 proofs[_proofid].currentgood,
                 proofs[_proofid].valuegood
             ).toId() != _proofid
-        ) revert TTSwapError(8);
+        ) {
+            revert TTSwapError(8);
+        }
         L_Good.S_GoodDisinvestReturn memory disinvestNormalResult1_;
         L_Good.S_GoodDisinvestReturn memory disinvestValueResult2_;
         address normalgood = proofs[_proofid].currentgood;
@@ -570,7 +579,9 @@ contract TTSwap_Market is
                 proofs[_proofid].currentgood,
                 proofs[_proofid].valuegood
             ).toId() != _proofid
-        ) revert TTSwapError(9);
+        ) {
+            revert TTSwapError(9);
+        }
         address valuegood = proofs[_proofid].valuegood;
         address currentgood = proofs[_proofid].currentgood;
         (address dao_admin, address referal) = I_TTSwap_Token(
@@ -668,12 +679,13 @@ contract TTSwap_Market is
         emit e_changegoodowner(_goodid, _to);
     }
     /// @inheritdoc I_TTSwap_Market
+
     function collectCommission(
         address[] memory _goodid
     ) external payable override noReentrant msgValue {
         if (_goodid.length > 100) revert TTSwapError(11);
         uint256[] memory commissionamount = new uint256[](_goodid.length);
-        for (uint i = 0; i < _goodid.length; i++) {
+        for (uint256 i = 0; i < _goodid.length; i++) {
             commissionamount[i] = goods[_goodid[i]].commission[msg.sender];
             if (commissionamount[i] < 2) {
                 commissionamount[i] = 0;
@@ -694,7 +706,7 @@ contract TTSwap_Market is
     ) external view override returns (uint256[] memory) {
         if (_goodid.length >= 100) revert TTSwapError(11);
         uint256[] memory feeamount = new uint256[](_goodid.length);
-        for (uint i = 0; i < _goodid.length; i++) {
+        for (uint256 i = 0; i < _goodid.length; i++) {
             feeamount[i] = goods[_goodid[i]].commission[_recipent];
         }
         return feeamount;
@@ -706,8 +718,9 @@ contract TTSwap_Market is
         uint128 welfare,
         bytes calldata data
     ) external payable override noReentrant msgValue {
-        if (goods[goodid].feeQuantityState.amount0() + welfare >= 2 ** 109)
+        if (goods[goodid].feeQuantityState.amount0() + welfare >= 2 ** 109) {
             revert TTSwapError(12);
+        }
         goodid.transferFrom(msg.sender, welfare, data);
         goods[goodid].feeQuantityState = add(
             goods[goodid].feeQuantityState,
@@ -779,12 +792,13 @@ contract TTSwap_Market is
         token.safeTransfer(securitykeeper, amount);
     }
     /// will be remove when contract excute for one year
+
     function removeSecurityKeeper() external {
         if (msg.sender != marketcreator) revert TTSwapError(14);
         securitykeeper = address(0);
     }
 
-    function stakeETH(address token, uint128 amount) external {
+    function stakeETH(address token, uint128 amount) external override {
         require(goods[token].owner == msg.sender && token.canRestake());
         if (token.isNative()) {
             restakingamount = add(restakingamount, toTTSwapUINT256(0, amount));
@@ -796,7 +810,7 @@ contract TTSwap_Market is
         }
     }
 
-    function unstakeETH(address token, uint128 amount) external {
+    function unstakeETH(address token, uint128 amount) external override {
         require(goods[token].owner == msg.sender && token.canRestake());
         uint128 fee = restakeContract.unstakeEthSome(token, amount);
         if (token.isNative()) {
@@ -810,7 +824,7 @@ contract TTSwap_Market is
         );
     }
 
-    function syncReward(address token) external {
+    function syncReward(address token) external override {
         uint128 fee = restakeContract.syncReward(token);
         goods[token].feeQuantityState = sub(
             goods[token].feeQuantityState,
@@ -818,7 +832,9 @@ contract TTSwap_Market is
         );
     }
 
-    function changeReStakingContrat(address _target) external onlyDAOadmin {
+    function changeReStakingContrat(
+        address _target
+    ) external override onlyDAOadmin {
         restakeContract = I_TTSwap_StakeETH(_target);
     }
 

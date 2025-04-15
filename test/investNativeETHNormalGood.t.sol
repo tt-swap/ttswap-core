@@ -258,6 +258,7 @@ contract investNativeETHNormalGood is BaseSetup {
 
         vm.stopPrank();
     }
+
     function testinvestotherNativeETHNormalGood() public {
         vm.startPrank(users[4]);
         deal(address(usdt), users[4], 800000 * 10 ** 6, false);

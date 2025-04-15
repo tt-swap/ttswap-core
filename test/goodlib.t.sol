@@ -28,6 +28,7 @@ contract testBuy11 is Test {
     S_GoodState good1;
 
     function setUp() public {}
+
     function testUpdateGood() public {
         uint256 _goodConfig = 1 *
             2 ** 217 +

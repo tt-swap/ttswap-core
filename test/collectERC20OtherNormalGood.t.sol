@@ -18,6 +18,7 @@ import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toU
  * @title collectERC20OtherNormalGood
  * @dev Test contract for collecting ERC20 tokens from normal goods
  */
+
 contract collectERC20OtherNormalGood is BaseSetup {
     // Use libraries
     using L_MarketConfigLibrary for uint256;

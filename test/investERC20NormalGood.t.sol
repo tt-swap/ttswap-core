@@ -259,6 +259,7 @@ contract investERC20NormalGood is BaseSetup {
 
         vm.stopPrank();
     }
+
     function testinvestotherERC20NormalGood() public {
         vm.startPrank(users[4]);
         deal(address(usdt), users[4], 800000 * 10 ** 6, false);

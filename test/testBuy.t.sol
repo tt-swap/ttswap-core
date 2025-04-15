@@ -42,6 +42,7 @@ contract testBuy1 is Test {
     MyToken wbtc;
     bytes internal constant defaultdata =
         abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
+
     function setUp() public {
         marketcreator = address(1);
         vm.startPrank(marketcreator);
@@ -105,6 +106,7 @@ contract testBuy1 is Test {
         btcgood = address(wbtc);
         vm.stopPrank();
     }
+
     function testBuyfromethtobtc() public {
         vm.startPrank(marketcreator);
         console2.log("before balance of eth", eth.balanceOf(marketcreator));

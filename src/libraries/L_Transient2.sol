@@ -4,6 +4,7 @@ pragma solidity ^0.8.1;
 import {TTSwapError} from "./L_Error.sol";
 /// @notice This is a temporary library that allows us to use transient storage (tstore/tload)
 /// TODO: This library can be deleted when we have the transient keyword support in solidity.
+
 library L_Transient {
     // The slot holding the Value state, transiently. bytes32(uint256(keccak256("STAKE_VALUE_SLOT")) - 1)
     bytes32 constant VALUE_SLOT =
@@ -26,6 +27,7 @@ library L_Transient {
             locker := tload(LOCK_SLOT)
         }
     }
+
     function setValue(uint256 locker) internal {
         assembly {
             tstore(VALUE_SLOT, locker)
@@ -50,16 +52,19 @@ library L_Transient {
             tstore(VALUE_SLOT, sub(tload(VALUE_SLOT), amount))
         }
     }
+
     function getDepth() internal view returns (uint256 step) {
         assembly {
             step := tload(DEPTH_SLOT)
         }
     }
+
     function clearDepth() internal {
         assembly {
             tstore(DEPTH_SLOT, 0)
         }
     }
+
     function addDepth() internal {
         assembly {
             tstore(DEPTH_SLOT, add(tload(DEPTH_SLOT), 1))
@@ -79,6 +84,7 @@ library L_Transient {
         }
         addDepth();
     }
+
     function checkafter() internal {
         subDepth();
         if (getDepth() == 0 && getValue() >= 0) {

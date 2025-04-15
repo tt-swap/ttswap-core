@@ -14,11 +14,13 @@ import {L_SignatureVerification} from "./libraries/L_SignatureVerification.sol";
  * @title TTS Token Contract
  * @dev Implements ERC20 token with additional staking and cross-chain functionality
  */
+
 contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
     using L_TTSwapUINT256Library for uint256;
     using L_TTSTokenConfigLibrary for uint256;
     using L_CurrencyLibrary for address;
     using L_SignatureVerification for bytes;
+
     uint256 public ttstokenconfig;
 
     mapping(address => s_share) public shares; // all share's mapping
@@ -79,7 +81,6 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
     /**
      * @dev  this chain trade vol ratio in protocol
      */
-
     function setRatio(uint256 _ratio) external {
         if (_ratio > 10000 || auths[msg.sender] != 2) revert TTSwapError(17);
         ttstokenconfig = ttstokenconfig.setratio(_ratio);
@@ -148,8 +149,9 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
         s_share memory _share,
         address owner
     ) external override onlymain {
-        if (left_share < _share.leftamount || msg.sender != dao_admin)
+        if (left_share < _share.leftamount || msg.sender != dao_admin) {
             revert TTSwapError(18);
+        }
         _addShare(_share, owner);
     }
 
@@ -384,6 +386,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @param value Amount of tokens to burn
      */
     /// @inheritdoc I_TTSwap_Token
+
     function burn(address account, uint256 value) external override {
         _burn(account, value);
     }

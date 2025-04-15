@@ -14,7 +14,11 @@ interface ISignatureTransfer {
     error LengthMismatch();
 
     /// @notice Emits an event when the owner successfully invalidates an unordered nonce.
-    event UnorderedNonceInvalidation(address indexed owner, uint256 word, uint256 mask);
+    event UnorderedNonceInvalidation(
+        address indexed owner,
+        uint256 word,
+        uint256 mask
+    );
 
     /// @notice The token and amount details for a transfer signed in the permit transfer signature
     struct TokenPermissions {

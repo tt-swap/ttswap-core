@@ -13,6 +13,7 @@ import {L_Good} from "../src/libraries/L_Good.sol";
 contract testInitNormalGood is BaseSetup {
     using L_ProofIdLibrary for S_ProofKey;
     using L_TTSwapUINT256Library for uint256;
+
     address metagoodkey;
 
     function setUp() public override {

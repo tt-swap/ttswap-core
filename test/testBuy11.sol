@@ -24,6 +24,7 @@ contract testBuy11 is Test {
     using L_CurrencyLibrary for address;
     using L_TTSwapUINT256Library for uint256;
     using L_Good for S_GoodState;
+
     bytes internal constant defaultdata =
         abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
     address usdtgood;
@@ -58,6 +59,7 @@ contract testBuy11 is Test {
         );
         vm.stopPrank();
     }
+
     function testBuyfromethtobtc() public view {
         uint128 swap = 10 * 10 ** 18;
 

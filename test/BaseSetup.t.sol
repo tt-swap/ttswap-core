@@ -18,7 +18,9 @@ contract BaseSetup is Test, GasSnapshot {
     TTSwap_Token tts_token;
     bytes internal constant defaultdata =
         abi.encode(L_CurrencyLibrary.S_transferData(1, ""));
+
     event debuggdata(bytes);
+
     function setUp() public virtual {
         uint256 m_marketconfig = (45 << 250) +
             (5 << 244) +

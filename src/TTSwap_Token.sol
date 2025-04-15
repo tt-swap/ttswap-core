@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.26;
+pragma solidity 0.8.29;
 
 import {ERC20} from "./base/ERC20.sol";
 import {I_TTSwap_Market} from "./interfaces/I_TTSwap_Market.sol";

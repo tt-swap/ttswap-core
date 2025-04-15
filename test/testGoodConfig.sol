@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.26;
+pragma solidity 0.8.29;
 
 import "forge-std/Test.sol";
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";

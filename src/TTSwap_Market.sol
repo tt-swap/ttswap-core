@@ -818,5 +818,9 @@ contract TTSwap_Market is
         );
     }
 
+    function changeReStakingContrat(address _target)external onlyDAOadmin(
+        restakeContract=_target;
+    ) 
+
     receive() external payable {}
 }

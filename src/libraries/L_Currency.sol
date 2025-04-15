@@ -11,8 +11,8 @@ import {IWETH9} from "../interfaces/IWETH9.sol";
 
 address constant NATIVE = address(1);
 address constant SETH = address(2);
-address constant WETH1 = address(3);
-address constant WETH9 = 0x898118E029Aa17Ed4763f432c1Bdc1085d166cDe;
+address constant SWETH = address(3);
+address constant WETH = 0x898118E029Aa17Ed4763f432c1Bdc1085d166cDe;
 address constant dai = 0x898118E029Aa17Ed4763f432c1Bdc1085d166cDe;
 address constant _permit2 = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
 
@@ -54,6 +54,8 @@ library L_CurrencyLibrary {
     ) internal view returns (uint256 amount) {
         if (token.isNative()) {
             amount = address(_sender).balance;
+        } else if (token.isWETH()) {
+            amount = IERC20(WETH).balanceOf(_sender);
         } else {
             amount = IERC20(token).balanceOf(_sender);
         }
@@ -74,7 +76,8 @@ library L_CurrencyLibrary {
         if (token.isNative()) {
             L_Transient.decreaseValue(amount);
         } else if (token.isWETH()) {
-            transferFrom(WETH9, from, to, amount);
+            transferFrom(WETH, from, to, amount, detail);
+            //transferFrom(WETH, from, to, amount);
         } else if (_simplePermit.transfertype == 1) {
             transferFrom(token, from, to, amount);
         } else if (_simplePermit.transfertype == 2) {
@@ -251,7 +254,7 @@ library L_CurrencyLibrary {
         if (currency.isNative()) {
             L_Transient.increaseValue(amount);
         } else if (currency.isWETH()) {
-            safeTransfer(WETH9, to, amount);
+            safeTransfer(WETH, to, amount);
         } else {
             assembly {
                 // We'll write our calldata to this slot below, but restore it later.
@@ -291,7 +294,7 @@ library L_CurrencyLibrary {
     }
 
     function isWETH(address currency) internal pure returns (bool) {
-        return currency == WETH1;
+        return currency == SWETH;
     }
 
     function to_uint160(uint256 amount) internal pure returns (uint160) {
@@ -303,22 +306,22 @@ library L_CurrencyLibrary {
     }
 
     function deposit(address token, uint256 amount) internal {
-        if (token == WETH1) {
-            IWETH9(WETH9).deposit{value: amount}();
+        if (token == SWETH) {
+            IWETH9(WETH).deposit{value: amount}();
         }
     }
 
     function withdraw(address token, uint256 amount) internal {
-        if (token == WETH1) {
-            IWETH9(WETH9).withdraw(amount);
+        if (token == SWETH) {
+            IWETH9(WETH).withdraw(amount);
         }
     }
 
     function canRestake(address token) internal pure returns (bool a) {
-        return token == WETH1 || token == SETH;
+        return token == SWETH || token == SETH;
     }
 
     function approve(address token, address to, uint128 amount) internal {
-        if (token == WETH9) IERC20(WETH9).approve(to, uint256(amount));
+        if (token == WETH) IERC20(WETH).approve(to, uint256(amount));
     }
 }

@@ -6,7 +6,7 @@ ffi = true
 optimizer = true
 via-ir = true
 optimizer_runs = 100
-solc = "0.8.26"
+solc = "0.8.29"
 evm_version = "cancun"
 fs_permissions = [{ access = "read-write", path = ".forge-snapshots/"}]
 

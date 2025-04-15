@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity 0.8.29;
 
 /// @title L_GoodConfigLibrary
 /// @notice A library for managing and retrieving configuration data for goods

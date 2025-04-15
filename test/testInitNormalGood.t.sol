@@ -1,4 +1,4 @@
-pragma solidity 0.8.26;
+pragma solidity 0.8.29;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {MyToken} from "../src/test/MyToken.sol";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.26;
+pragma solidity 0.8.29;
 
 /// @title Market Configuration Library
 /// @notice Library for managing and calculating various fee configurations for a market

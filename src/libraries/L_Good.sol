@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.26;
+pragma solidity 0.8.29;
 
 import {L_Proof} from "./L_Proof.sol";
 import {TTSwapError} from "./L_Error.sol";

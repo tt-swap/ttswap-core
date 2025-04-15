@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.26;
+pragma solidity 0.8.29;
 
 import {toTTSwapUINT256, mulDiv, sub, add, L_TTSwapUINT256Library} from "./L_TTSwapUINT256.sol";
 import {I_TTSwap_Token} from "../interfaces/I_TTSwap_Token.sol";

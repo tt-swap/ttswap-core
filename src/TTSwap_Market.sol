@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.26;
+pragma solidity 0.8.29;
 
 import {I_TTSwap_Market, S_ProofState, S_GoodState, S_ProofKey, S_GoodTmpState} from "./interfaces/I_TTSwap_Market.sol";
 import {L_Good} from "./libraries/L_Good.sol";
@@ -816,6 +816,10 @@ contract TTSwap_Market is
             goods[token].feeQuantityState,
             toTTSwapUINT256(fee, 0)
         );
+    }
+
+    function changeReStakingContrat(address _target) external onlyDAOadmin {
+        restakeContract = I_TTSwap_StakeETH(_target);
     }
 
     receive() external payable {}

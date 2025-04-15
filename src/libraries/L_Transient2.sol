@@ -5,18 +5,15 @@ import {TTSwapError} from "./L_Error.sol";
 /// @notice This is a temporary library that allows us to use transient storage (tstore/tload)
 /// TODO: This library can be deleted when we have the transient keyword support in solidity.
 library L_Transient {
-    // The slot holding the Value state, transiently. bytes32(uint256(keccak256("VALUE_SLOT")) - 1)
-
+    // The slot holding the Value state, transiently. bytes32(uint256(keccak256("STAKE_VALUE_SLOT")) - 1)
     bytes32 constant VALUE_SLOT =
-        0xcbe27d488af5b5c1b0bd8d89be6fdfeaed3ad42719044fd9b728f33df1d6f1d1;
-    // The slot holding the Value state, transiently. bytes32(uint256(keccak256("DEPTH_SLOT")) - 1)
+        0xbc0bea6b0debcaf41836b6168bd1bce6a6cfb17d221105a2e34f5c1e5634e2a1;
+    // The slot holding the Value state, transiently. bytes32(uint256(keccak256("STAKE_DEPTH_SLOT")) - 1)
     bytes32 constant DEPTH_SLOT =
-        0x87b52c29898e62efc1f9a9b00a26dcbdaee98d728c56841703077b7c0d20dee7;
-
-    // The slot holding the Value state, transiently. bytes32(uint256(keccak256("LOCK_SLOT")) - 1)
-
+        0x968200d04761c0c59f9a621549e0c376bd2c036f6fd5b0d8ff844478c3216f8e;
+    // The slot holding the Value state, transiently. bytes32(uint256(keccak256("STAKE_LOCK_SLOT")) - 1)
     bytes32 constant LOCK_SLOT =
-        0xe2afc7ec4dbb9bfdb1b8e8bcf21a055747c25bf2faaea9cb5a134005381f4843;
+        0xe8b57f2a24cc49561abc37cc14eb27f7e291d1ac82b5f173f246cc4b4de01451;
 
     function set(address locker) internal {
         assembly {

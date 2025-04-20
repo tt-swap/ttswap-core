@@ -177,7 +177,6 @@ contract TTSwap_Market is
         emit e_modifiedUserConfig(_user, userConfig[_user]);
         return true;
     }
-
     /**
      * @dev Initializes a meta good
      * @param _erc20address The address of the ERC20 token
@@ -297,11 +296,10 @@ contract TTSwap_Market is
      * @param _goodid1 The ID of the first good
      * @param _goodid2 The ID of the second good
      * @param _swapQuantity The quantity to swap
-     * @param _limitPrice The limit price
-     * @param _istotal Whether it's a total swap
+     * @param _tradetimes trade times
      * @param _referal The referral address
-     * @return goodid2Quantity_ The quantity of the second good received
-     * @return goodid2FeeQuantity_ The fee quantity for the second good
+     * @return good1change amount0() good1tradefee,good1tradeamount
+     * @return good2change amount0() good1tradefee,good2tradeamount
      */
     /// @inheritdoc I_TTSwap_Market
 
@@ -309,8 +307,7 @@ contract TTSwap_Market is
         address _goodid1,
         address _goodid2,
         uint128 _swapQuantity,
-        uint256 _limitPrice,
-        bool _istotal,
+        uint128 _tradetimes,
         address _referal,
         bytes calldata data
     )
@@ -318,7 +315,7 @@ contract TTSwap_Market is
         payable
         noReentrant
         msgValue
-        returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_)
+        returns (uint256 good1change, uint256 good2change)
     {
         if (_referal != address(0)) {
             I_TTSwap_Token(officialTokenContract).addreferral(
@@ -338,21 +335,25 @@ contract TTSwap_Market is
             good2config: goods[_goodid2].goodConfig
         });
 
-        L_Good.swapCompute1(swapcache, _limitPrice);
+        L_Good.swapCompute1(swapcache, _tradetimes);
 
         if (
             _swapQuantity == 0 ||
             (swapcache.remainQuantity + swapcache.feeQuantity) >=
             _swapQuantity ||
-            _goodid1 == _goodid2 ||
-            (_istotal == true && swapcache.remainQuantity > 0)
+            _goodid1 == _goodid2
         ) revert TTSwapError(6);
 
-        goodid2FeeQuantity_ = swapcache.good2config.getBuyFee(
-            swapcache.outputQuantity
+        good1change = toTTSwapUINT256(
+            swapcache.feeQuantity,
+            _swapQuantity - swapcache.remainQuantity
         );
 
-        goodid2Quantity_ = swapcache.outputQuantity - goodid2FeeQuantity_;
+        good2change = toTTSwapUINT256(
+            swapcache.good2config.getBuyFee(swapcache.outputQuantity),
+            swapcache.outputQuantity -
+                swapcache.good2config.getBuyFee(swapcache.outputQuantity)
+        );
 
         goods[_goodid1].swapCommit(
             swapcache.good1currentState,
@@ -360,26 +361,64 @@ contract TTSwap_Market is
         );
         goods[_goodid2].swapCommit(
             swapcache.good2currentState,
-            goodid2FeeQuantity_
-        );
-        _goodid1.transferFrom(
-            msg.sender,
-            _swapQuantity - swapcache.remainQuantity,
-            data
+            good2change.amount0()
         );
 
-        _goodid2.safeTransfer(msg.sender, goodid2Quantity_);
-
+        _goodid1.transferFrom(msg.sender, good1change.amount1(), data);
+        _goodid2.safeTransfer(msg.sender, good2change.amount1());
         emit e_buyGood(
             _goodid1,
             _goodid2,
             msg.sender,
             swapcache.swapvalue,
-            toTTSwapUINT256(
-                _swapQuantity - swapcache.remainQuantity,
-                swapcache.feeQuantity
-            ),
-            toTTSwapUINT256(goodid2Quantity_, goodid2FeeQuantity_)
+            good1change,
+            good2change
+        );
+    }
+    /**
+     * @dev Check before a good
+     * @param _goodid1 The ID of the first good
+     * @param _goodid2 The ID of the second good
+     * @param _swapQuantity The quantity to swap
+     * @param _tradetimes trade times
+     * @return good1change amount0() good1tradefee,good1tradeamount
+     * @return good2change amount0() good1tradefee,good2tradeamount
+     */
+    /// @inheritdoc I_TTSwap_Market
+    function buyGoodCheck(
+        address _goodid1,
+        address _goodid2,
+        uint128 _swapQuantity,
+        uint128 _tradetimes
+    ) external view returns (uint256 good1change, uint256 good2change) {
+        L_Good.swapCache memory swapcache = L_Good.swapCache({
+            remainQuantity: _swapQuantity,
+            outputQuantity: 0,
+            feeQuantity: 0,
+            swapvalue: 0,
+            good1currentState: goods[_goodid1].currentState,
+            good1config: goods[_goodid1].goodConfig,
+            good2currentState: goods[_goodid2].currentState,
+            good2config: goods[_goodid2].goodConfig
+        });
+        L_Good.swapCompute1(swapcache, _tradetimes);
+
+        if (
+            _swapQuantity == 0 ||
+            (swapcache.remainQuantity + swapcache.feeQuantity) >=
+            _swapQuantity ||
+            _goodid1 == _goodid2
+        ) revert TTSwapError(6);
+
+        good1change = toTTSwapUINT256(
+            swapcache.feeQuantity,
+            _swapQuantity - swapcache.remainQuantity
+        );
+
+        good2change = toTTSwapUINT256(
+            swapcache.good2config.getBuyFee(swapcache.outputQuantity),
+            swapcache.outputQuantity -
+                swapcache.good2config.getBuyFee(swapcache.outputQuantity)
         );
     }
 
@@ -797,13 +836,19 @@ contract TTSwap_Market is
         if (msg.sender != marketcreator) revert TTSwapError(14);
         securitykeeper = address(0);
     }
-
+    event debugstakeeth(uint256);
     function stakeETH(address token, uint128 amount) external override {
+        emit debugstakeeth(1);
         require(goods[token].owner == msg.sender && token.canRestake());
+        emit debugstakeeth(2);
         if (token.isNative()) {
+            emit debugstakeeth(3);
             restakingamount = add(restakingamount, toTTSwapUINT256(0, amount));
+            emit debugstakeeth(4);
             restakeContract.stakeEth{value: amount}(token, amount);
+            emit debugstakeeth(5);
         } else {
+            emit debugstakeeth(1);
             restakingamount = add(restakingamount, toTTSwapUINT256(amount, 0));
             token.approve(address(restakeContract), amount);
             restakeContract.stakeEth(token, amount);
@@ -823,9 +868,12 @@ contract TTSwap_Market is
             toTTSwapUINT256(fee, 0)
         );
     }
-
+    event debuggsyncreward(uint256, uint256);
     function syncReward(address token) external override {
+        emit debuggsyncreward(1, address(this).balance);
         uint128 fee = restakeContract.syncReward(token);
+
+        emit debuggsyncreward(2, uint256(fee));
         goods[token].feeQuantityState = sub(
             goods[token].feeQuantityState,
             toTTSwapUINT256(fee, 0)
@@ -838,5 +886,8 @@ contract TTSwap_Market is
         restakeContract = I_TTSwap_StakeETH(_target);
     }
 
-    receive() external payable {}
+    event debugg(uint256);
+    receive() external payable {
+        emit debugg(msg.value);
+    }
 }

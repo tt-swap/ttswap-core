@@ -92,15 +92,15 @@ interface I_TTSwap_Market {
     /// @param forgood The ID of the good being bought
     /// @param fromer The address of the buyer
     /// @param swapvalue The trade value
-    /// @param sellgoodstate The status of the sold good (amount0: fee, amount1: quantity)
-    /// @param forgoodstate The status of the bought good (amount0: fee, amount1: quantity)
+    /// @param good1change The status of the sold good (amount0: fee, amount1: quantity)
+    /// @param good2change The status of the bought good (amount0: fee, amount1: quantity)
     event e_buyGood(
         address indexed sellgood,
         address indexed forgood,
         address fromer,
         uint128 swapvalue,
-        uint256 sellgoodstate,
-        uint256 forgoodstate
+        uint256 good1change,
+        uint256 good2change
     );
 
     /// @notice Emitted when a user invests in a normal good
@@ -190,27 +190,40 @@ interface I_TTSwap_Market {
         bytes calldata data2
     ) external payable returns (bool);
 
-    /// @notice Sell one good to buy another
-    /// @param _goodid1 ID of the good to sell
-    /// @param _goodid2 ID of the good to buy
-    /// @param _swapQuantity Quantity of _goodid1 to sell
-    /// @param _limitprice Price limit for the trade
-    /// @param _istotal Whether to trade all or partial amount
-    /// @param _referal Referral address
-    /// @return goodid2Quantity_ Actual quantity of good2 received
-    /// @return goodid2FeeQuantity_ Fee quantity for good2
+    /**
+     * @dev Buys a good
+     * @param _goodid1 The ID of the first good
+     * @param _goodid2 The ID of the second good
+     * @param _swapQuantity The quantity to swap
+     * @param _tradetimes trade times
+     * @param _referal The referral address
+     * @return good1change amount0() good1tradefee,good1tradeamount
+     * @return good2change amount0() good1tradefee,good2tradeamount
+     */
     function buyGood(
         address _goodid1,
         address _goodid2,
         uint128 _swapQuantity,
-        uint256 _limitprice,
-        bool _istotal,
+        uint128 _tradetimes,
         address _referal,
-        bytes calldata data1
-    )
-        external
-        payable
-        returns (uint128 goodid2Quantity_, uint128 goodid2FeeQuantity_);
+        bytes calldata data
+    ) external payable returns (uint256 good1change, uint256 good2change);
+
+    /**
+     * @dev check before buy good
+     * @param _goodid1 The ID of the first good
+     * @param _goodid2 The ID of the second good
+     * @param _swapQuantity The quantity to swap
+     * @param _tradetimes trade times
+     * @return good1change amount0()good1tradeamount,good1tradefee
+     * @return good2change amount0()good2tradeamount,good2tradefee
+     */
+    function buyGoodCheck(
+        address _goodid1,
+        address _goodid2,
+        uint128 _swapQuantity,
+        uint128 _tradetimes
+    ) external view returns (uint256 good1change, uint256 good2change);
 
     /// @notice Invest in a normal good
     /// @param _togood ID of the normal good to invest in

@@ -74,121 +74,108 @@ library L_Good {
      * @notice Compute the swap result from good1 to good2
      * @dev Implements a complex swap algorithm considering price limits, fees, and minimum swap amounts
      * @param _stepCache A cache structure containing swap state and configurations
-     * @param _limitPrice The price limit for the swap
+     * @param _tradetimes tradetimes
      */
     function swapCompute1(
         swapCache memory _stepCache,
-        uint256 _limitPrice
+        uint128 _tradetimes
     ) internal pure {
         // Check if the current price is lower than the limit price, if not, return immediately
-        if (
-            lowerprice(
-                _stepCache.good1currentState,
-                _stepCache.good2currentState,
-                _limitPrice
-            )
-        ) {
-            uint128 minValue;
-            uint128 minQuantity;
 
-            // Calculate and deduct the sell fee
-            _stepCache.feeQuantity = _stepCache.good1config.getSellFee(
-                _stepCache.remainQuantity
-            );
-            _stepCache.remainQuantity -= _stepCache.feeQuantity;
+        uint128 minValue;
+        uint128 minQuantity;
 
-            // Continue swapping while there's remaining quantity and price is favorable
-            while (
-                _stepCache.remainQuantity > 0 &&
-                lowerprice(
-                    _stepCache.good1currentState,
-                    _stepCache.good2currentState,
-                    _limitPrice
+        // Calculate and deduct the sell fee
+        _stepCache.feeQuantity = _stepCache.good1config.getSellFee(
+            _stepCache.remainQuantity
+        );
+        _stepCache.remainQuantity -= _stepCache.feeQuantity;
+
+        // Continue swapping while there's remaining quantity and price is favorable
+        while (_stepCache.remainQuantity > 0 && _tradetimes > 0) {
+            _tradetimes -= 0;
+            // Determine the minimum swap value (take the smaller of the two goods)
+            minValue = _stepCache.good1config.getSwapChips(
+                _stepCache.good1currentState.amount0()
+            ) >=
+                _stepCache.good2config.getSwapChips(
+                    _stepCache.good2currentState.amount0()
                 )
-            ) {
-                // Determine the minimum swap value (take the smaller of the two goods)
-                minValue = _stepCache.good1config.getSwapChips(
+                ? _stepCache.good2config.getSwapChips(
+                    _stepCache.good2currentState.amount0()
+                )
+                : _stepCache.good1config.getSwapChips(
                     _stepCache.good1currentState.amount0()
-                ) >=
-                    _stepCache.good2config.getSwapChips(
-                        _stepCache.good2currentState.amount0()
-                    )
-                    ? _stepCache.good2config.getSwapChips(
-                        _stepCache.good2currentState.amount0()
-                    )
-                    : _stepCache.good1config.getSwapChips(
-                        _stepCache.good1currentState.amount0()
-                    );
+                );
 
-                // Calculate the corresponding quantity for the minimum value
-                minQuantity = _stepCache
-                    .good1currentState
+            // Calculate the corresponding quantity for the minimum value
+            minQuantity = _stepCache.good1currentState.getamount1fromamount0(
+                minValue
+            );
+
+            if (_stepCache.remainQuantity > minQuantity) {
+                // Swap the entire minQuantity
+                _stepCache.remainQuantity -= minQuantity;
+
+                // Calculate and add the output quantity
+                _stepCache.outputQuantity += _stepCache
+                    .good2currentState
                     .getamount1fromamount0(minValue);
 
-                if (_stepCache.remainQuantity > minQuantity) {
-                    // Swap the entire minQuantity
-                    _stepCache.remainQuantity -= minQuantity;
-
-                    // Calculate and add the output quantity
-                    _stepCache.outputQuantity += _stepCache
-                        .good2currentState
-                        .getamount1fromamount0(minValue);
-
-                    // Update the states of both goods
-                    _stepCache.good1currentState = subadd(
-                        _stepCache.good1currentState,
-                        toTTSwapUINT256(minValue, minQuantity)
-                    );
-                    _stepCache.good2currentState = addsub(
-                        _stepCache.good2currentState,
-                        toTTSwapUINT256(
-                            minValue,
-                            _stepCache.good2currentState.getamount1fromamount0(
-                                minValue
-                            )
+                // Update the states of both goods
+                _stepCache.good1currentState = subadd(
+                    _stepCache.good1currentState,
+                    toTTSwapUINT256(minValue, minQuantity)
+                );
+                _stepCache.good2currentState = addsub(
+                    _stepCache.good2currentState,
+                    toTTSwapUINT256(
+                        minValue,
+                        _stepCache.good2currentState.getamount1fromamount0(
+                            minValue
                         )
-                    );
-                } else {
-                    // Swap the remaining quantity
-                    minValue = _stepCache
-                        .good1currentState
-                        .getamount0fromamount1(_stepCache.remainQuantity);
-                    _stepCache.outputQuantity += _stepCache
-                        .good2currentState
-                        .getamount1fromamount0(minValue);
-
-                    // Update the states of both goods
-                    _stepCache.good1currentState = subadd(
-                        _stepCache.good1currentState,
-                        toTTSwapUINT256(minValue, _stepCache.remainQuantity)
-                    );
-
-                    _stepCache.good2currentState = addsub(
-                        _stepCache.good2currentState,
-                        toTTSwapUINT256(
-                            minValue,
-                            _stepCache.good2currentState.getamount1fromamount0(
-                                minValue
-                            )
-                        )
-                    );
-                    _stepCache.remainQuantity = 0;
-                }
-
-                // Update the total swap value
-                _stepCache.swapvalue += minValue;
-            }
-
-            // Adjust fees if there's remaining quantity
-            if (_stepCache.remainQuantity > 0) {
-                _stepCache.feeQuantity -= _stepCache.good1config.getSellFee(
+                    )
+                );
+            } else {
+                // Swap the remaining quantity
+                minValue = _stepCache.good1currentState.getamount0fromamount1(
                     _stepCache.remainQuantity
                 );
+                _stepCache.outputQuantity += _stepCache
+                    .good2currentState
+                    .getamount1fromamount0(minValue);
 
-                _stepCache.remainQuantity += _stepCache.good1config.getSellFee(
-                    _stepCache.remainQuantity
+                // Update the states of both goods
+                _stepCache.good1currentState = subadd(
+                    _stepCache.good1currentState,
+                    toTTSwapUINT256(minValue, _stepCache.remainQuantity)
                 );
+
+                _stepCache.good2currentState = addsub(
+                    _stepCache.good2currentState,
+                    toTTSwapUINT256(
+                        minValue,
+                        _stepCache.good2currentState.getamount1fromamount0(
+                            minValue
+                        )
+                    )
+                );
+                _stepCache.remainQuantity = 0;
             }
+
+            // Update the total swap value
+            _stepCache.swapvalue += minValue;
+        }
+
+        // Adjust fees if there's remaining quantity
+        if (_stepCache.remainQuantity > 0) {
+            _stepCache.feeQuantity -= _stepCache.good1config.getSellFee(
+                _stepCache.remainQuantity
+            );
+
+            _stepCache.remainQuantity += _stepCache.good1config.getSellFee(
+                _stepCache.remainQuantity
+            );
         }
     }
 

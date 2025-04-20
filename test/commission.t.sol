@@ -110,8 +110,7 @@ contract commission is BaseSetup {
             metagood,
             normalgoodbtc,
             6300,
-            65000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            1,
             address(0),
             defaultdata
         );
@@ -120,8 +119,7 @@ contract commission is BaseSetup {
             metagood,
             normalgoodbtc,
             6300,
-            80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            1,
             address(0),
             defaultdata
         );
@@ -130,8 +128,7 @@ contract commission is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            12,
             address(0),
             defaultdata
         );
@@ -140,8 +137,7 @@ contract commission is BaseSetup {
             metagood,
             normalgoodbtc,
             1000000000,
-            90000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            10,
             address(0),
             defaultdata
         );
@@ -164,17 +160,3 @@ contract commission is BaseSetup {
         console2.log("btc", cm[1]);
     }
 }
-// function appendToArray(
-//     uint256[] memory memoryArray,
-//     uint256 element
-// ) public pure returns (uint256[] memory) {
-//     uint256[] memory newArray = new uint256[](memoryArray.length + 1);
-
-//     for (uint i = 0; i < memoryArray.length; i++) {
-//         newArray[i] = memoryArray[i];
-//     }
-
-//     newArray[memoryArray.length] = element;
-
-//     return newArray;
-// }

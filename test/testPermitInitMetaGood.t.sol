@@ -48,8 +48,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
     address marketcreator;
     TTSwap_Market market;
     TTSwap_Token tts_token;
-    bytes internal constant defaultdata =
-        abi.encode(L_CurrencyLibrary.S_transferData(1, ""));
+    bytes internal constant defaultdata = bytes("");
 
     event debuggdata(bytes);
 

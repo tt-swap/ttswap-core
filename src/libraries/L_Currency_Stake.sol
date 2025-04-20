@@ -6,7 +6,7 @@ import {ISignatureTransfer} from "../interfaces/ISignatureTransfer.sol";
 import {IERC20Permit} from "../interfaces/IERC20Permit.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 import {IDAIPermit} from "../interfaces/IDAIPermit.sol";
-import {L_Transient} from "./L_Transient.sol";
+import {L_Transient} from "./L_Transient_Stake.sol";
 import {IWETH9} from "../interfaces/IWETH9.sol";
 
 address constant NATIVE = address(1);
@@ -21,6 +21,7 @@ address constant _permit2 = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
 library L_CurrencyLibrary {
     using L_CurrencyLibrary for address;
 
+    bytes constant defualtvalue = bytes("");
     struct S_Permit {
         uint256 value;
         uint256 deadline;
@@ -37,8 +38,6 @@ library L_CurrencyLibrary {
         bytes32 r;
         bytes32 s;
     }
-
-    bytes constant defualtvalue = bytes("");
 
     /// @notice Thrown when an ERC20 transfer fails
     error ERC20TransferFailed();
@@ -270,7 +269,11 @@ library L_CurrencyLibrary {
 
         bool success;
         if (currency.isNative()) {
-            L_Transient.increaseValue(amount);
+            assembly {
+                // Transfer the ETH and store if it succeeded or not.
+                success := call(gas(), to, amount, 0, 0, 0, 0)
+            }
+            if (!success) revert ERC20TransferFailed();
         } else if (currency.isWETH()) {
             safeTransfer(WETH, to, amount);
         } else {
@@ -324,9 +327,34 @@ library L_CurrencyLibrary {
     }
 
     function deposit(address token, uint256 amount) internal {
-        if (token == SWETH) {
-            IWETH9(WETH).deposit{value: amount}();
+        bool success;
+        assembly {
+            // We'll write our calldata to this slot below, but restore it later.
+            let memPointer := mload(0x40)
+
+            // Write the abi-encoded calldata into memory, beginning with the function selector.
+            mstore(
+                0,
+                0xd0e30db000000000000000000000000000000000000000000000000000000000
+            )
+
+            success := and(
+                // Set success to whether the call reverted, if not we check it either
+                // returned exactly 1 (can't just be non-zero data), or had no return data.
+                or(
+                    and(eq(mload(0), 1), gt(returndatasize(), 31)),
+                    iszero(returndatasize())
+                ),
+                // We use 68 because that's the total length of our calldata (4 + 32 * 2)
+                // Counterintuitively, this call() must be positioned after the or() in the
+                // surrounding and() because and() evaluates its arguments from right to left.
+                call(gas(), token, amount, 0, 4, 0, 32)
+            )
+
+            mstore(0x60, 0) // Restore the zero slot to zero.
+            mstore(0x40, memPointer) // Restore the memPointer.
         }
+        if (!success) revert ERC20TransferFailed();
     }
 
     function withdraw(address token, uint256 amount) internal {

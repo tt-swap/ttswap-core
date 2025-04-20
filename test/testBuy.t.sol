@@ -18,7 +18,7 @@ import {ProofUtil} from "./util/ProofUtil.sol";
 import {GoodUtil} from "./util/GoodUtil.sol";
 import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 
-contract testBuy1 is Test {
+contract testBuy123 is Test {
     using L_MarketConfigLibrary for uint256;
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
@@ -40,8 +40,7 @@ contract testBuy1 is Test {
     MyToken usdt;
     MyToken eth;
     MyToken wbtc;
-    bytes internal constant defaultdata =
-        abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
+    bytes internal constant defaultdata = bytes("");
 
     function setUp() public {
         marketcreator = address(1);
@@ -115,11 +114,7 @@ contract testBuy1 is Test {
             ethgood,
             btcgood,
             1 * 10 ** 18,
-            toTTSwapUINT256(
-                33000 * 10 ** 6 * 2 * 10 ** 5 * 995,
-                10 * 10 ** 18 * 128000 * 10 ** 6
-            ),
-            false,
+            100,
             address(0),
             defaultdata
         );

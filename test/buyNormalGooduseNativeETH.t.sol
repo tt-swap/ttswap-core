@@ -145,8 +145,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             6 * 10 ** 6,
-            1 * 10 ** 8 * 2 ** 128 + 65000 * 1 * 10 ** 6,
-            false,
+            10,
             address(0),
             defaultdata
         );
@@ -208,8 +207,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             10 ** 6,
-            1 * 10 ** 8 * 2 ** 128 + 65000 * 1 * 10 ** 6,
-            false,
+            10,
             address(0),
             defaultdata
         );
@@ -218,8 +216,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             10 ** 6,
-            1 * 10 ** 8 * 2 ** 128 + 65000 * 1 * 10 ** 6,
-            false,
+            10,
             address(0),
             defaultdata
         );
@@ -270,8 +267,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             6300,
-            1 * 10 ** 8 * 2 ** 128 + 65000 * 1 * 10 ** 6,
-            false,
+            1,
             address(0),
             defaultdata
         );
@@ -281,8 +277,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             6300,
-            80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            1,
             address(0),
             defaultdata
         );
@@ -292,8 +287,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             6300 * 10 ** 1,
-            80000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            12,
             address(0),
             defaultdata
         );
@@ -303,8 +297,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             6300 * 10 ** 2,
-            100000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            10,
             address(0),
             defaultdata
         );
@@ -355,8 +348,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             6300,
-            100000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            1,
             users[3],
             defaultdata
         );
@@ -368,8 +360,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             6300,
-            100000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            1,
             users[3],
             defaultdata
         );
@@ -381,8 +372,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             6300,
-            100000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            12,
             users[3],
             defaultdata
         );
@@ -394,8 +384,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             normalgoodbtc,
             metagood,
             6300,
-            100000 * 1 * 10 ** 6 + 1 * 10 ** 8 * 2 ** 128,
-            false,
+            10,
             users[3],
             defaultdata
         );

@@ -73,10 +73,8 @@ contract testBuy11 is Test {
             good2currentState: btcstate.currentState,
             good2config: btcstate.goodConfig
         });
-        uint256 _limitPrice = toTTSwapUINT256(1, 1); //301099450000000000000
-        _limitPrice = 3402823669209384634633746074317682114560000000009; //301099450000000000000
 
-        L_Good.swapCompute1(swapcache, _limitPrice);
+        L_Good.swapCompute1(swapcache, 1);
         console2.log("1", swapcache.remainQuantity);
         console2.log("2", swapcache.outputQuantity);
     }

@@ -24,9 +24,9 @@ interface I_TTSwap_StakeETH {
     ) external returns (uint128 reward);
 
     function syncReward(address token) external returns (uint128 reward);
-    function stakeRocketPoolETH(uint128 stakeamount) external payable;
+    function stakeRocketPoolETH(uint128 stakeamount) external;
     function unstakeRocketPoolETH(uint256 rethAmount) external;
-    function invest(uint128 _goodQuantity, bytes calldata data1) external;
+    function invest(uint128 _goodQuantity) external;
     function divest(uint128 _goodQuantity) external;
-    function collectTTS() external;
+    function collectTTSReward() external;
 }

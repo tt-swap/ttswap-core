@@ -12,8 +12,8 @@ contract rocketpoolmock is
     IRocketDepositPool,
     IRocketDAOProtocolSettingsDeposit
 {
-    uint256 ETHValue;
-    uint256 rETHValue;
+    uint256 public ETHValue;
+    uint256 public rETHValue;
     constructor(
         string memory _name,
         string memory _symbol,
@@ -34,7 +34,7 @@ contract rocketpoolmock is
         payable(msg.sender).transfer(_ethvalue);
         _burn(msg.sender, _rethAmount);
     }
-
+    event deubggdeposit(uint256, uint256);
     function deposit() external payable {
         uint256 addreth = ETHValue == 0
             ? msg.value
@@ -42,6 +42,7 @@ contract rocketpoolmock is
         rETHValue += addreth;
         ETHValue += msg.value;
         _mint(msg.sender, addreth);
+        emit deubggdeposit(rETHValue, ETHValue);
     }
     function getBalance() external view returns (uint256) {
         return address(this).balance;

@@ -24,7 +24,7 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     uint256 public override ethShare; // amount0:share amount1:quantity
     uint256 public override wethShare; // amount0:share amount1:quantity
     uint256 public override TotalStake; // amount0:stakingAmount amount1:currentBalance
-    uint256 public override reth_staking; // amount0:reth invest amount,amount1:total reward
+    uint256 public override reth_staking; // amount0:reth invest amount,amount1: reward
     address internal protocolCreator;
     address internal protocolManager;
 
@@ -64,18 +64,12 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         _;
     }
 
+    /// @notice This will revert if the contract is locked
     modifier noReentrant() {
         if (L_Transient.get() != address(0)) revert TTSwapError(3);
         L_Transient.set(msg.sender);
         _;
         L_Transient.set(address(0));
-    }
-
-    /// run when eth token
-    modifier msgValue() {
-        L_Transient.checkbefore();
-        _;
-        L_Transient.checkafter();
     }
 
     function changeManager(address _manager) external onlyCreator {
@@ -85,7 +79,7 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     function stakeEth(
         address token,
         uint128 _stakeamount
-    ) external payable override noReentrant msgValue {
+    ) external payable override noReentrant {
         require(token.canRestake() && address(TTSWAP_MARKET) == msg.sender);
         token.transferFrom(address(TTSWAP_MARKET), address(this), _stakeamount);
         TotalStake = add(TotalStake, toTTSwapUINT256(0, _stakeamount));
@@ -122,17 +116,22 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
             unstakeshare = ethShare.getamount0fromamount1(amount);
             reward = TotalState.getamount1fromamount0(unstakeshare);
             ethShare = sub(ethShare, toTTSwapUINT256(unstakeshare, reward));
+            TotalState = sub(TotalState, toTTSwapUINT256(unstakeshare, reward));
+            TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward + amount));
+            token.safeTransfer(protocolManager, reward / 9);
+            reward = reward - reward / 9;
+            token.safeTransfer(msg.sender, reward + amount);
         } else {
             unstakeshare = wethShare.getamount0fromamount1(amount);
             reward = TotalState.getamount1fromamount0(unstakeshare);
             wethShare = sub(wethShare, toTTSwapUINT256(unstakeshare, reward));
+            TotalState = sub(TotalState, toTTSwapUINT256(unstakeshare, reward));
+            TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward + amount));
+            token.deposit(amount + reward);
+            token.safeTransfer(protocolManager, reward / 9);
+            reward = reward - reward / 9;
+            token.safeTransfer(msg.sender, reward + amount);
         }
-        TotalState = sub(TotalState, toTTSwapUINT256(unstakeshare, reward));
-        TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward + amount));
-        reward -= amount;
-        token.safeTransfer(protocolManager, reward / 9);
-        reward = reward - reward / 9;
-        token.safeTransfer(msg.sender, reward + amount);
     }
 
     function syncReward(
@@ -148,22 +147,28 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
             TotalState = sub(TotalState, toTTSwapUINT256(share, reward));
             ethShare = sub(ethShare, toTTSwapUINT256(share, 0));
             TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward));
+            token.safeTransfer(protocolManager, reward / 9);
+            reward = reward - reward / 9;
+            token.safeTransfer(msg.sender, reward);
         } else {
             reward =
                 TotalState.getamount1fromamount0(wethShare.amount0()) -
                 wethShare.amount1();
+
+            share = TotalState.getamount0fromamount1(reward);
             TotalState = sub(TotalState, toTTSwapUINT256(share, reward));
             wethShare = sub(wethShare, toTTSwapUINT256(share, 0));
             TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward));
+            token.deposit(reward);
+            token.safeTransfer(protocolManager, reward / 9);
+            reward = reward - reward / 9;
+            token.safeTransfer(msg.sender, reward);
         }
-        token.safeTransfer(protocolManager, reward / 9);
-        reward = reward - reward / 9;
-        token.safeTransfer(msg.sender, reward);
     }
 
     function internalReward() internal {
         uint128 reth = uint128(
-            ROCKET_TOKEN_RETH.balanceOf(msg.sender) + reth_staking.amount0()
+            ROCKET_TOKEN_RETH.balanceOf(address(this)) + reth_staking.amount0()
         );
         uint128 eth1 = uint128(ROCKET_TOKEN_RETH.getEthValue(reth));
         uint128 reward = eth1 >= TotalStake.amount0()
@@ -171,6 +176,7 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
             : 0;
         TotalStake = add(TotalStake, toTTSwapUINT256(reward, 0));
         TotalState = add(TotalState, toTTSwapUINT256(0, reward));
+        reth_staking = toTTSwapUINT256(reth_staking.amount0(), 0);
     }
 
     // 质押ETH，接收rETH
@@ -205,20 +211,28 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     }
 
     // 取消质押rETH，取回ETH
-    function unstakeRocketPoolETH(uint256 rethAmount) external {
+    function unstakeRocketPoolETH(uint256 rethAmount) external override {
         require(rethAmount > 0, "Amount must be greater than 0");
         require(
-            ROCKET_TOKEN_RETH.balanceOf(msg.sender) >= rethAmount,
+            ROCKET_TOKEN_RETH.balanceOf(address(this)) >= rethAmount,
             "Insufficient rETH balance"
         );
 
         // 计算将获得的ETH数量
         uint128 ethAmount = uint128(ROCKET_TOKEN_RETH.getEthValue(rethAmount));
+        uint128 reward = ethAmount -
+            toTTSwapUINT256(TotalStake.amount0(), reth_staking.amount0())
+                .getamount0fromamount1(uint128(rethAmount));
+        reth_staking = sub(
+            reth_staking,
+            toTTSwapUINT256(uint128(rethAmount), 0)
+        );
 
         // 销毁rETH并取回ETH
         ROCKET_TOKEN_RETH.burn(rethAmount);
 
         TotalStake = subadd(TotalStake, toTTSwapUINT256(ethAmount, ethAmount));
+        TotalState = add(TotalState, toTTSwapUINT256(0, reward));
 
         emit e_rocketpoolUnstaked(rethAmount, ethAmount);
     }
@@ -229,7 +243,7 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     }
 
     // 投资rETH到流动性产生流动性收益
-    function invest(uint128 _goodQuantity) external override {
+    function invest(uint128 _goodQuantity) external override onlyManager {
         uint256 proofid = S_ProofKey(
             address(this),
             address(ROCKET_TOKEN_RETH),
@@ -262,7 +276,7 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     }
     // 撤资rETH以供赎回
 
-    function divest(uint128 _goodQuantity) external override {
+    function divest(uint128 _goodQuantity) external override onlyManager {
         uint256 proofid = S_ProofKey(
             address(this),
             address(ROCKET_TOKEN_RETH),
@@ -279,23 +293,26 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
             protocolManager
         );
         _goodQuantity += reward;
-        reth_staking = add(reth_staking, toTTSwapUINT256(0, _goodQuantity));
-
+        reth_staking = subadd(
+            reth_staking,
+            toTTSwapUINT256(_goodQuantity, reward)
+        );
         emit e_stakeeth_devest(_goodQuantity);
     }
 
-    function collectTTSReward() external override {
-        require(msg.sender == protocolManager);
+    function collectTTSReward() external override onlyManager {
         uint128 amount = uint128(tts_token.balanceOf(address(this)));
-        tts_token.approve(address(TTSWAP_MARKET), amount);
-        TTSWAP_MARKET.buyGood(
-            address(tts_token),
-            seth,
-            amount,
-            1,
-            protocolManager,
-            ""
-        );
-        emit e_collecttts(amount);
+        if (amount > 0) {
+            tts_token.approve(address(TTSWAP_MARKET), amount);
+            TTSWAP_MARKET.buyGood(
+                address(tts_token),
+                address(ROCKET_TOKEN_RETH),
+                amount,
+                1,
+                address(0),
+                ""
+            );
+            emit e_collecttts(amount);
+        }
     }
 }

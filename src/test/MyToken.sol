@@ -25,9 +25,8 @@ contract MyToken is ERC20 {
     event Withdrawal(address indexed to, uint256 amount);
 
     function deposit() public payable virtual {
-        _mint(msg.sender, msg.value);
-
         emit Deposit(msg.sender, msg.value);
+        _mint(msg.sender, msg.value);
     }
 
     function withdraw(uint256 amount) public virtual {

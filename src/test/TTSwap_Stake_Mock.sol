@@ -71,26 +71,15 @@ contract TTSwap_Stake_Mock is I_TTSwap_StakeETH {
         L_Transient.set(address(0));
     }
 
-    /// run when eth token
-    modifier msgValue() {
-        L_Transient.checkbefore();
-        _;
-        L_Transient.checkafter();
-    }
-
     function changeManager(address _manager) external onlyCreator {
         protocolManager = _manager;
     }
-    event ttswapethstake(uint256 aa, uint256 bb);
     function stakeEth(
         address token,
         uint128 _stakeamount
-    ) external payable override noReentrant msgValue {
-        emit ttswapethstake(_stakeamount, msg.value);
+    ) external payable override noReentrant {
         require(token.canRestake() && address(TTSWAP_MARKET) == msg.sender);
-        emit ttswapethstake(2, msg.value);
         token.transferFrom(address(TTSWAP_MARKET), address(this), _stakeamount);
-        emit ttswapethstake(3, msg.value);
         TotalStake = add(TotalStake, toTTSwapUINT256(0, _stakeamount));
         uint128 _stakeshare = TotalState != 0
             ? TotalState.getamount0fromamount1(_stakeamount)
@@ -113,42 +102,34 @@ contract TTSwap_Stake_Mock is I_TTSwap_StakeETH {
             token.withdraw(_stakeamount);
         }
     }
-    event debugggg(uint256);
+
     function unstakeEthSome(
         address token,
         uint128 amount
     ) external override noReentrant returns (uint128 reward) {
         require(token.canRestake() && address(TTSWAP_MARKET) == msg.sender);
-        emit debugggg(1);
         internalReward();
         uint128 unstakeshare;
-        emit debugggg(2);
         if (token == seth) {
-            emit debugggg(3);
             unstakeshare = ethShare.getamount0fromamount1(amount);
-            emit debugggg(4);
             reward = TotalState.getamount1fromamount0(unstakeshare);
-            emit debugggg(5);
             ethShare = sub(ethShare, toTTSwapUINT256(unstakeshare, reward));
-            emit debugggg(6);
+            TotalState = sub(TotalState, toTTSwapUINT256(unstakeshare, reward));
+            TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward + amount));
+            token.safeTransfer(protocolManager, reward / 9);
+            reward = reward - reward / 9;
+            token.safeTransfer(msg.sender, reward + amount);
         } else {
             unstakeshare = wethShare.getamount0fromamount1(amount);
             reward = TotalState.getamount1fromamount0(unstakeshare);
             wethShare = sub(wethShare, toTTSwapUINT256(unstakeshare, reward));
+            TotalState = sub(TotalState, toTTSwapUINT256(unstakeshare, reward));
+            TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward + amount));
+            token.deposit(amount + reward);
+            token.safeTransfer(protocolManager, reward / 9);
+            reward = reward - reward / 9;
+            token.safeTransfer(msg.sender, reward + amount);
         }
-
-        emit debugggg(7);
-        TotalState = sub(TotalState, toTTSwapUINT256(unstakeshare, reward));
-        emit debugggg(8);
-        TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward + amount));
-        emit debugggg(8);
-        emit debugggg(9);
-        token.safeTransfer(protocolManager, reward / 9);
-        emit debugggg(10);
-        reward = reward - reward / 9;
-        emit debugggg(11);
-        token.safeTransfer(msg.sender, reward + amount);
-        emit debugggg(12);
     }
 
     function syncReward(
@@ -164,17 +145,23 @@ contract TTSwap_Stake_Mock is I_TTSwap_StakeETH {
             TotalState = sub(TotalState, toTTSwapUINT256(share, reward));
             ethShare = sub(ethShare, toTTSwapUINT256(share, 0));
             TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward));
+            token.safeTransfer(protocolManager, reward / 9);
+            reward = reward - reward / 9;
+            token.safeTransfer(msg.sender, reward);
         } else {
             reward =
                 TotalState.getamount1fromamount0(wethShare.amount0()) -
                 wethShare.amount1();
+
+            share = TotalState.getamount0fromamount1(reward);
             TotalState = sub(TotalState, toTTSwapUINT256(share, reward));
             wethShare = sub(wethShare, toTTSwapUINT256(share, 0));
             TotalStake = sub(TotalStake, toTTSwapUINT256(0, reward));
+            token.deposit(reward);
+            token.safeTransfer(protocolManager, reward / 9);
+            reward = reward - reward / 9;
+            token.safeTransfer(msg.sender, reward);
         }
-        token.safeTransfer(protocolManager, reward / 9);
-        reward = reward - reward / 9;
-        token.safeTransfer(msg.sender, reward);
     }
 
     function internalReward() internal {
@@ -189,6 +176,7 @@ contract TTSwap_Stake_Mock is I_TTSwap_StakeETH {
         TotalState = add(TotalState, toTTSwapUINT256(0, reward));
         reth_staking = toTTSwapUINT256(reth_staking.amount0(), 0);
     }
+
     // 质押ETH，接收rETH
     function stakeRocketPoolETH(uint128 stakeamount) external {
         require(msg.sender == protocolManager);
@@ -312,15 +300,17 @@ contract TTSwap_Stake_Mock is I_TTSwap_StakeETH {
 
     function collectTTSReward() external override onlyManager {
         uint128 amount = uint128(tts_token.balanceOf(address(this)));
-        tts_token.approve(address(TTSWAP_MARKET), amount);
-        TTSWAP_MARKET.buyGood(
-            address(tts_token),
-            seth,
-            amount,
-            1,
-            protocolManager,
-            ""
-        );
-        emit e_collecttts(amount);
+        if (amount > 0) {
+            tts_token.approve(address(TTSWAP_MARKET), amount);
+            TTSWAP_MARKET.buyGood(
+                address(tts_token),
+                address(ROCKET_TOKEN_RETH),
+                amount,
+                1,
+                address(0),
+                ""
+            );
+            emit e_collecttts(amount);
+        }
     }
 }

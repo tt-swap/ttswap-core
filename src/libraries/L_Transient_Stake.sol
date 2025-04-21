@@ -46,9 +46,7 @@ library L_Transient {
         }
     }
 
-    event ttswapethstakekk(uint256 aa, uint256 bb);
     function decreaseValue(uint256 amount) internal {
-        emit ttswapethstakekk(amount, msg.value);
         if (amount > getValue()) revert TTSwapError(28);
         assembly {
             tstore(VALUE_SLOT, sub(tload(VALUE_SLOT), amount))

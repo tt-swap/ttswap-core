@@ -324,6 +324,11 @@ contract TTSwap_Market is
             );
         }
 
+        if (
+            goods[_goodid1].currentState == 0 ||
+            goods[_goodid2].currentState == 0
+        ) revert TTSwapError(6);
+
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
             outputQuantity: 0,
@@ -391,6 +396,11 @@ contract TTSwap_Market is
         uint128 _swapQuantity,
         uint128 _tradetimes
     ) external view returns (uint256 good1change, uint256 good2change) {
+        if (
+            goods[_goodid1].currentState == 0 ||
+            goods[_goodid2].currentState == 0 ||
+            _goodid1 == _goodid2
+        ) revert TTSwapError(6);
         L_Good.swapCache memory swapcache = L_Good.swapCache({
             remainQuantity: _swapQuantity,
             outputQuantity: 0,
@@ -405,9 +415,7 @@ contract TTSwap_Market is
 
         if (
             _swapQuantity == 0 ||
-            (swapcache.remainQuantity + swapcache.feeQuantity) >=
-            _swapQuantity ||
-            _goodid1 == _goodid2
+            (swapcache.remainQuantity + swapcache.feeQuantity) >= _swapQuantity
         ) revert TTSwapError(6);
 
         good1change = toTTSwapUINT256(
@@ -848,7 +856,9 @@ contract TTSwap_Market is
             restakeContract.stakeEth{value: amount}(token, amount);
             emit debugstakeeth(5);
         } else {
-            emit debugstakeeth(1);
+            emit debugstakeeth(7);
+            emit debugstakeeth(amount);
+            emit debugstakeeth(token.balanceof(address(this)));
             restakingamount = add(restakingamount, toTTSwapUINT256(amount, 0));
             token.approve(address(restakeContract), amount);
             restakeContract.stakeEth(token, amount);

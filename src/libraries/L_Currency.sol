@@ -271,7 +271,7 @@ library L_CurrencyLibrary {
         bool success;
         if (currency.isNative()) {
             L_Transient.increaseValue(amount);
-        } else if (currency.isWETH()) {
+        } else if (currency == SWETH) {
             safeTransfer(WETH, to, amount);
         } else {
             assembly {
@@ -323,23 +323,15 @@ library L_CurrencyLibrary {
         return uint256(uint160(amount));
     }
 
-    function deposit(address token, uint256 amount) internal {
-        if (token == SWETH) {
-            IWETH9(WETH).deposit{value: amount}();
-        }
-    }
-
-    function withdraw(address token, uint256 amount) internal {
-        if (token == SWETH) {
-            IWETH9(WETH).withdraw(amount);
-        }
-    }
-
     function canRestake(address token) internal pure returns (bool a) {
         return token == SWETH || token == SETH;
     }
 
     function approve(address token, address to, uint128 amount) internal {
-        if (token == WETH) IERC20(WETH).approve(to, uint256(amount));
+        if (token == SWETH) {
+            IERC20(WETH).approve(to, uint256(amount));
+        } else {
+            IERC20(token).approve(to, uint256(amount));
+        }
     }
 }

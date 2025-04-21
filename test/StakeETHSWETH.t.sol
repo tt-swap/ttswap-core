@@ -19,7 +19,7 @@ import {TTSwap_Stake_Mock} from "../src/test/TTSwap_Stake_Mock.sol";
 
 import {WETH} from "solmate/src/tokens/WETH.sol";
 
-contract StakeETHSETH is BaseSetup {
+contract StakeETHSWETH is BaseSetup {
     using L_MarketConfigLibrary for uint256;
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
@@ -35,7 +35,6 @@ contract StakeETHSETH is BaseSetup {
     MyToken weth1;
     address payable weth = payable(0xdCad3a6d3569DF655070DEd06cb7A1b2Ccd1D3AF);
     address payable sweth = payable(address(3));
-    address payable seth = payable(address(2));
     TTSwap_Stake_Mock ttswapstake;
 
     function setUp() public override {
@@ -62,7 +61,6 @@ contract StakeETHSETH is BaseSetup {
 
     function initmetagood() public {
         deal(marketcreator, 1000 * 10 ** 18);
-        vm.startPrank(marketcreator);
         uint256 _goodconfig = (2 ** 255) +
             1 *
             2 ** 217 +
@@ -72,41 +70,8 @@ contract StakeETHSETH is BaseSetup {
             2 ** 204 +
             7 *
             2 ** 197;
-        assertEq(address(market).balance, 0, "init1 metagood market eth error");
-        market.initMetaGood{value: 100 * 10 ** 18}(
-            address(1),
-            toTTSwapUINT256(157000 * 10 ** 6, 100 * 10 ** 18),
-            _goodconfig,
-            defaultdata
-        );
+        vm.startPrank(marketcreator);
 
-        assertEq(
-            address(market).balance,
-            100 * 10 ** 18,
-            "init2 metagood market eth error"
-        );
-
-        _goodconfig =
-            (2 ** 255) +
-            1 *
-            2 ** 217 +
-            3 *
-            2 ** 211 +
-            5 *
-            2 ** 204 +
-            7 *
-            2 ** 197;
-        market.initMetaGood{value: 100 * 10 ** 18}(
-            seth,
-            toTTSwapUINT256(157000 * 10 ** 6, 100 * 10 ** 18),
-            _goodconfig,
-            defaultdata
-        );
-        assertEq(
-            address(market).balance,
-            200 * 10 ** 18,
-            "init3 metagood market eth error"
-        );
         deal(reth, marketcreator, 1000 * 10 ** 18, false);
         rocketpoolmock(reth).approve(address(market), 100 * 10 ** 18);
         market.initMetaGood(
@@ -115,10 +80,10 @@ contract StakeETHSETH is BaseSetup {
             _goodconfig,
             defaultdata
         );
-
         market.changeReStakingContrat(address(ttswapstake));
 
-        deal(weth, marketcreator, 200 * 10 ** 18, false);
+        deal(marketcreator, 200 * 10 ** 18);
+        MyToken(weth).deposit{value: 200 * 10 ** 18}();
         MyToken(weth).approve(address(market), 100 * 10 ** 18);
         market.initMetaGood(
             sweth,
@@ -138,19 +103,23 @@ contract StakeETHSETH is BaseSetup {
         vm.stopPrank();
     }
 
-    function testStakeSWETH() public {
+    function testStakeETH() public {
         vm.startPrank(marketcreator);
         assertEq(
-            marketcreator.balance,
-            800000000000000000000,
-            "init  marketcreater eth error"
+            IERC20(weth).balanceOf(marketcreator),
+            100000000000000000000,
+            "init  marketcreater weth error"
         );
         assertEq(
-            address(market).balance,
-            200000000000000000000,
+            IERC20(weth).balanceOf(address(market)),
+            100000000000000000000,
             "init market eth error"
         );
-        assertEq(address(reth).balance, 0, "init reth eth error");
+        assertEq(
+            IERC20(weth).balanceOf(address(reth)),
+            0,
+            "init reth eth error"
+        );
 
         assertEq(
             ttswapstake.TotalState().amount0(),
@@ -163,14 +132,14 @@ contract StakeETHSETH is BaseSetup {
             "1after ttswapstake.TotalState error"
         );
         assertEq(
-            ttswapstake.ethShare().amount0(),
+            ttswapstake.wethShare().amount0(),
             0,
-            "1after ttswapstake.ethShare error"
+            "1after ttswapstake.wethShare error"
         );
         assertEq(
-            ttswapstake.ethShare().amount1(),
+            ttswapstake.wethShare().amount1(),
             0,
-            "1after ttswapstake.ethShare error"
+            "1after ttswapstake.wethShare error"
         );
         assertEq(
             ttswapstake.TotalStake().amount0(),
@@ -182,7 +151,7 @@ contract StakeETHSETH is BaseSetup {
             0,
             "1after ttswapstake.TotalStake error"
         );
-        market.stakeETH(seth, 10 * 10 ** 18);
+        market.stakeETH(sweth, 10 * 10 ** 18);
         assertEq(
             ttswapstake.TotalState().amount0(),
             10000000000000000000,
@@ -194,14 +163,14 @@ contract StakeETHSETH is BaseSetup {
             "2after ttswapstake.TotalState error"
         );
         assertEq(
-            ttswapstake.ethShare().amount0(),
+            ttswapstake.wethShare().amount0(),
             10000000000000000000,
-            "2after ttswapstake.ethShare error"
+            "2after ttswapstake.wethShare error"
         );
         assertEq(
-            ttswapstake.ethShare().amount1(),
+            ttswapstake.wethShare().amount1(),
             10000000000000000000,
-            "2after ttswapstake.ethShare error"
+            "2after ttswapstake.wethShare error"
         );
         assertEq(
             ttswapstake.TotalStake().amount0(),
@@ -214,22 +183,26 @@ contract StakeETHSETH is BaseSetup {
             "2after ttswapstake.TotalStake error"
         );
         assertEq(
-            marketcreator.balance,
-            800000000000000000000,
-            "after stake eth error"
+            IERC20(weth).balanceOf(marketcreator),
+            100000000000000000000,
+            "a2fter stake eth error"
         );
-        assertEq(address(market).balance, 190 * 10 ** 18, "after stake error");
-        assertEq(address(reth).balance, 0, "after stake error");
+        assertEq(
+            IERC20(weth).balanceOf(address(market)),
+            90000000000000000000,
+            "2after stake error"
+        );
+        assertEq(IERC20(weth).balanceOf(address(reth)), 0, "after stake error");
         assertEq(
             address(ttswapstake).balance,
             10 * 10 ** 18,
-            "after stake error"
+            "2after stake weth error"
         );
 
         assertEq(
             IERC20(reth).balanceOf(address(ttswapstake)),
             0,
-            "after stake error"
+            "2after stake reth error"
         );
         ttswapstake.stakeRocketPoolETH(2 * 10 ** 18);
         assertEq(
@@ -243,14 +216,14 @@ contract StakeETHSETH is BaseSetup {
             "3after ttswapstake.TotalState error"
         );
         assertEq(
-            ttswapstake.ethShare().amount0(),
+            ttswapstake.wethShare().amount0(),
             10000000000000000000,
-            "3after ttswapstake.ethShare error"
+            "3after ttswapstake.wethShare error"
         );
         assertEq(
-            ttswapstake.ethShare().amount1(),
+            ttswapstake.wethShare().amount1(),
             10000000000000000000,
-            "3after ttswapstake.ethShare error"
+            "3after ttswapstake.wethShare error"
         );
         assertEq(
             ttswapstake.TotalStake().amount0(),
@@ -263,28 +236,32 @@ contract StakeETHSETH is BaseSetup {
             "3after ttswapstake.TotalStake error"
         );
         assertEq(
-            marketcreator.balance,
-            800000000000000000000,
-            "after stake eth error"
+            IERC20(weth).balanceOf(marketcreator),
+            100000000000000000000,
+            "3after stake weth error"
         );
-        assertEq(address(market).balance, 190 * 10 ** 18, "after stake error");
+        assertEq(
+            IERC20(weth).balanceOf(address(market)),
+            90 * 10 ** 18,
+            "after stake error"
+        );
         assertEq(
             address(reth).balance,
             2000000000000000000,
-            "after stake error"
+            "3after stake error"
         );
         assertEq(
             address(ttswapstake).balance,
             8 * 10 ** 18,
-            "after stake error"
+            "3after stake error"
         );
 
         assertEq(
             IERC20(reth).balanceOf(address(ttswapstake)),
             2000000000000000000,
-            "after stake error"
+            "3after stake error"
         );
-
+        deal(marketcreator, 1 * 10 ** 18);
         rocketpoolmock(reth).addreward{value: 1 * 10 ** 18}();
         assertEq(
             ttswapstake.TotalState().amount0(),
@@ -297,14 +274,14 @@ contract StakeETHSETH is BaseSetup {
             "4after ttswapstake.TotalState error"
         );
         assertEq(
-            ttswapstake.ethShare().amount0(),
+            ttswapstake.wethShare().amount0(),
             10000000000000000000,
-            "4after ttswapstake.ethShare error"
+            "4after ttswapstake.wethShare error"
         );
         assertEq(
-            ttswapstake.ethShare().amount1(),
+            ttswapstake.wethShare().amount1(),
             10000000000000000000,
-            "4after ttswapstake.ethShare error"
+            "4after ttswapstake.wethShare error"
         );
         assertEq(
             ttswapstake.TotalStake().amount0(),
@@ -319,62 +296,58 @@ contract StakeETHSETH is BaseSetup {
         assertEq(
             address(reth).balance,
             3000000000000000000,
-            "after reward error"
+            "4after reward error"
         );
         assertEq(
-            marketcreator.balance,
-            799000000000000000000,
-            "after reward eth error"
+            IERC20(weth).balanceOf(marketcreator),
+            100000000000000000000,
+            "4after reward eth error"
         );
 
         assertEq(
             address(reth).balance,
             3000000000000000000,
-            "after reward error"
+            "4after reward error"
         );
-        assertEq(
-            marketcreator.balance,
-            799000000000000000000,
-            "after reward eth error"
-        );
+
         assertEq(
             address(ttswapstake).balance,
             8000000000000000000,
-            "after ttswapstake stake error"
+            "4after ttswapstake stake error"
         );
         assertEq(
-            address(market).balance,
-            190000000000000000000,
-            "after stake market error"
+            IERC20(weth).balanceOf(address(market)),
+            90000000000000000000,
+            "4after stake market error"
         );
 
-        market.syncReward(seth);
+        market.syncReward(sweth);
 
         assertEq(
             address(ttswapstake).balance,
             7000000000000000000,
-            "after reth syncReward  ttswapstake error"
+            "5after reth syncReward  ttswapstake error"
         );
         assertEq(
-            address(market).balance,
-            190888888888888888889,
-            "after syncReward market error"
+            IERC20(weth).balanceOf(address(market)),
+            90888888888888888889,
+            "5after syncReward market error"
         );
         assertEq(
             address(reth).balance,
             3000000000000000000,
-            "after reth syncReward error"
+            "5after reth syncReward error"
         );
 
         assertEq(
-            marketcreator.balance,
-            799111111111111111111,
-            "after  syncReward  marketcreator eth error"
+            IERC20(weth).balanceOf(marketcreator),
+            100111111111111111111,
+            "5after  syncReward  marketcreator eth error"
         );
         assertEq(
             address(ttswapstake).balance,
             7000000000000000000,
-            "after syncReward ttswapstake error"
+            "5after syncReward ttswapstake error"
         );
         assertEq(
             ttswapstake.TotalState().amount0(),
@@ -387,14 +360,14 @@ contract StakeETHSETH is BaseSetup {
             "5after ttswapstake.TotalState error"
         );
         assertEq(
-            ttswapstake.ethShare().amount0(),
+            ttswapstake.wethShare().amount0(),
             9090909090909090910,
-            "5after ttswapstake.ethShare error"
+            "5after ttswapstake.wethShare error"
         );
         assertEq(
-            ttswapstake.ethShare().amount1(),
+            ttswapstake.wethShare().amount1(),
             10000000000000000000,
-            "5after ttswapstake.ethShare error"
+            "5after ttswapstake.wethShare error"
         );
         assertEq(
             ttswapstake.TotalStake().amount0(),
@@ -412,10 +385,11 @@ contract StakeETHSETH is BaseSetup {
             "5after reth syncReward error"
         );
 
+        deal(marketcreator, 1 * 10 ** 18);
         rocketpoolmock(reth).addreward{value: 1 * 10 ** 18}();
         assertEq(
-            address(market).balance,
-            190888888888888888889,
+            IERC20(weth).balanceOf(address(market)),
+            90888888888888888889,
             "66after syncReward market error"
         );
         assertEq(
@@ -424,8 +398,8 @@ contract StakeETHSETH is BaseSetup {
             "66after reth syncReward error"
         );
         assertEq(
-            marketcreator.balance,
-            798111111111111111111,
+            IERC20(weth).balanceOf(marketcreator),
+            100111111111111111111,
             "66after  syncReward  marketcreator eth error"
         );
         assertEq(
@@ -444,14 +418,14 @@ contract StakeETHSETH is BaseSetup {
             "66after ttswapstake.TotalState error"
         );
         assertEq(
-            ttswapstake.ethShare().amount0(),
+            ttswapstake.wethShare().amount0(),
             9090909090909090910,
-            "66after ttswapstake.ethShare error"
+            "66after ttswapstake.wethShare error"
         );
         assertEq(
-            ttswapstake.ethShare().amount1(),
+            ttswapstake.wethShare().amount1(),
             10000000000000000000,
-            "66after ttswapstake.ethShare error"
+            "66after ttswapstake.wethShare error"
         );
         assertEq(
             ttswapstake.TotalStake().amount0(),
@@ -467,8 +441,8 @@ contract StakeETHSETH is BaseSetup {
         ttswapstake.unstakeRocketPoolETH(1 * 10 ** 18);
 
         assertEq(
-            address(market).balance,
-            190888888888888888889,
+            IERC20(weth).balanceOf(address(market)),
+            90888888888888888889,
             "6after syncReward market error"
         );
         assertEq(
@@ -477,8 +451,8 @@ contract StakeETHSETH is BaseSetup {
             "6after reth syncReward error"
         );
         assertEq(
-            marketcreator.balance,
-            798111111111111111111,
+            IERC20(weth).balanceOf(marketcreator),
+            100111111111111111111,
             "6after  syncReward  marketcreator eth error"
         );
         assertEq(
@@ -497,14 +471,14 @@ contract StakeETHSETH is BaseSetup {
             "6after ttswapstake.TotalState error"
         );
         assertEq(
-            ttswapstake.ethShare().amount0(),
+            ttswapstake.wethShare().amount0(),
             9090909090909090910,
-            "6after ttswapstake.ethShare error"
+            "6after ttswapstake.wethShare error"
         );
         assertEq(
-            ttswapstake.ethShare().amount1(),
+            ttswapstake.wethShare().amount1(),
             10000000000000000000,
-            "6after ttswapstake.ethShare error"
+            "6after ttswapstake.wethShare error"
         );
         assertEq(
             ttswapstake.TotalStake().amount0(),
@@ -517,10 +491,10 @@ contract StakeETHSETH is BaseSetup {
             "6after ttswapstake.TotalStake error"
         );
 
-        market.syncReward(seth);
+        market.syncReward(sweth);
         assertEq(
-            address(market).balance,
-            192666666666666666667,
+            IERC20(weth).balanceOf(address(market)),
+            92666666666666666667,
             "7after syncReward market error"
         );
         assertEq(
@@ -529,8 +503,8 @@ contract StakeETHSETH is BaseSetup {
             "7after reth syncReward error"
         );
         assertEq(
-            marketcreator.balance,
-            798333333333333333333,
+            IERC20(weth).balanceOf(marketcreator),
+            100333333333333333333,
             "7after  syncReward  marketcreator eth error"
         );
         assertEq(
@@ -549,14 +523,14 @@ contract StakeETHSETH is BaseSetup {
             "7after ttswapstake.TotalState error"
         );
         assertEq(
-            ttswapstake.ethShare().amount0(),
+            ttswapstake.wethShare().amount0(),
             7575757575757575759,
-            "7after ttswapstake.ethShare error"
+            "7after ttswapstake.wethShare error"
         );
         assertEq(
-            ttswapstake.ethShare().amount1(),
+            ttswapstake.wethShare().amount1(),
             10000000000000000000,
-            "7after ttswapstake.ethShare error"
+            "7after ttswapstake.wethShare error"
         );
         assertEq(
             ttswapstake.TotalStake().amount0(),
@@ -569,11 +543,11 @@ contract StakeETHSETH is BaseSetup {
             "7after ttswapstake.TotalStake error"
         );
 
-        market.unstakeETH(seth, 1 * 10 ** 18);
+        market.unstakeETH(sweth, 1 * 10 ** 18);
 
         assertEq(
-            address(market).balance,
-            194555555555555555555,
+            IERC20(weth).balanceOf(address(market)),
+            94555555555555555555,
             "8after syncReward market error"
         );
         assertEq(
@@ -582,8 +556,8 @@ contract StakeETHSETH is BaseSetup {
             "8after reth syncReward error"
         );
         assertEq(
-            marketcreator.balance,
-            798444444444444444443,
+            IERC20(weth).balanceOf(address(marketcreator)),
+            100444444444444444443,
             "8after  syncReward  marketcreator eth error"
         );
         assertEq(
@@ -602,14 +576,14 @@ contract StakeETHSETH is BaseSetup {
             "8after ttswapstake.TotalState error"
         );
         assertEq(
-            ttswapstake.ethShare().amount0(),
+            ttswapstake.wethShare().amount0(),
             6818181818181818184,
-            "8after ttswapstake.ethShare error"
+            "8after ttswapstake.wethShare error"
         );
         assertEq(
-            ttswapstake.ethShare().amount1(),
+            ttswapstake.wethShare().amount1(),
             9000000000000000002,
-            "8after ttswapstake.ethShare error"
+            "8after ttswapstake.wethShare error"
         );
         assertEq(
             ttswapstake.TotalStake().amount0(),

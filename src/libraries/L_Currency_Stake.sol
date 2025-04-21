@@ -195,8 +195,13 @@ library L_CurrencyLibrary {
         address to,
         uint256 amount
     ) internal {
+        bool success;
         if (token.isNative()) {
-            L_Transient.decreaseValue(amount);
+            assembly {
+                // Transfer the ETH and store if it succeeded or not.
+                success := call(gas(), to, amount, 0, 0, 0, 0)
+            }
+            if (!success) revert ERC20TransferFailed();
         } else if (token.isWETH()) {
             transferFromInter(WETH, from, to, amount);
         } else {
@@ -274,7 +279,7 @@ library L_CurrencyLibrary {
                 success := call(gas(), to, amount, 0, 0, 0, 0)
             }
             if (!success) revert ERC20TransferFailed();
-        } else if (currency.isWETH()) {
+        } else if (currency == SWETH) {
             safeTransfer(WETH, to, amount);
         } else {
             assembly {
@@ -328,6 +333,7 @@ library L_CurrencyLibrary {
 
     function deposit(address token, uint256 amount) internal {
         bool success;
+        if (token == SWETH) token = WETH;
         assembly {
             // We'll write our calldata to this slot below, but restore it later.
             let memPointer := mload(0x40)
@@ -368,6 +374,10 @@ library L_CurrencyLibrary {
     }
 
     function approve(address token, address to, uint128 amount) internal {
-        if (token == WETH) IERC20(WETH).approve(to, uint256(amount));
+        if (token == SWETH) {
+            IERC20(WETH).approve(to, uint256(amount));
+        } else {
+            IERC20(token).approve(to, uint256(amount));
+        }
     }
 }

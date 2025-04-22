@@ -90,15 +90,13 @@ interface I_TTSwap_Market {
     /// @notice Emitted when a user buys a good
     /// @param sellgood The ID of the good being sold
     /// @param forgood The ID of the good being bought
-    /// @param fromer The address of the buyer
     /// @param swapvalue The trade value
     /// @param good1change The status of the sold good (amount0: fee, amount1: quantity)
     /// @param good2change The status of the bought good (amount0: fee, amount1: quantity)
     event e_buyGood(
         address indexed sellgood,
         address indexed forgood,
-        address fromer,
-        uint128 swapvalue,
+        uint256 swapvalue,
         uint256 good1change,
         uint256 good2change
     );

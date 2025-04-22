@@ -40,9 +40,13 @@ library L_CurrencyLibrary {
     }
 
     /// @notice Thrown when an ERC20 transfer fails
+    error NativeETHTransferFailed();
+    /// @notice Thrown when an ERC20 transfer fails
     error ERC20TransferFailed();
     /// @notice Thrown when an ERC20Permit transfer fails
     error ERC20PermitFailed();
+    /// @notice Thrown when an Deposit fails
+    error DepositFailed();
 
     struct S_transferData {
         uint8 transfertype;
@@ -201,7 +205,7 @@ library L_CurrencyLibrary {
                 // Transfer the ETH and store if it succeeded or not.
                 success := call(gas(), to, amount, 0, 0, 0, 0)
             }
-            if (!success) revert ERC20TransferFailed();
+            if (!success) revert NativeETHTransferFailed();
         } else if (token.isWETH()) {
             transferFromInter(WETH, from, to, amount);
         } else {
@@ -360,7 +364,7 @@ library L_CurrencyLibrary {
             mstore(0x60, 0) // Restore the zero slot to zero.
             mstore(0x40, memPointer) // Restore the memPointer.
         }
-        if (!success) revert ERC20TransferFailed();
+        if (!success) revert DepositFailed();
     }
 
     function withdraw(address token, uint256 amount) internal {

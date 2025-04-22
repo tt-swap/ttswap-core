@@ -42,7 +42,6 @@ library L_Transient {
             value := tload(VALUE_SLOT)
         }
     }
-
     function increaseValue(uint256 amount) internal {
         assembly {
             tstore(VALUE_SLOT, add(tload(VALUE_SLOT), amount))

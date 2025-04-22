@@ -33,7 +33,7 @@ interface I_TTSwap_Token {
     /// @param chips The number of chips
     event e_addShare(
         address recipient,
-        uint256 leftamount,
+        uint128 leftamount,
         uint120 metric,
         uint8 chips
     );

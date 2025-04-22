@@ -114,7 +114,7 @@ contract testBuy123 is Test {
             ethgood,
             btcgood,
             1 * 10 ** 18,
-            100,
+            99,
             address(0),
             defaultdata
         );

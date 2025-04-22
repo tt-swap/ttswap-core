@@ -420,7 +420,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
         uint128 dealline,
         bytes calldata signature
     ) external override {
-        if (block.timestamp > dealline) revert TTSwapError(99);
+        if (block.timestamp > dealline) revert TTSwapError(36);
         // Verify the signer address from the signature.
         signature.verify(
             _hashTypedData(

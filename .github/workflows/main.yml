@@ -11,6 +11,12 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install solc
+        run: npm install -g solc@0.8.17
+
+      - name: Install solc
+        run: npm install -g solc@0.8.29
+
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1.3.1
         

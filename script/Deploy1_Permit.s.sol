@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.15;
 
-import "forge-std/console2.sol";
-import "forge-std/Script.sol";
+import "forge-std/src/console2.sol";
+import "forge-std/src/Script.sol";
 import {Permit2} from "permit2/src/Permit2.sol";
 
 bytes32 constant SALT = bytes32(

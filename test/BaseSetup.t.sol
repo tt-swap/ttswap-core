@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.29;
 
-import "forge-gas-snapshot/GasSnapshot.sol";
-import {Test} from "forge-std/Test.sol";
+import "forge-gas-snapshot/src/GasSnapshot.sol";
+import {Test} from "forge-std/src/Test.sol";
 import {MyToken} from "../src/test/MyToken.sol";
 import {L_CurrencyLibrary} from "../src/libraries/L_Currency.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";

@@ -40,15 +40,17 @@ library L_CurrencyLibrary {
 
     bytes constant defualtvalue = bytes("");
 
-    /// @notice Thrown when an ERC20 transfer fails
-    error ERC20TransferFailed();
-    /// @notice Thrown when an ERC20Permit transfer fails
-    error ERC20PermitFailed();
-
     struct S_transferData {
         uint8 transfertype;
         bytes sigdata;
     }
+
+    /// @notice Thrown when an ERC20 transfer fails
+    error NativeETHTransferFailed();
+    /// @notice Thrown when an ERC20 transfer fails
+    error ERC20TransferFailed();
+    /// @notice Thrown when an ERC20Permit transfer fails
+    error ERC20PermitFailed();
 
     function balanceof(
         address token,
@@ -270,7 +272,11 @@ library L_CurrencyLibrary {
 
         bool success;
         if (currency.isNative()) {
-            L_Transient.increaseValue(amount);
+            assembly {
+                // Transfer the ETH and store if it succeeded or not.
+                success := call(gas(), to, amount, 0, 0, 0, 0)
+            }
+            if (!success) revert NativeETHTransferFailed();
         } else if (currency == SWETH) {
             safeTransfer(WETH, to, amount);
         } else {

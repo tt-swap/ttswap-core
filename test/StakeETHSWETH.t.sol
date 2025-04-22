@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.29;
 
-import {Test, console2} from "forge-std/Test.sol";
+import {Test, console2} from "forge-std/src/Test.sol";
 import {MyToken} from "../src/test/MyToken.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
@@ -122,65 +122,65 @@ contract StakeETHSWETH is BaseSetup {
         );
 
         assertEq(
-            ttswapstake.TotalState().amount0(),
+            ttswapstake.totalState().amount0(),
             0,
-            "1after ttswapstake.TotalState error"
+            "1after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.TotalState().amount1(),
+            ttswapstake.totalState().amount1(),
             0,
-            "1after ttswapstake.TotalState error"
+            "1after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount0(),
+            ttswapstake.swethState().amount0(),
             0,
-            "1after ttswapstake.wethShare error"
+            "1after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount1(),
+            ttswapstake.swethState().amount1(),
             0,
-            "1after ttswapstake.wethShare error"
+            "1after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount0(),
+            ttswapstake.totalStake().amount0(),
             0,
-            "1after ttswapstake.TotalStake error"
+            "1after ttswapstake.totalStake error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount1(),
+            ttswapstake.totalStake().amount1(),
             0,
-            "1after ttswapstake.TotalStake error"
+            "1after ttswapstake.totalStake error"
         );
         market.stakeETH(sweth, 10 * 10 ** 18);
         assertEq(
-            ttswapstake.TotalState().amount0(),
+            ttswapstake.totalState().amount0(),
             10000000000000000000,
-            "2after ttswapstake.TotalState error"
+            "2after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.TotalState().amount1(),
+            ttswapstake.totalState().amount1(),
             10000000000000000000,
-            "2after ttswapstake.TotalState error"
+            "2after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount0(),
+            ttswapstake.swethState().amount0(),
             10000000000000000000,
-            "2after ttswapstake.wethShare error"
+            "2after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount1(),
+            ttswapstake.swethState().amount1(),
             10000000000000000000,
-            "2after ttswapstake.wethShare error"
+            "2after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount0(),
+            ttswapstake.totalStake().amount0(),
             0,
-            "2after ttswapstake.TotalStake error"
+            "2after ttswapstake.totalStake error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount1(),
+            ttswapstake.totalStake().amount1(),
             10000000000000000000,
-            "2after ttswapstake.TotalStake error"
+            "2after ttswapstake.totalStake error"
         );
         assertEq(
             IERC20(weth).balanceOf(marketcreator),
@@ -206,34 +206,34 @@ contract StakeETHSWETH is BaseSetup {
         );
         ttswapstake.stakeRocketPoolETH(2 * 10 ** 18);
         assertEq(
-            ttswapstake.TotalState().amount0(),
+            ttswapstake.totalState().amount0(),
             10000000000000000000,
-            "3after ttswapstake.TotalState error"
+            "3after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.TotalState().amount1(),
+            ttswapstake.totalState().amount1(),
             10000000000000000000,
-            "3after ttswapstake.TotalState error"
+            "3after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount0(),
+            ttswapstake.swethState().amount0(),
             10000000000000000000,
-            "3after ttswapstake.wethShare error"
+            "3after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount1(),
+            ttswapstake.swethState().amount1(),
             10000000000000000000,
-            "3after ttswapstake.wethShare error"
+            "3after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount0(),
+            ttswapstake.totalStake().amount0(),
             2000000000000000000,
-            "3after ttswapstake.TotalStake error"
+            "3after ttswapstake.totalStake error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount1(),
+            ttswapstake.totalStake().amount1(),
             8000000000000000000,
-            "3after ttswapstake.TotalStake error"
+            "3after ttswapstake.totalStake error"
         );
         assertEq(
             IERC20(weth).balanceOf(marketcreator),
@@ -264,34 +264,34 @@ contract StakeETHSWETH is BaseSetup {
         deal(marketcreator, 1 * 10 ** 18);
         rocketpoolmock(reth).addreward{value: 1 * 10 ** 18}();
         assertEq(
-            ttswapstake.TotalState().amount0(),
+            ttswapstake.totalState().amount0(),
             10000000000000000000,
-            "4after ttswapstake.TotalState error"
+            "4after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.TotalState().amount1(),
+            ttswapstake.totalState().amount1(),
             10000000000000000000,
-            "4after ttswapstake.TotalState error"
+            "4after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount0(),
+            ttswapstake.swethState().amount0(),
             10000000000000000000,
-            "4after ttswapstake.wethShare error"
+            "4after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount1(),
+            ttswapstake.swethState().amount1(),
             10000000000000000000,
-            "4after ttswapstake.wethShare error"
+            "4after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount0(),
+            ttswapstake.totalStake().amount0(),
             2000000000000000000,
-            "4after ttswapstake.TotalStake error"
+            "4after ttswapstake.totalStake error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount1(),
+            ttswapstake.totalStake().amount1(),
             8000000000000000000,
-            "4after ttswapstake.TotalStake error"
+            "4after ttswapstake.totalStake error"
         );
         assertEq(
             address(reth).balance,
@@ -350,34 +350,34 @@ contract StakeETHSWETH is BaseSetup {
             "5after syncReward ttswapstake error"
         );
         assertEq(
-            ttswapstake.TotalState().amount0(),
+            ttswapstake.totalState().amount0(),
             9090909090909090910,
-            "5after ttswapstake.TotalState error"
+            "5after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.TotalState().amount1(),
+            ttswapstake.totalState().amount1(),
             10000000000000000000,
-            "5after ttswapstake.TotalState error"
+            "5after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount0(),
+            ttswapstake.swethState().amount0(),
             9090909090909090910,
-            "5after ttswapstake.wethShare error"
+            "5after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount1(),
+            ttswapstake.swethState().amount1(),
             10000000000000000000,
-            "5after ttswapstake.wethShare error"
+            "5after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount0(),
+            ttswapstake.totalStake().amount0(),
             3000000000000000000,
-            "5after ttswapstake.TotalStake error"
+            "5after ttswapstake.totalStake error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount1(),
+            ttswapstake.totalStake().amount1(),
             7000000000000000000,
-            "5after ttswapstake.TotalStake error"
+            "5after ttswapstake.totalStake error"
         );
         assertEq(
             address(reth).balance,
@@ -408,34 +408,34 @@ contract StakeETHSWETH is BaseSetup {
             "66after syncReward ttswapstake error"
         );
         assertEq(
-            ttswapstake.TotalState().amount0(),
+            ttswapstake.totalState().amount0(),
             9090909090909090910,
-            "66after ttswapstake.TotalState error"
+            "66after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.TotalState().amount1(),
+            ttswapstake.totalState().amount1(),
             10000000000000000000,
-            "66after ttswapstake.TotalState error"
+            "66after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount0(),
+            ttswapstake.swethState().amount0(),
             9090909090909090910,
-            "66after ttswapstake.wethShare error"
+            "66after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount1(),
+            ttswapstake.swethState().amount1(),
             10000000000000000000,
-            "66after ttswapstake.wethShare error"
+            "66after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount0(),
+            ttswapstake.totalStake().amount0(),
             3000000000000000000,
-            "66after ttswapstake.TotalStake error"
+            "66after ttswapstake.totalStake error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount1(),
+            ttswapstake.totalStake().amount1(),
             7000000000000000000,
-            "66after ttswapstake.TotalStake error"
+            "66after ttswapstake.totalStake error"
         );
 
         ttswapstake.unstakeRocketPoolETH(1 * 10 ** 18);
@@ -461,34 +461,34 @@ contract StakeETHSWETH is BaseSetup {
             "6after syncReward ttswapstake error"
         );
         assertEq(
-            ttswapstake.TotalState().amount0(),
+            ttswapstake.totalState().amount0(),
             9090909090909090910,
-            "6after ttswapstake.TotalState error"
+            "6after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.TotalState().amount1(),
+            ttswapstake.totalState().amount1(),
             12000000000000000000,
-            "6after ttswapstake.TotalState error"
+            "6after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount0(),
+            ttswapstake.swethState().amount0(),
             9090909090909090910,
-            "6after ttswapstake.wethShare error"
+            "6after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount1(),
+            ttswapstake.swethState().amount1(),
             10000000000000000000,
-            "6after ttswapstake.wethShare error"
+            "6after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount0(),
+            ttswapstake.totalStake().amount0(),
             1000000000000000000,
-            "6after ttswapstake.TotalStake error"
+            "6after ttswapstake.totalStake error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount1(),
+            ttswapstake.totalStake().amount1(),
             9000000000000000000,
-            "6after ttswapstake.TotalStake error"
+            "6after ttswapstake.totalStake error"
         );
 
         market.syncReward(sweth);
@@ -513,34 +513,34 @@ contract StakeETHSWETH is BaseSetup {
             "7after syncReward ttswapstake error"
         );
         assertEq(
-            ttswapstake.TotalState().amount0(),
+            ttswapstake.totalState().amount0(),
             7575757575757575759,
-            "7after ttswapstake.TotalState error"
+            "7after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.TotalState().amount1(),
+            ttswapstake.totalState().amount1(),
             10000000000000000000,
-            "7after ttswapstake.TotalState error"
+            "7after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount0(),
+            ttswapstake.swethState().amount0(),
             7575757575757575759,
-            "7after ttswapstake.wethShare error"
+            "7after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount1(),
+            ttswapstake.swethState().amount1(),
             10000000000000000000,
-            "7after ttswapstake.wethShare error"
+            "7after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount0(),
+            ttswapstake.totalStake().amount0(),
             1000000000000000000,
-            "7after ttswapstake.TotalStake error"
+            "7after ttswapstake.totalStake error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount1(),
+            ttswapstake.totalStake().amount1(),
             7000000000000000000,
-            "7after ttswapstake.TotalStake error"
+            "7after ttswapstake.totalStake error"
         );
 
         market.unstakeETH(sweth, 1 * 10 ** 18);
@@ -566,34 +566,34 @@ contract StakeETHSWETH is BaseSetup {
             "8after syncReward ttswapstake error"
         );
         assertEq(
-            ttswapstake.TotalState().amount0(),
+            ttswapstake.totalState().amount0(),
             6818181818181818184,
-            "8after ttswapstake.TotalState error"
+            "8after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.TotalState().amount1(),
+            ttswapstake.totalState().amount1(),
             9000000000000000002,
-            "8after ttswapstake.TotalState error"
+            "8after ttswapstake.totalState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount0(),
+            ttswapstake.swethState().amount0(),
             6818181818181818184,
-            "8after ttswapstake.wethShare error"
+            "8after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.wethShare().amount1(),
+            ttswapstake.swethState().amount1(),
             9000000000000000002,
-            "8after ttswapstake.wethShare error"
+            "8after ttswapstake.swethState error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount0(),
+            ttswapstake.totalStake().amount0(),
             1000000000000000000,
-            "8after ttswapstake.TotalStake error"
+            "8after ttswapstake.totalStake error"
         );
         assertEq(
-            ttswapstake.TotalStake().amount1(),
+            ttswapstake.totalStake().amount1(),
             5000000000000000002,
-            "8after ttswapstake.TotalStake error"
+            "8after ttswapstake.totalStake error"
         );
         deal(address(tts_token), address(ttswapstake), 10 ** 18, false);
         ttswapstake.collectTTSReward();

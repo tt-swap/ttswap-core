@@ -14,7 +14,7 @@ import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
 
-contract buyERC20NormalGood is BaseSetup {
+contract buyERC20NormalGoodPay is BaseSetup {
     using L_MarketConfigLibrary for uint256;
     using L_TTSwapUINT256Library for uint256;
     using L_GoodConfigLibrary for uint256;
@@ -86,7 +86,7 @@ contract buyERC20NormalGood is BaseSetup {
         vm.stopPrank();
     }
 
-    function testBuyERC20GoodWithoutChips() public {
+    function testBuyERC20GoodPayWithoutChips() public {
         vm.startPrank(users[1]);
         usdt.approve(address(market), 800000 * 10 ** 6 + 1);
         btc.approve(address(market), 10 * 10 ** 8 + 1);
@@ -115,41 +115,41 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            1,
-            address(0),
+            101,
+            users[1],
             defaultdata
         );
-        snapLastCall("buy_erc20_normal_good_without_chips_first");
+        snapLastCall("pay_erc20_normal_good_without_chips_first");
         assertEq(
             usdt.balanceOf(users[1]),
-            49930700000000,
+            49943300000000,
             "after buy erc20_normalgood:usdt users[1] account  balance error1"
         );
         assertEq(
             btc.balanceOf(users[1]),
-            909989003,
+            889986996,
             "after buy erc20_normalgood:btc users[1] account  balance error"
         );
         assertEq(
             btc.balanceOf(address(market)),
-            90010997,
+            110013004,
             "after buy erc20_normalgood:btc market account  balance error"
         );
         assertEq(
             usdt.balanceOf(address(market)),
-            119300000000,
+            106700000000,
             "after buy erc20_normalgood:usdt market account  balance error"
         );
 
         S_GoodTmpState memory good_ = market.getGoodState(metagood);
         assertEq(
             good_.currentState.amount0(),
-            106698110000,
+            119298110000,
             "after buy erc20_normalgood:metagood currentState amount0 error"
         );
         assertEq(
             good_.currentState.amount1(),
-            119289290000,
+            106689290000,
             "after buy erc20_normalgood:metagood currentState amount1 error"
         );
 
@@ -168,20 +168,20 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            99,
-            address(0),
+            199,
+            users[1],
             defaultdata
         );
-        snapLastCall("buy_erc20_normal_good_without_chips_second");
+        snapLastCall("pay_erc20_normal_good_without_chips_second");
         market.buyGood(
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            99,
-            address(0),
+            199,
+            users[1],
             defaultdata
         );
-        snapLastCall("buy_erc20_normal_good_without_chips_three");
+        snapLastCall("pay_erc20_normal_good_without_chips_three");
         vm.stopPrank();
     }
 
@@ -232,41 +232,41 @@ contract buyERC20NormalGood is BaseSetup {
             metagood,
             normalgoodbtc,
             6300,
-            1,
-            address(0),
+            101,
+            users[1],
             defaultdata
         );
-        snapLastCall("buy_erc20_normal_good_chips_first_1chips");
+        snapLastCall("pay_erc20_normal_good_chips_first_1chips");
 
         market.buyGood(
             metagood,
             normalgoodbtc,
             6300,
-            1,
-            address(0),
+            101,
+            users[1],
             defaultdata
         );
-        snapLastCall("buy_erc20_normal_good_chips_second_1chips");
+        snapLastCall("pay_erc20_normal_good_chips_second_1chips");
 
         market.buyGood(
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            12,
-            address(0),
+            112,
+            users[1],
             defaultdata
         );
-        snapLastCall("buy_erc20_normal_good_chips_second_12chips");
+        snapLastCall("pay_erc20_normal_good_chips_second_12chips");
 
         market.buyGood(
             metagood,
             normalgoodbtc,
             1000000000,
-            2,
-            address(0),
+            102,
+            users[1],
             defaultdata
         );
-        snapLastCall("buy_erc20_normal_good_chips_second_2chips");
+        snapLastCall("pay_erc20_normal_good_chips_second_2chips");
         vm.stopPrank();
     }
 
@@ -313,31 +313,45 @@ contract buyERC20NormalGood is BaseSetup {
             "before buy erc20_normalgood:btc address(market) account  balance error"
         );
 
-        market.buyGood(metagood, normalgoodbtc, 6300, 1, users[3], defaultdata);
-        snapLastCall("buy_erc20_normal_good_chips_first_1chips_refere");
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            6300,
+            101,
+            users[1],
+            defaultdata
+        );
+        snapLastCall("pay_erc20_normal_good_chips_first_1chips_refere");
 
-        market.buyGood(metagood, normalgoodbtc, 6300, 1, users[3], defaultdata);
-        snapLastCall("buy_erc20_normal_good_chips_second_1chips_refere");
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            6300,
+            101,
+            users[1],
+            defaultdata
+        );
+        snapLastCall("pay_erc20_normal_good_chips_second_1chips_refere");
 
         market.buyGood(
             metagood,
             normalgoodbtc,
             6300 * 10 ** 6,
-            12,
-            users[3],
+            112,
+            users[1],
             defaultdata
         );
-        snapLastCall("buy_erc20_normal_good_chips_second_12chips_refere");
+        snapLastCall("pay_erc20_normal_good_chips_second_12chips_refere");
 
         market.buyGood(
             metagood,
             normalgoodbtc,
             1000000000,
-            2,
-            users[3],
+            102,
+            users[1],
             defaultdata
         );
-        snapLastCall("buy_erc20_normal_good_chips_second_2chips_refere");
+        snapLastCall("pay_erc20_normal_good_chips_second_2chips_refere");
         vm.stopPrank();
     }
 }

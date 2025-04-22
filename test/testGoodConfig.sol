@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.29;
 
-import "forge-std/Test.sol";
+import "forge-std/src/Test.sol";
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 
 contract testGoodConfig is Test {

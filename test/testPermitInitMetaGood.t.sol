@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-import {Test, console2} from "forge-std/Test.sol";
+import {Test, console2} from "forge-std/src/Test.sol";
 import {MyToken} from "../src/test/MyToken.sol";
 import "../src/TTSwap_Market.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
@@ -17,7 +17,7 @@ import {L_TTSwapUINT256Library, toTTSwapUINT256} from "../src/libraries/L_TTSwap
 import {Permit2} from "permit2/src/Permit2.sol";
 import {IAllowanceTransfer} from "../src/interfaces/IAllowanceTransfer.sol";
 import {ISignatureTransfer} from "../src/interfaces/ISignatureTransfer.sol";
-import "forge-gas-snapshot/GasSnapshot.sol";
+import "forge-gas-snapshot/src/GasSnapshot.sol";
 
 contract testPermitInitMetaGood is Test, GasSnapshot {
     using L_ProofIdLibrary for S_ProofKey;

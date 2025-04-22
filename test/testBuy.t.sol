@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.29;
 
-import {Test, console2} from "forge-std/Test.sol";
+import {Test, console2} from "forge-std/src/Test.sol";
 import {MyToken} from "../src/test/MyToken.sol";
 import {TTSwap_Market} from "../src/TTSwap_Market.sol";
 import {TTSwap_Token} from "../src/TTSwap_Token.sol";

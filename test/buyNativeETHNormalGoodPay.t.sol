@@ -526,7 +526,7 @@ contract buyNativeETHNormalGoodPay is BaseSetup {
         );
 
         market.multicall{value: 10 ** 8}(calls);
-        snapLastCall("pay_nativeeth_normal_good_chips_second_10chips");
+        snapLastCall("multicall_pay_nativeeth_normal_good_chips_3call");
         vm.stopPrank();
 
         assertEq(

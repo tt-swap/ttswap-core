@@ -215,7 +215,7 @@ contract buyNormalGooduseNativeETH is BaseSetup {
         );
 
         market.multicall{value: 3000000000000000}(calls);
-
+        snapLastCall("multicall_buy_nativeeth_normal_good_chips_3call");
         assertEq(
             users[1].balance,
             89999997000000000000000,

@@ -526,7 +526,7 @@ contract buyNativeETHNormalGood is BaseSetup {
         );
 
         market.multicall(calls);
-        snapLastCall("buy_nativeeth_normal_good_chips_second_10chips");
+        snapLastCall("multical_nativeeth_normal_good_chips");
         vm.stopPrank();
 
         assertEq(

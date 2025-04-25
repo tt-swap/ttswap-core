@@ -15,7 +15,9 @@ import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
 import {IERC20} from "../src/interfaces/IERC20.sol";
 
 import {rocketpoolmock} from "../src/test/rocketpoolmock.sol";
-import {TTSwap_Stake_Mock} from "../src/test/TTSwap_Stake_Mock.sol";
+import {TTSwap_StakeETH} from "../src/TTSwap_StakeETH.sol";
+import {IRocketTokenRETH} from "../src/interfaces/IRocketTokenRETH.sol";
+import {IRocketStorage} from "../src/interfaces/IRocketStorage.sol";
 
 import {WETH} from "solmate/src/tokens/WETH.sol";
 
@@ -36,16 +38,18 @@ contract StakeETHSETH is BaseSetup {
     address payable weth = payable(0xdCad3a6d3569DF655070DEd06cb7A1b2Ccd1D3AF);
     address payable sweth = payable(address(3));
     address payable seth = payable(address(2));
-    TTSwap_Stake_Mock ttswapstake;
+    TTSwap_StakeETH ttswapstake;
 
     function setUp() public override {
         BaseSetup.setUp();
-        ttswapstake = new TTSwap_Stake_Mock(
+        initRethToken();
+        ttswapstake = new TTSwap_StakeETH(
             marketcreator,
             market,
-            IERC20(address(tts_token))
+            IERC20(address(tts_token)),
+            IRocketTokenRETH(reth),
+            IRocketStorage(reth)
         );
-        initRethToken();
         weth1 = new MyToken("WETH", "WETH", 18);
         vm.etch(weth, address(weth1).code);
         initmetagood();
@@ -56,6 +60,21 @@ contract StakeETHSETH is BaseSetup {
     function initRethToken() public {
         reth1 = new rocketpoolmock("Reth", "Reth", 18);
         vm.etch(reth, address(reth1).code);
+        IRocketStorage(reth).setAddress(
+            keccak256(
+                abi.encodePacked(
+                    "contract.address",
+                    "rocketDAOProtocolSettingsDeposit"
+                )
+            ),
+            address(reth)
+        );
+        IRocketStorage(reth).setAddress(
+            keccak256(
+                abi.encodePacked("contract.address", "rocketDepositPool")
+            ),
+            address(reth)
+        );
 
         // vm.etch(reth, rocketpoolmock("Reth", "Reth", 18));
     }

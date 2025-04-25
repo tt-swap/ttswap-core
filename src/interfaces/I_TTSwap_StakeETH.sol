@@ -6,7 +6,11 @@ pragma solidity 0.8.29;
 interface I_TTSwap_StakeETH {
     event e_stakeRocketPoolETH(uint256 totalStake);
     event e_Received(uint256);
-    event e_rocketpoolUnstaked(uint256 totalStake, uint256 totalState);
+    event e_rocketpoolUnstaked(
+        uint256 totalStake,
+        uint256 totalState,
+        uint128 reward
+    );
     event e_stakeeth_invest(uint256 rethStaking);
     event e_stakeeth_devest(uint256 rethStaking);
     event e_collecttts(uint256 amount);
@@ -14,13 +18,29 @@ interface I_TTSwap_StakeETH {
         uint256 TotalStake,
         uint256 TotalState,
         uint256 sethShare,
-        uint256 rethStaking
+        uint256 rethStaking,
+        uint128 stakeamount
     );
     event e_stakeSWETH(
         uint256 TotalStake,
         uint256 TotalState,
         uint256 swethShare,
-        uint256 rethStaking
+        uint256 rethStaking,
+        uint128 stakeamount
+    );
+    event e_unstakeSETH(
+        uint256 TotalStake,
+        uint256 TotalState,
+        uint256 sethShare,
+        uint256 rethStaking,
+        uint128 reward
+    );
+    event e_unstakeSWETH(
+        uint256 TotalStake,
+        uint256 TotalState,
+        uint256 swethShare,
+        uint256 rethStaking,
+        uint128 reward
     );
 
     function totalState() external returns (uint256); //amount0:totalShare, amount1:totalETHQuantity

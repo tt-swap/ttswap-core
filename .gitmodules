@@ -20,3 +20,6 @@
 [submodule "lib/permit2"]
 	path = lib/permit2
 	url = https://github.com/Uniswap/permit2
+[submodule "lib/tenderly-cli"]
+	path = lib/tenderly-cli
+	url = https://github.com/tenderly/tenderly-cli

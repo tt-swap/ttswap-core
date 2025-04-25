@@ -2,23 +2,35 @@
 pragma solidity 0.8.29;
 
 import {IRocketDepositPool} from "../interfaces/IRocketDepositPool.sol";
-import {IRocketTokenRETH} from "./IRocketTokenRETH.sol";
+import {IRocketTokenRETH} from "../interfaces/IRocketTokenRETH.sol";
 import {IRocketDAOProtocolSettingsDeposit} from "../interfaces/IRocketDAOProtocolSettingsDeposit.sol";
+import {IRocketStorage} from "../interfaces/IRocketStorage.sol";
 import {ERC20} from "../base/ERC20.sol";
 
 contract rocketpoolmock is
-    ERC20,
     IRocketTokenRETH,
     IRocketDepositPool,
-    IRocketDAOProtocolSettingsDeposit
+    IRocketDAOProtocolSettingsDeposit,
+    IRocketStorage,
+    ERC20
 {
     uint256 public ETHValue;
     uint256 public rETHValue;
+
+    mapping(bytes32 => address) private addressStorage;
     constructor(
         string memory _name,
         string memory _symbol,
         uint8 _decimals
     ) ERC20(_name, _symbol, _decimals) {}
+
+    function getAddress(bytes32 _key) external view override returns (address) {
+        return addressStorage[_key];
+    }
+
+    function setAddress(bytes32 _key, address _value) external override {
+        addressStorage[_key] = _value;
+    }
 
     function getEthValue(uint256 _rethAmount) public view returns (uint256) {
         return (ETHValue * _rethAmount) / rETHValue;
@@ -34,7 +46,6 @@ contract rocketpoolmock is
         payable(msg.sender).transfer(_ethvalue);
         _burn(msg.sender, _rethAmount);
     }
-    event deubggdeposit(uint256, uint256);
     function deposit() external payable {
         uint256 addreth = ETHValue == 0
             ? msg.value
@@ -42,7 +53,6 @@ contract rocketpoolmock is
         rETHValue += addreth;
         ETHValue += msg.value;
         _mint(msg.sender, addreth);
-        emit deubggdeposit(rETHValue, ETHValue);
     }
     function getBalance() external view returns (uint256) {
         return address(this).balance;
@@ -51,9 +61,15 @@ contract rocketpoolmock is
     function getDepositEnabled() external view returns (bool) {
         return true;
     }
-    function getMaximumDepositPoolSize() external view returns (uint256) {
+    function getMaximumDepositPoolSize()
+        external
+        view
+        override
+        returns (uint256)
+    {
         return 1000 ether;
     }
+
     function addreward() external payable {
         ETHValue += msg.value;
     }
@@ -61,5 +77,17 @@ contract rocketpoolmock is
     receive() external payable {
         // Emit ether deposited event
         emit EtherDeposited(msg.sender, msg.value, block.timestamp);
+    }
+
+    // Mint rETH
+    // Only accepts calls from the RocketDepositPool contract
+    function mint(uint256 _ethAmount, address _to) external override {
+        // Get rETH amount
+        uint256 rethAmount = getRethValue(_ethAmount);
+        // Check rETH amount
+        require(rethAmount > 0, "Invalid token mint amount");
+        // Update balance & supply
+        _mint(_to, rethAmount);
+        // Emit tokens minted event
     }
 }

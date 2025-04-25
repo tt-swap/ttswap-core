@@ -9,6 +9,7 @@ import {L_Transient} from "./libraries/L_Transient_Stake.sol";
 import {IRocketDepositPool} from "./interfaces/IRocketDepositPool.sol";
 import {IRocketTokenRETH} from "./interfaces/IRocketTokenRETH.sol";
 import {IRocketDAOProtocolSettingsDeposit} from "./interfaces/IRocketDAOProtocolSettingsDeposit.sol";
+import {IRocketStorage} from "./interfaces/IRocketStorage.sol";
 import {I_TTSwap_Market, S_ProofKey} from "./interfaces/I_TTSwap_Market.sol";
 import {I_TTSwap_StakeETH} from "./interfaces/I_TTSwap_StakeETH.sol";
 import {IERC20} from "./interfaces/IERC20.sol";
@@ -28,17 +29,9 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     address internal protocolCreator;
     address internal protocolManager;
 
-    // Rocket Pool 主网合约地址
-    IRocketDepositPool internal constant ROCKET_DEPOSIT_POOL =
-        IRocketDepositPool(0x320f3aAB9405e38b955178BBe75c477dECBA0C27);
-    IRocketTokenRETH internal constant ROCKET_TOKEN_RETH =
-        IRocketTokenRETH(0x7322c24752f79c05FFD1E2a6FCB97020C1C264F1);
-    IRocketDAOProtocolSettingsDeposit
-        internal constant ROCKET_DAO_SETTINGS_DEPOSIT =
-        IRocketDAOProtocolSettingsDeposit(
-            0x47B600D9127a473e45B693A7badD9F4d929d5b76
-        );
-
+    // Rocket Pool 主网合约地址]
+    IRocketTokenRETH internal immutable ROCKET_TOKEN_RETH;
+    IRocketStorage internal immutable rocketstorage;
     I_TTSwap_Market internal immutable TTSWAP_MARKET;
     IERC20 internal immutable tts_token;
     address internal constant seth = address(2);
@@ -46,12 +39,16 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     constructor(
         address _creator,
         I_TTSwap_Market _ttswap_market,
-        IERC20 _ttswap_token
+        IERC20 _ttswap_token,
+        IRocketTokenRETH _ROCKET_TOKEN_RETH,
+        IRocketStorage _rocketstorage
     ) {
         protocolCreator = _creator;
         protocolManager = msg.sender;
         TTSWAP_MARKET = _ttswap_market;
         tts_token = _ttswap_token;
+        rocketstorage = _rocketstorage;
+        ROCKET_TOKEN_RETH = _ROCKET_TOKEN_RETH;
     }
 
     modifier onlyCreator() {
@@ -97,14 +94,26 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
                 sethState,
                 toTTSwapUINT256(_stakeshare, _stakeamount)
             );
-            emit e_stakeSETH(totalStake, totalState, sethState, rethStaking);
+            emit e_stakeSETH(
+                totalStake,
+                totalState,
+                sethState,
+                rethStaking,
+                _stakeamount
+            );
         } else {
             swethState = add(
                 swethState,
                 toTTSwapUINT256(_stakeshare, _stakeamount)
             );
             token.withdraw(_stakeamount);
-            emit e_stakeSWETH(totalStake, totalState, swethState, rethStaking);
+            emit e_stakeSWETH(
+                totalStake,
+                totalState,
+                swethState,
+                rethStaking,
+                _stakeamount
+            );
         }
     }
 
@@ -125,7 +134,13 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
             token.safeTransfer(protocolManager, reward / 9);
             reward = reward - reward / 9;
             token.safeTransfer(msg.sender, reward + amount);
-            emit e_stakeSETH(totalStake, totalState, sethState, rethStaking);
+            emit e_unstakeSETH(
+                totalStake,
+                totalState,
+                sethState,
+                rethStaking,
+                reward
+            );
         } else {
             unstakeshare = swethState.getamount0fromamount1(amount);
             reward = totalState.getamount1fromamount0(unstakeshare);
@@ -136,7 +151,13 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
             token.safeTransfer(protocolManager, reward / 9);
             reward = reward - reward / 9;
             token.safeTransfer(msg.sender, reward + amount);
-            emit e_stakeSWETH(totalStake, totalState, swethState, rethStaking);
+            emit e_unstakeSWETH(
+                totalStake,
+                totalState,
+                swethState,
+                rethStaking,
+                reward
+            );
         }
     }
 
@@ -158,7 +179,13 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
             token.safeTransfer(protocolManager, reward / 9);
             reward = reward - reward / 9;
             token.safeTransfer(msg.sender, reward);
-            emit e_stakeSETH(totalStake, totalState, sethState, rethStaking);
+            emit e_unstakeSETH(
+                totalStake,
+                totalState,
+                sethState,
+                rethStaking,
+                reward
+            );
         } else {
             reward =
                 totalState.getamount1fromamount0(swethState.amount0()) -
@@ -172,13 +199,20 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
             token.safeTransfer(protocolManager, reward / 9);
             reward = reward - reward / 9;
             token.safeTransfer(msg.sender, reward);
-            emit e_stakeSWETH(totalStake, totalState, swethState, rethStaking);
+            emit e_unstakeSWETH(
+                totalStake,
+                totalState,
+                swethState,
+                rethStaking,
+                reward
+            );
         }
     }
 
     function internalReward() internal {
         uint128 reth = uint128(
-            ROCKET_TOKEN_RETH.balanceOf(address(this)) + rethStaking.amount0()
+            IERC20(address(ROCKET_TOKEN_RETH)).balanceOf(address(this)) +
+                rethStaking.amount0()
         );
         uint128 eth1 = uint128(ROCKET_TOKEN_RETH.getEthValue(reth));
         uint128 reward = eth1 >= totalStake.amount0()
@@ -193,6 +227,23 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     function stakeRocketPoolETH(
         uint128 stakeamount
     ) external override onlyManager returns (uint256 rethAmount) {
+        IRocketDAOProtocolSettingsDeposit ROCKET_DAO_SETTINGS_DEPOSIT = IRocketDAOProtocolSettingsDeposit(
+                rocketstorage.getAddress(
+                    keccak256(
+                        abi.encodePacked(
+                            "contract.address",
+                            "rocketDAOProtocolSettingsDeposit"
+                        )
+                    )
+                )
+            );
+        IRocketDepositPool ROCKET_DEPOSIT_POOL = IRocketDepositPool(
+            rocketstorage.getAddress(
+                keccak256(
+                    abi.encodePacked("contract.address", "rocketDepositPool")
+                )
+            )
+        );
         require(
             ROCKET_DAO_SETTINGS_DEPOSIT.getDepositEnabled(),
             "Rocket Pool deposits are currently disabled"
@@ -226,8 +277,10 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         uint256 rethAmount
     ) external override onlyManager {
         require(rethAmount > 0, "Amount must be greater than 0");
+
         require(
-            ROCKET_TOKEN_RETH.balanceOf(address(this)) >= rethAmount,
+            IERC20(address(ROCKET_TOKEN_RETH)).balanceOf(address(this)) >=
+                rethAmount,
             "Insufficient rETH balance"
         );
 
@@ -244,7 +297,7 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         totalStake = subadd(totalStake, toTTSwapUINT256(ethAmount, ethAmount));
         totalState = add(totalState, toTTSwapUINT256(0, reward));
 
-        emit e_rocketpoolUnstaked(totalStake, totalState);
+        emit e_rocketpoolUnstaked(totalStake, totalState, reward);
     }
 
     // 接收ETH的回退函数
@@ -270,11 +323,18 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
                             .amount0() * 2) / 10
                 )) &&
                 (_goodQuantity <=
-                    (uint128(ROCKET_TOKEN_RETH.balanceOf(address(this))) * 8) /
+                    (uint128(
+                        IERC20(address(ROCKET_TOKEN_RETH)).balanceOf(
+                            address(this)
+                        )
+                    ) * 8) /
                         10)
         );
         rethStaking = add(rethStaking, toTTSwapUINT256(_goodQuantity, 0));
-        ROCKET_TOKEN_RETH.approve(address(TTSWAP_MARKET), _goodQuantity);
+        IERC20(address(ROCKET_TOKEN_RETH)).approve(
+            address(TTSWAP_MARKET),
+            _goodQuantity
+        );
         TTSWAP_MARKET.investGood(
             address(ROCKET_TOKEN_RETH),
             address(0),

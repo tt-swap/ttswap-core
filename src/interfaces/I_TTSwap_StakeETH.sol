@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.29;
+pragma solidity ^0.8.29;
 
 /// @title Investment Proof Interface
 /// @notice Contains a series of interfaces for goods

@@ -48,6 +48,8 @@ library L_CurrencyLibrary {
     /// @notice Thrown when an Deposit fails
     error DepositFailed();
 
+    error ApprovedFailed();
+
     struct S_transferData {
         uint8 transfertype;
         bytes sigdata;
@@ -379,9 +381,11 @@ library L_CurrencyLibrary {
 
     function approve(address token, address to, uint128 amount) internal {
         if (token == SWETH) {
-            IERC20(WETH).approve(to, uint256(amount));
+            if (!IERC20(WETH).approve(to, uint256(amount)))
+                revert ApprovedFailed();
         } else {
-            IERC20(token).approve(to, uint256(amount));
+            if (!IERC20(token).approve(to, uint256(amount)))
+                revert ApprovedFailed();
         }
     }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity ^0.8.1;
+pragma solidity ^0.8.29;
 
 import {TTSwapError} from "./L_Error.sol";
 /// @notice This is a temporary library that allows us to use transient storage (tstore/tload)
@@ -18,7 +18,6 @@ library L_Transient {
 
     bytes32 constant LOCK_SLOT =
         0xe2afc7ec4dbb9bfdb1b8e8bcf21a055747c25bf2faaea9cb5a134005381f4843;
-
     function set(address locker) internal {
         assembly {
             tstore(LOCK_SLOT, locker)
@@ -89,7 +88,7 @@ library L_Transient {
 
     function checkafter() internal {
         subDepth();
-        if (getDepth() == 0 && getValue() >= 0) {
+        if (getDepth() == 0 && getValue() > 0) {
             uint256 amount = getValue();
             setValue(0);
             bool success;

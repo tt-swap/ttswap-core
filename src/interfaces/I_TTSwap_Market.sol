@@ -149,8 +149,6 @@ interface I_TTSwap_Market {
     // Function declarations
 
     function userConfig(address) external view returns (uint256);
-    function setMarketor(address _newmarketor) external;
-    function removeMarketor(address _user) external;
 
     /// @notice Initialize the first good in the market
     /// @param _erc20address The contract address of the good

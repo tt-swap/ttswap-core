@@ -148,16 +148,12 @@ contract TTSwap_Market is
         emit e_changemarketcreator(_newmarketor);
     }
 
-    /// @inheritdoc I_TTSwap_Market
-    function setMarketor(address _newmarketor) external override onlyDAOadmin {
-        userConfig[_newmarketor] = userConfig[_newmarketor] | 2;
-        emit e_modifiedUserConfig(_newmarketor, userConfig[_newmarketor]);
-    }
-
-    /// @inheritdoc I_TTSwap_Market
-    function removeMarketor(address _user) external override onlyDAOadmin {
-        userConfig[_user] = userConfig[_user] & ~uint256(2);
-        emit e_modifiedUserConfig(_user, userConfig[_user]);
+    function setMarketor(
+        address _newmarketor,
+        uint256 auth
+    ) external onlyDAOadmin {
+        userConfig[_newmarketor] = auth;
+        emit e_modifiedUserConfig(_newmarketor, auth);
     }
 
     /// @inheritdoc I_TTSwap_Market

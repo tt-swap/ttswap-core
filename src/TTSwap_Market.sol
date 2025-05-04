@@ -273,6 +273,7 @@ contract TTSwap_Market is
 
         _mint(msg.sender, _erc20address.to_uint256(), _initial.amount0());
         _mint(msg.sender, _valuegood.to_uint256(), _initial.amount1());
+
         emit e_initGood(
             proofId,
             _erc20address,
@@ -735,6 +736,13 @@ contract TTSwap_Market is
                 goods[valuegood].currentState,
                 compareprice
             );
+    }
+
+    function getRecentGoodState(
+        address good1,
+        address good2
+    ) external view returns (uint256, uint256) {
+        return (goods[good1].currentState, goods[good2].currentState);
     }
 
     /// @inheritdoc I_TTSwap_Market

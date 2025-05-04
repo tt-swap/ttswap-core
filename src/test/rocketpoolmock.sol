@@ -28,6 +28,23 @@ contract rocketpoolmock is
         return addressStorage[_key];
     }
 
+    function testrocketDAOProtocolSettingsDepositKey() external {
+        bytes32 kk = keccak256(
+            abi.encodePacked(
+                "contract.address",
+                "rocketDAOProtocolSettingsDeposit"
+            )
+        );
+        addressStorage[kk] = address(this);
+    }
+
+    function testrocketDepositPoolKey() external {
+        bytes32 kk = keccak256(
+            abi.encodePacked("contract.address", "rocketDepositPool")
+        );
+        addressStorage[kk] = address(this);
+    }
+
     function setAddress(bytes32 _key, address _value) external override {
         addressStorage[_key] = _value;
     }

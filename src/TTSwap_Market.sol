@@ -874,7 +874,7 @@ contract TTSwap_Market is
         address token,
         uint256 amount,
         bytes calldata data
-    ) public override returns (bool) {
+    ) public override noReentrant returns (bool) {
         if (token.isNative()) revert TTSwapError(29);
         uint256 maxLoan = maxFlashLoan(token);
         maxLoan = maxLoan / 2;

@@ -12,9 +12,9 @@ import {IWETH9} from "../interfaces/IWETH9.sol";
 address constant NATIVE = address(1);
 address constant SETH = address(2);
 address constant SWETH = address(3);
-address constant WETH = 0xdCad3a6d3569DF655070DEd06cb7A1b2Ccd1D3AF;
-address constant dai = 0x898118E029Aa17Ed4763f432c1Bdc1085d166cDe;
-address constant _permit2 = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
+address constant WETH = 0x2387fD72C1DA19f6486B843F5da562679FbB4057;
+address constant dai = 0xCaFBbAd55eb09efe7bec8408Cff9932Be7D9A7fA;
+address constant _permit2 = 0xa50eb0d081E986c280efF32dae089939Ea07bd22;
 
 /// @title L_CurrencyLibrary
 /// @dev This library allows for transferring and holding native tokens and ERC20 tokens

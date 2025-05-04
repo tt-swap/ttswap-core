@@ -340,4 +340,44 @@ contract buyERC20NormalGood is BaseSetup {
         snapLastCall("buy_erc20_normal_good_chips_second_2chips_refere");
         vm.stopPrank();
     }
+
+    function testBuyERC20GoodWithChipskkk() public {
+        vm.startPrank(users[1]);
+        uint256 goodconfig = 1 *
+            2 ** 217 +
+            3 *
+            2 ** 211 +
+            5 *
+            2 ** 204 +
+            7 *
+            2 ** 197 +
+            2 *
+            2 ** 216 +
+            3 *
+            2 ** 206;
+        market.updateGoodConfig(normalgoodbtc, goodconfig);
+
+        usdt.approve(address(market), 800000 * 10 ** 6 + 1);
+        btc.approve(address(market), 10 * 10 ** 8 + 1);
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            630000,
+            1,
+            address(0),
+            defaultdata
+        );
+
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            630000,
+            1,
+            address(0),
+            defaultdata
+        );
+
+        vm.stopPrank();
+    }
 }

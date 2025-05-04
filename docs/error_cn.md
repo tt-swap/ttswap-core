@@ -47,4 +47,4 @@ ExcessiveInvalidation() 0x24d35a26 授权失效
 InvalidAmount(uint256)  0x3728b83d 无效金额
 LengthMismatch() 0xff633a38 长度不匹配
 DepositFailed() 79cacff1 weth充值失败 或者rocketpool调用失败 
-NativeETHTransferFailed() 
+NativeETHTransferFailed()  6c0f429e nativeETH转账失败

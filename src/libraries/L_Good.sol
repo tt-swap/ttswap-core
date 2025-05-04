@@ -619,11 +619,11 @@ library L_Good {
             _marketcreator,
             0
         );
-
         uint128 profit2;
         // If value good exists, calculate and allocate its fees
-        if (_valuegood.goodConfig >= 0) {
+        if (_valuegood.investState > 0) {
             // Calculate profit for the value good
+
             profit2 =
                 toTTSwapUINT256(
                     _valuegood.feeQuantityState.amount0(),

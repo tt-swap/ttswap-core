@@ -52,6 +52,8 @@ library L_CurrencyLibrary {
     /// @notice Thrown when an ERC20Permit transfer fails
     error ERC20PermitFailed();
 
+    error ApproveFailed();
+
     function balanceof(
         address token,
         address _sender
@@ -335,9 +337,11 @@ library L_CurrencyLibrary {
 
     function approve(address token, address to, uint128 amount) internal {
         if (token == SWETH) {
-            IERC20(WETH).approve(to, uint256(amount));
+            if (!IERC20(WETH).approve(to, uint256(amount)))
+                revert ApproveFailed();
         } else {
-            IERC20(token).approve(to, uint256(amount));
+            if (!IERC20(token).approve(to, uint256(amount)))
+                revert ApproveFailed();
         }
     }
 }

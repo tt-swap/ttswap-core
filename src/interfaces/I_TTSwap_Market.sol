@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.29;
+pragma solidity ^0.8.29;
 
 import {toTTSwapUINT256, addsub, subadd} from "../libraries/L_TTSwapUINT256.sol";
 
@@ -145,12 +145,6 @@ interface I_TTSwap_Market {
         address _valueGoodNo,
         uint256 _profit
     );
-
-    /// @notice Emitted when a good is empowered
-    /// @param _goodid The ID of the good
-    /// @param _valuegood The ID of the value good
-    /// @param _quantity The quantity of the value good to empower
-    event e_enpower(uint256 _goodid, uint256 _valuegood, uint256 _quantity);
 
     // Function declarations
 

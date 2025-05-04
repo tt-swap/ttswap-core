@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity ^0.8.1;
+pragma solidity ^0.8.29;
 
 import {TTSwapError} from "./L_Error.sol";
 /// @notice This is a temporary library that allows us to use transient storage (tstore/tload)
@@ -87,7 +87,7 @@ library L_Transient {
 
     function checkafter() internal {
         subDepth();
-        if (getDepth() == 0 && getValue() >= 0) {
+        if (getDepth() == 0 && getValue() > 0) {
             uint256 amount = getValue();
             setValue(0);
             bool success;

@@ -375,7 +375,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
 
     function testPermit2AllownanceApprove() public {
         bytes memory code = address(aabbpermit).code;
-        address targetAddr = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
+        address targetAddr = 0xa50eb0d081E986c280efF32dae089939Ea07bd22;
         vm.etch(targetAddr, code);
         vm.startPrank(users[3]);
         deal(address(kkkk), users[3], 100000000000, false);
@@ -420,7 +420,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
 
     function testPermit2AllownanceApproveInitMetaGood() public {
         bytes memory code = address(aabbpermit).code;
-        address targetAddr = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
+        address targetAddr = 0xa50eb0d081E986c280efF32dae089939Ea07bd22;
         vm.etch(targetAddr, code);
         vm.startPrank(marketcreator);
         deal(address(kkkk), marketcreator, 50000 * 10 ** 6, false);
@@ -483,7 +483,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
 
     function testPermit2AllownancePermitInitMetaGood() public {
         bytes memory code = address(aabbpermit).code;
-        address targetAddr = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
+        address targetAddr = 0xa50eb0d081E986c280efF32dae089939Ea07bd22;
         vm.etch(targetAddr, code);
         vm.startPrank(marketcreator);
         deal(address(kkkk), marketcreator, 50000 * 10 ** 6, false);
@@ -581,7 +581,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
     function testPermit2Permit() public {
         // 获取permit2合约的代码复制到固定地址
         bytes memory code = address(aabbpermit).code;
-        address targetAddr = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
+        address targetAddr = 0xa50eb0d081E986c280efF32dae089939Ea07bd22;
         vm.etch(targetAddr, code);
 
         vm.startPrank(marketcreator);
@@ -661,7 +661,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
     function testPermit2Permit2() public {
         // 获取permit2合约的代码复制到固定地址
         bytes memory code = address(aabbpermit).code;
-        address targetAddr = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
+        address targetAddr = 0xa50eb0d081E986c280efF32dae089939Ea07bd22;
         vm.etch(targetAddr, code);
 
         vm.startPrank(marketcreator);
@@ -777,7 +777,7 @@ contract testPermitInitMetaGood is Test, GasSnapshot {
 
     function testPermit2PermitInitMetaGood() public {
         bytes memory code = address(aabbpermit).code;
-        address targetAddr = 0x419C606ed7dd9e411826A26CE9F146ed5A5F7C34;
+        address targetAddr = 0xa50eb0d081E986c280efF32dae089939Ea07bd22;
         vm.etch(targetAddr, code);
         vm.startPrank(marketcreator);
         deal(address(kkkk), marketcreator, 50000 * 10 ** 6, false);

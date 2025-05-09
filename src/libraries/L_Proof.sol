@@ -87,24 +87,6 @@ library L_Proof {
     }
 
     /**
-     * @dev Collects fees for the proof
-     * @param _self The proof state to update
-     * @param profit The profit to add
-     */
-    function collectProofFee(
-        S_ProofState storage _self,
-        uint256 profit
-    ) internal {
-        _self.invest = add(_self.invest, toTTSwapUINT256(profit.amount0(), 0));
-        if (_self.valuegood != address(0)) {
-            _self.valueinvest = add(
-                _self.valueinvest,
-                toTTSwapUINT256(profit.amount1(), 0)
-            );
-        }
-    }
-
-    /**
      * @dev Stakes a certain amount of proof value
      * @param contractaddress The address of the staking contract
      * @param to The address to stake for

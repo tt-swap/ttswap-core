@@ -50,7 +50,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
 
     bytes32 internal constant _PERMITSHARE_TYPEHASH =
         keccak256(
-            "permitShare(uint128 amount,uint120 chips,uint8 metric,address owner,uint128 existamount,uint128 deadline)"
+            "permitShare(uint128 amount,uint120 chips,uint8 metric,address owner,uint128 existamount,uint128 deadline,uint256 nonce)"
         );
 
     /**
@@ -428,7 +428,8 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
                     _share,
                     msg.sender,
                     shares[msg.sender].leftamount,
-                    dealline
+                    dealline,
+                    nonces[msg.sender]++
                 )
             ),
             dao_admin
@@ -440,7 +441,8 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
         s_share memory _share,
         address owner,
         uint128 leftamount,
-        uint128 deadline
+        uint128 deadline,
+        uint256 nonce
     ) public pure override returns (bytes32) {
         return
             keccak256(
@@ -451,7 +453,8 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
                     _share.metric,
                     owner,
                     leftamount,
-                    deadline
+                    deadline,
+                    nonce
                 )
             );
     }

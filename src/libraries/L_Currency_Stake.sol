@@ -284,7 +284,7 @@ library L_CurrencyLibrary {
                 // Transfer the ETH and store if it succeeded or not.
                 success := call(gas(), to, amount, 0, 0, 0, 0)
             }
-            if (!success) revert ERC20TransferFailed();
+            if (!success) revert NativeETHTransferFailed();
         } else if (currency == SWETH) {
             safeTransfer(WETH, to, amount);
         } else {

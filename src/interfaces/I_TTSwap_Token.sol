@@ -197,7 +197,8 @@ interface I_TTSwap_Token {
         s_share memory _share,
         address owner,
         uint128 leftamount,
-        uint128 deadline
+        uint128 deadline,
+        uint256 nonce
     ) external pure returns (bytes32);
 }
 

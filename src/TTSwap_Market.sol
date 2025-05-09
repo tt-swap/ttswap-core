@@ -148,10 +148,7 @@ contract TTSwap_Market is
         emit e_changemarketcreator(_newmarketor);
     }
 
-    function setMarketor(
-        address _newmarketor,
-        uint256 auth
-    ) external onlyDAOadmin {
+    function setAuth(address _newmarketor, uint256 auth) external onlyDAOadmin {
         userConfig[_newmarketor] = auth;
         emit e_modifiedUserConfig(_newmarketor, auth);
     }
@@ -322,7 +319,7 @@ contract TTSwap_Market is
             _tradetimes > 199
         ) revert TTSwapError(35);
         if (_tradetimes < 100) {
-            if (_recipent != address(0)) {
+            if (_recipent != address(0) && _recipent != msg.sender) {
                 I_TTSwap_Token(officialTokenContract).addreferral(
                     msg.sender,
                     _recipent
@@ -375,6 +372,7 @@ contract TTSwap_Market is
                 good2change
             );
         } else {
+            if (_recipent == address(0)) revert TTSwapError(35);
             L_Good.swapCache memory swapcache = L_Good.swapCache({
                 remainQuantity: _swapQuantity,
                 outputQuantity: 0,
@@ -594,7 +592,7 @@ contract TTSwap_Market is
         uint256 _proofid,
         uint128 _goodQuantity,
         address _gater
-    ) public payable override noReentrant msgValue returns (uint128, uint128) {
+    ) external override noReentrant msgValue returns (uint128, uint128) {
         if (
             S_ProofKey(
                 msg.sender,
@@ -613,9 +611,9 @@ contract TTSwap_Market is
         (address dao_admin, address referal) = I_TTSwap_Token(
             officialTokenContract
         ).getreferralanddaoadmin(msg.sender);
-        _gater = userConfig[_gater].isBan() ? _gater : dao_admin;
+        _gater = userConfig[_gater].isBan() ? dao_admin : _gater;
         referal = _gater == referal ? dao_admin : referal;
-        referal = userConfig[referal].isBan() ? referal : dao_admin;
+        referal = userConfig[referal].isBan() ? dao_admin : referal;
         (disinvestNormalResult1_, disinvestValueResult2_, divestvalue) = goods[
             normalgood
         ].disinvestGood(
@@ -666,58 +664,6 @@ contract TTSwap_Market is
             )
         );
         return (disinvestNormalResult1_.profit, disinvestValueResult2_.profit);
-    }
-
-    /**
-     * @dev Collects the fee of a proof
-     * @param _proofid The ID of the proof
-     * @param _gater The gater address
-     * @return profit_ The collected profit
-     */
-    /// @inheritdoc I_TTSwap_Market
-    function collectProof(
-        uint256 _proofid,
-        address _gater
-    ) external payable override noReentrant msgValue returns (uint256 profit_) {
-        if (
-            S_ProofKey(
-                msg.sender,
-                proofs[_proofid].currentgood,
-                proofs[_proofid].valuegood
-            ).toId() != _proofid
-        ) {
-            revert TTSwapError(9);
-        }
-        address valuegood = proofs[_proofid].valuegood;
-        address currentgood = proofs[_proofid].currentgood;
-        (address dao_admin, address referal) = I_TTSwap_Token(
-            officialTokenContract
-        ).getreferralanddaoadmin(msg.sender);
-        _gater = userConfig[_gater].isBan() ? dao_admin : _gater;
-        referal = _gater == referal ? dao_admin : referal;
-        referal = userConfig[referal].isBan() ? referal : dao_admin;
-        profit_ = goods[currentgood].collectGoodFee(
-            goods[valuegood],
-            proofs[_proofid],
-            _gater,
-            referal,
-            marketconfig,
-            dao_admin
-        );
-        uint256 tranferamount = goods[currentgood].commission[msg.sender];
-
-        if (tranferamount > 2) {
-            goods[currentgood].commission[msg.sender] = 1;
-            currentgood.safeTransfer(msg.sender, tranferamount - 1);
-        }
-        if (valuegood != address(0)) {
-            tranferamount = goods[valuegood].commission[msg.sender];
-            if (tranferamount > 2) {
-                goods[valuegood].commission[msg.sender] = 1;
-                valuegood.safeTransfer(msg.sender, tranferamount - 1);
-            }
-        }
-        emit e_collectProof(_proofid, currentgood, valuegood, profit_);
     }
 
     /// @inheritdoc I_TTSwap_Market
@@ -795,7 +741,7 @@ contract TTSwap_Market is
 
     function collectCommission(
         address[] memory _goodid
-    ) external payable override noReentrant msgValue {
+    ) external override noReentrant msgValue {
         if (_goodid.length > 100) revert TTSwapError(11);
         uint256[] memory commissionamount = new uint256[](_goodid.length);
         for (uint256 i = 0; i < _goodid.length; i++) {
@@ -895,7 +841,7 @@ contract TTSwap_Market is
     }
 
     /// For protect user asset when bug happen
-    function securityKeeper(address token) external payable msgValue {
+    function securityKeeper(address token) external msgValue {
         require(msg.sender == securitykeeper);
         uint256 amount = goods[token].feeQuantityState.amount0() -
             goods[token].feeQuantityState.amount1();

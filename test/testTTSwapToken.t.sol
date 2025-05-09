@@ -140,7 +140,7 @@ contract testTTSwapToken is Test, GasSnapshot {
         vm.stopPrank();
 
         bytes32 _PERMIT_TYPEHASH = keccak256(
-            "permitShare(uint128 amount,uint120 chips,uint8 metric,address owner,uint128 existamount,uint128 deadline)"
+            "permitShare(uint128 amount,uint120 chips,uint8 metric,address owner,uint128 existamount,uint128 deadline,uint256 nonce)"
         );
         vm.startPrank(marketcreator);
         _share = s_share(10000, 5, 6);
@@ -158,7 +158,8 @@ contract testTTSwapToken is Test, GasSnapshot {
                         _share.metric,
                         users[5],
                         10000,
-                        dealline
+                        dealline,
+                        0
                     )
                 )
             )

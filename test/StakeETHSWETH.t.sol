@@ -35,7 +35,7 @@ contract StakeETHSWETH is BaseSetup {
         rocketpoolmock(payable(0x7322c24752f79c05FFD1E2a6FCB97020C1C264F1)); //hoodi address
     address payable reth = payable(0x7322c24752f79c05FFD1E2a6FCB97020C1C264F1); //hoodi address
     MyToken weth1;
-    address payable weth = payable(0xdCad3a6d3569DF655070DEd06cb7A1b2Ccd1D3AF);
+    address payable weth = payable(0x2387fD72C1DA19f6486B843F5da562679FbB4057);
     address payable sweth = payable(address(3));
     TTSwap_StakeETH ttswapstake;
 

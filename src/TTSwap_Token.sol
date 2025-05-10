@@ -82,7 +82,8 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @dev  this chain trade vol ratio in protocol
      */
     function setRatio(uint256 _ratio) external {
-        if (_ratio > 10000 || auths[msg.sender] != 2) revert TTSwapError(17);
+        if (_ratio > 10000 || auths[msg.sender] & 2 != 2)
+            revert TTSwapError(17);
         ttstokenconfig = ttstokenconfig.setratio(_ratio);
         emit e_updatettsconfig(ttstokenconfig);
     }
@@ -199,7 +200,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
     /// @inheritdoc I_TTSwap_Token
     function shareMint() external override onlymain {
         if (
-            I_TTSwap_Market(marketcontract).ishigher(
+            !I_TTSwap_Market(marketcontract).ishigher(
                 address(this),
                 usdt,
                 2 ** shares[msg.sender].metric * 2 ** 128 + 20

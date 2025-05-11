@@ -14,8 +14,8 @@ contract rocketpoolmock is
     IRocketStorage,
     ERC20
 {
-    uint256 public ETHValue;
-    uint256 public rETHValue;
+    uint256 public ETHValue = 10 ** 19;
+    uint256 public rETHValue = 10 ** 19;
 
     mapping(bytes32 => address) private addressStorage;
     constructor(

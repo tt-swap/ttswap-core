@@ -6,8 +6,6 @@ import {toTTSwapUINT256, addsub, subadd} from "../libraries/L_TTSwapUINT256.sol"
 /// @title Market Management Interface
 /// @notice Defines the interface for managing market operations
 interface I_TTSwap_Market {
-    error noEnoughOutputError();
-
     /// @notice Emitted when market configuration is set
     /// @param _newmarketor The marketcreator
     event e_changemarketcreator(address _newmarketor);
@@ -147,7 +145,6 @@ interface I_TTSwap_Market {
     );
 
     // Function declarations
-
     function userConfig(address) external view returns (uint256);
 
     /// @notice Initialize the first good in the market

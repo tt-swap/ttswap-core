@@ -843,10 +843,8 @@ contract TTSwap_Market is
     /// For protect user asset when bug happen
     function securityKeeper(address token) external msgValue {
         require(msg.sender == securitykeeper);
-        uint256 amount = goods[token].feeQuantityState.amount0() -
-            goods[token].feeQuantityState.amount1();
+        uint256 amount = token.balanceof(address(this));
         goods[token].feeQuantityState = 0;
-        amount += goods[token].currentState.amount1();
         goods[token].currentState = 0;
         token.safeTransfer(securitykeeper, amount);
     }

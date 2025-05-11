@@ -197,7 +197,7 @@ contract StakeETHSWETH is BaseSetup {
         );
         assertEq(
             ttswapstake.totalStake().amount1(),
-            10000000000000000000,
+            0,
             "2after ttswapstake.totalStake error"
         );
         assertEq(

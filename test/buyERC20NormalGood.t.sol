@@ -231,7 +231,7 @@ contract buyERC20NormalGood is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            6300,
+            63000000,
             1,
             address(0),
             defaultdata
@@ -241,7 +241,7 @@ contract buyERC20NormalGood is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            6300,
+            63000000,
             1,
             address(0),
             defaultdata
@@ -313,10 +313,24 @@ contract buyERC20NormalGood is BaseSetup {
             "before buy erc20_normalgood:btc address(market) account  balance error"
         );
 
-        market.buyGood(metagood, normalgoodbtc, 6300, 1, users[3], defaultdata);
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            63000000,
+            1,
+            users[3],
+            defaultdata
+        );
         snapLastCall("buy_erc20_normal_good_chips_first_1chips_refere");
 
-        market.buyGood(metagood, normalgoodbtc, 6300, 1, users[3], defaultdata);
+        market.buyGood(
+            metagood,
+            normalgoodbtc,
+            63000000,
+            1,
+            users[3],
+            defaultdata
+        );
         snapLastCall("buy_erc20_normal_good_chips_second_1chips_refere");
 
         market.buyGood(
@@ -363,7 +377,7 @@ contract buyERC20NormalGood is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            630000,
+            63000000,
             1,
             address(0),
             defaultdata
@@ -372,7 +386,7 @@ contract buyERC20NormalGood is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            630000,
+            63000000,
             1,
             address(0),
             defaultdata

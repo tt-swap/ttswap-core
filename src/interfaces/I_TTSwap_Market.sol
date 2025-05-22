@@ -6,8 +6,6 @@ import {toTTSwapUINT256, addsub, subadd} from "../libraries/L_TTSwapUINT256.sol"
 /// @title Market Management Interface
 /// @notice Defines the interface for managing market operations
 interface I_TTSwap_Market {
-    error noEnoughOutputError();
-
     /// @notice Emitted when market configuration is set
     /// @param _newmarketor The marketcreator
     event e_changemarketcreator(address _newmarketor);
@@ -134,20 +132,7 @@ interface I_TTSwap_Market {
         uint256 _profit
     );
 
-    /// @notice Emitted when a user collects profit from an investment proof
-    /// @param _proofNo The ID of the investment proof
-    /// @param _normalGoodNo The ID of the normal good
-    /// @param _valueGoodNo The ID of the value good
-    /// @param _profit The collected profit (amount0: normal good profit, amount1: value good profit)
-    event e_collectProof(
-        uint256 indexed _proofNo,
-        address _normalGoodNo,
-        address _valueGoodNo,
-        uint256 _profit
-    );
-
     // Function declarations
-
     function userConfig(address) external view returns (uint256);
 
     /// @notice Initialize the first good in the market

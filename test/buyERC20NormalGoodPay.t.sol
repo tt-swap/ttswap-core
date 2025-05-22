@@ -231,7 +231,7 @@ contract buyERC20NormalGoodPay is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            6300,
+            63000000,
             101,
             users[1],
             defaultdata
@@ -241,7 +241,7 @@ contract buyERC20NormalGoodPay is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            6300,
+            63000000,
             101,
             users[1],
             defaultdata
@@ -316,8 +316,8 @@ contract buyERC20NormalGoodPay is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            6300,
-            101,
+            63000000,
+            110,
             users[1],
             defaultdata
         );
@@ -326,7 +326,7 @@ contract buyERC20NormalGoodPay is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            6300,
+            63000000,
             101,
             users[1],
             defaultdata

@@ -263,45 +263,46 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             "before buy nativeeth_normalgood:btc address(market) account  balance error"
         );
 
-        market.buyGood{value: 6300}(
+        market.buyGood{value: 63000000}(
             normalgoodbtc,
             metagood,
-            6300,
+            63000000,
             1,
             address(0),
             defaultdata
         );
         snapLastCall("buy_normal_good_use_nativegood_chips_first_1chips");
 
-        market.buyGood{value: 6300}(
+        market.buyGood{value: 63000000}(
             normalgoodbtc,
             metagood,
-            6300,
+            63000000,
             1,
             address(0),
             defaultdata
         );
         snapLastCall("buy_normal_good_use_nativegood_chips_second_1chips");
 
-        market.buyGood{value: 6300 * 10 ** 1}(
+        market.buyGood{value: 6300 * 10 ** 4}(
             normalgoodbtc,
             metagood,
-            6300 * 10 ** 1,
+            6300 * 10 ** 4,
             12,
             address(0),
             defaultdata
         );
         snapLastCall("buy_normal_good_use_nativegood_chips_second_12chips");
 
-        market.buyGood{value: 6300 * 10 ** 2}(
+        market.buyGood{value: 6300 * 10 ** 4}(
             normalgoodbtc,
             metagood,
-            6300 * 10 ** 2,
+            6300 * 10 ** 4,
             10,
             address(0),
             defaultdata
         );
         snapLastCall("buy_normal_good_use_nativegood_chips_second_10chips");
+
         vm.stopPrank();
     }
 
@@ -344,10 +345,10 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             "before buy nativeeth_normalgood:btc address(market) account  balance error"
         );
 
-        market.buyGood{value: 6300}(
+        market.buyGood{value: 63000000}(
             normalgoodbtc,
             metagood,
-            6300,
+            63000000,
             1,
             users[3],
             defaultdata
@@ -356,10 +357,10 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             "buy_normal_good_use_nativegood_chips_first_1chips_refere"
         );
 
-        market.buyGood{value: 6300}(
+        market.buyGood{value: 63000000}(
             normalgoodbtc,
             metagood,
-            6300,
+            63000000,
             1,
             users[3],
             defaultdata
@@ -368,10 +369,10 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             "buy_normal_good_use_nativegood_chips_second_1chips_refere"
         );
 
-        market.buyGood{value: 6300}(
+        market.buyGood{value: 63000000}(
             normalgoodbtc,
             metagood,
-            6300,
+            63000000,
             12,
             users[3],
             defaultdata
@@ -380,10 +381,10 @@ contract buyNormalGooduseNativeETH is BaseSetup {
             "buy_normal_good_use_nativegood_chips_second_12chips_refere"
         );
 
-        market.buyGood{value: 6300}(
+        market.buyGood{value: 63000000}(
             normalgoodbtc,
             metagood,
-            6300,
+            63000000,
             10,
             users[3],
             defaultdata

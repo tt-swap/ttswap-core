@@ -2,6 +2,7 @@
 	"language": "Solidity",
 	"settings": {
 		"viaIR": true,
+		"evmVersion": "cancun",
 		"optimizer": {
 			"enabled": true,
 			"runs": 100

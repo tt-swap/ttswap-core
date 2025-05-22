@@ -296,7 +296,6 @@ contract TTSwap_Market is
      * @return good2change amount0() good1tradefee,good2tradeamount
      */
     /// @inheritdoc I_TTSwap_Market
-
     function buyGood(
         address _goodid1,
         address _goodid2,
@@ -338,10 +337,10 @@ contract TTSwap_Market is
             });
 
             L_Good.swapCompute1(swapcache, _tradetimes);
-
             if (
                 (swapcache.remainQuantity + swapcache.feeQuantity) >=
-                _swapQuantity
+                _swapQuantity ||
+                swapcache.swapvalue < 10_000_000
             ) revert TTSwapError(34);
 
             good1change = toTTSwapUINT256(
@@ -354,8 +353,8 @@ contract TTSwap_Market is
                 swapcache.outputQuantity -
                     swapcache.good2config.getBuyFee(swapcache.outputQuantity)
             );
+
             _goodid1.transferFrom(msg.sender, good1change.amount1(), data);
-            _goodid2.safeTransfer(msg.sender, good2change.amount1());
             goods[_goodid1].swapCommit(
                 swapcache.good1currentState,
                 swapcache.feeQuantity
@@ -364,6 +363,8 @@ contract TTSwap_Market is
                 swapcache.good2currentState,
                 good2change.amount0()
             );
+
+            _goodid2.safeTransfer(msg.sender, good2change.amount1());
             emit e_buyGood(
                 _goodid1,
                 _goodid2,
@@ -384,7 +385,11 @@ contract TTSwap_Market is
                 good2config: goods[_goodid2].goodConfig
             });
             L_Good.swapCompute2(swapcache, _tradetimes);
-            if (swapcache.remainQuantity > 0) revert TTSwapError(33);
+
+            if (
+                swapcache.remainQuantity > 0 || swapcache.swapvalue < 10_000_000
+            ) revert TTSwapError(33);
+
             good1change = toTTSwapUINT256(swapcache.feeQuantity, _swapQuantity);
             good2change = toTTSwapUINT256(
                 swapcache.good2config.getBuyFee(swapcache.outputQuantity),
@@ -392,7 +397,6 @@ contract TTSwap_Market is
                     swapcache.good2config.getBuyFee(swapcache.outputQuantity)
             );
 
-            _goodid1.safeTransfer(_recipent, good1change.amount1());
             _goodid2.transferFrom(msg.sender, good2change.amount1(), data);
 
             goods[_goodid1].swapCommit(
@@ -404,6 +408,7 @@ contract TTSwap_Market is
                 good2change.amount0()
             );
 
+            _goodid1.safeTransfer(_recipent, good1change.amount1());
             emit e_buyGood(
                 _goodid1,
                 _goodid2,

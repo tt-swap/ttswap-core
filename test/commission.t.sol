@@ -109,7 +109,7 @@ contract commission is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            6300,
+            63000000,
             1,
             address(0),
             defaultdata
@@ -118,7 +118,7 @@ contract commission is BaseSetup {
         market.buyGood(
             metagood,
             normalgoodbtc,
-            6300,
+            63000000,
             1,
             address(0),
             defaultdata

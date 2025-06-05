@@ -48,10 +48,9 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
     address private immutable usdt;
     // lasttime is for stake
 
-    bytes32 internal constant _PERMITSHARE_TYPEHASH =
-        keccak256(
-            "permitShare(uint128 amount,uint120 chips,uint8 metric,address owner,uint128 existamount,uint128 deadline,uint256 nonce)"
-        );
+    bytes32 internal constant _PERMITSHARE_TYPEHASH = keccak256(
+        "permitShare(uint128 amount,uint120 chips,uint8 metric,address owner,uint128 existamount,uint128 deadline,uint256 nonce)"
+    );
 
     /**
      * @dev Constructor to initialize the TTS token
@@ -59,11 +58,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @param _dao_admin Address of the DAO admin
      * @param _ttsconfig Configuration for the TTS token
      */
-    constructor(
-        address _usdt,
-        address _dao_admin,
-        uint256 _ttsconfig
-    ) ERC20("TTSwap Token", "TTS", 6) {
+    constructor(address _usdt, address _dao_admin, uint256 _ttsconfig) ERC20("TTSwap Token", "TTS", 6) {
         usdt = _usdt;
         stakestate = toTTSwapUINT256(uint128(block.timestamp), 0);
         dao_admin = _dao_admin;
@@ -82,8 +77,9 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @dev  this chain trade vol ratio in protocol
      */
     function setRatio(uint256 _ratio) external {
-        if (_ratio > 10000 || auths[msg.sender] & 2 != 2)
+        if (_ratio > 10000 || auths[msg.sender] & 2 != 2) {
             revert TTSwapError(17);
+        }
         ttstokenconfig = ttstokenconfig.setratio(_ratio);
         emit e_updatettsconfig(ttstokenconfig);
     }
@@ -146,10 +142,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @notice Emits an e_addShare event with the share details
      */
     /// @inheritdoc I_TTSwap_Token
-    function addShare(
-        s_share memory _share,
-        address owner
-    ) external override onlymain {
+    function addShare(s_share memory _share, address owner) external override onlymain {
         if (left_share < _share.leftamount || msg.sender != dao_admin) {
             revert TTSwapError(18);
         }
@@ -163,12 +156,8 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
         } else {
             s_share memory newpart = shares[owner];
             newpart.leftamount += _share.leftamount;
-            newpart.chips = newpart.chips >= _share.chips
-                ? newpart.chips
-                : _share.chips;
-            newpart.metric = newpart.metric >= _share.metric
-                ? newpart.metric
-                : _share.metric;
+            newpart.chips = newpart.chips >= _share.chips ? newpart.chips : _share.chips;
+            newpart.metric = newpart.metric >= _share.metric ? newpart.metric : _share.metric;
             shares[owner] = newpart;
         }
         emit e_addShare(owner, _share.leftamount, _share.metric, _share.chips);
@@ -201,13 +190,10 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
     function shareMint() external override onlymain {
         if (
             !I_TTSwap_Market(marketcontract).ishigher(
-                address(this),
-                usdt,
-                2 ** shares[msg.sender].metric * 2 ** 128 + 20
+                address(this), usdt, 2 ** shares[msg.sender].metric * 2 ** 128 + 20
             ) || shares[msg.sender].leftamount == 0
         ) revert TTSwapError(23);
-        uint128 mintamount = shares[msg.sender].leftamount /
-            shares[msg.sender].chips;
+        uint128 mintamount = shares[msg.sender].leftamount / shares[msg.sender].chips;
         shares[msg.sender].leftamount -= mintamount;
         shares[msg.sender].metric += 1;
         _mint(msg.sender, mintamount);
@@ -223,11 +209,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      */
     /// @inheritdoc I_TTSwap_Token
     function addreferral(address user, address referral) external override {
-        if (
-            auths[msg.sender] == 1 &&
-            referrals[user] == address(0) &&
-            user != referral
-        ) {
+        if (auths[msg.sender] == 1 && referrals[user] == address(0) && user != referral) {
             referrals[user] = referral;
             emit e_addreferral(user, referral);
         }
@@ -239,9 +221,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @return A tuple containing the DAO admin address and the customer's referrer address
      */
     /// @inheritdoc I_TTSwap_Token
-    function getreferralanddaoadmin(
-        address _customer
-    ) external view override returns (address, address) {
+    function getreferralanddaoadmin(address _customer) external view override returns (address, address) {
         return (dao_admin, referrals[_customer]);
     }
 
@@ -250,10 +230,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @param usdtamount Amount of USDT to spend on token purchase
      */
     /// @inheritdoc I_TTSwap_Token
-    function publicSell(
-        uint256 usdtamount,
-        bytes calldata data
-    ) external onlymain {
+    function publicSell(uint256 usdtamount, bytes calldata data) external onlymain {
         publicsell += uint128(usdtamount);
         if (publicsell > 500_000_000_000) revert TTSwapError(24);
         usdt.transferFrom(msg.sender, address(this), usdtamount, data);
@@ -279,10 +256,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @notice Transfers the specified amount of USDT to the recipient
      */
     /// @inheritdoc I_TTSwap_Token
-    function withdrawPublicSell(
-        uint256 amount,
-        address recipient
-    ) external onlymain {
+    function withdrawPublicSell(uint256 amount, address recipient) external onlymain {
         if (msg.sender != dao_admin) revert TTSwapError(25);
         usdt.safeTransfer(recipient, amount);
     }
@@ -294,29 +268,18 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @return netconstruct Net construct value
      */
     /// @inheritdoc I_TTSwap_Token
-    function stake(
-        address _staker,
-        uint128 proofvalue
-    ) external override returns (uint128 netconstruct) {
+    function stake(address _staker, uint128 proofvalue) external override returns (uint128 netconstruct) {
         if (auths[msg.sender] != 1) revert TTSwapError(26);
         _stakeFee();
         uint256 restakeid = uint256(keccak256(abi.encode(_staker, msg.sender)));
-        netconstruct = poolstate.amount1() == 0
-            ? 0
-            : mulDiv(poolstate.amount1(), proofvalue, stakestate.amount1());
+        netconstruct = poolstate.amount1() == 0 ? 0 : mulDiv(poolstate.amount1(), proofvalue, stakestate.amount1());
         poolstate = add(poolstate, toTTSwapUINT256(netconstruct, netconstruct));
         stakestate = add(stakestate, toTTSwapUINT256(0, proofvalue));
         stakeproof[restakeid].fromcontract = msg.sender;
-        stakeproof[restakeid].proofstate = add(
-            stakeproof[restakeid].proofstate,
-            toTTSwapUINT256(proofvalue, netconstruct)
-        );
+        stakeproof[restakeid].proofstate =
+            add(stakeproof[restakeid].proofstate, toTTSwapUINT256(proofvalue, netconstruct));
         emit e_stakeinfo(
-            _staker,
-            stakeproof[restakeid].proofstate,
-            toTTSwapUINT256(0, netconstruct),
-            stakestate,
-            poolstate
+            _staker, stakeproof[restakeid].proofstate, toTTSwapUINT256(0, netconstruct), stakestate, poolstate
         );
     }
 
@@ -337,26 +300,17 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
             construct = stakeproof[restakeid].proofstate.amount1();
             delete stakeproof[restakeid];
         } else {
-            construct = stakeproof[restakeid].proofstate.getamount1fromamount0(
-                proofvalue
-            );
-            stakeproof[restakeid].proofstate = sub(
-                stakeproof[restakeid].proofstate,
-                toTTSwapUINT256(proofvalue, construct)
-            );
+            construct = stakeproof[restakeid].proofstate.getamount1fromamount0(proofvalue);
+            stakeproof[restakeid].proofstate =
+                sub(stakeproof[restakeid].proofstate, toTTSwapUINT256(proofvalue, construct));
         }
-        profit = toTTSwapUINT256(poolstate.amount0(), stakestate.amount1())
-            .getamount0fromamount1(proofvalue);
+        profit = toTTSwapUINT256(poolstate.amount0(), stakestate.amount1()).getamount0fromamount1(proofvalue);
         stakestate = sub(stakestate, toTTSwapUINT256(0, proofvalue));
         poolstate = sub(poolstate, toTTSwapUINT256(profit, construct));
         profit = profit - construct;
         if (profit > 0) _mint(_staker, profit);
         emit e_stakeinfo(
-            _staker,
-            stakeproof[restakeid].proofstate,
-            toTTSwapUINT256(construct, profit),
-            stakestate,
-            poolstate
+            _staker, stakeproof[restakeid].proofstate, toTTSwapUINT256(construct, profit), stakestate, poolstate
         );
     }
 
@@ -367,17 +321,10 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
         if (stakestate.amount0() + 86400 < block.timestamp) {
             stakestate = add(stakestate, toTTSwapUINT256(86400, 0));
             uint128 leftamount = uint128(200_000_000_000_000 - totalSupply);
-            uint128 mintamount = leftamount < 1000000
-                ? 1000000
-                : leftamount / 18250; //leftamount /50 /365
-            poolstate = add(
-                poolstate,
-                toTTSwapUINT256(ttstokenconfig.getratio(mintamount), 0)
-            );
+            uint128 mintamount = leftamount < 1000000 ? 1000000 : leftamount / 18250; //leftamount /50 /365
+            poolstate = add(poolstate, toTTSwapUINT256(ttstokenconfig.getratio(mintamount), 0));
 
-            emit e_updatepool(
-                toTTSwapUINT256(stakestate.amount0(), poolstate.amount0())
-            );
+            emit e_updatepool(toTTSwapUINT256(stakestate.amount0(), poolstate.amount0()));
         }
     }
     // burn
@@ -416,88 +363,54 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
         emit Transfer(from, address(0), amount);
     }
 
-    function permitShare(
-        s_share memory _share,
-        uint128 dealline,
-        bytes calldata signature
-    ) external override {
+    function permitShare(s_share memory _share, uint128 dealline, bytes calldata signature) external override {
         if (block.timestamp > dealline) revert TTSwapError(36);
         // Verify the signer address from the signature.
         signature.verify(
-            _hashTypedData(
-                shareHash(
-                    _share,
-                    msg.sender,
-                    shares[msg.sender].leftamount,
-                    dealline,
-                    nonces[msg.sender]++
-                )
-            ),
+            _hashTypedData(shareHash(_share, msg.sender, shares[msg.sender].leftamount, dealline, nonces[msg.sender]++)),
             dao_admin
         );
         _addShare(_share, msg.sender);
     }
 
-    function shareHash(
-        s_share memory _share,
-        address owner,
-        uint128 leftamount,
-        uint128 deadline,
-        uint256 nonce
-    ) public pure override returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(
-                    _PERMITSHARE_TYPEHASH,
-                    _share.leftamount,
-                    _share.chips,
-                    _share.metric,
-                    owner,
-                    leftamount,
-                    deadline,
-                    nonce
-                )
-            );
+    function shareHash(s_share memory _share, address owner, uint128 leftamount, uint128 deadline, uint256 nonce)
+        public
+        pure
+        override
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encode(
+                _PERMITSHARE_TYPEHASH,
+                _share.leftamount,
+                _share.chips,
+                _share.metric,
+                owner,
+                leftamount,
+                deadline,
+                nonce
+            )
+        );
     }
 
     /// @notice Builds a domain separator using the current chainId and contract address.
-    function _buildDomainSeparator(
-        bytes32 typeHash,
-        bytes32 nameHash
-    ) private view returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(typeHash, nameHash, block.chainid, address(this))
-            );
+    function _buildDomainSeparator(bytes32 typeHash, bytes32 nameHash) private view returns (bytes32) {
+        return keccak256(abi.encode(typeHash, nameHash, block.chainid, address(this)));
     }
 
     /// @notice Creates an EIP-712 typed data hash
     function _hashTypedData(bytes32 dataHash) internal view returns (bytes32) {
-        return
-            keccak256(
-                abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR(), dataHash)
-            );
+        return keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR(), dataHash));
     }
 
-    function DOMAIN_SEPARATOR()
-        public
-        view
-        override(ERC20, IEIP712)
-        returns (bytes32)
-    {
-        return
-            block.chainid == INITIAL_CHAIN_ID
-                ? INITIAL_DOMAIN_SEPARATOR
-                : computeDomainSeparator();
+    function DOMAIN_SEPARATOR() public view override(ERC20, IEIP712) returns (bytes32) {
+        return block.chainid == INITIAL_CHAIN_ID ? INITIAL_DOMAIN_SEPARATOR : computeDomainSeparator();
     }
 
     function computeDomainSeparator() internal view override returns (bytes32) {
-        return
-            _buildDomainSeparator(
-                keccak256(
-                    "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-                ),
-                keccak256(bytes(name))
-            );
+        return _buildDomainSeparator(
+            keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+            keccak256(bytes(name))
+        );
     }
 }

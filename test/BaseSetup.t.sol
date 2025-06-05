@@ -21,12 +21,7 @@ contract BaseSetup is Test, GasSnapshot {
     event debuggdata(bytes);
 
     function setUp() public virtual {
-        uint256 m_marketconfig = (45 << 250) +
-            (5 << 244) +
-            (10 << 238) +
-            (15 << 232) +
-            (25 << 226) +
-            (20 << 220);
+        uint256 m_marketconfig = (45 << 250) + (5 << 244) + (10 << 238) + (15 << 232) + (25 << 226) + (20 << 220);
 
         users[0] = payable(address(1));
         users[1] = payable(address(2));
@@ -43,12 +38,7 @@ contract BaseSetup is Test, GasSnapshot {
         vm.startPrank(marketcreator);
         tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255);
         snapStart("depoly Market Manager");
-        market = new TTSwap_Market(
-            m_marketconfig,
-            address(tts_token),
-            marketcreator,
-            marketcreator
-        );
+        market = new TTSwap_Market(m_marketconfig, address(tts_token), marketcreator, marketcreator);
         snapEnd();
         tts_token.addauths(address(market), 1);
         tts_token.addauths(marketcreator, 3);

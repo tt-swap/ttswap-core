@@ -8,16 +8,14 @@ import {TTSwapError} from "./L_Error.sol";
 library L_Transient {
     // The slot holding the Value state, transiently. bytes32(uint256(keccak256("VALUE_SLOT")) - 1)
 
-    bytes32 constant VALUE_SLOT =
-        0xcbe27d488af5b5c1b0bd8d89be6fdfeaed3ad42719044fd9b728f33df1d6f1d1;
+    bytes32 constant VALUE_SLOT = 0xcbe27d488af5b5c1b0bd8d89be6fdfeaed3ad42719044fd9b728f33df1d6f1d1;
     // The slot holding the Value state, transiently. bytes32(uint256(keccak256("DEPTH_SLOT")) - 1)
-    bytes32 constant DEPTH_SLOT =
-        0x87b52c29898e62efc1f9a9b00a26dcbdaee98d728c56841703077b7c0d20dee7;
+    bytes32 constant DEPTH_SLOT = 0x87b52c29898e62efc1f9a9b00a26dcbdaee98d728c56841703077b7c0d20dee7;
 
     // The slot holding the Value state, transiently. bytes32(uint256(keccak256("LOCK_SLOT")) - 1)
 
-    bytes32 constant LOCK_SLOT =
-        0xe2afc7ec4dbb9bfdb1b8e8bcf21a055747c25bf2faaea9cb5a134005381f4843;
+    bytes32 constant LOCK_SLOT = 0xe2afc7ec4dbb9bfdb1b8e8bcf21a055747c25bf2faaea9cb5a134005381f4843;
+
     function set(address locker) internal {
         assembly {
             tstore(LOCK_SLOT, locker)
@@ -41,6 +39,7 @@ library L_Transient {
             value := tload(VALUE_SLOT)
         }
     }
+
     function increaseValue(uint256 amount) internal {
         assembly {
             tstore(VALUE_SLOT, add(tload(VALUE_SLOT), amount))

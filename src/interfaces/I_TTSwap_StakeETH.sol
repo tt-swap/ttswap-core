@@ -15,11 +15,7 @@ interface I_TTSwap_StakeETH {
     /// @param totalState amount0:represent total share ,amount1:represent totalEth quantity
     /// @param totalStake amount0:represent staking amount ,amount1:represent the get amount of reth
     /// @param reward reward of the staking
-    event e_rocketpoolUnstaked(
-        uint256 totalStake,
-        uint256 totalState,
-        uint128 reward
-    );
+    event e_rocketpoolUnstaked(uint256 totalStake, uint256 totalState, uint128 reward);
     /// @notice Emitted when invest reth to market
     /// @param rethStaking amount0:represent investing amount of reth, amount1:represent total reward
     event e_stakeeth_invest(uint256 rethStaking);
@@ -39,11 +35,7 @@ interface I_TTSwap_StakeETH {
     /// @param rethStaking amount0:represent investing amount of reth, amount1:represent total reward
     /// @param stakeamount  represent amount of stake
     event e_stakeSETH(
-        uint256 totalStake,
-        uint256 totalState,
-        uint256 sethShare,
-        uint256 rethStaking,
-        uint128 stakeamount
+        uint256 totalStake, uint256 totalState, uint256 sethShare, uint256 rethStaking, uint128 stakeamount
     );
 
     /// @notice Emitted when user stake weth
@@ -53,11 +45,7 @@ interface I_TTSwap_StakeETH {
     /// @param rethStaking amount0:represent investing amount of reth, amount1:represent total reward
     /// @param stakeamount  represent amount of stake
     event e_stakeSWETH(
-        uint256 totalStake,
-        uint256 totalState,
-        uint256 swethShare,
-        uint256 rethStaking,
-        uint128 stakeamount
+        uint256 totalStake, uint256 totalState, uint256 swethShare, uint256 rethStaking, uint128 stakeamount
     );
     /// @notice Emitted when user unstake eth
     /// @param totalStake amount0:represent staking amount ,amount1:represent the get amount of reth
@@ -66,11 +54,7 @@ interface I_TTSwap_StakeETH {
     /// @param rethStaking amount0:represent investing amount of reth, amount1:represent total reward
     /// @param unstakeAmount amount0:represent amount of reward,amount1 :represent the unstake amount
     event e_unstakeSETH(
-        uint256 totalStake,
-        uint256 totalState,
-        uint256 sethShare,
-        uint256 rethStaking,
-        uint256 unstakeAmount
+        uint256 totalStake, uint256 totalState, uint256 sethShare, uint256 rethStaking, uint256 unstakeAmount
     );
 
     /// @notice Emitted when user unstake weth
@@ -80,16 +64,13 @@ interface I_TTSwap_StakeETH {
     /// @param rethStaking amount0:represent investing amount of reth, amount1:represent total reward
     /// @param unstakeAmount amount0:represent amount of reward,amount1 :represent the unstake amount
     event e_unstakeSWETH(
-        uint256 totalStake,
-        uint256 totalState,
-        uint256 swethShare,
-        uint256 rethStaking,
-        uint256 unstakeAmount
+        uint256 totalStake, uint256 totalState, uint256 swethShare, uint256 rethStaking, uint256 unstakeAmount
     );
     /**
      * @notice record the state of staking,
      * @return amount0:represent total share ,amount1:represent totalEth quantity
      */
+
     function totalState() external returns (uint256);
     /**
      * @notice record the state of stake eth ,
@@ -124,10 +105,7 @@ interface I_TTSwap_StakeETH {
      * @param amount the amount of unstake(only seth or sweth)
      * @return reward the amount of reward
      */
-    function unstakeEthSome(
-        address token,
-        uint128 amount
-    ) external returns (uint128 reward);
+    function unstakeEthSome(address token, uint128 amount) external returns (uint128 reward);
 
     /**
      * @notice call when market  syncReward info
@@ -141,9 +119,7 @@ interface I_TTSwap_StakeETH {
      * @param stakeamount the amount of eth
      * @return rethAmount the amount of reth
      */
-    function stakeRocketPoolETH(
-        uint128 stakeamount
-    ) external returns (uint128 rethAmount);
+    function stakeRocketPoolETH(uint128 stakeamount) external returns (uint128 rethAmount);
 
     /**
      * @notice call when unstake eth from rocketpool

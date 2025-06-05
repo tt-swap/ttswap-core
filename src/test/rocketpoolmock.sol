@@ -18,30 +18,20 @@ contract rocketpoolmock is
     uint256 public rETHValue = 10 ** 19;
 
     mapping(bytes32 => address) private addressStorage;
-    constructor(
-        string memory _name,
-        string memory _symbol,
-        uint8 _decimals
-    ) ERC20(_name, _symbol, _decimals) {}
+
+    constructor(string memory _name, string memory _symbol, uint8 _decimals) ERC20(_name, _symbol, _decimals) {}
 
     function getAddress(bytes32 _key) external view override returns (address) {
         return addressStorage[_key];
     }
 
     function testrocketDAOProtocolSettingsDepositKey() external {
-        bytes32 kk = keccak256(
-            abi.encodePacked(
-                "contract.address",
-                "rocketDAOProtocolSettingsDeposit"
-            )
-        );
+        bytes32 kk = keccak256(abi.encodePacked("contract.address", "rocketDAOProtocolSettingsDeposit"));
         addressStorage[kk] = address(this);
     }
 
     function testrocketDepositPoolKey() external {
-        bytes32 kk = keccak256(
-            abi.encodePacked("contract.address", "rocketDepositPool")
-        );
+        bytes32 kk = keccak256(abi.encodePacked("contract.address", "rocketDepositPool"));
         addressStorage[kk] = address(this);
     }
 
@@ -63,14 +53,14 @@ contract rocketpoolmock is
         payable(msg.sender).transfer(_ethvalue);
         _burn(msg.sender, _rethAmount);
     }
+
     function deposit() external payable {
-        uint256 addreth = ETHValue == 0
-            ? msg.value
-            : ((rETHValue * msg.value) / ETHValue);
+        uint256 addreth = ETHValue == 0 ? msg.value : ((rETHValue * msg.value) / ETHValue);
         rETHValue += addreth;
         ETHValue += msg.value;
         _mint(msg.sender, addreth);
     }
+
     function getBalance() external view returns (uint256) {
         return address(this).balance;
     }
@@ -78,19 +68,17 @@ contract rocketpoolmock is
     function getDepositEnabled() external view returns (bool) {
         return true;
     }
-    function getMaximumDepositPoolSize()
-        external
-        view
-        override
-        returns (uint256)
-    {
+
+    function getMaximumDepositPoolSize() external view override returns (uint256) {
         return 1000 ether;
     }
 
     function addreward() external payable {
         ETHValue += msg.value;
     }
+
     event EtherDeposited(address, uint256, uint256);
+
     receive() external payable {
         // Emit ether deposited event
         emit EtherDeposited(msg.sender, msg.value, block.timestamp);

@@ -59,13 +59,7 @@ interface I_TTSwap_Market {
     /// @param _construct A 256-bit value where the first 128 bits represent the good's ID and the last 128 bits represent the stake construct
     /// @param _goodConfig The configuration of the meta good (refer to the whitepaper for details)
     /// @param _initial Market initialization parameters: amount0 is the value, amount1 is the quantity
-    event e_initMetaGood(
-        uint256 _proofNo,
-        address _goodid,
-        uint256 _construct,
-        uint256 _goodConfig,
-        uint256 _initial
-    );
+    event e_initMetaGood(uint256 _proofNo, address _goodid, uint256 _construct, uint256 _goodConfig, uint256 _initial);
 
     /// @notice Emitted when a good is created and initialized
     /// @param _proofNo The ID of the investment proof
@@ -92,11 +86,7 @@ interface I_TTSwap_Market {
     /// @param good1change The status of the sold good (amount0: fee, amount1: quantity)
     /// @param good2change The status of the bought good (amount0: fee, amount1: quantity)
     event e_buyGood(
-        address indexed sellgood,
-        address indexed forgood,
-        uint256 swapvalue,
-        uint256 good1change,
-        uint256 good2change
+        address indexed sellgood, address indexed forgood, uint256 swapvalue, uint256 good1change, uint256 good2change
     );
 
     /// @notice Emitted when a user invests in a normal good
@@ -119,6 +109,7 @@ interface I_TTSwap_Market {
     /// @param _proofNo The ID of the investment proof
     /// @param _normalGoodNo The ID of the normal good
     /// @param _valueGoodNo The ID of the value good
+    /// @param _gater The Gater of User
     /// @param _normalgood The disinvestment details of the normal good (amount0: actual fee, amount1: actual disinvest quantity)
     /// @param _valuegood The disinvestment details of the value good (amount0: actual fee, amount1: actual disinvest quantity)
     /// @param _profit The profit (amount0: normal good profit, amount1: value good profit)
@@ -126,6 +117,7 @@ interface I_TTSwap_Market {
         uint256 indexed _proofNo,
         address _normalGoodNo,
         address _valueGoodNo,
+        address _gater,
         uint256 _value,
         uint256 _normalgood,
         uint256 _valuegood,
@@ -141,12 +133,10 @@ interface I_TTSwap_Market {
     /// @param _goodconfig Configuration of the good
     /// @param data Configuration of the good
     /// @return Success status
-    function initMetaGood(
-        address _erc20address,
-        uint256 _initial,
-        uint256 _goodconfig,
-        bytes calldata data
-    ) external payable returns (bool);
+    function initMetaGood(address _erc20address, uint256 _initial, uint256 _goodconfig, bytes calldata data)
+        external
+        payable
+        returns (bool);
 
     /// @notice Initialize a normal good in the market
     /// @param _valuegood The ID of the value good used to measure the normal good's value
@@ -193,12 +183,10 @@ interface I_TTSwap_Market {
      * @return good1change amount0()good1tradeamount,good1tradefee
      * @return good2change amount0()good2tradeamount,good2tradefee
      */
-    function buyGoodCheck(
-        address _goodid1,
-        address _goodid2,
-        uint128 _swapQuantity,
-        uint128 _tradetimes
-    ) external view returns (uint256 good1change, uint256 good2change);
+    function buyGoodCheck(address _goodid1, address _goodid2, uint128 _swapQuantity, uint128 _tradetimes)
+        external
+        view
+        returns (uint256 good1change, uint256 good2change);
 
     /// @notice Invest in a normal good
     /// @param _togood ID of the normal good to invest in
@@ -219,30 +207,20 @@ interface I_TTSwap_Market {
     /// @param _gater Address of the gater
     /// @return reward1 status
     /// @return reward2 status
-    function disinvestProof(
-        uint256 _proofid,
-        uint128 _goodQuantity,
-        address _gater
-    ) external returns (uint128 reward1, uint128 reward2);
+    function disinvestProof(uint256 _proofid, uint128 _goodQuantity, address _gater)
+        external
+        returns (uint128 reward1, uint128 reward2);
 
     /// @notice Check if the price of a good is higher than a comparison price
     /// @param goodid ID of the good to check
     /// @param valuegood ID of the value good
     /// @param compareprice Price to compare against
     /// @return Whether the good's price is higher
-    function ishigher(
-        address goodid,
-        address valuegood,
-        uint256 compareprice
-    ) external view returns (bool);
+    function ishigher(address goodid, address valuegood, uint256 compareprice) external view returns (bool);
 
-    function getProofState(
-        uint256 proofid
-    ) external view returns (S_ProofState memory);
+    function getProofState(uint256 proofid) external view returns (S_ProofState memory);
 
-    function getGoodState(
-        address goodkey
-    ) external view returns (S_GoodTmpState memory);
+    function getGoodState(address goodkey) external view returns (S_GoodTmpState memory);
 
     /// @notice Returns the market configuration
     /// @dev Can be changed by the market manager
@@ -258,19 +236,13 @@ interface I_TTSwap_Market {
     /// @param _goodid The ID of the good
     /// @param _goodConfig The new configuration
     /// @return Success status
-    function updateGoodConfig(
-        address _goodid,
-        uint256 _goodConfig
-    ) external returns (bool);
+    function updateGoodConfig(address _goodid, uint256 _goodConfig) external returns (bool);
 
     /// @notice Allows market admin to modify a good's attributes
     /// @param _goodid The ID of the good
     /// @param _goodConfig The new configuration
     /// @return Success status
-    function modifyGoodConfig(
-        address _goodid,
-        uint256 _goodConfig
-    ) external returns (bool);
+    function modifyGoodConfig(address _goodid, uint256 _goodConfig) external returns (bool);
 
     /// @notice Changes the owner of a good
     /// @param _goodid The ID of the good
@@ -285,10 +257,7 @@ interface I_TTSwap_Market {
     /// @param _goodid Array of good IDs
     /// @param _recipent The recipient's address
     /// @return Array of commission amounts
-    function queryCommission(
-        address[] memory _goodid,
-        address _recipent
-    ) external returns (uint256[] memory);
+    function queryCommission(address[] memory _goodid, address _recipent) external returns (uint256[] memory);
 
     /// @notice Adds an address to the ban list
     /// @param _user The address to ban
@@ -303,15 +272,15 @@ interface I_TTSwap_Market {
     /// @notice Delivers welfare to investors
     /// @param goodid The ID of the good
     /// @param welfare The amount of welfare
-    function goodWelfare(
-        address goodid,
-        uint128 welfare,
-        bytes calldata data1
-    ) external payable;
+    function goodWelfare(address goodid, uint128 welfare, bytes calldata data1) external payable;
     function unstakeETH(address token, uint128 amount) external;
     function stakeETH(address token, uint128 amount) external;
     function syncReward(address token) external;
     function changeReStakingContrat(address _target) external;
+    function getRecentGoodState(address good1, address good2)
+        external
+        view
+        returns (uint256 good1correntstate, uint256 good2correntstate);
 }
 /**
  * @dev Represents the state of a proof

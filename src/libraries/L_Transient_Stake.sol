@@ -7,14 +7,11 @@ import {TTSwapError} from "./L_Error.sol";
 
 library L_Transient {
     // The slot holding the Value state, transiently. bytes32(uint256(keccak256("STAKE_VALUE_SLOT")) - 1)
-    bytes32 constant VALUE_SLOT =
-        0xbc0bea6b0debcaf41836b6168bd1bce6a6cfb17d221105a2e34f5c1e5634e2a1;
+    bytes32 constant VALUE_SLOT = 0xbc0bea6b0debcaf41836b6168bd1bce6a6cfb17d221105a2e34f5c1e5634e2a1;
     // The slot holding the Value state, transiently. bytes32(uint256(keccak256("STAKE_DEPTH_SLOT")) - 1)
-    bytes32 constant DEPTH_SLOT =
-        0x968200d04761c0c59f9a621549e0c376bd2c036f6fd5b0d8ff844478c3216f8e;
+    bytes32 constant DEPTH_SLOT = 0x968200d04761c0c59f9a621549e0c376bd2c036f6fd5b0d8ff844478c3216f8e;
     // The slot holding the Value state, transiently. bytes32(uint256(keccak256("STAKE_LOCK_SLOT")) - 1)
-    bytes32 constant LOCK_SLOT =
-        0xe8b57f2a24cc49561abc37cc14eb27f7e291d1ac82b5f173f246cc4b4de01451;
+    bytes32 constant LOCK_SLOT = 0xe8b57f2a24cc49561abc37cc14eb27f7e291d1ac82b5f173f246cc4b4de01451;
 
     function set(address locker) internal {
         assembly {

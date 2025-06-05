@@ -26,12 +26,7 @@ contract testTTSwapToken is Test, GasSnapshot {
         marketcreatorkey = 0xA121;
         marketcreator = vm.addr(marketcreatorkey);
         vm.warp(1728111156);
-        uint256 m_marketconfig = (45 << 250) +
-            (5 << 244) +
-            (10 << 238) +
-            (15 << 232) +
-            (25 << 226) +
-            (20 << 220);
+        uint256 m_marketconfig = (45 << 250) + (5 << 244) + (10 << 238) + (15 << 232) + (25 << 226) + (20 << 220);
 
         users[0] = payable(address(1));
         users[1] = payable(address(2));
@@ -45,18 +40,9 @@ contract testTTSwapToken is Test, GasSnapshot {
         usdt = new MyToken("USDT", "USDT", 6);
         eth = new MyToken("ETH", "ETH", 18);
         vm.startPrank(marketcreator);
-        tts_token = new TTSwap_Token(
-            address(usdt),
-            marketcreator,
-            2 ** 255 + 10000
-        );
+        tts_token = new TTSwap_Token(address(usdt), marketcreator, 2 ** 255 + 10000);
         snapStart("depoly Market Manager");
-        market = new TTSwap_Market(
-            m_marketconfig,
-            address(tts_token),
-            marketcreator,
-            marketcreator
-        );
+        market = new TTSwap_Market(m_marketconfig, address(tts_token), marketcreator, marketcreator);
         snapEnd();
 
         tts_token.addauths(address(market), 1);
@@ -73,11 +59,7 @@ contract testTTSwapToken is Test, GasSnapshot {
         tts_token.stake(users[2], 100000);
         vm.stopPrank();
         assertEq(tts_token.stakestate() % 2 ** 128, 100000, "pool value error");
-        assertEq(
-            tts_token.poolstate() / 2 ** 128,
-            10958904109,
-            "pool asset error1"
-        );
+        assertEq(tts_token.poolstate() / 2 ** 128, 10958904109, "pool asset error1");
         assertEq(tts_token.poolstate() % 2 ** 128, 0, "pool construct error");
         assertEq(tts_token.balanceOf(users[2]), 0, "tts balance error");
         console2.log("pool value", tts_token.stakestate() % 2 ** 128);
@@ -93,11 +75,7 @@ contract testTTSwapToken is Test, GasSnapshot {
         console2.log("pool asset", tts_token.poolstate() / 2 ** 128);
         console2.log("pool construct", tts_token.poolstate() % 2 ** 128);
         assertEq(tts_token.stakestate() % 2 ** 128, 99000, "pool value error");
-        assertEq(
-            tts_token.poolstate() / 2 ** 128,
-            10849315068,
-            "pool asset erro2r"
-        );
+        assertEq(tts_token.poolstate() / 2 ** 128, 10849315068, "pool asset erro2r");
         assertEq(tts_token.poolstate() % 2 ** 128, 0, "pool construct error");
         assertEq(tts_token.balanceOf(users[2]), 109589041, "tts balance error");
     }
@@ -116,9 +94,7 @@ contract testTTSwapToken is Test, GasSnapshot {
         s_share memory _share = s_share(10000, 5, 6);
         tts_token.addShare(_share, users[5]);
 
-        (uint128 leftamount, uint128 metric, uint8 chips) = tts_token.shares(
-            users[5]
-        );
+        (uint128 leftamount, uint128 metric, uint8 chips) = tts_token.shares(users[5]);
         assertEq(10000, leftamount, "left amount error");
         assertEq(5, metric, "left metric error");
         assertEq(6, chips, "left chips error");
@@ -152,14 +128,7 @@ contract testTTSwapToken is Test, GasSnapshot {
                 tts_token.DOMAIN_SEPARATOR(),
                 keccak256(
                     abi.encode(
-                        _PERMIT_TYPEHASH,
-                        _share.leftamount,
-                        _share.chips,
-                        _share.metric,
-                        users[5],
-                        10000,
-                        dealline,
-                        0
+                        _PERMIT_TYPEHASH, _share.leftamount, _share.chips, _share.metric, users[5], 10000, dealline, 0
                     )
                 )
             )
@@ -170,9 +139,7 @@ contract testTTSwapToken is Test, GasSnapshot {
 
         vm.startPrank(users[5]);
         tts_token.permitShare(_share, dealline, bytes.concat(r, s, bytes1(v)));
-        (uint128 leftamount, uint128 metric, uint8 chips) = tts_token.shares(
-            users[5]
-        );
+        (uint128 leftamount, uint128 metric, uint8 chips) = tts_token.shares(users[5]);
         assertEq(20000, leftamount, "left amount error");
         assertEq(5, metric, "left metric error");
         assertEq(6, chips, "left chips error");

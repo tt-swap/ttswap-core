@@ -9,15 +9,8 @@ interface IERC20Permit {
     ///
     /// _INTERFACE_ID_ERC4494 = 0x5604e225
 
-    function permit(
-        address owner,
-        address spender,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external;
+    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
+        external;
     /// @notice Returns the nonce of an NFT - useful for creating permits
     /// @param tokenId the index of the NFT to get the nonce of
     /// @return the uint256 representation of the nonce

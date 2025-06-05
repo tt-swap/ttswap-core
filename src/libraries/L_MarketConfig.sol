@@ -8,10 +8,7 @@ library L_MarketConfigLibrary {
     /// @param config The market configuration
     /// @param amount The total amount to calculate the fee from
     /// @return a The calculated liquidity provider fee amount
-    function getLiquidFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getLiquidFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(250, config)
@@ -25,10 +22,7 @@ library L_MarketConfigLibrary {
     /// @param config The market configuration
     /// @param amount The total amount to calculate the fee from
     /// @return a The calculated seller fee amount
-    function getSellerFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getSellerFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(250, shl(6, config))
@@ -42,10 +36,7 @@ library L_MarketConfigLibrary {
     /// @param config The market configuration
     /// @param amount The total amount to calculate the fee from
     /// @return a The calculated gater fee amount
-    function getGaterFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getGaterFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(250, shl(12, config))
@@ -59,10 +50,7 @@ library L_MarketConfigLibrary {
     /// @param config The market configuration
     /// @param amount The total amount to calculate the fee from
     /// @return a The calculated referrer fee amount
-    function getReferFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getReferFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(250, shl(18, config))
@@ -76,10 +64,7 @@ library L_MarketConfigLibrary {
     /// @param config The market configuration
     /// @param amount The total amount to calculate the fee from
     /// @return a The calculated customer fee amount
-    function getCustomerFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getCustomerFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(250, shl(24, config))
@@ -93,10 +78,7 @@ library L_MarketConfigLibrary {
     /// @param config The market configuration
     /// @param amount The total amount to calculate the fee from
     /// @return a The calculated platform fee amount as a uint128
-    function getPlatFee128(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getPlatFee128(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(251, shl(30, config))
@@ -110,10 +92,7 @@ library L_MarketConfigLibrary {
     /// @param config The market configuration
     /// @param amount The total amount to calculate the fee from
     /// @return a The calculated platform fee amount as a uint256
-    function getPlatFee256(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint256 a) {
+    function getPlatFee256(uint256 config, uint256 amount) internal pure returns (uint256 a) {
         unchecked {
             assembly {
                 config := shr(251, shl(30, config))

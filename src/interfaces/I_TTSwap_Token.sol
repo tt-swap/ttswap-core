@@ -31,12 +31,7 @@ interface I_TTSwap_Token {
     /// @param leftamount The remaining amount to be minted
     /// @param metric The metric used for minting
     /// @param chips The number of chips
-    event e_addShare(
-        address recipient,
-        uint128 leftamount,
-        uint120 metric,
-        uint8 chips
-    );
+    event e_addShare(address recipient, uint128 leftamount, uint120 metric, uint8 chips);
 
     /// @notice Emitted when minting is burned
     /// @param owner The index of the minting operation being burned
@@ -56,12 +51,8 @@ interface I_TTSwap_Token {
     /// @param chain The chain ID
     /// @param poolasset The pool asset value
     /// @param proofstate  The value of the pool
-    event e_syncChainStake(
-        //first 128 bit proofvalue,last 128 bit proofconstruct
-        uint32 chain,
-        uint128 poolasset,
-        uint256 proofstate
-    );
+    //first 128 bit proofvalue,last 128 bit proofconstruct
+    event e_syncChainStake(uint32 chain, uint128 poolasset, uint256 proofstate);
 
     /// @notice Emitted when unstaking occurs
     /// @param recipient The address receiving the unstaked tokens
@@ -70,11 +61,7 @@ interface I_TTSwap_Token {
     /// @param stakestate The state of the stake
     /// @param poolstate The state of the pool
     event e_stakeinfo(
-        address recipient,
-        uint256 proofvalue,
-        uint256 unstakestate,
-        uint256 stakestate,
-        uint256 poolstate
+        address recipient, uint256 proofvalue, uint256 unstakestate, uint256 stakestate, uint256 poolstate
     );
     /// @notice Emitted when the pool state is updated
     /// @param poolstate The new state of the pool
@@ -95,9 +82,7 @@ interface I_TTSwap_Token {
      * @param _recipent user's address
      * @return _referral Returns the referrer address for a given user
      */
-    function referrals(
-        address _recipent
-    ) external view returns (address _referral);
+    function referrals(address _recipent) external view returns (address _referral);
     /**
      * @dev Returns the authorization level for a given address
      * @param recipent user's address
@@ -169,10 +154,7 @@ interface I_TTSwap_Token {
     /// @param staker The address of the staker
     /// @param proofvalue The proof value for the stake
     /// @return construct The construct value after staking
-    function stake(
-        address staker,
-        uint128 proofvalue
-    ) external returns (uint128 construct);
+    function stake(address staker, uint128 proofvalue) external returns (uint128 construct);
 
     /// @notice Unstake tokens
     /// @param staker The address of the staker
@@ -183,23 +165,14 @@ interface I_TTSwap_Token {
     /// @param _customer The address of the customer
     /// @return dba_admin The address of the DAO admin
     /// @return referral The address of the referrer
-    function getreferralanddaoadmin(
-        address _customer
-    ) external view returns (address dba_admin, address referral);
+    function getreferralanddaoadmin(address _customer) external view returns (address dba_admin, address referral);
 
-    function permitShare(
-        s_share memory _share,
-        uint128 dealline,
-        bytes calldata signature
-    ) external;
+    function permitShare(s_share memory _share, uint128 dealline, bytes calldata signature) external;
 
-    function shareHash(
-        s_share memory _share,
-        address owner,
-        uint128 leftamount,
-        uint128 deadline,
-        uint256 nonce
-    ) external pure returns (bytes32);
+    function shareHash(s_share memory _share, address owner, uint128 leftamount, uint128 deadline, uint256 nonce)
+        external
+        pure
+        returns (bytes32);
 }
 
 struct s_share {

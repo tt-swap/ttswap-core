@@ -66,11 +66,7 @@ contract testBuy123 is Test {
         market.initMetaGood(
             address(usdt),
             toTTSwapUINT256(4316279969830, 4316279969830),
-            58014493144340224047723362035128774673999617126840714024924520715586495315968 +
-                2 *
-                2 ** 216 +
-                10 *
-                2 ** 206,
+            58014493144340224047723362035128774673999617126840714024924520715586495315968 + 2 * 2 ** 216 + 10 * 2 ** 206,
             defaultdata
         );
         console2.log(1, 1);
@@ -110,20 +106,10 @@ contract testBuy123 is Test {
         vm.startPrank(marketcreator);
         console2.log("before balance of eth", eth.balanceOf(marketcreator));
         console2.log("before balance of wbtc", wbtc.balanceOf(marketcreator));
-        market.buyGood(
-            ethgood,
-            btcgood,
-            1 * 10 ** 18,
-            99,
-            address(0),
-            defaultdata
-        );
+        market.buyGood(ethgood, btcgood, 1 * 10 ** 18, 99, address(0), defaultdata);
         console2.log("after balance of eth", eth.balanceOf(marketcreator));
         console2.log("after balance of wbtc", wbtc.balanceOf(marketcreator));
-        console2.log(
-            33000 * 10 ** 6 * 2 * 10 ** 5 * 995,
-            10 * 10 ** 18 * 128000 * 10 ** 6
-        );
+        console2.log(33000 * 10 ** 6 * 2 * 10 ** 5 * 995, 10 * 10 ** 18 * 128000 * 10 ** 6);
         vm.stopPrank();
     }
 }

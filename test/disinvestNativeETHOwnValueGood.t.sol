@@ -8,7 +8,14 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
-import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
+import {
+    L_TTSwapUINT256Library,
+    toTTSwapUINT256,
+    addsub,
+    subadd,
+    lowerprice,
+    toUint128
+} from "../src/libraries/L_TTSwapUINT256.sol";
 
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
@@ -33,20 +40,9 @@ contract disinvestNativeETHOwnValueGood is BaseSetup {
     function initmetagood() public {
         deal(marketcreator, 1000000 * 10 ** 6);
         vm.startPrank(marketcreator);
-        uint256 _goodconfig = (2 ** 255) +
-            1 *
-            2 ** 217 +
-            3 *
-            2 ** 211 +
-            5 *
-            2 ** 204 +
-            7 *
-            2 ** 197;
+        uint256 _goodconfig = (2 ** 255) + 1 * 2 ** 217 + 3 * 2 ** 211 + 5 * 2 ** 204 + 7 * 2 ** 197;
         market.initMetaGood{value: 50000 * 10 ** 6}(
-            address(1),
-            toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6),
-            _goodconfig,
-            defaultdata
+            address(1), toTTSwapUINT256(50000 * 10 ** 6, 50000 * 10 ** 6), _goodconfig, defaultdata
         );
         metagood = address(1);
         vm.stopPrank();
@@ -54,13 +50,7 @@ contract disinvestNativeETHOwnValueGood is BaseSetup {
 
     function investOwnERC20ValueGood() public {
         vm.startPrank(marketcreator);
-        market.investGood{value: 50000000000}(
-            metagood,
-            address(0),
-            50000 * 10 ** 6,
-            defaultdata,
-            defaultdata
-        );
+        market.investGood{value: 50000000000}(metagood, address(0), 50000 * 10 ** 6, defaultdata, defaultdata);
         vm.stopPrank();
     }
 
@@ -69,22 +59,10 @@ contract disinvestNativeETHOwnValueGood is BaseSetup {
         uint256 normalproof;
         normalproof = S_ProofKey(marketcreator, metagood, address(0)).toId();
         S_ProofState memory _proof = market.getProofState(normalproof);
-        assertEq(
-            _proof.state.amount0(),
-            99995000000,
-            "before disinvest:proof value error"
-        );
-        assertEq(
-            _proof.invest.amount1(),
-            99995000000,
-            "before disinvest:proof quantity error"
-        );
+        assertEq(_proof.state.amount0(), 99995000000, "before disinvest:proof value error");
+        assertEq(_proof.invest.amount1(), 99995000000, "before disinvest:proof quantity error");
 
-        assertEq(
-            _proof.invest.amount0(),
-            0,
-            "before disinvest:proof contruct error"
-        );
+        assertEq(_proof.invest.amount0(), 0, "before disinvest:proof contruct error");
 
         S_GoodTmpState memory good_ = market.getGoodState(metagood);
         assertEq(
@@ -153,21 +131,9 @@ contract disinvestNativeETHOwnValueGood is BaseSetup {
         );
 
         _proof = market.getProofState(normalproof);
-        assertEq(
-            _proof.state.amount0(),
-            89995000000,
-            "after disinvest:proof value error"
-        );
-        assertEq(
-            _proof.invest.amount1(),
-            89995000000,
-            "after disinvest:proof quantity error"
-        );
-        assertEq(
-            _proof.invest.amount0(),
-            0,
-            "after disinvest:proof contruct error"
-        );
+        assertEq(_proof.state.amount0(), 89995000000, "after disinvest:proof value error");
+        assertEq(_proof.invest.amount1(), 89995000000, "after disinvest:proof quantity error");
+        assertEq(_proof.invest.amount0(), 0, "after disinvest:proof contruct error");
         market.disinvestProof(normalproof, 10000 * 10 ** 6, address(0));
         snapLastCall("disinvest_own_nativeeth_valuegood_second");
 

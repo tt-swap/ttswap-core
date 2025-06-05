@@ -14,15 +14,9 @@ library L_SignatureVerification {
     /// @notice Thrown when the recovered contract signature is incorrect
     error InvalidContractSignature();
 
-    bytes32 constant UPPER_BIT_MASK = (
-        0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-    );
+    bytes32 constant UPPER_BIT_MASK = (0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
 
-    function verify(
-        bytes calldata signature,
-        bytes32 hash,
-        address claimedSigner
-    ) internal pure {
+    function verify(bytes calldata signature, bytes32 hash, address claimedSigner) internal pure {
         bytes32 r;
         bytes32 s;
         uint8 v;

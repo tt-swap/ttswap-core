@@ -30,14 +30,7 @@ contract testBuy11 is Test {
     function setUp() public {}
 
     function testUpdateGood() public {
-        uint256 _goodConfig = 1 *
-            2 ** 217 +
-            3 *
-            2 ** 211 +
-            5 *
-            2 ** 204 +
-            7 *
-            2 ** 197;
+        uint256 _goodConfig = 1 * 2 ** 217 + 3 * 2 ** 211 + 5 * 2 ** 204 + 7 * 2 ** 197;
         good1.updateGoodConfig(_goodConfig);
         assertEq(_goodConfig, good1.goodConfig, "update goodconfig error");
 

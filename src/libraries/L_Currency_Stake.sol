@@ -22,6 +22,7 @@ library L_CurrencyLibrary {
     using L_CurrencyLibrary for address;
 
     bytes constant defualtvalue = bytes("");
+
     struct S_Permit {
         uint256 value;
         uint256 deadline;
@@ -55,10 +56,7 @@ library L_CurrencyLibrary {
         bytes sigdata;
     }
 
-    function balanceof(
-        address token,
-        address _sender
-    ) internal view returns (uint256 amount) {
+    function balanceof(address token, address _sender) internal view returns (uint256 amount) {
         if (token.isNative()) {
             amount = address(_sender).balance;
         } else if (token.isWETH()) {
@@ -68,13 +66,7 @@ library L_CurrencyLibrary {
         }
     }
 
-    function transferFrom(
-        address token,
-        address from,
-        address to,
-        uint256 amount,
-        bytes calldata detail
-    ) internal {
+    function transferFrom(address token, address from, address to, uint256 amount, bytes calldata detail) internal {
         bool success;
         if (token.isNative()) {
             L_Transient.decreaseValue(amount);
@@ -83,15 +75,9 @@ library L_CurrencyLibrary {
         } else if (detail.length == 0) {
             transferFromInter(token, from, to, amount);
         } else {
-            S_transferData memory _simplePermit = abi.decode(
-                detail,
-                (S_transferData)
-            );
+            S_transferData memory _simplePermit = abi.decode(detail, (S_transferData));
             if (_simplePermit.transfertype == 2) {
-                S_Permit memory _permit = abi.decode(
-                    _simplePermit.sigdata,
-                    (S_Permit)
-                );
+                S_Permit memory _permit = abi.decode(_simplePermit.sigdata, (S_Permit));
                 bytes memory inputdata = token == dai
                     ? abi.encodeCall(
                         IDAIPermit.permit,
@@ -108,27 +94,11 @@ library L_CurrencyLibrary {
                     )
                     : abi.encodeCall(
                         IERC20Permit.permit,
-                        (
-                            from,
-                            address(this),
-                            _permit.value,
-                            _permit.deadline,
-                            _permit.v,
-                            _permit.r,
-                            _permit.s
-                        )
+                        (from, address(this), _permit.value, _permit.deadline, _permit.v, _permit.r, _permit.s)
                     );
 
                 assembly {
-                    success := call(
-                        gas(),
-                        token,
-                        0,
-                        add(inputdata, 32),
-                        mload(inputdata),
-                        0,
-                        0
-                    )
+                    success := call(gas(), token, 0, add(inputdata, 32), mload(inputdata), 0, 0)
                 }
                 if (success) {
                     transferFromInter(token, from, to, amount);
@@ -136,17 +106,9 @@ library L_CurrencyLibrary {
                     revert ERC20PermitFailed();
                 }
             } else if (_simplePermit.transfertype == 3) {
-                IAllowanceTransfer(_permit2).transferFrom(
-                    from,
-                    to,
-                    to_uint160(amount),
-                    token
-                );
+                IAllowanceTransfer(_permit2).transferFrom(from, to, to_uint160(amount), token);
             } else if (_simplePermit.transfertype == 4) {
-                S_Permit2 memory _permit = abi.decode(
-                    _simplePermit.sigdata,
-                    (S_Permit2)
-                );
+                S_Permit2 memory _permit = abi.decode(_simplePermit.sigdata, (S_Permit2));
                 IAllowanceTransfer(_permit2).permit(
                     from,
                     IAllowanceTransfer.PermitSingle({
@@ -164,30 +126,16 @@ library L_CurrencyLibrary {
                     bytes.concat(_permit.r, _permit.s, bytes1(_permit.v))
                 );
 
-                IAllowanceTransfer(_permit2).transferFrom(
-                    from,
-                    to,
-                    to_uint160(amount),
-                    token
-                );
+                IAllowanceTransfer(_permit2).transferFrom(from, to, to_uint160(amount), token);
             } else if (_simplePermit.transfertype == 5) {
-                S_Permit2 memory _permit = abi.decode(
-                    _simplePermit.sigdata,
-                    (S_Permit2)
-                );
+                S_Permit2 memory _permit = abi.decode(_simplePermit.sigdata, (S_Permit2));
                 ISignatureTransfer(_permit2).permitTransferFrom(
                     ISignatureTransfer.PermitTransferFrom({
-                        permitted: ISignatureTransfer.TokenPermissions({
-                            token: token,
-                            amount: _permit.value
-                        }),
+                        permitted: ISignatureTransfer.TokenPermissions({token: token, amount: _permit.value}),
                         nonce: _permit.nonce,
                         deadline: _permit.deadline
                     }),
-                    ISignatureTransfer.SignatureTransferDetails({
-                        to: to,
-                        requestedAmount: amount
-                    }),
+                    ISignatureTransfer.SignatureTransferDetails({to: to, requestedAmount: amount}),
                     from,
                     bytes.concat(_permit.r, _permit.s, bytes1(_permit.v))
                 );
@@ -195,12 +143,7 @@ library L_CurrencyLibrary {
         }
     }
 
-    function transferFrom(
-        address token,
-        address from,
-        address to,
-        uint256 amount
-    ) internal {
+    function transferFrom(address token, address from, address to, uint256 amount) internal {
         bool success;
         if (token.isNative()) {
             assembly {
@@ -215,12 +158,7 @@ library L_CurrencyLibrary {
         }
     }
 
-    function transferFromInter(
-        address token,
-        address from,
-        address to,
-        uint256 amount
-    ) internal {
+    function transferFromInter(address token, address from, address to, uint256 amount) internal {
         bool success;
 
         /// @solidity memory-safe-assembly
@@ -229,52 +167,32 @@ library L_CurrencyLibrary {
             let freeMemoryPointer := mload(0x40)
 
             // Write the abi-encoded calldata into memory, beginning with the function selector.
-            mstore(
-                freeMemoryPointer,
-                0x23b872dd00000000000000000000000000000000000000000000000000000000
-            )
-            mstore(
-                add(freeMemoryPointer, 4),
-                and(from, 0xffffffffffffffffffffffffffffffffffffffff)
-            ) // Append and mask the "from" argument.
-            mstore(
-                add(freeMemoryPointer, 36),
-                and(to, 0xffffffffffffffffffffffffffffffffffffffff)
-            ) // Append and mask the "to" argument.
+            mstore(freeMemoryPointer, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
+            mstore(add(freeMemoryPointer, 4), and(from, 0xffffffffffffffffffffffffffffffffffffffff)) // Append and mask the "from" argument.
+            mstore(add(freeMemoryPointer, 36), and(to, 0xffffffffffffffffffffffffffffffffffffffff)) // Append and mask the "to" argument.
             mstore(add(freeMemoryPointer, 68), amount) // Append the "amount" argument. Masking not required as it's a full 32 byte type.
 
-            success := and(
-                // Set success to whether the call reverted, if not we check it either
-                // returned exactly 1 (can't just be non-zero data), or had no return data.
-                or(
-                    and(eq(mload(0), 1), gt(returndatasize(), 31)),
-                    iszero(returndatasize())
-                ),
-                // We use 100 because the length of our calldata totals up like so: 4 + 32 * 3.
-                // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
-                // Counterintuitively, this call must be positioned second to the or() call in the
-                // surrounding and() call or else returndatasize() will be zero during the computation.
-                call(gas(), token, 0, freeMemoryPointer, 100, 0, 32)
-            )
+            success :=
+                and(
+                    // Set success to whether the call reverted, if not we check it either
+                    // returned exactly 1 (can't just be non-zero data), or had no return data.
+                    or(and(eq(mload(0), 1), gt(returndatasize(), 31)), iszero(returndatasize())),
+                    // We use 100 because the length of our calldata totals up like so: 4 + 32 * 3.
+                    // We use 0 and 32 to copy up to 32 bytes of return data into the scratch space.
+                    // Counterintuitively, this call must be positioned second to the or() call in the
+                    // surrounding and() call or else returndatasize() will be zero during the computation.
+                    call(gas(), token, 0, freeMemoryPointer, 100, 0, 32)
+                )
         }
         if (!success) revert ERC20TransferFailed();
     }
 
-    function transferFrom(
-        address token,
-        address from,
-        uint256 amount,
-        bytes calldata trandata
-    ) internal {
+    function transferFrom(address token, address from, uint256 amount, bytes calldata trandata) internal {
         address to = address(this);
         transferFrom(token, from, to, uint128(amount), trandata);
     }
 
-    function safeTransfer(
-        address currency,
-        address to,
-        uint256 amount
-    ) internal {
+    function safeTransfer(address currency, address to, uint256 amount) internal {
         // implementation from
         // https://github.com/transmissions11/solmate/blob/e8f96f25d48fe702117ce76c79228ca4f20206cb/src/utils/SafeTransferLib.sol
 
@@ -293,25 +211,20 @@ library L_CurrencyLibrary {
                 let memPointer := mload(0x40)
 
                 // Write the abi-encoded calldata into memory, beginning with the function selector.
-                mstore(
-                    0,
-                    0xa9059cbb00000000000000000000000000000000000000000000000000000000
-                )
+                mstore(0, 0xa9059cbb00000000000000000000000000000000000000000000000000000000)
                 mstore(4, to) // Append the "to" argument.
                 mstore(36, amount) // Append the "amount" argument.
 
-                success := and(
-                    // Set success to whether the call reverted, if not we check it either
-                    // returned exactly 1 (can't just be non-zero data), or had no return data.
-                    or(
-                        and(eq(mload(0), 1), gt(returndatasize(), 31)),
-                        iszero(returndatasize())
-                    ),
-                    // We use 68 because that's the total length of our calldata (4 + 32 * 2)
-                    // Counterintuitively, this call() must be positioned after the or() in the
-                    // surrounding and() because and() evaluates its arguments from right to left.
-                    call(gas(), currency, 0, 0, 68, 0, 32)
-                )
+                success :=
+                    and(
+                        // Set success to whether the call reverted, if not we check it either
+                        // returned exactly 1 (can't just be non-zero data), or had no return data.
+                        or(and(eq(mload(0), 1), gt(returndatasize(), 31)), iszero(returndatasize())),
+                        // We use 68 because that's the total length of our calldata (4 + 32 * 2)
+                        // Counterintuitively, this call() must be positioned after the or() in the
+                        // surrounding and() because and() evaluates its arguments from right to left.
+                        call(gas(), currency, 0, 0, 68, 0, 32)
+                    )
 
                 mstore(0x60, 0) // Restore the zero slot to zero.
                 mstore(0x40, memPointer) // Restore the memPointer.
@@ -345,23 +258,18 @@ library L_CurrencyLibrary {
             let memPointer := mload(0x40)
 
             // Write the abi-encoded calldata into memory, beginning with the function selector.
-            mstore(
-                0,
-                0xd0e30db000000000000000000000000000000000000000000000000000000000
-            )
+            mstore(0, 0xd0e30db000000000000000000000000000000000000000000000000000000000)
 
-            success := and(
-                // Set success to whether the call reverted, if not we check it either
-                // returned exactly 1 (can't just be non-zero data), or had no return data.
-                or(
-                    and(eq(mload(0), 1), gt(returndatasize(), 31)),
-                    iszero(returndatasize())
-                ),
-                // We use 68 because that's the total length of our calldata (4 + 32 * 2)
-                // Counterintuitively, this call() must be positioned after the or() in the
-                // surrounding and() because and() evaluates its arguments from right to left.
-                call(gas(), token, amount, 0, 4, 0, 32)
-            )
+            success :=
+                and(
+                    // Set success to whether the call reverted, if not we check it either
+                    // returned exactly 1 (can't just be non-zero data), or had no return data.
+                    or(and(eq(mload(0), 1), gt(returndatasize(), 31)), iszero(returndatasize())),
+                    // We use 68 because that's the total length of our calldata (4 + 32 * 2)
+                    // Counterintuitively, this call() must be positioned after the or() in the
+                    // surrounding and() because and() evaluates its arguments from right to left.
+                    call(gas(), token, amount, 0, 4, 0, 32)
+                )
 
             mstore(0x60, 0) // Restore the zero slot to zero.
             mstore(0x40, memPointer) // Restore the memPointer.
@@ -381,11 +289,13 @@ library L_CurrencyLibrary {
 
     function approve(address token, address to, uint128 amount) internal {
         if (token == SWETH) {
-            if (!IERC20(WETH).approve(to, uint256(amount)))
+            if (!IERC20(WETH).approve(to, uint256(amount))) {
                 revert ApprovedFailed();
+            }
         } else {
-            if (!IERC20(token).approve(to, uint256(amount)))
+            if (!IERC20(token).approve(to, uint256(amount))) {
                 revert ApprovedFailed();
+            }
         }
     }
 }

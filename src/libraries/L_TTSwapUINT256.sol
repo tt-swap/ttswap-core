@@ -7,18 +7,10 @@ using L_TTSwapUINT256Library for uint256;
 /// @param _amount1 The second 128-bit amount
 /// @return balanceDelta The resulting T_BalanceUINT256
 
-function toTTSwapUINT256(
-    uint128 _amount0,
-    uint128 _amount1
-) pure returns (uint256 balanceDelta) {
+function toTTSwapUINT256(uint128 _amount0, uint128 _amount1) pure returns (uint256 balanceDelta) {
     assembly ("memory-safe") {
-        balanceDelta := or(
-            shl(128, _amount0),
-            and(
-                0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff,
-                _amount1
-            )
-        )
+        balanceDelta :=
+            or(shl(128, _amount0), and(0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff, _amount1))
     }
 }
 
@@ -31,15 +23,9 @@ function add(uint256 a, uint256 b) pure returns (uint256) {
     uint256 res1;
     assembly ("memory-safe") {
         let a0 := sar(128, a)
-        let a1 := and(
-            0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff,
-            a
-        )
+        let a1 := and(0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff, a)
         let b0 := sar(128, b)
-        let b1 := and(
-            0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff,
-            b
-        )
+        let b1 := and(0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff, b)
         res0 := add(a0, b0)
         res1 := add(a1, b1)
     }
@@ -55,15 +41,9 @@ function sub(uint256 a, uint256 b) pure returns (uint256) {
     uint256 res1;
     assembly ("memory-safe") {
         let a0 := sar(128, a)
-        let a1 := and(
-            0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff,
-            a
-        )
+        let a1 := and(0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff, a)
         let b0 := sar(128, b)
-        let b1 := and(
-            0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff,
-            b
-        )
+        let b1 := and(0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff, b)
         res0 := sub(a0, b0)
         res1 := sub(a1, b1)
     }
@@ -79,15 +59,9 @@ function addsub(uint256 a, uint256 b) pure returns (uint256) {
     uint256 res1;
     assembly ("memory-safe") {
         let a0 := sar(128, a)
-        let a1 := and(
-            0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff,
-            a
-        )
+        let a1 := and(0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff, a)
         let b0 := sar(128, b)
-        let b1 := and(
-            0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff,
-            b
-        )
+        let b1 := and(0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff, b)
         res0 := add(a0, b0)
         res1 := sub(a1, b1)
     }
@@ -103,15 +77,9 @@ function subadd(uint256 a, uint256 b) pure returns (uint256) {
     uint256 res1;
     assembly ("memory-safe") {
         let a0 := sar(128, a)
-        let a1 := and(
-            0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff,
-            a
-        )
+        let a1 := and(0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff, a)
         let b0 := sar(128, b)
-        let b1 := and(
-            0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff,
-            b
-        )
+        let b1 := and(0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff, b)
         res0 := sub(a0, b0)
         res1 := add(a1, b1)
     }
@@ -131,11 +99,8 @@ function toUint128(uint256 a) pure returns (uint128) {
 /// @param c The third T_BalanceUINT256
 /// @return True if the price of a is lower than the prices of b and c, false otherwise
 function lowerprice(uint256 a, uint256 b, uint256 c) pure returns (bool) {
-    return
-        uint256(a.amount0()) * uint256(b.amount1()) * uint256(c.amount1()) >
-            uint256(a.amount1()) * uint256(b.amount0()) * uint256(c.amount0())
-            ? true
-            : false;
+    return uint256(a.amount0()) * uint256(b.amount1()) * uint256(c.amount1())
+        > uint256(a.amount1()) * uint256(b.amount0()) * uint256(c.amount0()) ? true : false;
 }
 
 /// @notice Performs a multiplication followed by a division
@@ -143,11 +108,7 @@ function lowerprice(uint256 a, uint256 b, uint256 c) pure returns (bool) {
 /// @param amount The multiplier
 /// @param domitor The divisor
 /// @return a The result as a uint128
-function mulDiv(
-    uint256 config,
-    uint256 amount,
-    uint256 domitor
-) pure returns (uint128 a) {
+function mulDiv(uint256 config, uint256 amount, uint256 domitor) pure returns (uint128 a) {
     uint256 result;
     unchecked {
         assembly {
@@ -164,9 +125,7 @@ library L_TTSwapUINT256Library {
     /// @notice Extracts the first 128-bit amount from a T_BalanceUINT256
     /// @param balanceDelta The T_BalanceUINT256 to extract from
     /// @return _amount0 The extracted first 128-bit amount
-    function amount0(
-        uint256 balanceDelta
-    ) internal pure returns (uint128 _amount0) {
+    function amount0(uint256 balanceDelta) internal pure returns (uint128 _amount0) {
         assembly {
             _amount0 := shr(128, balanceDelta)
         }
@@ -175,9 +134,7 @@ library L_TTSwapUINT256Library {
     /// @notice Extracts the second 128-bit amount from a T_BalanceUINT256
     /// @param balanceDelta The T_BalanceUINT256 to extract from
     /// @return _amount1 The extracted second 128-bit amount
-    function amount1(
-        uint256 balanceDelta
-    ) internal pure returns (uint128 _amount1) {
+    function amount1(uint256 balanceDelta) internal pure returns (uint128 _amount1) {
         assembly {
             _amount1 := balanceDelta
         }
@@ -187,31 +144,23 @@ library L_TTSwapUINT256Library {
     /// @param balanceDelta The T_BalanceUINT256 containing the ratio
     /// @param amount1delta The amount1 to base the calculation on
     /// @return _amount0 The calculated amount0
-    function getamount0fromamount1(
-        uint256 balanceDelta,
-        uint128 amount1delta
-    ) internal pure returns (uint128 _amount0) {
-        return
-            mulDiv(
-                balanceDelta.amount0(),
-                amount1delta,
-                balanceDelta.amount1()
-            );
+    function getamount0fromamount1(uint256 balanceDelta, uint128 amount1delta)
+        internal
+        pure
+        returns (uint128 _amount0)
+    {
+        return mulDiv(balanceDelta.amount0(), amount1delta, balanceDelta.amount1());
     }
 
     /// @notice Calculates amount1 based on a given amount0 and the ratio in balanceDelta
     /// @param balanceDelta The T_BalanceUINT256 containing the ratio
     /// @param amount0delta The amount0 to base the calculation on
     /// @return _amount1 The calculated amount1
-    function getamount1fromamount0(
-        uint256 balanceDelta,
-        uint128 amount0delta
-    ) internal pure returns (uint128 _amount1) {
-        return
-            mulDiv(
-                balanceDelta.amount1(),
-                amount0delta,
-                balanceDelta.amount0()
-            );
+    function getamount1fromamount0(uint256 balanceDelta, uint128 amount0delta)
+        internal
+        pure
+        returns (uint128 _amount1)
+    {
+        return mulDiv(balanceDelta.amount1(), amount0delta, balanceDelta.amount0());
     }
 }

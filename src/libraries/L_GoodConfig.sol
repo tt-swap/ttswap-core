@@ -23,10 +23,7 @@ library L_GoodConfigLibrary {
     /// @param config The configuration value
     /// @param amount The investment amount
     /// @return a The calculated investment fee
-    function getFlashFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint256 a) {
+    function getFlashFee(uint256 config, uint256 amount) internal pure returns (uint256 a) {
         unchecked {
             assembly {
                 config := shr(250, shl(27, config))
@@ -40,10 +37,7 @@ library L_GoodConfigLibrary {
     /// @param config The configuration value
     /// @param amount The investment amount
     /// @return a The calculated investment fee
-    function getInvestFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getInvestFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(250, shl(33, config))
@@ -53,10 +47,7 @@ library L_GoodConfigLibrary {
         }
     }
 
-    function getInvestFullFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getInvestFullFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(250, shl(33, config))
@@ -70,10 +61,7 @@ library L_GoodConfigLibrary {
     /// @param config The configuration value
     /// @param amount The disinvestment amount
     /// @return a The calculated disinvestment fee
-    function getDisinvestFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getDisinvestFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(250, shl(39, config))
@@ -87,10 +75,7 @@ library L_GoodConfigLibrary {
     /// @param config The configuration value
     /// @param amount The buying amount
     /// @return a The calculated buying fee
-    function getBuyFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getBuyFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(249, shl(45, config))
@@ -104,10 +89,7 @@ library L_GoodConfigLibrary {
     /// @param config The configuration value
     /// @param amount The selling amount
     /// @return a The calculated selling fee
-    function getSellFee(
-        uint256 config,
-        uint256 amount
-    ) internal pure returns (uint128 a) {
+    function getSellFee(uint256 config, uint256 amount) internal pure returns (uint128 a) {
         unchecked {
             assembly {
                 config := shr(249, shl(52, config))
@@ -121,10 +103,7 @@ library L_GoodConfigLibrary {
     /// @param config The configuration value
     /// @param amount The amount
     /// @return The swap chips for the given amount
-    function getSwapChips(
-        uint256 config,
-        uint128 amount
-    ) internal pure returns (uint128) {
+    function getSwapChips(uint256 config, uint128 amount) internal pure returns (uint128) {
         uint128 a;
         assembly {
             a := shr(246, shl(59, config))
@@ -137,10 +116,7 @@ library L_GoodConfigLibrary {
     /// @param config The configuration value
     /// @param amount The amount
     /// @return The disinvestment chips for the given amount
-    function getDisinvestChips(
-        uint256 config,
-        uint128 amount
-    ) internal pure returns (uint128) {
+    function getDisinvestChips(uint256 config, uint128 amount) internal pure returns (uint128) {
         uint128 a;
         assembly {
             a := shr(246, shl(69, config))

@@ -25,8 +25,7 @@ contract testBuy11 is Test {
     using L_TTSwapUINT256Library for uint256;
     using L_Good for S_GoodState;
 
-    bytes internal constant defaultdata =
-        abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
+    bytes internal constant defaultdata = abi.encode(L_CurrencyLibrary.S_transferData(1, "0X"));
     address usdtgood;
     address nativenormalgood;
     address btcgood;

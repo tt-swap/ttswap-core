@@ -8,11 +8,25 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 import {S_GoodKey, S_ProofKey} from "../src/interfaces/I_TTSwap_Market.sol";
 import {L_ProofIdLibrary, L_Proof} from "../src/libraries/L_Proof.sol";
 import {L_Good} from "../src/libraries/L_Good.sol";
-import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
+import {
+    L_TTSwapUINT256Library,
+    toTTSwapUINT256,
+    addsub,
+    subadd,
+    lowerprice,
+    toUint128
+} from "../src/libraries/L_TTSwapUINT256.sol";
 
 import {L_GoodConfigLibrary} from "../src/libraries/L_GoodConfig.sol";
 import {L_MarketConfigLibrary} from "../src/libraries/L_MarketConfig.sol";
-import {L_TTSwapUINT256Library, toTTSwapUINT256, addsub, subadd, lowerprice, toUint128} from "../src/libraries/L_TTSwapUINT256.sol";
+import {
+    L_TTSwapUINT256Library,
+    toTTSwapUINT256,
+    addsub,
+    subadd,
+    lowerprice,
+    toUint128
+} from "../src/libraries/L_TTSwapUINT256.sol";
 
 contract buyNormalGooduseNativeETH2Pay is BaseSetup {
     using L_MarketConfigLibrary for uint256;
@@ -54,14 +68,7 @@ contract buyNormalGooduseNativeETH2Pay is BaseSetup {
         deal(address(usdt), users[1], 9000000000000000, false);
         usdt.approve(address(market), 9000000000000000);
 
-        uint256 normalgoodconfig = 1 *
-            2 ** 217 +
-            3 *
-            2 ** 211 +
-            5 *
-            2 ** 204 +
-            7 *
-            2 ** 197;
+        uint256 normalgoodconfig = 1 * 2 ** 217 + 3 * 2 ** 211 + 5 * 2 ** 204 + 7 * 2 ** 197;
         market.initGood{value: 1000000000000000}(
             metagood,
             toTTSwapUINT256(1000000000000000, 1000000000000000),
@@ -76,18 +83,7 @@ contract buyNormalGooduseNativeETH2Pay is BaseSetup {
 
     function testBuyNormalGoodUsingNativeETHWithChipsaa() public {
         vm.startPrank(users[1]);
-        uint256 goodconfig = 1 *
-            2 ** 217 +
-            3 *
-            2 ** 211 +
-            5 *
-            2 ** 204 +
-            7 *
-            2 ** 197 +
-            10 *
-            2 ** 216 +
-            10 *
-            2 ** 206;
+        uint256 goodconfig = 1 * 2 ** 217 + 3 * 2 ** 211 + 5 * 2 ** 204 + 7 * 2 ** 197 + 10 * 2 ** 216 + 10 * 2 ** 206;
         market.updateGoodConfig(nativeeth, goodconfig);
 
         usdt.approve(address(market), 800000 * 10 ** 6 + 1);
@@ -172,18 +168,7 @@ contract buyNormalGooduseNativeETH2Pay is BaseSetup {
 
     function testBuyNormalGoodUsingNativeETHWithChipsmultical() public {
         vm.startPrank(users[1]);
-        uint256 goodconfig = 1 *
-            2 ** 217 +
-            3 *
-            2 ** 211 +
-            5 *
-            2 ** 204 +
-            7 *
-            2 ** 197 +
-            10 *
-            2 ** 216 +
-            10 *
-            2 ** 206;
+        uint256 goodconfig = 1 * 2 ** 217 + 3 * 2 ** 211 + 5 * 2 ** 204 + 7 * 2 ** 197 + 10 * 2 ** 216 + 10 * 2 ** 206;
         market.updateGoodConfig(nativeeth, goodconfig);
 
         usdt.approve(address(market), 800000 * 10 ** 6 + 1);

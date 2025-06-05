@@ -18,20 +18,12 @@ interface IAllowanceTransfer {
 
     /// @notice Emits an event when the owner successfully invalidates an ordered nonce.
     event NonceInvalidation(
-        address indexed owner,
-        address indexed token,
-        address indexed spender,
-        uint48 newNonce,
-        uint48 oldNonce
+        address indexed owner, address indexed token, address indexed spender, uint48 newNonce, uint48 oldNonce
     );
 
     /// @notice Emits an event when the owner successfully sets permissions on a token for the spender.
     event Approval(
-        address indexed owner,
-        address indexed token,
-        address indexed spender,
-        uint160 amount,
-        uint48 expiration
+        address indexed owner, address indexed token, address indexed spender, uint160 amount, uint48 expiration
     );
 
     /// @notice Emits an event when the owner successfully sets permissions using a permit signature on a token for the spender.
@@ -114,11 +106,7 @@ interface IAllowanceTransfer {
     /// @notice A mapping from owner address to token address to spender address to PackedAllowance struct, which contains details and conditions of the approval.
     /// @notice The mapping is indexed in the above order see: allowance[ownerAddress][tokenAddress][spenderAddress]
     /// @dev The packed slot holds the allowed amount, expiration at which the allowed amount is no longer valid, and current nonce thats updated on any signature based approvals.
-    function allowance(
-        address,
-        address,
-        address
-    ) external view returns (uint160, uint48, uint48);
+    function allowance(address, address, address) external view returns (uint160, uint48, uint48);
 
     /// @notice Approves the spender to use up to amount of the specified token up until the expiration
     /// @param token The token to approve
@@ -127,34 +115,21 @@ interface IAllowanceTransfer {
     /// @param expiration The timestamp at which the approval is no longer valid
     /// @dev The packed allowance also holds a nonce, which will stay unchanged in approve
     /// @dev Setting amount to type(uint160).max sets an unlimited approval
-    function approve(
-        address token,
-        address spender,
-        uint160 amount,
-        uint48 expiration
-    ) external;
+    function approve(address token, address spender, uint160 amount, uint48 expiration) external;
 
     /// @notice Permit a spender to a given amount of the owners token via the owner's EIP-712 signature
     /// @dev May fail if the owner's nonce was invalidated in-flight by invalidateNonce
     /// @param owner The owner of the tokens being approved
     /// @param permitSingle Data signed over by the owner specifying the terms of approval
     /// @param signature The owner's signature over the permit data
-    function permit(
-        address owner,
-        PermitSingle memory permitSingle,
-        bytes calldata signature
-    ) external;
+    function permit(address owner, PermitSingle memory permitSingle, bytes calldata signature) external;
 
     /// @notice Permit a spender to the signed amounts of the owners tokens via the owner's EIP-712 signature
     /// @dev May fail if the owner's nonce was invalidated in-flight by invalidateNonce
     /// @param owner The owner of the tokens being approved
     /// @param permitBatch Data signed over by the owner specifying the terms of approval
     /// @param signature The owner's signature over the permit data
-    function permit(
-        address owner,
-        PermitBatch memory permitBatch,
-        bytes calldata signature
-    ) external;
+    function permit(address owner, PermitBatch memory permitBatch, bytes calldata signature) external;
 
     /// @notice Transfer approved tokens from one address to another
     /// @param from The address to transfer from
@@ -163,20 +138,13 @@ interface IAllowanceTransfer {
     /// @param token The token address to transfer
     /// @dev Requires the from address to have approved at least the desired amount
     /// of tokens to msg.sender.
-    function transferFrom(
-        address from,
-        address to,
-        uint160 amount,
-        address token
-    ) external;
+    function transferFrom(address from, address to, uint160 amount, address token) external;
 
     /// @notice Transfer approved tokens in a batch
     /// @param transferDetails Array of owners, recipients, amounts, and tokens for the transfers
     /// @dev Requires the from addresses to have approved at least the desired amount
     /// of tokens to msg.sender.
-    function transferFrom(
-        AllowanceTransferDetails[] calldata transferDetails
-    ) external;
+    function transferFrom(AllowanceTransferDetails[] calldata transferDetails) external;
 
     /// @notice Enables performing a "lockdown" of the sender's Permit2 identity
     /// by batch revoking approvals
@@ -188,9 +156,5 @@ interface IAllowanceTransfer {
     /// @param spender The spender to invalidate nonces for
     /// @param newNonce The new nonce to set. Invalidates all nonces less than it.
     /// @dev Can't invalidate more than 2**16 nonces per transaction.
-    function invalidateNonces(
-        address token,
-        address spender,
-        uint48 newNonce
-    ) external;
+    function invalidateNonces(address token, address spender, uint48 newNonce) external;
 }

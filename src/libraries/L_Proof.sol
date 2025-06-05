@@ -64,16 +64,8 @@ library L_Proof {
         // If there's a value good, calculate and burn the corresponding amount of value investment
         if (_self.valuegood != address(0)) {
             uint256 burnResult2_ = toTTSwapUINT256(
-                mulDiv(
-                    _self.valueinvest.amount0(),
-                    _value,
-                    _self.state.amount0()
-                ),
-                mulDiv(
-                    _self.valueinvest.amount1(),
-                    _value,
-                    _self.state.amount0()
-                )
+                mulDiv(_self.valueinvest.amount0(), _value, _self.state.amount0()),
+                mulDiv(_self.valueinvest.amount1(), _value, _self.state.amount0())
             );
             // Subtract the calculated value investment from the total value investment
             _self.valueinvest = sub(_self.valueinvest, burnResult2_);
@@ -93,11 +85,7 @@ library L_Proof {
      * @param proofvalue The amount of proof value to stake
      * @return The staked amount
      */
-    function stake(
-        address contractaddress,
-        address to,
-        uint128 proofvalue
-    ) internal returns (uint128) {
+    function stake(address contractaddress, address to, uint128 proofvalue) internal returns (uint128) {
         return I_TTSwap_Token(contractaddress).stake(to, proofvalue);
     }
 
@@ -107,11 +95,7 @@ library L_Proof {
      * @param from The address to unstake from
      * @param divestvalue The amount of proof value to unstake
      */
-    function unstake(
-        address contractaddress,
-        address from,
-        uint128 divestvalue
-    ) internal {
+    function unstake(address contractaddress, address from, uint128 divestvalue) internal {
         I_TTSwap_Token(contractaddress).unstake(from, divestvalue);
     }
 }

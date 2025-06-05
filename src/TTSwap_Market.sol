@@ -654,6 +654,7 @@ contract TTSwap_Market is
             _proofid,
             normalgood,
             valuegood,
+            _gater,
             toTTSwapUINT256(divestvalue, 0),
             toTTSwapUINT256(
                 disinvestNormalResult1_.actual_fee,

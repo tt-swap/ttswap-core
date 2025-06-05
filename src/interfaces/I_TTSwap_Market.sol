@@ -119,6 +119,7 @@ interface I_TTSwap_Market {
     /// @param _proofNo The ID of the investment proof
     /// @param _normalGoodNo The ID of the normal good
     /// @param _valueGoodNo The ID of the value good
+    /// @param _gater The Gater of User
     /// @param _normalgood The disinvestment details of the normal good (amount0: actual fee, amount1: actual disinvest quantity)
     /// @param _valuegood The disinvestment details of the value good (amount0: actual fee, amount1: actual disinvest quantity)
     /// @param _profit The profit (amount0: normal good profit, amount1: value good profit)
@@ -126,6 +127,7 @@ interface I_TTSwap_Market {
         uint256 indexed _proofNo,
         address _normalGoodNo,
         address _valueGoodNo,
+        address _gater,
         uint256 _value,
         uint256 _normalgood,
         uint256 _valuegood,

@@ -599,7 +599,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4, E
      * @dev Disinvests from a proof by withdrawing invested tokens and collecting profits
      * @param _proofid The ID of the proof to disinvest from
      * @param _goodQuantity The amount of normal good tokens to disinvest
-     * @param _gater The address to receive gater rewards (falls back to DAO admin if banned)
+     * @param _gate The address to receive gate rewards (falls back to DAO admin if banned)
      * @return uint128 The profit amount from normal good disinvestment
      * @return uint128 The profit amount from value good disinvestment (if applicable)
      * @notice This function:
@@ -607,7 +607,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4, E
      * - Processes disinvestment for both normal and value goods
      * - Handles commission distribution and fee collection
      * - Updates proof state and burns tokens
-     * - Distributes rewards to gater and referrer
+     * - Distributes rewards to gate and referrer
      * - Unstakes TTS tokens
      * @custom:security Protected by noReentrant modifier
      * @custom:security Reverts if:
@@ -616,7 +616,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4, E
      * - Insufficient balance for disinvestment
      */
     /// @inheritdoc I_TTSwap_Market
-    function disinvestProof(uint256 _proofid, uint128 _goodQuantity, address _gater)
+    function disinvestProof(uint256 _proofid, uint128 _goodQuantity, address _gate)
         external
         override
         noReentrant
@@ -633,13 +633,13 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4, E
 
         uint128 divestvalue;
         (address dao_admin, address referal) = I_TTSwap_Token(officialTokenContract).getreferralanddaoadmin(msg.sender);
-        _gater = userConfig[_gater].isBan() ? dao_admin : _gater;
-        referal = _gater == referal ? dao_admin : referal;
+        _gate = userConfig[_gate].isBan() ? dao_admin : _gate;
+        referal = _gate == referal ? dao_admin : referal;
         referal = userConfig[referal].isBan() ? dao_admin : referal;
         (disinvestNormalResult1_, disinvestValueResult2_, divestvalue) = goods[normalgood].disinvestGood(
             goods[valuegood],
             proofs[_proofid],
-            L_Good.S_GoodDisinvestParam(_goodQuantity, _gater, referal, marketconfig, dao_admin)
+            L_Good.S_GoodDisinvestParam(_goodQuantity, _gate, referal, marketconfig, dao_admin)
         );
 
         uint256 tranferamount = goods[normalgood].commission[msg.sender];
@@ -663,7 +663,7 @@ contract TTSwap_Market is I_TTSwap_Market, IERC3156FlashLender, IMulticall_v4, E
             _proofid,
             normalgood,
             valuegood,
-            _gater,
+            _gate,
             toTTSwapUINT256(divestvalue, 0),
             toTTSwapUINT256(disinvestNormalResult1_.actual_fee, disinvestNormalResult1_.actualDisinvestQuantity),
             toTTSwapUINT256(disinvestValueResult2_.actual_fee, disinvestValueResult2_.actualDisinvestQuantity),

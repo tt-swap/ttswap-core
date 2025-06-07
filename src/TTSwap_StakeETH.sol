@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity 0.8.29;
 
+/**
+ * @title TTSwap_StakeETH
+ * @notice This contract manages ETH staking and restaking operations, integrating with Rocket Pool and TTSwap market.
+ * @dev Handles staking, unstaking, reward synchronization, and investment/divestment logic for ETH and rETH.
+ *      Provides role-based access control for protocol creator and manager.
+ */
 import {TTSwapError} from "./libraries/L_Error.sol";
 import {
     toTTSwapUINT256, L_TTSwapUINT256Library, add, sub, subadd, addsub, mulDiv
@@ -23,25 +29,59 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
     using L_CurrencyLibrary for address;
     using L_ProofIdLibrary for S_ProofKey;
 
-    uint256 public override totalState; //amount0:totalShare, amount1:totalETHQuantity
-    uint256 public override sethState; // amount0:share amount1:quantity
-    uint256 public override swethState; // amount0:share amount1:quantity
-    uint256 public override totalStake; // amount0:stakingAmount amount1:getRethAmount
-    uint256 public override rethStaking; // amount0:reth invest amount,amount1: reward
+    /**
+     * @notice Aggregated state for all staked tokens.
+     * @dev amount0: total share, amount1: total ETH quantity
+     */
+    uint256 public override totalState;
+    /**
+     * @notice State for sETH pool (restakable ETH).
+     * @dev amount0: share, amount1: quantity
+     */
+    uint256 public override sethState;
+    /**
+     * @notice State for swETH pool (non-restakable ETH).
+     * @dev amount0: share, amount1: quantity
+     */
+    uint256 public override swethState;
+    /**
+     * @notice Total staked ETH and corresponding rETH received.
+     * @dev amount0: staking amount, amount1: rETH amount received
+     */
+    uint256 public override totalStake;
+    /**
+     * @notice rETH staking state and rewards.
+     * @dev amount0: rETH invested, amount1: reward
+     */
+    uint256 public override rethStaking;
+    /**
+     * @notice Address of the protocol creator (has permission to change manager).
+     */
     address internal protocolCreator;
+    /**
+     * @notice Address of the protocol manager (has permission to manage staking operations).
+     */
     address internal protocolManager;
 
-    // rocket pool token  address
+    // Rocket Pool rETH token contract
     IRocketTokenRETH internal immutable ROCKET_TOKEN_RETH;
-    // rocket storge contract address
+    // Rocket Pool storage contract
     IRocketStorage internal immutable rocketstorage;
-    // ttswap market contract address
+    // TTSwap market contract
     I_TTSwap_Market internal immutable TTSWAP_MARKET;
-    // ttswap token address
+    // TTSwap platform token contract
     IERC20 internal immutable tts_token;
-    // address(2) stand for the pool of eth can restaking to rocketpool
+    // Special address representing the sETH pool (restakable ETH)
     address internal constant seth = address(2);
 
+    /**
+     * @notice Contract constructor, sets up protocol roles and external contract addresses.
+     * @param _creator Address of the protocol creator
+     * @param _ttswap_market Address of the TTSwap market contract
+     * @param _ttswap_token Address of the TTSwap platform token
+     * @param _ROCKET_TOKEN_RETH Address of the Rocket Pool rETH token
+     * @param _rocketstorage Address of the Rocket Pool storage contract
+     */
     constructor(
         address _creator,
         I_TTSwap_Market _ttswap_market,
@@ -57,17 +97,26 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         ROCKET_TOKEN_RETH = _ROCKET_TOKEN_RETH;
     }
 
+    /**
+     * @notice Restricts function access to the protocol creator only.
+     */
     modifier onlyCreator() {
         require(msg.sender == protocolCreator);
         _;
     }
 
+    /**
+     * @notice Restricts function access to the protocol manager only.
+     */
     modifier onlyManager() {
         require(msg.sender == protocolManager);
         _;
     }
 
-    /// @notice This will revert if the contract is locked
+    /**
+     * @notice Prevents reentrancy by using a transient storage lock.
+     * @dev Reverts if the contract is already locked for the current call context.
+     */
     modifier noReentrant() {
         if (L_Transient.get() != address(0)) revert TTSwapError(3);
         L_Transient.set(msg.sender);
@@ -75,13 +124,20 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         L_Transient.set(address(0));
     }
 
-    /// @notice change by creator
-    /// @param _manager new manager's address
+    /**
+     * @notice Changes the protocol manager address. Only callable by the creator.
+     * @param _manager The new manager's address
+     */
     function changeManager(address _manager) external onlyCreator {
         protocolManager = _manager;
     }
 
-    /// @inheritdoc I_TTSwap_StakeETH
+    /**
+     * @notice Stake ETH or restakable tokens into the protocol.
+     * @dev Only callable by the TTSwap market contract. Handles both sETH and swETH logic.
+     * @param token The token address to stake (sETH or swETH)
+     * @param _stakeamount The amount to stake
+     */
     function stakeEth(address token, uint128 _stakeamount) external payable override noReentrant {
         if (!token.canRestake() || address(TTSWAP_MARKET) != msg.sender) {
             revert TTSwapError(37);
@@ -100,7 +156,13 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         }
     }
 
-    /// @inheritdoc I_TTSwap_StakeETH
+    /**
+     * @notice Unstake a specified amount of ETH or restakable tokens.
+     * @dev Only callable by the TTSwap market contract. Handles both sETH and swETH logic.
+     * @param token The token address to unstake (sETH or swETH)
+     * @param amount The amount to unstake
+     * @return reward The reward amount distributed to the user
+     */
     function unstakeEthSome(address token, uint128 amount) external override noReentrant returns (uint128 reward) {
         if (!token.canRestake() || address(TTSWAP_MARKET) != msg.sender) {
             revert TTSwapError(37);
@@ -129,7 +191,12 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         }
     }
 
-    /// @inheritdoc I_TTSwap_StakeETH
+    /**
+     * @notice Synchronize and claim staking rewards for a given token.
+     * @dev Only callable by the TTSwap market contract. Handles both sETH and swETH logic.
+     * @param token The token address to claim rewards for (sETH or swETH)
+     * @return reward The reward amount distributed to the user
+     */
     function syncReward(address token) external override noReentrant returns (uint128 reward) {
         if (!token.canRestake() || address(TTSWAP_MARKET) != msg.sender) {
             revert TTSwapError(37);
@@ -160,6 +227,10 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         }
     }
 
+    /**
+     * @notice Internal function to update rewards based on rETH and ETH balances.
+     * @dev Updates totalStake, totalState, and rethStaking if new rewards are available.
+     */
     function internalReward() internal {
         uint128 reth = uint128(IERC20(address(ROCKET_TOKEN_RETH)).balanceOf(address(this)) + rethStaking.amount0());
         uint128 eth1 = uint128(ROCKET_TOKEN_RETH.getEthValue(reth));
@@ -171,7 +242,11 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         }
     }
 
-    /// @inheritdoc I_TTSwap_StakeETH
+    /**
+     * @notice Stake ETH into Rocket Pool and receive rETH. Only callable by the manager.
+     * @param stakeamount The amount of ETH to stake
+     * @return rethAmount The amount of rETH received
+     */
     function stakeRocketPoolETH(uint128 stakeamount) external override onlyManager returns (uint128 rethAmount) {
         IRocketDAOProtocolSettingsDeposit ROCKET_DAO_SETTINGS_DEPOSIT = IRocketDAOProtocolSettingsDeposit(
             rocketstorage.getAddress(
@@ -196,7 +271,10 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         emit e_stakeRocketPoolETH(totalStake);
     }
 
-    /// @inheritdoc I_TTSwap_StakeETH
+    /**
+     * @notice Unstake rETH from Rocket Pool and update protocol state. Only callable by the manager.
+     * @param rethAmount The amount of rETH to unstake
+     */
     function unstakeRocketPoolETH(uint128 rethAmount) external override onlyManager {
         require(rethAmount > 0, "Amount must be greater than 0");
         uint128 ethAmount = totalStake.getamount0fromamount1(rethAmount);
@@ -209,11 +287,18 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         emit e_rocketpoolUnstaked(totalStake, totalState, reward);
     }
 
+    /**
+     * @notice Receive function to accept ETH transfers.
+     * @dev Emits an event with the received ETH amount.
+     */
     receive() external payable {
         emit e_Received(msg.value);
     }
 
-    /// @inheritdoc I_TTSwap_StakeETH
+    /**
+     * @notice Invest rETH into the TTSwap market. Only callable by the manager.
+     * @param _goodQuantity The amount of rETH to invest
+     */
     function invest(uint128 _goodQuantity) external override onlyManager {
         uint256 proofid = S_ProofKey(address(this), address(ROCKET_TOKEN_RETH), address(0)).toId();
         require(
@@ -232,7 +317,10 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         emit e_stakeeth_invest(rethStaking);
     }
 
-    /// @inheritdoc I_TTSwap_StakeETH
+    /**
+     * @notice Divest rETH from the TTSwap market. Only callable by the manager.
+     * @param _goodQuantity The amount of rETH to divest
+     */
     function divest(uint128 _goodQuantity) external override onlyManager {
         uint256 proofid = S_ProofKey(address(this), address(ROCKET_TOKEN_RETH), address(0)).toId();
         require(_goodQuantity <= TTSWAP_MARKET.getProofState(proofid).invest.amount0());
@@ -243,7 +331,9 @@ contract TTSwap_StakeETH is I_TTSwap_StakeETH {
         emit e_stakeeth_devest(rethStaking);
     }
 
-    /// @inheritdoc I_TTSwap_StakeETH
+    /**
+     * @notice Collect TTS token rewards and swap for rETH via the TTSwap market. Only callable by the manager.
+     */
     function collectTTSReward() external override onlyManager {
         uint128 amount = uint128(tts_token.balanceOf(address(this)));
         if (amount > 0) {

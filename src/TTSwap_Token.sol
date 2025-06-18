@@ -150,6 +150,7 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
     }
 
     function _addShare(s_share memory _share, address owner) internal {
+        require(left_share<=uint64(_share.leftamount));
         left_share -= uint64(_share.leftamount);
         if (shares[owner].leftamount == 0) {
             shares[owner] = _share;
@@ -323,7 +324,6 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
             uint128 leftamount = uint128(200_000_000_000_000 - totalSupply);
             uint128 mintamount = leftamount < 1000000 ? 1000000 : leftamount / 18250; //leftamount /50 /365
             poolstate = add(poolstate, toTTSwapUINT256(ttstokenconfig.getratio(mintamount), 0));
-
             emit e_updatepool(toTTSwapUINT256(stakestate.amount0(), poolstate.amount0()));
         }
     }
@@ -334,9 +334,8 @@ contract TTSwap_Token is I_TTSwap_Token, ERC20, IEIP712 {
      * @param value Amount of tokens to burn
      */
     /// @inheritdoc I_TTSwap_Token
-
-    function burn(address account, uint256 value) external override {
-        _burn(account, value);
+    function burn( uint256 value) external override {
+        _burn(msg.sender, value);
     }
 
     function _mint(address to, uint256 amount) internal override {

@@ -127,11 +127,9 @@ interface I_TTSwap_Token {
 
     /**
      * @dev Burns the specified value of tokens from the given account
-     * @param account the given account
      * @param value the amount will be burned
      */
-    function burn(address account, uint256 value) external;
-
+    function burn( uint256 value) external;
     /**
      * @dev Adds or updates authorization for an address
      * @param _auths The address to authorize
